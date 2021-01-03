@@ -1,6 +1,6 @@
 <template>
   <div class="signup">
-      <div class="bigtext">ANIHUU</div>
+      <div v-bind:class="{ step2: step == 2, step3: step == 3}"  class="bigtext">ANIHUU</div>
       <div class="container">
 
         <div class="formContainer">
@@ -53,7 +53,7 @@
 
                     <div v-if="animelist" class="animePosters">
                         <div class="posterContainer" v-for="anime in animelist" :key="anime" :id="anime.id" @click="select($event)" >
-                            <img v-bind:class="{ selected: selectedAnime.has(anime.id.toString())}" :id="anime.id" class="anime" :src="`http://anihuu.moe:8880/posters/${anime.id}.jpg`" alt="">
+                            <img v-bind:class="{ selected: selectedAnime.has(anime.id.toString())}" :id="anime.id" class="anime" :src="`http://anihuu.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
                             <svg v-if="selectedAnime.has(anime.id.toString())" width="46" height="36" viewBox="0 0 46 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M39.9402 0.165039L15.4048 24.2298L6.46488 15.4613L0.95166 20.8688L15.4048 35.0448L45.4534 5.57252L39.9402 0.165039Z" fill="#FF006B"/></svg>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
 
                 
                 <div class="buttonsStep2" v-if="step == 2">
-                    <button class="backButton" @click="step = 1"> BACK</button>
+                    <button class="backButton" @click="window.location.href = `http:/anihuu.moe/profile/${username}`"> SKIP</button>
                     <button type="submit">NEXT</button>
                 </div>
 
@@ -70,14 +70,14 @@
 
             <form v-if="step == 3" v-on:submit.prevent="addSocials">
 
-                <h1>Add your socials</h1>
+                <h1>Add your socials links</h1>
 
                 <div class="inputField" v-for="field in fields" :key="field">
                     <img src="../assets/_default.svg" alt="Text">
                     <input autocomplete="off" :id="field" v-model="socials[field - 1]" class="i" type="text" placeholder="Link...">
                 </div>
 
-                <svg @click="addField()" width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.4998 0.00976562C7.45864 0.00976562 0.916504 6.5519 0.916504 14.5931C0.916504 22.6343 7.45864 29.1764 15.4998 29.1764C23.541 29.1764 30.0832 22.6343 30.0832 14.5931C30.0832 6.5519 23.541 0.00976562 15.4998 0.00976562ZM15.4998 2.19727C22.3588 2.19727 27.8957 7.73411 27.8957 14.5931C27.8957 21.4521 22.3588 26.9889 15.4998 26.9889C8.64085 26.9889 3.104 21.4521 3.104 14.5931C3.104 7.73411 8.64085 2.19727 15.4998 2.19727ZM15.4827 7.28577C15.1929 7.2903 14.9167 7.40968 14.7149 7.61769C14.513 7.82571 14.4019 8.10535 14.4061 8.39518V13.4994H9.30192C9.15699 13.4973 9.01309 13.5241 8.87859 13.5781C8.7441 13.6322 8.62168 13.7124 8.51847 13.8142C8.41525 13.9159 8.33329 14.0372 8.27735 14.1709C8.2214 14.3046 8.19259 14.4482 8.19259 14.5931C8.19259 14.738 8.2214 14.8816 8.27735 15.0153C8.33329 15.149 8.41525 15.2703 8.51847 15.372C8.62168 15.4738 8.7441 15.554 8.87859 15.6081C9.01309 15.6621 9.15699 15.6889 9.30192 15.6869H14.4061V20.791C14.404 20.936 14.4308 21.0799 14.4849 21.2143C14.5389 21.3488 14.6191 21.4713 14.7209 21.5745C14.8227 21.6777 14.9439 21.7597 15.0777 21.8156C15.2114 21.8715 15.3549 21.9003 15.4998 21.9003C15.6448 21.9003 15.7883 21.8715 15.922 21.8156C16.0557 21.7597 16.177 21.6777 16.2788 21.5745C16.3805 21.4713 16.4608 21.3488 16.5148 21.2143C16.5689 21.0799 16.5956 20.936 16.5936 20.791V15.6869H21.6978C21.8427 15.6889 21.9866 15.6621 22.1211 15.6081C22.2556 15.554 22.378 15.4738 22.4812 15.372C22.5844 15.2703 22.6664 15.149 22.7223 15.0153C22.7783 14.8816 22.8071 14.738 22.8071 14.5931C22.8071 14.4482 22.7783 14.3046 22.7223 14.1709C22.6664 14.0372 22.5844 13.9159 22.4812 13.8142C22.378 13.7124 22.2556 13.6322 22.1211 13.5781C21.9866 13.5241 21.8427 13.4973 21.6978 13.4994H16.5936V8.39518C16.5957 8.24879 16.5684 8.10347 16.5133 7.96782C16.4582 7.83218 16.3764 7.70898 16.2728 7.60552C16.1692 7.50206 16.0459 7.42045 15.9102 7.36553C15.7745 7.3106 15.6291 7.28348 15.4827 7.28577Z" fill="#959595"/></svg>
+                <svg class="addButton" @click="addField()" width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.4998 0.00976562C7.45864 0.00976562 0.916504 6.5519 0.916504 14.5931C0.916504 22.6343 7.45864 29.1764 15.4998 29.1764C23.541 29.1764 30.0832 22.6343 30.0832 14.5931C30.0832 6.5519 23.541 0.00976562 15.4998 0.00976562ZM15.4998 2.19727C22.3588 2.19727 27.8957 7.73411 27.8957 14.5931C27.8957 21.4521 22.3588 26.9889 15.4998 26.9889C8.64085 26.9889 3.104 21.4521 3.104 14.5931C3.104 7.73411 8.64085 2.19727 15.4998 2.19727ZM15.4827 7.28577C15.1929 7.2903 14.9167 7.40968 14.7149 7.61769C14.513 7.82571 14.4019 8.10535 14.4061 8.39518V13.4994H9.30192C9.15699 13.4973 9.01309 13.5241 8.87859 13.5781C8.7441 13.6322 8.62168 13.7124 8.51847 13.8142C8.41525 13.9159 8.33329 14.0372 8.27735 14.1709C8.2214 14.3046 8.19259 14.4482 8.19259 14.5931C8.19259 14.738 8.2214 14.8816 8.27735 15.0153C8.33329 15.149 8.41525 15.2703 8.51847 15.372C8.62168 15.4738 8.7441 15.554 8.87859 15.6081C9.01309 15.6621 9.15699 15.6889 9.30192 15.6869H14.4061V20.791C14.404 20.936 14.4308 21.0799 14.4849 21.2143C14.5389 21.3488 14.6191 21.4713 14.7209 21.5745C14.8227 21.6777 14.9439 21.7597 15.0777 21.8156C15.2114 21.8715 15.3549 21.9003 15.4998 21.9003C15.6448 21.9003 15.7883 21.8715 15.922 21.8156C16.0557 21.7597 16.177 21.6777 16.2788 21.5745C16.3805 21.4713 16.4608 21.3488 16.5148 21.2143C16.5689 21.0799 16.5956 20.936 16.5936 20.791V15.6869H21.6978C21.8427 15.6889 21.9866 15.6621 22.1211 15.6081C22.2556 15.554 22.378 15.4738 22.4812 15.372C22.5844 15.2703 22.6664 15.149 22.7223 15.0153C22.7783 14.8816 22.8071 14.738 22.8071 14.5931C22.8071 14.4482 22.7783 14.3046 22.7223 14.1709C22.6664 14.0372 22.5844 13.9159 22.4812 13.8142C22.378 13.7124 22.2556 13.6322 22.1211 13.5781C21.9866 13.5241 21.8427 13.4973 21.6978 13.4994H16.5936V8.39518C16.5957 8.24879 16.5684 8.10347 16.5133 7.96782C16.4582 7.83218 16.3764 7.70898 16.2728 7.60552C16.1692 7.50206 16.0459 7.42045 15.9102 7.36553C15.7745 7.3106 15.6291 7.28348 15.4827 7.28577Z" fill="#959595"/></svg>
 
                 <div class="buttonsStep2" v-if="step == 3">
                     <button class="backButton" @click="step = 2"> BACK</button>
@@ -287,29 +287,39 @@ export default {
 
 <style scoped>
 
-.slideup {
-  transition: all .3s ease;
-  transform: translateX(10px);
-}
+.slideup { transition: all .3s ease; transform: translateX(10px); }
 
 .bigtext {
-  font-size: 244px;
-  font-weight: 900;
-  font-style: italic;
-  position: absolute;
-  color: #FF006B;
-  transition: 300ms ease;
-  transform: rotate(90deg) translate(320px, 460px);
+    font-size: 244px;
+    font-weight: 900;
+    font-style: italic;
+    position: absolute;
+    color: #FF006B;
+    transition: 300ms ease;
+    transform: rotate(90deg) translate(320px, 460px);
+}
+
+.step2 {
+    transform: rotate(0deg) translate(0px, 0px);
+}
+
+.step3 {
+    transform: translate(-100px, 300px) rotate(-28.9deg) ;
+}
+
+.addButton {
+    margin-bottom: 16px;
+    cursor: pointer;
 }
 
 .container {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .formContainer {
@@ -330,69 +340,69 @@ export default {
 }
 
 .formContainer form *:not(button):not(.anime):not(svg) {
-  margin-bottom: 16px;
+    margin-bottom: 16px;
 }
 
 .formContainer form h1 {
-  font-size: 32px;
-  font-weight: 700;
-  text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
 }
 
 .formContainer form input:not(.search) {
-  width: 100%;
-  height: 24px;
-  padding: 0px 0px 14px 0px;
+    width: 100%;
+    height: 24px;
+    padding: 0px 0px 14px 0px;
 
-  font-weight: 500;
-  font-size: 16px;
+    font-weight: 500;
+    font-size: 16px;
 
-  outline: none;
-  border: none;
-  border-bottom: 2px solid #D8D8D8;
+    outline: none;
+    border: none;
+    border-bottom: 2px solid #D8D8D8;
 }
 
 .formContainer form input:not(.search)::placeholder {
-  opacity: 1;
+    opacity: 1;
 }
 
 .formContainer form button {
-  width: 179px;
-  height: 47px;
-  border: none;
-  outline: none;
-  background: #FF006B;
-  border-radius: 24px;
+    width: 179px;
+    height: 47px;
+    border: none;
+    outline: none;
+    background: #FF006B;
+    border-radius: 24px;
 
-  font-family: Work Sans;
-  font-style: normal;
-  font-weight: 800;
-  font-size: 16px;
-  line-height: 117.9%;
-  text-align: center;
+    font-family: Work Sans;
+    font-style: normal;
+    font-weight: 800;
+    font-size: 16px;
+    line-height: 117.9%;
+    text-align: center;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-  color: #FFFFFF;
+    color: #FFFFFF;
 }
 
 .formContainer form button:hover {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .inputField {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .inputField img {
-  width: 35px;
-  height: 35px;
-  margin-right: 17px;
-  transform: translateY(-6px)
+    width: 35px;
+    height: 35px;
+    margin-right: 17px;
+    transform: translateY(-6px)
 }
 
 .error {
@@ -422,7 +432,7 @@ export default {
 
     transition: 200ms ease;
 
-    transform: translateY(300px);
+    transform: translateY(200px);
 }
 
 .error img {

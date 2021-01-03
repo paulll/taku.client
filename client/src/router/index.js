@@ -46,6 +46,14 @@ const routes = [
       title: '💬 DMs',
     },
   },
+  {
+    path: '/anime/:anime_id',
+    name: 'Anime',
+    component: () => import('../views/Anime.vue'),
+    meta: {
+      title: 'Anime',
+    },
+  },
 ]
 
 const router = createRouter({
