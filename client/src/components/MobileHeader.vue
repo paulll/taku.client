@@ -10,11 +10,10 @@ export default {
   <div class="mh-headerContainer">
     <header class="mh-header">
       <ul class="mh-headerButtons">
-        <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.png" alt=""></router-link></li>
-        <li><router-link to="/faq" class="mh-headerButton"><img src="../assets/question.png" alt=""></router-link></li>
-        <li><router-link to="/masterlist" class="mh-headerButton"><img src="../assets/headshot.png" alt=""></router-link></li>
-        <li><router-link to="/tickets" class="mh-headerButton"><img src="../assets/ticket.png" alt=""></router-link></li>
-        <li><router-link to="/terms" class="mh-headerButton"><img src="../assets/text.png" alt=""></router-link></li>
+        <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
+        <li><router-link to="/faq" class="mh-headerButton"><img src="../assets/facebook.svg" alt=""></router-link></li>
+        <li><router-link to="/masterlist" class="mh-headerButton"><img src="../assets/facebook.svg" alt=""></router-link></li>
+        <li><router-link to="/tickets" class="mh-headerButton"><img src="../assets/facebook.svg" alt=""></router-link></li>
       </ul>
     </header>
   </div>
@@ -38,7 +37,7 @@ export default {
   background: white;
   height: 48px;
   width: calc(100% - 16px);
-  border-radius: 16px;
+  border-radius: 12px;
   flex-direction: row;
   justify-content: center;
   align-items: center;

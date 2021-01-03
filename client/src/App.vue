@@ -1,15 +1,18 @@
 <template>
   <Header/>
   <router-view/>
+  <MobileHeader/>
 </template>
 
 <script>
 import Header from '@/components/Header.vue'
+import MobileHeader from '@/components/MobileHeader.vue'
 
 export default {
   name: 'Home',
   components: {
     Header,
+    MobileHeader
   },
 }
 
