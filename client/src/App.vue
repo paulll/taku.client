@@ -1,18 +1,15 @@
 <template>
   <Header/>
-  <Authprompt/>
   <router-view/>
 </template>
 
 <script>
 import Header from '@/components/Header.vue'
-import Authprompt from '@/components/Authprompt.vue'
 
 export default {
   name: 'Home',
   components: {
     Header,
-    Authprompt
   },
 }
 

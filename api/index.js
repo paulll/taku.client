@@ -265,23 +265,26 @@ app.get("/message/:user_id", async (req, res) => {
   }
 });
 
+// Search Endpoints
+app.get("/search/anime/:name", async (req, res) => {
+    const keywords = String.raw`.*${req.params.name}.*`;
+    const animelist = await anime.find({ title: new RegExp(keywords, "i") });
+    res.status(200);
+    res.json({ animelist: animelist });
+});
+
 // Anime Endpoints
 app.get("/anime", async (req, res) => {
   const animelist = await anime.find();
   res.status(200);
   res.json({ animelist: animelist });
 });
-app.get("/anime/:name", async (req, res) => {
-    const keywords = String.raw`.*${req.params.name}.*`;
-    const animelist = await anime.find({ title: new RegExp(keywords, "i") });
-    res.status(200);
-    res.json({ animelist: animelist });
-});
-app.get("/anime/id/:anime_id", async (req, res) => {
-    const result = await anime.find({ id: parseInt(req.params.anime_id) });
+app.get("/anime/id/:id", async (req, res) => {
+    const result = await anime.find({ id: parseInt(req.params.id) });
     res.status(200);
     res.json({ anime: result });
 });
+
 // Auth
 app.post("/signup", async (req, res) => {
   // Parse body

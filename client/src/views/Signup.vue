@@ -178,7 +178,7 @@ export default {
         if(search == "") return this.getAnime();
 
         // Search for anime
-        this.animelist = (await axios.get(`http://anihuu.moe:8880/anime/${search}`, {
+        this.animelist = (await axios.get(`http://anihuu.moe:8880/search/anime/${search}`, {
             headers: {
                 'Content-Type': 'application/json'
             }

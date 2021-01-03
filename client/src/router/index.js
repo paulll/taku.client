@@ -47,7 +47,7 @@ const routes = [
     },
   },
   {
-    path: '/anime/:anime_id',
+    path: '/anime/:id',
     name: 'Anime',
     component: () => import('../views/Anime.vue'),
     meta: {

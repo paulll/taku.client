@@ -37,7 +37,7 @@ export default {
     methods: {
         async getData() {
             // Get user data
-            let result = await axios.get(`http://anihuu.moe:8880/anime/id/${this.$route.params.anime_id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+            let result = await axios.get(`http://anihuu.moe:8880/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
             result = Object.assign({}, result).data.anime[0];
             result.tags = result.tags.join(", ");
             this.anime = result;
@@ -86,6 +86,7 @@ export default {
 .info h1 {
     position: relative;
     font-size: 28px;
+    font-weight: 800;
     padding-right: 32px;
 }
 
@@ -107,14 +108,16 @@ export default {
 
 .info h3 {
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .info p {
     overflow: scroll;
-    height: 70px;
+    height: fit-content;
+    max-height: 70px;
     font-weight: 400;
     margin-bottom: 6px;
+    
 }
 
 .info p::-webkit-scrollbar {
