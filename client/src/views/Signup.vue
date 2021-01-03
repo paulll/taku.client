@@ -273,6 +273,7 @@ export default {
         });
             
         localStorage.token = loginResponse.data.token;
+        localStorage.username = response.data.username;
 
         this.step = 2;
 

@@ -47,6 +47,11 @@ export default {
         return message["content"] = linkifyHtml(message.content, {defaultProtocol: 'https'});
       });
     });
+
+    setTimeout(() => {
+      let dummy = document.querySelector(".dummy");
+      dummy.scrollIntoView({behavior: "smooth"});
+    }, 500);
   },
   unmounted() {
     this.socket.disconnect();
@@ -66,7 +71,8 @@ export default {
 
       // Scroll to last message
       let dummy = document.querySelector(".dummy");
-      dummy.scrollIntoView();
+        dummy.scrollIntoView({behavior: "smooth"});
+
 
       // Maintain focus on keyboard for mobile
       this.$refs.message.focus();
@@ -121,7 +127,8 @@ export default {
 }
 
 .messages {
-  height: 100vh;
+  margin-top: 56px;
+  height: calc(100vh - 56px);
   overflow: scroll;
   overflow-x: hidden;
 }
@@ -132,6 +139,7 @@ export default {
 .message {
   padding: 6px 0px;
   margin: 0px 16px;
+  align-items: flex-end;
   display: flex;
   align-items: top;
 }
@@ -160,10 +168,11 @@ export default {
   display: flex;
   align-items: center;
   font-size: 14px;
-  margin: 0px 16px;
-  padding: 12px 12px;
+  margin: 0px 12px;
+  padding: 10px 12px;
   background: #eee;
   overflow-wrap: anywhere;
+  margin-bottom: 1px;
   max-width: 600px;
   font-weight: 500;
   width: fit-content;

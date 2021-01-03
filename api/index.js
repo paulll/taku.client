@@ -10,10 +10,9 @@ var http = require('http');
 var Jimp = require('jimp');
 const Joi = require('joi');
 const bcrypt = require('bcrypt');
-const saltRounds = 12;
+const saltRounds = 12; 
 const jwt = require('jsonwebtoken');
 const cookieParser = require("cookie-parser");
-
 
 // const options = {
 //     key: fs.readFileSync("./key.pem"),
@@ -37,7 +36,6 @@ const schema = Joi.object({
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
         .required(),
 })
-
 
 // Database
 var monk = require('monk');
@@ -211,11 +209,6 @@ app.post('/user/anime',async (req, res) => {
         res.json({"message": "done"});
     });
 });
-
-
-
-
-
 app.post('/user/socials',async (req, res) => {
     // Parse body
     const body = req.body; 
@@ -238,7 +231,6 @@ app.post('/user/socials',async (req, res) => {
     });
 
 });
-
 
 app.get('/banner/:id', async (req, res) => {
     const id = req.params.id;
@@ -394,8 +386,6 @@ app.post('/login', async (req, res) => {
         }
     }
 });
-
-
 
 
 const port = process.env.PORT || 8880;
