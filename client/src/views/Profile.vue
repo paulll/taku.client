@@ -76,12 +76,12 @@ export default {
     async getData() {
 
         // Get user data
-        let result = await axios.get(`http://anihuu.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+        let result = await axios.get(`http://localhost:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
         this.user = result;
 
         // Get banner URL
-        let bannerURL = await axios.get(`http://anihuu.moe:8880/banner/${result.banner}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+        let bannerURL = await axios.get(`http://localhost:8880/banner/${result.banner}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         bannerURL = Object.assign({}, bannerURL).data;
         this.user.bannerURL = bannerURL;
     },

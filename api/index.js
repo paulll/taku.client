@@ -56,7 +56,7 @@ var io = require("socket.io")(http, {
 
 app.use(
   cors({
-    origin: "http://anihuu.moe:8080",
+    origin: "http://localhost:8080",
     credentials: true,
   })
 );
@@ -162,6 +162,7 @@ app.get("/user/:username", async (req, res) => {
 });
 app.get("/user", async (req, res) => {
   // Verify Logged In User
+  
   jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
     if (error) {
       res.status(401);
@@ -204,6 +205,31 @@ app.post("/user/anime", async (req, res) => {
     res.json({ message: "done" });
   });
 });
+app.patch("/user/anime", async (req, res) => {
+  // Parse body
+  const body = req.body;
+  console.log(body);
+  console.log("ass");
+
+  // Verify Logged In User
+  jwt.verify(body.user, "h4x0r", async (error, user) => {
+    if (error) {
+      console.log(error);
+    }
+    req.user = user;
+
+    await users.update(
+      { username: req.user.username },
+      { $pull: { anime_showcase: parseInt(body.anime) } }
+    );
+
+    res.status(200);
+    res.json({ message: "done" });
+  });
+});
+
+
+
 app.post("/user/socials", async (req, res) => {
   // Parse body
   const body = req.body;
@@ -333,7 +359,7 @@ app.post("/signup", async (req, res) => {
   result.background_showcase = {};
   result.likes = {};
   result.socials = {};
-  result.pfp = `http://anihuu.moe:8880/pfp/_default.png`;
+  result.pfp = `http://localhost:8880/pfp/_default.png`;
   result.total_uploads = 0;
   result.uploaded_backgrounds = {};
   result.vip = false;

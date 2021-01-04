@@ -11,15 +11,21 @@ export default {
     <header class="mh-header">
       <ul class="mh-headerButtons">
         <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
-        <li><router-link to="/faq" class="mh-headerButton"><img src="../assets/facebook.svg" alt=""></router-link></li>
-        <li><router-link to="/masterlist" class="mh-headerButton"><img src="../assets/facebook.svg" alt=""></router-link></li>
-        <li><router-link to="/tickets" class="mh-headerButton"><img src="../assets/facebook.svg" alt=""></router-link></li>
+        <li><router-link to="/submit" class="mh-headerButton"><img src="../assets/add.png" alt=""></router-link></li>
+        <li><router-link to="/dm" class="mh-headerButton"><img src="../assets/chat.png" alt=""></router-link></li>
+        <li><router-link to="/settings" class="mh-headerButton"><img src="../assets/settings.svg" alt=""></router-link></li>
       </ul>
     </header>
   </div>
 </template>
 
-<style>
+<style scoped>
+
+.router-link-active {
+  border-bottom: 2px solid #FF006B;
+  filter: invert(26%) sepia(92%) saturate(7218%) hue-rotate(327deg) brightness(99%) contrast(109%);
+}
+
 
 .mh-headerContainer{
   display: none;

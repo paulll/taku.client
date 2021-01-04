@@ -1,11 +1,14 @@
 <template>
     <div class="anime">
         <div class="bannerContainer">
-            <div class="banner" :style="{'background-image' : `linear-gradient(0deg, rgba(255, 0, 107, 0.65), rgba(255, 0, 107, 0.75)), linear-gradient(0deg, #000000, #000000), url(http://anihuu.moe:8880/anime/banners/${anime.id}.jpg)`}">
-                <img class="poster" :src="`http://anihuu.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
+            <div class="banner" :style="{'background-image' : `linear-gradient(0deg, rgba(255, 0, 107, 0.65), rgba(255, 0, 107, 0.75)), linear-gradient(0deg, #000000, #000000), url(http://localhost:8880/anime/banners/${anime.id}.jpg)`}">
+                <img class="poster" :src="`http://localhost:8880/anime/posters/${anime.id}.jpg`" alt="">
                 <div class="info">
                     <div class="title">
-                        <h1>{{anime.title}} <img src="../assets/bookmark.svg" alt=""></h1>
+                        <h1>{{anime.title}} 
+                            <img v-if="!saved" @click="saveAnime(anime.id)" src="../assets/bookmark.svg" alt="">
+                            <img v-if="saved" @click="removeAnime(anime.id)" src="../assets/bookmark-filled.svg" alt="">
+                        </h1>
                         <h2>{{anime.year}}</h2>
                     </div>
                     <div class="desc">
@@ -29,19 +32,77 @@ export default {
   data: () => {
       return {
           anime: {},
+          saved: false,
       };
   },
     mounted() {
         this.getData();
     },
     methods: {
+        async saveAnime(id) {
+
+            this.saved = true;  
+
+            // Reset animation
+            const json = JSON.stringify({anime: [id], user: localStorage.token});
+            const response = await axios.post('http://localhost:8880/user/anime', json, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log(response);
+
+            // Display backend error
+            if (response.data.error) {
+                this.error = response.data.error;
+                this.saved = false;
+                setTimeout(() => {
+                    this.error = "";
+                }, 300);
+            }
+
+            this.saved = true;
+
+        },
+        async removeAnime(id) {
+            this.saved = false;  
+
+            // Reset animation
+            const json = JSON.stringify({anime: [id], user: localStorage.token});
+            const response = await axios.patch('http://localhost:8880/user/anime', json, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log(response);
+
+            // Display backend error
+            if (response.data.error) {
+                this.error = response.data.error;
+                this.saved = true;
+                setTimeout(() => {
+                    this.error = "";
+                }, 300);
+            }
+
+            this.saved = false;
+        },
         async getData() {
+
             // Get user data
-            let result = await axios.get(`http://anihuu.moe:8880/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
-            result = Object.assign({}, result).data.anime[0];
-            result.tags = result.tags.join(", ");
-            this.anime = result;
-            console.log(result);
+            const response = await axios.get('http://localhost:8880/user', {withCredentials: true});
+            let user = response.data
+            this.user = user;
+
+            // Get anime data
+            let anime = await axios.get(`http://localhost:8880/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+            anime = Object.assign({}, anime).data.anime[0];
+            anime.tags = anime.tags.join(", ");
+            this.anime = anime;
+
+            if (user.anime_showcase.includes(anime.id)) this.saved = true;
         }
     }
 }

@@ -36,14 +36,13 @@ export default {
     methods: {
         logout(){
             localStorage.removeItem('token');
-            window.location.href = "http://anihuu.moe:8080";
+            window.location.href = "http://localhost:8080";
         },
         async getUser() {
-            const settings = await axios.get('http://anihuu.moe:8880/user', {
+            const settings = await axios.get('http://localhost:8880/user', {
                 withCredentials: true,
             });
 
-            console.log(settings.data);
             this.user = settings.data;
         },
     }

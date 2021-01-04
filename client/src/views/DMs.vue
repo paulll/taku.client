@@ -36,7 +36,7 @@ export default {
     return {
       message: "",
       messages: [],
-      socket: io('ws://anihuu.moe:8880'),
+      socket: io('ws://localhost:8880'),
       me: localStorage.username,
     };
   },
@@ -86,7 +86,7 @@ export default {
 
 .sendMessageContainer {
   position: fixed;
-  bottom: 13px;
+  bottom: 64px;
   width: 100%;
 }
 
@@ -133,7 +133,7 @@ export default {
   overflow-x: hidden;
 }
 .dummy {
-  height: 64px;
+  height: 112px;
   width: 100%;
 }
 .message {

@@ -53,7 +53,7 @@
 
                     <div v-if="animelist" class="animePosters">
                         <div class="posterContainer" v-for="anime in animelist" :key="anime" :id="anime.id" @click="select($event)" >
-                            <img v-bind:class="{ selected: selectedAnime.has(anime.id.toString())}" :id="anime.id" class="anime" :src="`http://anihuu.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
+                            <img v-bind:class="{ selected: selectedAnime.has(anime.id.toString())}" :id="anime.id" class="anime" :src="`http://localhost:8880/anime/posters/${anime.id}.jpg`" alt="">
                             <svg v-if="selectedAnime.has(anime.id.toString())" width="46" height="36" viewBox="0 0 46 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M39.9402 0.165039L15.4048 24.2298L6.46488 15.4613L0.95166 20.8688L15.4048 35.0448L45.4534 5.57252L39.9402 0.165039Z" fill="#FF006B"/></svg>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
 
                 
                 <div class="buttonsStep2" v-if="step == 2">
-                    <button class="backButton" @click="window.location.href = `http:/anihuu.moe/profile/${username}`"> SKIP</button>
+                    <button class="backButton" @click="window.location.href = `http:/localhost/profile/${username}`"> SKIP</button>
                     <button type="submit">NEXT</button>
                 </div>
 
@@ -136,7 +136,7 @@ export default {
         console.log(this.socials);
 
         const json = JSON.stringify({socials: [...this.socials], user: localStorage.token});
-        const response = await axios.post('http://anihuu.moe:8880/user/socials', json, {
+        const response = await axios.post('http://localhost:8880/user/socials', json, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -158,11 +158,11 @@ export default {
             return
         }
 
-        this.selectedAnime.add(targetId);
+        this.selectedAnime.add(parseInt(targetId));
         console.log(this.selectedAnime);    
     },
     async getAnime(){
-        let result = await axios.get(`http://anihuu.moe:8880/anime`, {
+        let result = await axios.get(`http://localhost:8880/anime`, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -178,7 +178,7 @@ export default {
         if(search == "") return this.getAnime();
 
         // Search for anime
-        this.animelist = (await axios.get(`http://anihuu.moe:8880/search/anime/${search}`, {
+        this.animelist = (await axios.get(`http://localhost:8880/search/anime/${search}`, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -192,7 +192,6 @@ export default {
             setTimeout(() => {
                 this.angery = false;
             }, 300);
-        
         }
 
         // Reset animation
@@ -200,7 +199,7 @@ export default {
         if (this.selectedAnime.size < 3) return this.error = "Please select at least 3 of your favorite anime (个_个)";
 
         const json = JSON.stringify({anime: [...this.selectedAnime], user: localStorage.token});
-        const response = await axios.post('http://anihuu.moe:8880/user/anime', json, {
+        const response = await axios.post('http://localhost:8880/user/anime', json, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -248,7 +247,7 @@ export default {
         });
 
         // Send JSON to backend
-        const response = await axios.post('http://anihuu.moe:8880/signup', json, {
+        const response = await axios.post('http://localhost:8880/signup', json, {
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -265,7 +264,7 @@ export default {
         });
 
         // Send JSON to backend
-        const loginResponse = await axios.post('http://anihuu.moe:8880/login', loginJson, {
+        const loginResponse = await axios.post('http://localhost:8880/login', loginJson, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'

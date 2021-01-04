@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     async getUser() {
-      const user = await axios.get('http://anihuu.moe:8880/user', {
+      const user = await axios.get('http://localhost:8880/user', {
           withCredentials: true,
       });
 

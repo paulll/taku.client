@@ -82,7 +82,7 @@ export default {
         });
 
         // Send JSON to backend
-        const response = await axios.post('http://anihuu.moe:8880/login', json, {
+        const response = await axios.post('http://localhost:8880/login', json, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
