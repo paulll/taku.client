@@ -6,46 +6,57 @@
             <div class="heading">
                 <div class="pfp">
                     <div v-if="user.username" class="image" :style="{'background-image' : `url('${user.pfp}')`}"></div>
-                    <div v-if="user.vip" class="badge">✪</div>
+                    <svg v-if="user.vip" class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.9644 26C11.1836 26 9.50959 25.6676 7.94247 25.0027C6.37534 24.3142 4.99817 23.3763 3.81096 22.189C2.62374 20.9781 1.68584 19.589 0.99726 18.0219C0.33242 16.4548 0 14.769 0 12.9644C0 11.1361 0.33242 9.43836 0.99726 7.87123C1.68584 6.28037 2.62374 4.9032 3.81096 3.73973C4.99817 2.55251 6.37534 1.63836 7.94247 0.99726C9.50959 0.33242 11.1836 0 12.9644 0C14.7927 0 16.4904 0.344293 18.0575 1.03288C19.6484 1.69772 21.0374 2.63562 22.2247 3.84658C23.4119 5.03379 24.3379 6.41096 25.0027 7.97808C25.6676 9.52146 26 11.1836 26 12.9644C26 14.769 25.6557 16.4548 24.9671 18.0219C24.3023 19.589 23.3763 20.9781 22.189 22.189C21.0018 23.3763 19.6128 24.3142 18.0219 25.0027C16.4548 25.6676 14.769 26 12.9644 26ZM6.91151 19.5383C6.601 20.4617 7.65966 21.2388 8.44753 20.6658L12.3792 17.8064C12.7284 17.5525 13.2012 17.5513 13.5516 17.8036L17.5645 20.6929C18.3531 21.2607 19.4064 20.4837 19.0967 19.5626L17.6237 15.1825C17.4802 14.7559 17.6394 14.286 18.0127 14.0345L21.2199 11.8731C22.0382 11.3216 21.6478 10.0438 20.661 10.0438H16.6038C16.1743 10.0438 15.7928 9.76954 15.6559 9.36239L13.924 4.20888C13.6175 3.29675 12.3257 3.30152 12.0259 4.21589L10.3408 9.35539C10.2061 9.76612 9.8228 10.0438 9.39056 10.0438H5.339C4.35218 10.0438 3.96181 11.3216 4.78015 11.8731L7.98733 14.0345C8.36056 14.286 8.51977 14.7559 8.37632 15.1825L6.91151 19.5383Z" fill="#FF006B"/>
+                    </svg>
+                    <h1 class="username">{{user.username}}</h1>
                 </div>
-                <div class="infoField">
-                    <h1>{{user.username}}</h1>
-                    <p>{{user.role}}</p>
+                <div class="row info">
+                    <div class="infoField">
+                        <button v-if="user.username != me.username" class="button">FOLLOW</button>
+                        <button v-if="user.username == me.username" class="button"> <img src="../assets/edit.svg" alt="Edit"> EDIT</button>
+                    </div>
+                    <div class="splitter"></div>
+                    <div class="infoField">
+                        <h1 class="uploads">{{user.total_uploads}}</h1>
+                        <p>Uploads</p>
+                    </div>
                 </div>
-                <div class="splitter"></div>
-                <div class="infoField">
-                    <h1>{{user.total_tomodachi}}</h1>
-                    <p>Tomodachi</p>
+
+                <div class="row socials">
+                    <div class="socials">
+                        <a v-if="user.socials.twitter" class="twitter" target="_blank" :href="user.socials.twitter"><img src="../assets/twitter.svg" alt="Twitter"></a>
+                        <a v-if="user.socials.youtube" class="youtube" target="_blank" :href="user.socials.youtube"><img src="../assets/youtube.svg" alt="YouTube"></a>
+                        <a v-if="user.socials.instagram" class="instagram" target="_blank" :href="user.socials.instagram"><img src="../assets/instagram.svg" alt="Instagram"></a>
+                        <a v-if="user.socials.twitch" class="twitch" target="_blank" :href="user.socials.twitch"><img src="../assets/twitch.svg" alt="Twitch"></a>
+                        <a v-if="user.socials.tiktok" class="tiktok" target="_blank" :href="user.socials.tiktok"><img src="../assets/tiktok.svg" alt="tiktok"></a>
+                        <a v-if="user.socials.tumblr" class="tumblr" target="_blank" :href="user.socials.tumblr"><img src="../assets/tumblr.svg" alt="tumblr"></a>
+                        <a v-if="user.socials.pinterest" class="pinterest" target="_blank" :href="user.socials.pinterest"><img src="../assets/pinterest.svg" alt="pinterest"></a>
+                        <a v-if="user.socials.facebook" class="facebook" target="_blank" :href="user.socials.facebook"><img src="../assets/facebook.svg" alt="facebook"></a>
+                        <a v-if="user.socials.deviantart" class="deviantart" target="_blank" :href="user.socials.deviantart"><img src="../assets/deviantart.svg" alt="deviantart"></a>
+                        <a v-if="user.socials.linkedin" class="linkedin" target="_blank" :href="user.socials.linkedin"><img src="../assets/linkedin.svg" alt="linkedin"></a>
+                        <a v-if="user.socials.snapchat" class="snapchat" target="_blank" :href="user.socials.snapchat"><img src="../assets/snapchat.svg" alt="snapchat"></a>
+                        <a v-if="user.socials.vkontakte" class="vkontakte" target="_blank" :href="user.socials.vkontakte"><img src="../assets/vkontakte.svg" alt="vkontakte"></a>
+                        <a v-if="user.socials.reddit" class="reddit" target="_blank" :href="user.socials.reddit"><img src="../assets/reddit.svg" alt="reddit"></a>
+                        <a v-if="user.socials.discord" class="discord" target="_blank" :href="user.socials.discord"><img src="../assets/discord.svg" alt="discord"></a>
+                    </div>
                 </div>
-                <div class="splitter"></div>
-                <div class="infoField">
-                    <h1 class="uploads">{{user.total_uploads}}</h1>
-                    <p>Uploads</p>
-                </div>
-                <div class="splitter"></div>
-                <div class="infoField socials">
-                    <a v-if="user.socials.twitter" class="twitter" target="_blank" :href="user.socials.twitter"><img src="../assets/twitter.svg" alt="Twitter"></a>
-                    <a v-if="user.socials.youtube" class="youtube" target="_blank" :href="user.socials.youtube"><img src="../assets/youtube.svg" alt="YouTube"></a>
-                    <a v-if="user.socials.instagram" class="instagram" target="_blank" :href="user.socials.instagram"><img src="../assets/instagram.svg" alt="Instagram"></a>
-                    <a v-if="user.socials.twitch" class="twitch" target="_blank" :href="user.socials.twitch"><img src="../assets/twitch.svg" alt="Twitch"></a>
-                    <a v-if="user.socials.tiktok" class="tiktok" target="_blank" :href="user.socials.tiktok"><img src="../assets/tiktok.svg" alt="tiktok"></a>
-                    <a v-if="user.socials.tumblr" class="tumblr" target="_blank" :href="user.socials.tumblr"><img src="../assets/tumblr.svg" alt="tumblr"></a>
-                    <a v-if="user.socials.pinterest" class="pinterest" target="_blank" :href="user.socials.pinterest"><img src="../assets/pinterest.svg" alt="pinterest"></a>
-                    <a v-if="user.socials.facebook" class="facebook" target="_blank" :href="user.socials.facebook"><img src="../assets/facebook.svg" alt="facebook"></a>
-                    <a v-if="user.socials.deviantart" class="deviantart" target="_blank" :href="user.socials.deviantart"><img src="../assets/deviantart.svg" alt="deviantart"></a>
-                    <a v-if="user.socials.linkedin" class="linkedin" target="_blank" :href="user.socials.linkedin"><img src="../assets/linkedin.svg" alt="linkedin"></a>
-                    <a v-if="user.socials.snapchat" class="snapchat" target="_blank" :href="user.socials.snapchat"><img src="../assets/snapchat.svg" alt="snapchat"></a>
-                    <a v-if="user.socials.vkontakte" class="vkontakte" target="_blank" :href="user.socials.vkontakte"><img src="../assets/vkontakte.svg" alt="vkontakte"></a>
-                    <a v-if="user.socials.reddit" class="reddit" target="_blank" :href="user.socials.reddit"><img src="../assets/reddit.svg" alt="reddit"></a>
-                    <a v-if="user.socials.discord" class="discord" target="_blank" :href="user.socials.discord"><img src="../assets/discord.svg" alt="discord"></a>
-                </div>
+
                 <!-- <img class="settings" src="../assets/settings.svg" alt="Settings"> -->
-               <button class="follow">FOLLOW</button>
             </div>
         </div>
 
         <div class="pageContent">
-            <div class="page"></div>
+            <p class="tags" ><strong>FAVORITE</strong> Anime</p>
+            <div class="animePosters">
+                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.anime_showcase" :key="id" :id="id">
+                    <img class="anime" :src="`http://localhost:8880/anime/posters/${id}.jpg`" alt="Anime">
+                </router-link>
+            </div>
+            <p class="tags" ><strong>TOP</strong> Backgrounds</p>
+            <p class="tags" ><strong>STATS</strong></p>
+            <p class="tags" ><strong>DESCRIPTION</strong></p>
+            <p class="tags" ><strong>ACHIVEMENTS</strong></p>
         </div>
     </div>
 </template>
@@ -53,20 +64,22 @@
 <script>
 
 import axios from 'axios';
-/* eslint-disable */
 
 export default {
   name: 'user',
   data: () => {
     return {
-      user: {
-        socials: {
-            twitter: "",
-            instagram: "",
-            twitch: "",
-            youtube: "",
-        }
-      },
+        me: {
+            username: localStorage.username,
+        },
+        user: {
+            socials: {
+                twitter: "",
+                instagram: "",
+                twitch: "",
+                youtube: "",
+            }
+        },
     };
   },
   mounted() {
@@ -78,6 +91,7 @@ export default {
         // Get user data
         let result = await axios.get(`http://localhost:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
+        console.log(result);
         this.user = result;
 
         // Get banner URL
@@ -111,16 +125,20 @@ export default {
 .heading {
     height: 116px;
     max-width: 100%;
-    padding: 0px calc(174px + 32px);
+    padding: 0px 12px;
     display: flex;
     justify-content: left;
+    flex-direction: column;
+    position: relative;
 }
 
+
 .pfp {
-    transform: translateY(-71px);
-    width: 174px;
-    height: 174px;
-    min-width: 174px;
+    transform: translateY(-60px);
+    width: 122px;
+    height: 122px;
+    min-width: 122px;
+    position: absolute;
 }
 
 .pfp .image {
@@ -129,8 +147,16 @@ export default {
     background-repeat: no-repeat;
     border-radius: 100%;
     width: 100%;
-    height: 100%;
+    height: 100%; 
+}
 
+.pfp .username {
+    font-size: 36px;
+    color: white;
+    top: 12px; 
+    text-align: left;
+    left: 138px;
+    position: absolute;
 }
 
 .settings {
@@ -141,11 +167,9 @@ export default {
     margin-top: calc((116px - 32px) / 2);
 }
 
-.follow {
-    width: 174px;
-    height: 38px;
-    position: absolute;
+.button {
     border: none;
+    height: 38px;
     background: #FF006B;
     border-radius: 32px;
     color: white;
@@ -154,11 +178,17 @@ export default {
     letter-spacing: 0.11rem;
     right: 206px;
     font-weight: 800;
-    margin-top: calc((116px - 38px) / 2);
+    cursor: pointer;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    padding: 7px 25px;
 }
 
-.follow:hover {
-    cursor: pointer;
+.button img {
+    width: 22px;
+    height: auto;
+    margin-right: 4px;
 }
 
 .settings:hover {
@@ -170,16 +200,30 @@ export default {
     position: absolute;
     font-size: 48px;
     color: #FF006B;
-    bottom: -12px;
+    bottom: 0px;
     right: 0px;
     user-select: none;
+}
+
+
+.row {
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    padding: 0px 8px;
+}
+
+.row.info {
+    margin-left: 122px;
+    padding-left: 0px;
 }
 
 .infoField {
     display: flex;
     flex-direction: column;
-    margin-left: 24px;
+    margin-left: 16px;
     margin-top: 16px;
+    height: fit-content;
     user-select: none;
 }
 
@@ -199,72 +243,108 @@ export default {
 
 .infoField p {
     color: #7C7C7C;
-    font-size: 18px;
+    font-size: 14px;
+    margin-top: 8px;
 }
 
-.infoField h1 {
-    font-size: 48px;
-}
-
-.splitter {
+.splitter { 
     width: 1px;
-    height: 74px;
+    height: 54px;
     background: rgba(0, 0, 0, 0.15);
     margin-left: 24px;
-    margin-top: 20px;
+    margin-top: 16px;
 }
 
-.uploads {
+.uploads { 
+    font-size: 36px;
+    line-height: 23px;
     color: #FF006B;
 }
 
-.page {
+.socials {
+    transform: translateY(4px);
+}
+
+.socials a {
+    width: fit-content;
+} 
+
+.socials img {
+    margin-right: 16px;
+} 
+
+.pageContent {
+    color: #414141;
     background: #F3F3F3;
     height: 710px;
     width: 100%;
 }
 
-.discord:hover {
-    filter: invert(51%) sepia(97%) saturate(374%) hue-rotate(193deg) brightness(90%) contrast(89%);
+.discord:hover { filter: invert(51%) sepia(97%) saturate(374%) hue-rotate(193deg) brightness(90%) contrast(89%); }
+.twitter:hover { filter: invert(54%) sepia(35%) saturate(3150%) hue-rotate(175deg) brightness(97%) contrast(96%); }
+.youtube:hover { filter: invert(21%) sepia(93%) saturate(7386%) hue-rotate(359deg) brightness(126%) contrast(121%); }
+.instagram:hover { filter: invert(18%) sepia(76%) saturate(4594%) hue-rotate(303deg) brightness(101%) contrast(120%); }
+.twitch:hover { filter: invert(10%) sepia(76%) saturate(7109%) hue-rotate(268deg) brightness(106%) contrast(126%); }
+.tiktok:hover { filter: invert(83%) sepia(61%) saturate(519%) hue-rotate(149deg) brightness(89%) contrast(82%); }
+.tumblr:hover { filter: invert(23%) sepia(18%) saturate(1054%) hue-rotate(176deg) brightness(97%) contrast(86%); }
+.pinterest:hover { filter: invert(17%) sepia(97%) saturate(5845%) hue-rotate(344deg) brightness(86%) contrast(112%); }
+.facebook:hover { filter: invert(38%) sepia(11%) saturate(3236%) hue-rotate(182deg) brightness(98%) contrast(86%); }
+.deviantart:hover { filter: invert(63%) sepia(71%) saturate(3009%) hue-rotate(94deg) brightness(97%) contrast(96%); }
+.linkedin:hover { filter: invert(24%) sepia(95%) saturate(1836%) hue-rotate(179deg) brightness(99%) contrast(89%); }
+.snapchat:hover { filter: invert(79%) sepia(70%) saturate(891%) hue-rotate(2deg) brightness(113%) contrast(106%); }
+.vkontakte:hover { filter: invert(44%) sepia(21%) saturate(961%) hue-rotate(171deg) brightness(95%) contrast(93%); }
+.reddit:hover { filter: invert(29%) sepia(77%) saturate(2766%) hue-rotate(2deg) brightness(103%) contrast(105%); }
+
+
+.tags {
+    padding: 24px 24px 0px;
+    font-size: 16px;
 }
-.twitter:hover {
-    filter: invert(54%) sepia(35%) saturate(3150%) hue-rotate(175deg) brightness(97%) contrast(96%);
+
+.animePosters {
+    padding: 8px 24px 0px;
+    display: flex;
+    position: relative;
+    scrollbar-width: thin;
+    scrollbar-color: lightgray transparent;
+    overflow-y: hidden;
+    overflow-x: scroll;
 }
-.youtube:hover {
-    filter: invert(21%) sepia(93%) saturate(7386%) hue-rotate(359deg) brightness(126%) contrast(121%);
+
+.animePosters::-webkit-scrollbar {
+  width: 12px;                                  /* width of the entire scrollbar */
 }
-.instagram:hover {
-    filter: invert(18%) sepia(76%) saturate(4594%) hue-rotate(303deg) brightness(101%) contrast(120%);
+
+.animePosters::-webkit-scrollbar-track {
+  background: white;                          /* color of the tracking area */
 }
-.twitch:hover {
-    filter: invert(10%) sepia(76%) saturate(7109%) hue-rotate(268deg) brightness(106%) contrast(126%);
+
+.animePosters::-webkit-scrollbar-thumb {
+  background-color: lightgray;                /* color of the scroll thumb */
+  padding: 0px;
+  border-radius: 20px;                          /* roundness of the scroll thumb */
+  border: 6px solid white;                    /* creates padding around scroll thumb */
 }
-.tiktok:hover {
-    filter: invert(83%) sepia(61%) saturate(519%) hue-rotate(149deg) brightness(89%) contrast(82%);
+
+.posterContainer {
+    margin-right: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: fit-content;
 }
-.tumblr:hover {
-    filter: invert(23%) sepia(18%) saturate(1054%) hue-rotate(176deg) brightness(97%) contrast(86%);
+
+.posterContainer svg {
+    position: absolute;
+    cursor: pointer;
 }
-.pinterest:hover {
-    filter: invert(17%) sepia(97%) saturate(5845%) hue-rotate(344deg) brightness(86%) contrast(112%);
-}
-.facebook:hover {
-    filter: invert(38%) sepia(11%) saturate(3236%) hue-rotate(182deg) brightness(98%) contrast(86%);
-}
-.deviantart:hover {
-    filter: invert(63%) sepia(71%) saturate(3009%) hue-rotate(94deg) brightness(97%) contrast(96%);
-}
-.linkedin:hover {
-    filter: invert(24%) sepia(95%) saturate(1836%) hue-rotate(179deg) brightness(99%) contrast(89%);
-}
-.snapchat:hover {
-    filter: invert(79%) sepia(70%) saturate(891%) hue-rotate(2deg) brightness(113%) contrast(106%);
-}
-.vkontakte:hover {
-    filter: invert(44%) sepia(21%) saturate(961%) hue-rotate(171deg) brightness(95%) contrast(93%);
-}
-.reddit:hover {
-    filter: invert(29%) sepia(77%) saturate(2766%) hue-rotate(2deg) brightness(103%) contrast(105%);
+
+.anime {
+    height: 124px;
+    border-radius: 8px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: 200ms ease;
 }
 
 </style>

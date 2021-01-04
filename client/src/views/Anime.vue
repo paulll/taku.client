@@ -51,8 +51,6 @@ export default {
                 }
             });
 
-            console.log(response);
-
             // Display backend error
             if (response.data.error) {
                 this.error = response.data.error;
@@ -75,8 +73,6 @@ export default {
                     'Content-Type': 'application/json'
                 }
             });
-
-            console.log(response);
 
             // Display backend error
             if (response.data.error) {
@@ -111,11 +107,7 @@ export default {
 
 <style scoped>
 
-.bannerContainer {
-    display: flex;
-
-}
-
+.bannerContainer { display: flex; }
 .banner {
     background-position: bottom;
     background-size: cover;
@@ -124,17 +116,15 @@ export default {
     padding: 64px 24px 24px;
     background-blend-mode: normal, color, normal;
     display: flex;
-
 }
-
 .poster {
     height: 168px;
+    width: 112px;
     border-radius: 8px;
     object-fit: cover;
     cursor: pointer;
     transition: 200ms ease;
 }
-
 .info {
     margin-left: 8px;
     display: flex;
@@ -143,7 +133,6 @@ export default {
     flex-direction: column;
     font-family: Work Sans;
 }
-
 .info h1 {
     position: relative;
     font-size: 28px;
@@ -159,8 +148,6 @@ export default {
     margin-top: 4px;
     cursor: pointer;
 }
-
-
 
 .info h2 {
     font-size: 22px;
@@ -178,9 +165,7 @@ export default {
     max-height: 70px;
     font-weight: 400;
     margin-bottom: 6px;
-    
 }
-
 .info p::-webkit-scrollbar {
     display: none;
 }

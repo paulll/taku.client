@@ -187,7 +187,6 @@ app.get("/user", async (req, res) => {
 app.post("/user/anime", async (req, res) => {
   // Parse body
   const body = req.body;
-  console.log(body);
 
   // Verify Logged In User
   jwt.verify(body.user, "h4x0r", async (error, user) => {
@@ -208,8 +207,6 @@ app.post("/user/anime", async (req, res) => {
 app.patch("/user/anime", async (req, res) => {
   // Parse body
   const body = req.body;
-  console.log(body);
-  console.log("ass");
 
   // Verify Logged In User
   jwt.verify(body.user, "h4x0r", async (error, user) => {

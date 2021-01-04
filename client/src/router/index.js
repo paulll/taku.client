@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import axios from 'axios'
 
 const routes = [
   {
@@ -62,7 +63,7 @@ const router = createRouter({
 })
 
 // this sets the tab title to the current page dynamically
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   if (to.meta.title) document.title = to.meta.title;
   if (to.path.startsWith('/profile/')) document.title = "Anihuu | " + to.params.username; 
   next();
