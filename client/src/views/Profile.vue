@@ -57,8 +57,8 @@
             <p class="tags"><strong>STATS</strong></p>
             <div class="stats">
                 <div class="stat">
-                    <h1>{{user.total_tomodachi}}</h1>
-                    <p>Tomodachi</p>
+                    <h1>{{user.total_anime}}</h1>
+                    <p>Anime</p>
                 </div>
                 <div class="stat">
                     <h1>{{user.total_likes}}</h1>
@@ -112,6 +112,7 @@ export default {
         let result = await axios.get(`http://localhost:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
         console.log(result);
+        result.total_anime = result.anime_showcase.length
         this.user = result;
 
         // Get banner URL
@@ -375,7 +376,7 @@ export default {
 .stats {
     display: grid;
     gap: 16px;
-    justify-items: center;
+    justify-items: left;
     grid-template-columns: repeat(4, 1fr);
     padding: 8px 24px 0px;
 }

@@ -310,97 +310,97 @@ app.get("/anime/id/:id", async (req, res) => {
 
 // Auth
 app.post("/signup", async (req, res) => {
-  // Parse body
-  const body = req.body;
+    // Parse body
+    const body = req.body;
 
-  // Validate the form
-  try {
-    var result = await schema.validateAsync(body);
-  } catch (error) {
-    res.status(400);
-    res.json(error);
-  }
+    // Validate the form
+    try {
+        var result = await schema.validateAsync(body);
+    } catch (error) {
+        res.status(400);
+        res.json(error);
+    }
 
-  // Check if someone else has the same username
-  if (
-    (
-      await users.find(
-        { username: result.username },
-        { collation: { locale: "en", strength: 2 } }
-      )
-    ).length == 1
-  ) {
+    // Check if someone else has the same username
+    if (
+        (
+        await users.find(
+            { username: result.username },
+            { collation: { locale: "en", strength: 2 } }
+        )
+        ).length == 1
+    ) {
+        res.status(200);
+        res.json({ error: "Username already taken" });
+        return;
+    }
+
+    // Check if the email is already bound to an account
+    if ((await users.find({ email: result.email })).length == 1) {
+        res.status(200);
+        res.json({ error: "Email already exists" });
+        return;
+    }
+
+    // Encrypt Passwords
+    const hash = await bcrypt.hash(body.password, saltRounds);
+
+    // Replace plain password with hashed password for database
+    result.password = hash;
+
+    // Append defaults to user
+    result.total_likes = 0;
+    result.total_comments = 0;
+    result.total_tomodachi = 0;
+    result.total_uploads = 0;
+
+    result.likes = {};
+    result.comments = {};
+    result.tomodachi = {};
+    result.uploads = {};
+    result.socials = {};
+
+    result.anime_showcase = [];
+    result.background_showcase = {};
+    result.description = "I love anime owo!";
+    result.pfp = `http://localhost:8880/pfp/_default.png`;
+    result.uploaded_backgrounds = {};
+    result.vip = false;
+    result.banner = 0;
+    result.state = true;
+    result.dms = {},
+    result.settings = {
+        theme: "light",
+        nsfw_referrals: true,
+        language: "english",
+        billing: {
+            active: false,
+            active_subscription: [],
+            transaction_history: [],
+            payment_methods: [],
+        },
+        notifications: {
+            pause_all: false,
+            chat: true,
+            posts: true,
+            comments: true,
+            friend_requests: true,
+            emails: true,
+        },
+        privacy: {
+            show_activity: true,
+            blocked_users: [],
+        },
+    }
+
+    // Add to database
+    await users.insert(result);
+
+    // Send email auth token
+
+    // Respond to user
     res.status(200);
-    res.json({ error: "Username already taken" });
-    return;
-  }
-
-  // Check if the email is already bound to an account
-  if ((await users.find({ email: result.email })).length == 1) {
-    res.status(200);
-    res.json({ error: "Email already exists" });
-    return;
-  }
-
-  // Encrypt Passwords
-  const hash = await bcrypt.hash(body.password, saltRounds);
-
-  // Replace plain password with hashed password for database
-  result.password = hash;
-
-  // Append defaults to user
-  result.total_likes = 0;
-  result.total_comments = 0;
-  result.total_tomodachi = 0;
-  result.total_uploads = 0;
-
-  result.likes = {};
-  result.comments = {};
-  result.tomodachi = {};
-  result.uploads = {};
-  result.socials = {};
-
-  result.anime_showcase = [];
-  result.background_showcase = {};
-  result.description = "I love anime owo!";
-  result.pfp = `http://localhost:8880/pfp/_default.png`;
-  result.uploaded_backgrounds = {};
-  result.vip = false;
-  result.banner = 0;
-  result.state = true;
-  (result.dms = {}),
-    (result.settings = {
-      theme: "light",
-      nsfw_referrals: true,
-      language: "english",
-      billing: {
-        active: false,
-        active_subscription: [],
-        transaction_history: [],
-        payment_methods: [],
-      },
-      notifications: {
-        pause_all: false,
-        chat: true,
-        posts: true,
-        comments: true,
-        friend_requests: true,
-        emails: true,
-      },
-      privacy: {
-        show_activity: true,
-        blocked_users: [],
-      },
-    });
-
-  // Add to database
-  await users.insert(result);
-
-  // Send email auth token
-
-  // Respond to user
-  res.status(200);
-  res.json(result);
+    res.json(result);
 });
 app.post("/login", async (req, res) => {
   // Parse body
