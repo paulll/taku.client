@@ -47,16 +47,36 @@
         </div>
 
         <div class="pageContent">
-            <p class="tags" ><strong>FAVORITE</strong> Anime</p>
+            <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="animePosters">
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.anime_showcase" :key="id" :id="id">
                     <img class="anime" :src="`http://localhost:8880/anime/posters/${id}.jpg`" alt="Anime">
                 </router-link>
             </div>
-            <p class="tags" ><strong>TOP</strong> Backgrounds</p>
-            <p class="tags" ><strong>STATS</strong></p>
-            <p class="tags" ><strong>DESCRIPTION</strong></p>
-            <p class="tags" ><strong>ACHIVEMENTS</strong></p>
+            <p class="tags"><strong>TOP</strong> Backgrounds</p>
+            <p class="tags"><strong>STATS</strong></p>
+            <div class="stats">
+                <div class="stat">
+                    <h1>{{user.total_tomodachi}}</h1>
+                    <p>Tomodachi</p>
+                </div>
+                <div class="stat">
+                    <h1>{{user.total_likes}}</h1>
+                    <p>Likes</p>
+                </div>
+                <div class="stat">
+                    <h1>{{user.total_comments}}</h1>
+                    <p>Comments</p>
+                </div>
+                <div class="stat">
+                    <h1>{{user.total_uploads}}</h1>
+                    <p>Uploads</p>
+                </div>
+
+            </div>
+            <p class="tags"><strong>DESCRIPTION</strong></p>
+            <p class="description">{{user.description}}</p>
+            <p class="tags"><strong>ACHIVEMENTS</strong></p>
         </div>
     </div>
 </template>
@@ -345,6 +365,29 @@ export default {
     object-fit: cover;
     cursor: pointer;
     transition: 200ms ease;
+}
+
+.description {
+    padding: 8px 24px 0px;
+    font-size: 14px;
+}
+
+.stats {
+    display: grid;
+    gap: 16px;
+    justify-items: center;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 8px 24px 0px;
+}
+
+.stat {
+    line-height: 23px;
+    display: flex;
+    flex-direction: column;
+}
+
+.stat p {
+    font-size: 14px;
 }
 
 </style>

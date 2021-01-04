@@ -349,15 +349,21 @@ app.post("/signup", async (req, res) => {
   result.password = hash;
 
   // Append defaults to user
-  result.role = "";
+  result.total_likes = 0;
+  result.total_comments = 0;
   result.total_tomodachi = 0;
-  result.tomodachi = [];
+  result.total_uploads = 0;
+
+  result.likes = {};
+  result.comments = {};
+  result.tomodachi = {};
+  result.uploads = {};
+  result.socials = {};
+
   result.anime_showcase = [];
   result.background_showcase = {};
-  result.likes = {};
-  result.socials = {};
+  result.description = "I love anime owo!";
   result.pfp = `http://localhost:8880/pfp/_default.png`;
-  result.total_uploads = 0;
   result.uploaded_backgrounds = {};
   result.vip = false;
   result.banner = 0;

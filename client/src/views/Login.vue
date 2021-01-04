@@ -96,7 +96,7 @@ export default {
         if (response.status == 200) {
             localStorage.token = response.data.token;
             localStorage.username = response.data.username;
-            window.location.href = `/profile/${this.username}`;
+            window.location.href = `/profile/${this.username.toLowerCase()}`;
         }
     },
   }

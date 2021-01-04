@@ -146,7 +146,7 @@ export default {
         if (response.data.error) return this.error = response.data.error;
 
         // Finish and send the bitch home
-        window.location.href = `/profile/${this.username}`;
+        window.location.href = `/profile/${this.username.toLowerCase()}`;
 
     },
     select: function(event) {
