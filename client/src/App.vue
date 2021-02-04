@@ -34,7 +34,7 @@ body {
   background: white
 }
 
-.messageBubble .content img, .messageBubble .content iframe {
+.messageBubble .content img, .messageBubble .content video, .messageBubble .content iframe {
   border-radius: 12px;
   max-height: 368px;
   /* max-width: 256px; */
@@ -42,6 +42,7 @@ body {
 
 #app {
   overflow: hidden;
+  background: #08090E; /* darkmode */
 }
 
 #nav a.router-link-exact-active {
@@ -49,7 +50,7 @@ body {
 }
 
 @media only screen and (max-width: 715px)  {
-  .messageBubble .content img, .messageBubble .content iframe {
+  .messageBubble .content img, .messageBubble .content video, .messageBubble .content iframe {
     max-width: 224px;
     height: auto;
 

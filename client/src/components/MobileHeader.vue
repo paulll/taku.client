@@ -21,7 +21,7 @@ export default {
 
 <style scoped>
 
-.router-link-active {
+.router-link-active:not(.unreads) {
   border-bottom: 2px solid #FF006B;
   filter: invert(26%) sepia(92%) saturate(7218%) hue-rotate(327deg) brightness(99%) contrast(109%);
 }
@@ -41,6 +41,7 @@ export default {
 .mh-header {
   display: flex;
   background: white;
+  background: #020204; /* darkmode */
   height: 48px;
   width: calc(100% - 32px);
   border-radius: 12px;
@@ -62,6 +63,19 @@ export default {
     align-items: center;
     list-style: none; 
   }   
-  .mh-headerButton img { width: 32px; }
+  .mh-headerButton img { width: 32px; filter: invert(1);}
 }
+
+.unreads {
+  position: absolute;
+  background: #0c97fa;
+  border-radius: 100%;
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px;
+  transform: translate(20px, 0px);
+  z-index: 1;
+}
+
 </style>

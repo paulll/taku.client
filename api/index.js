@@ -79,7 +79,7 @@ async function createToken(user, res) {
     username: user.username,
   };
 
-  jwt.sign(payload, "h4x0r", { expiresIn: "1d" }, (err, token) => {
+  jwt.sign(payload, "h4x0r", { expiresIn: "30d" }, (err, token) => {
     console.log(token);
     res.cookie("token", token);
     res.json({
@@ -94,11 +94,11 @@ async function createToken(user, res) {
 const currentMessages = [];
 
 // Websockets
-io.on("connection", (socket) => {
+io.on("connection", socket => {
   socket.emit("message", "Connected to anihuu DMs");
   socket.emit("messages", currentMessages);
 
-  socket.on("message", (messageEvent) => {
+  socket.on("message", messageEvent => {
     if (!messageEvent.user) return;
 
     author = {};
@@ -128,20 +128,20 @@ io.on("connection", (socket) => {
       };
 
       // Check if the content is a url that ends with a image extention
-      if (message.content.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/g)) {
+      if (message.content.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/ig)) {
 
         // if so then replace the content with an html image
         message["content"] = `<img src=${message.content} alt="">`;
       } 
       
       // Check if the content is a url that ends with a mp4 extention
-      else if (message.content.match(/(\.mp4)|(\.webm)/g)){
+      else if (message.content.match(/(\.mp4)|(\.webm)|(\.mov)/ig)){
 
         // if so then replace the content with an html video
         message["content"] = `<video controls> <source src=${message.content}> </video>`;
       }
       // Check for audio links
-      else if (message.content.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/g)){
+      else if (message.content.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/ig)){
 
         // if so then replace the content with an html video
         message["content"] = `<audio controls> <source src=${message.content}> </audio>`;
@@ -153,8 +153,6 @@ io.on("connection", (socket) => {
         message["content"] = linkifyHtml(message.content, {defaultProtocol: 'https'});
       }
 
-      console.log(message);
-
       currentMessages.push(message);
       if (currentMessages.length > 20) currentMessages.shift();
 
@@ -163,6 +161,27 @@ io.on("connection", (socket) => {
 
       // Send to current user
       socket.emit("message", message);
+    });
+  });
+
+  socket.on("typing", typingEvent => {
+
+    // Verify JWT
+    jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
+
+      // Get user's data from db
+      user = (await users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
+
+      // Create a typing user object
+      let typingUser = {
+        username: user.username,
+        pfp: user.pfp
+      };
+
+      console.log(typingUser);
+      
+      // Besides the client who is typing
+      socket.broadcast.emit("typingUser", typingUser);
     });
   });
 

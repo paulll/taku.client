@@ -10,15 +10,20 @@
               <router-link :to='`/profile/${message.author.username}`'>
                 <strong>{{message.author.username}}</strong></router-link> {{convert(message.date)}}
             </h4>
-            <h2 class="content" :class="{mention: message.content.startsWith('@') && message.content.includes(me)}" v-html="message.content"></h2>
+            <h2 class="content" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase())}" v-html="message.content"></h2>
           </div>
         </div>
         <div class="dummy"></div>
+
+        <div class="typingUsers">
+          <div v-for="pfp of typingUsers" :key="pfp" class="typing" :style="{ 'background-image': `url(${pfp})`}"></div>
+        </div>
+        
       </div>
 
       <div class="sendMessageContainer">
         <form class="sendMessage" v-on:submit.prevent="sendMessage">
-          <input ref="message" type="text" name="chat" id="chat" v-model="message" placeholder="Message" autocomplete="off">
+          <input ref="message" type="text" name="chat" @keyup="typing()" id="chat" v-model="message" placeholder="Message" autocomplete="off">
           <button v-if="message" type="submit">SEND</button>
         </form>
       </div> 
@@ -42,10 +47,10 @@ export default {
       messages: [],
       socket: io('ws://anihuu.moe:8880'),
       me: localStorage.username,
+      typingUsers: [],
     };
   },
   mounted() {
-    var notificationSound = new Audio(require('../../public/notification.mp3'));
 
     setTimeout(() => {
       let dummy = document.querySelector(".dummy");
@@ -53,25 +58,24 @@ export default {
     }, 500);
 
     this.socket.on('messages', messages => {
-      console.log(messages);
         this.messages.push(...messages);
     });
     this.socket.on('message', message => {
-      console.log(message);
       if (message.content !== undefined) {
 
         // add the message to the total messages
         this.messages.push(message);
 
-        // Play notification sound if they are alt tabbed
-        window.navigator.vibrate(100);
-        if (!document.hasFocus()) {
+        // Play notification sound if they got mentioned
+        if (message.content.includes('@') && message.content.toLowerCase().includes(this.me.toLowerCase())) {
+          window.navigator.vibrate(100);
+          var notificationSound = new Audio("https://cdn.discordapp.com/attachments/755597803102928966/806690267784151060/notification.mp3");
           notificationSound.play();
           console.log("playing sound");
-        }   
+        };
 
         // Remove this later but for now its here to only show the last 20 messages so the UI doesn't lag
-        if (this.messages.length > 50) this.messages.shift();
+        if (this.messages.length > 500) this.messages.shift();
 
         // Scroll to the bottom everytime someone sends a new message
         setTimeout(() => {
@@ -80,6 +84,16 @@ export default {
         }, 1);
 
       }
+    });
+    this.socket.on('typingUser', typingUser => {
+      if (this.typingUsers.includes(typingUser.pfp)) return
+
+      this.typingUsers.push(typingUser.pfp);
+
+      setTimeout(() => {
+        this.typingUsers.shift();
+      }, 3000);
+
     });
   },
   unmounted() {
@@ -105,12 +119,46 @@ export default {
       // Maintain focus on keyboard for mobile
       this.$refs.message.focus();
     },
+    typing(){
+      // Send new message
+      this.socket.emit('typing', {user: localStorage.token});
+    }
   }
 }
 
 </script>
 
 <style>
+
+.typingUsers {
+  display: flex;
+  margin: 0px 24px;
+
+}
+
+@keyframes scaleUp {
+  0% {
+    width: 0px;
+    height: 0px;
+  }
+  100% {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.typing {
+  animation-name: scaleUp;
+  animation-duration: 100ms;
+  animation-timing-function: ease;
+  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border-radius: 100%;
+}
 
 .sendMessageContainer {
   position: fixed;
@@ -143,6 +191,8 @@ export default {
   width: 100%;
   text-indent: 12px;
   background: white;
+  background: #020204; /* darkmode */
+  color: white;  /* darkmode */
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
   border-radius: 24px; 
   height: 39px;
@@ -202,6 +252,8 @@ export default {
   margin: 0px 12px;
   padding: 10px 12px;
   background: #eee;
+  background: #141520; /* darkmode */
+  color: white; /* darkmode */
   overflow-wrap: anywhere;
   margin-bottom: 1px;
   max-width: 600px;
@@ -210,11 +262,21 @@ export default {
   border-radius: 12px;
 }
 
-.mention {
+.message .messageBubble .content.mention {
   border-left: 4px solid #ff0084;
-  background: #ffe6f3 !important;
+  background: #ffe6f3 !important; 
+  background: #3b001f !important; /* darkmode */
   border-radius: 0px 12px 12px 0px !important;
+  color: #ff0084;
 }
+
+.message.me .messageBubble .content.mention{
+  border-radius: 12px 0px 0px 12px !important;
+  border-left: none;
+  border-right: 4px solid #ff0084;
+
+}
+
 
 .messageBubble .date {
   color: #8F8F8F;
