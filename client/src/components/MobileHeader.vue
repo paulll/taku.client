@@ -34,7 +34,7 @@ export default {
   position: fixed;
   bottom: 8px;
   width: 100%;
-  z-index: 2;
+  z-index: 2; 
 
 }
 
@@ -42,7 +42,7 @@ export default {
   display: flex;
   background: white;
   height: 48px;
-  width: calc(100% - 16px);
+  width: calc(100% - 32px);
   border-radius: 12px;
   flex-direction: row;
   justify-content: center;
@@ -57,7 +57,8 @@ export default {
     display: flex;
     transform: translateY(2px);
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: space-between;
+    padding: 48px;
     align-items: center;
     list-style: none; 
   }   

@@ -1,4 +1,4 @@
-# animebackgrounds
+# anihuu
 
 ## Project setup
 ```

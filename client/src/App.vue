@@ -34,12 +34,25 @@ body {
   background: white
 }
 
+.messageBubble .content img, .messageBubble .content iframe {
+  border-radius: 12px;
+  max-height: 368px;
+  /* max-width: 256px; */
+}
+
 #app {
   overflow: hidden;
 }
 
-
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+@media only screen and (max-width: 715px)  {
+  .messageBubble .content img, .messageBubble .content iframe {
+    max-width: 224px;
+    height: auto;
+
+  }
 }
 </style>

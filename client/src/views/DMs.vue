@@ -3,11 +3,14 @@
     <div class="tag-grid">
 
       <div class="messages">
-        <div class="message" v-for="message in messages" :key="message"  v-bind:class="{me: me == message.author.username}">
+        <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me == message.author.username}">
           <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('${message.author.pfp}')`}"></div></router-link>
           <div class="messageBubble">
-            <h4 class="date"><strong>{{message.author.username}}</strong> {{convert(message.date)}}</h4>
-            <h2 class="content" v-html="message.content"></h2>
+            <h4 class="date">
+              <router-link :to='`/profile/${message.author.username}`'>
+                <strong>{{message.author.username}}</strong></router-link> {{convert(message.date)}}
+            </h4>
+            <h2 class="content" :class="{mention: message.content.startsWith('@') && message.content.includes(me)}" v-html="message.content"></h2>
           </div>
         </div>
         <div class="dummy"></div>
@@ -26,9 +29,10 @@
 <script>
 import axios from 'axios';
 import io from 'socket.io-client';
-import linkifyHtml from 'linkifyjs/html';
+
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
+
 
 export default {
   name: 'home',
@@ -36,22 +40,47 @@ export default {
     return {
       message: "",
       messages: [],
-      socket: io('ws://localhost:8880'),
+      socket: io('ws://anihuu.moe:8880'),
       me: localStorage.username,
     };
   },
   mounted() {
-    this.socket.on('messages', messages => {
-      this.messages = messages;
-      messages.map(message => {
-        return message["content"] = linkifyHtml(message.content, {defaultProtocol: 'https'});
-      });
-    });
+    var notificationSound = new Audio(require('../../public/notification.mp3'));
 
     setTimeout(() => {
       let dummy = document.querySelector(".dummy");
       dummy.scrollIntoView({behavior: "smooth"});
     }, 500);
+
+    this.socket.on('messages', messages => {
+      console.log(messages);
+        this.messages.push(...messages);
+    });
+    this.socket.on('message', message => {
+      console.log(message);
+      if (message.content !== undefined) {
+
+        // add the message to the total messages
+        this.messages.push(message);
+
+        // Play notification sound if they are alt tabbed
+        window.navigator.vibrate(100);
+        if (!document.hasFocus()) {
+          notificationSound.play();
+          console.log("playing sound");
+        }   
+
+        // Remove this later but for now its here to only show the last 20 messages so the UI doesn't lag
+        if (this.messages.length > 50) this.messages.shift();
+
+        // Scroll to the bottom everytime someone sends a new message
+        setTimeout(() => {
+          let dummy = document.querySelector(".dummy");
+          dummy.scrollIntoView({behavior: "auto"});
+        }, 1);
+
+      }
+    });
   },
   unmounted() {
     this.socket.disconnect();
@@ -70,9 +99,8 @@ export default {
       this.message = "";
 
       // Scroll to last message
-      let dummy = document.querySelector(".dummy");
-        dummy.scrollIntoView({behavior: "smooth"});
-
+      // let dummy = document.querySelector(".dummy");
+      // dummy.scrollIntoView({behavior: "smooth"});
 
       // Maintain focus on keyboard for mobile
       this.$refs.message.focus();
@@ -82,12 +110,13 @@ export default {
 
 </script>
 
-<style scoped>
+<style>
 
 .sendMessageContainer {
   position: fixed;
   bottom: 64px;
   width: 100%;
+  z-index: 4000;
 }
 
 .sendMessage {
@@ -119,7 +148,7 @@ export default {
   height: 39px;
   font-style: normal;
   font-weight: 500;
-  font-size: 14px;
+  z-index: 3px;
 }
 
 .sendMessage input[type=text]::placeholder {
@@ -128,12 +157,13 @@ export default {
 
 .messages {
   margin-top: 56px;
-  height: calc(100vh - 56px);
+  margin-bottom: 56px;
+  height: calc(100vh - 112px);
   overflow: scroll;
   overflow-x: hidden;
 }
 .dummy {
-  height: 112px;
+  height: 2px;
   width: 100%;
 }
 .message {
@@ -158,6 +188,7 @@ export default {
   text-align: end;
   margin-left: 0px;
   margin-right: 24px;
+
 }
 
 .message.me .messageBubble .content{
@@ -176,7 +207,13 @@ export default {
   max-width: 600px;
   font-weight: 500;
   width: fit-content;
-  border-radius: 24px;
+  border-radius: 12px;
+}
+
+.mention {
+  border-left: 4px solid #ff0084;
+  background: #ffe6f3 !important;
+  border-radius: 0px 12px 12px 0px !important;
 }
 
 .messageBubble .date {
@@ -186,6 +223,11 @@ export default {
   margin-left: 24px;
 }
 
+.date a {
+  text-decoration: none;
+  color: #8F8F8F;
+}
+
 .message .pfp {
   border-radius: 100%;
   width: 39px;
@@ -193,4 +235,20 @@ export default {
   background-position: center;
   background-size: cover;
 }
+
+@media only screen and (min-width: 715px)  {
+  .sendMessageContainer {
+    bottom: 8px;
+  }
+}
+
+@media only screen and (max-width: 715px)  {
+  .messages {
+    margin-bottom: 112px;
+    height: calc(100vh - 168px);
+  }
+}
+
+
+
 </style>

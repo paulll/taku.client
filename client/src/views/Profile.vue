@@ -12,11 +12,11 @@
                     <h1 class="username">{{user.username}}</h1>
                 </div>
                 <div class="row info">
-                    <div class="infoField">
+                    <div class="infoField" v-if="token">
                         <button v-if="user.username != me.username" class="button">FOLLOW</button>
                         <button v-if="user.username == me.username" class="button"> <img src="../assets/edit.svg" alt="Edit"> EDIT</button>
                     </div>
-                    <div class="splitter"></div>
+                    <div class="splitter" v-if="token"></div>
                     <div class="infoField">
                         <h1 class="uploads">{{user.total_uploads}}</h1>
                         <p>Uploads</p>
@@ -50,7 +50,7 @@
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="animePosters">
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.anime_showcase" :key="id" :id="id">
-                    <img class="anime" :src="`http://localhost:8880/anime/posters/${id}.jpg`" alt="Anime">
+                    <img class="anime" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`" alt="Anime">
                 </router-link>
             </div>
             <p class="tags"><strong>TOP</strong> Backgrounds</p>
@@ -76,7 +76,7 @@
             </div>
             <p class="tags"><strong>DESCRIPTION</strong></p>
             <p class="description">{{user.description}}</p>
-            <p class="tags"><strong>ACHIVEMENTS</strong></p>
+            <p v-if="user.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
         </div>
     </div>
 </template>
@@ -89,6 +89,7 @@ export default {
   name: 'user',
   data: () => {
     return {
+        token: localStorage.token,
         me: {
             username: localStorage.username,
         },
@@ -109,14 +110,14 @@ export default {
     async getData() {
 
         // Get user data
-        let result = await axios.get(`http://localhost:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+        let result = await axios.get(`http://anihuu.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
         console.log(result);
         result.total_anime = result.anime_showcase.length
         this.user = result;
 
         // Get banner URL
-        let bannerURL = await axios.get(`http://localhost:8880/banner/${result.banner}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+        let bannerURL = await axios.get(`http://anihuu.moe:8880/banner/${result.banner}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         bannerURL = Object.assign({}, bannerURL).data;
         this.user.bannerURL = bannerURL;
     },
@@ -152,7 +153,6 @@ export default {
     flex-direction: column;
     position: relative;
 }
-
 
 .pfp {
     transform: translateY(-60px);
@@ -330,21 +330,22 @@ export default {
     scrollbar-color: lightgray transparent;
     overflow-y: hidden;
     overflow-x: scroll;
+    background: #F3F3F3;
 }
 
 .animePosters::-webkit-scrollbar {
-  width: 12px;                                  /* width of the entire scrollbar */
+  width: 12px;
 }
 
 .animePosters::-webkit-scrollbar-track {
-  background: white;                          /* color of the tracking area */
+  background:  #F3F3F3;
 }
 
 .animePosters::-webkit-scrollbar-thumb {
-  background-color: lightgray;                /* color of the scroll thumb */
+  background-color: lightgray;
   padding: 0px;
-  border-radius: 20px;                          /* roundness of the scroll thumb */
-  border: 6px solid white;                    /* creates padding around scroll thumb */
+  border-radius: 20px;    
+  border: 6px solid #F3F3F3;
 }
 
 .posterContainer {
@@ -379,7 +380,7 @@ export default {
     justify-items: left;
     grid-template-columns: repeat(4, 1fr);
     padding: 8px 24px 0px;
-}
+} 
 
 .stat {
     line-height: 23px;

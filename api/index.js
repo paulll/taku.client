@@ -13,6 +13,7 @@ const bcrypt = require("bcrypt");
 const saltRounds = 12;
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const linkifyHtml = require('linkifyjs/html');
 
 // const options = {
 //     key: fs.readFileSync("./key.pem"),
@@ -22,7 +23,7 @@ const cookieParser = require("cookie-parser");
 const schema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
 
-  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")).required(),
+  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9!@#$%^&*()_+$]{3,30}")).required(),
 
   repeat_password: Joi.ref("password"),
 
@@ -50,13 +51,14 @@ let anime = db.get("anime");
 // API
 var app = express();
 var http = require("http").createServer(app);
+
 var io = require("socket.io")(http, {
   cors: { origin: "*" },
 });
 
 app.use(
   cors({
-    origin: "http://localhost:8080",
+    origin: "http://anihuu.moe:8080",
     credentials: true,
   })
 );
@@ -117,6 +119,7 @@ io.on("connection", (socket) => {
 
       const message = {
         content: messageEvent.content,
+        attachments: [],
         date: new Date().getTime(),
         author: {
           username: author.username,
@@ -124,15 +127,42 @@ io.on("connection", (socket) => {
         },
       };
 
-      if (currentMessages.length > 35) currentMessages.shift();
+      // Check if the content is a url that ends with a image extention
+      if (message.content.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/g)) {
+
+        // if so then replace the content with an html image
+        message["content"] = `<img src=${message.content} alt="">`;
+      } 
+      
+      // Check if the content is a url that ends with a mp4 extention
+      else if (message.content.match(/(\.mp4)|(\.webm)/g)){
+
+        // if so then replace the content with an html video
+        message["content"] = `<video controls> <source src=${message.content}> </video>`;
+      }
+      // Check for audio links
+      else if (message.content.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/g)){
+
+        // if so then replace the content with an html video
+        message["content"] = `<audio controls> <source src=${message.content}> </audio>`;
+      }
+      else {
+
+        // if its not an image then its probably a normal link therefore
+        // ill make it clickable
+        message["content"] = linkifyHtml(message.content, {defaultProtocol: 'https'});
+      }
+
+      console.log(message);
 
       currentMessages.push(message);
+      if (currentMessages.length > 20) currentMessages.shift();
 
       // Send to all other users
-      socket.broadcast.emit("messages", currentMessages);
+      socket.broadcast.emit("message", message);
 
       // Send to current user
-      socket.emit("messages", currentMessages);
+      socket.emit("message", message);
     });
   });
 
@@ -230,7 +260,6 @@ app.patch("/user/anime", async (req, res) => {
 app.post("/user/socials", async (req, res) => {
   // Parse body
   const body = req.body;
-  console.log(body);
 
   // Verify Logged In User
   jwt.verify(body.user, "h4x0r", async (error, user) => {
@@ -248,7 +277,6 @@ app.post("/user/socials", async (req, res) => {
     res.json({ message: "done" });
   });
 });
-
 app.get("/banner/:id", async (req, res) => {
   const id = req.params.id;
   const response = await backgrounds.find({ id: parseInt(id) });
@@ -317,19 +345,13 @@ app.post("/signup", async (req, res) => {
     try {
         var result = await schema.validateAsync(body);
     } catch (error) {
+        console.log(error);
         res.status(400);
         res.json(error);
     }
 
     // Check if someone else has the same username
-    if (
-        (
-        await users.find(
-            { username: result.username },
-            { collation: { locale: "en", strength: 2 } }
-        )
-        ).length == 1
-    ) {
+    if ((await users.find({ username: result.username }, { collation: { locale: "en", strength: 2 } })).length == 1) {
         res.status(200);
         res.json({ error: "Username already taken" });
         return;
@@ -363,7 +385,7 @@ app.post("/signup", async (req, res) => {
     result.anime_showcase = [];
     result.background_showcase = {};
     result.description = "I love anime owo!";
-    result.pfp = `http://localhost:8880/pfp/_default.png`;
+    result.pfp = `http://anihuu.moe:8880/pfp/_default.png`;
     result.uploaded_backgrounds = {};
     result.vip = false;
     result.banner = 0;
