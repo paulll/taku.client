@@ -26,8 +26,8 @@
       <div class="sendMessageContainer">
         <form class="sendMessage" v-on:submit.prevent="sendMessage">
           <!-- <input id="file" class="formImageInput" type="file" ref="file" v-on:change="handleFileInput()"> -->
-          <img class="previewFile" v-for="file in previews" :src="file" :key="file" alt="">
-          <input ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" placeholder="Message" autocomplete="off">
+          <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="remove(previews.indexOf(file))" alt="">
+          <input ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
           <button v-if="message" type="submit">SEND</button>
         </form> 
       </div> 
@@ -116,6 +116,10 @@ export default {
       
       return hr + ':' + m.substr(-2)
     },
+    remove(i){
+      this.attachments.splice(i, 1);
+      this.previews.splice(i, 1);
+    },
     handleFileDrop(event) {
       let droppedFiles = event.dataTransfer.files;
       if(!droppedFiles) return;
@@ -194,6 +198,13 @@ export default {
   border-radius: 8px;
   height: 64px;
   width: auto;
+  margin: 8px 0px 8px 8px;
+  cursor: pointer;
+  transition: 100ms ease;
+}
+
+.previewFile:hover {
+  opacity: 50%;
 }
 
 .sendMessageContainer {

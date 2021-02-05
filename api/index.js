@@ -96,27 +96,16 @@ async function createToken(user, res) {
 // Or at least have it run last before sending the the message to the user
 // So it only sends them the HTML but the database keeps the original links intact
 function renderHtml(url){
-  // Check if the content is a url that ends with a image extention
   if (url.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/ig)) {
-
-    // if so then replace the content with an html image
     return `<img src=${url} alt="">`;
   } 
-  
-  // Check if the content is a url that ends with a mp4 extention
   else if (url.match(/(\.mp4)|(\.webm)|(\.mov)/ig)){
-
-    // if so then replace the content with an html video
     return `<video controls> <source src=${url}> </video>`;
   }
-  // Check for audio links
   else if (url.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/ig)){
-
-    // if so then replace the content with an html video
     return `<audio controls> <source src=${url}> </audio>`;
   }
   else {
-
     // if its not an image then its probably a normal link therefore
     // ill make it clickable
     return linkifyHtml(url, {defaultProtocol: 'https'});
@@ -132,10 +121,9 @@ io.on("connection", socket => {
 
   socket.on("message", messageEvent => {
 
-    console.log(messageEvent);
-
     if (!messageEvent.user) return;
-    // if (!messageEvent.attachments && messageEvent.content.length == 0) return;
+    if (!messageEvent.attachments) return;
+    if (messageEvent.attachments.length == 0 && messageEvent.content.length == 0) return;
     
     author = {};
 
@@ -154,10 +142,11 @@ io.on("connection", socket => {
       // Empty array where ill add the links for the attachments for below
       let attachments = [];
 
-      console.log(messageEvent);
-
       // Save attachment blobs locally and create a link for them to see
       messageEvent.attachments.forEach(attachment => {
+
+        attachment.name = attachment.name.replace(/\s/g, "_"); // Remove spaces with underscores
+
         fs.writeFile(`./db/uploads/${attachment.name}`, attachment.file, (err) => {
           if(!err) console.log('Data written');
         });
@@ -174,8 +163,6 @@ io.on("connection", socket => {
           pfp: author.pfp,
         },
       };
-
-      console.log(message);
 
       message["content"] = renderHtml(message.content);
 
