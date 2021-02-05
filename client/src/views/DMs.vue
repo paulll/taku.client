@@ -1,5 +1,5 @@
 <template>
-  <div class="DMs">
+  <div class="DMs" @dragover.prevent @drop.prevent="handleFileDrop">
     <div class="tag-grid">
 
       <div class="messages">
@@ -8,9 +8,11 @@
           <div class="messageBubble">
             <h4 class="date">
               <router-link :to='`/profile/${message.author.username}`'>
-                <strong>{{message.author.username}}</strong></router-link> {{convert(message.date)}}
+                <strong>{{message.author.username}}</strong>
+              </router-link> {{convert(message.date)}}
             </h4>
-            <h2 class="content" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase())}" v-html="message.content"></h2>
+            <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase())}" v-html="message.content"></h2>
+            <h2 class="content" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></h2>
           </div>
         </div>
         <div class="dummy"></div>
@@ -23,9 +25,11 @@
 
       <div class="sendMessageContainer">
         <form class="sendMessage" v-on:submit.prevent="sendMessage">
-          <input ref="message" type="text" name="chat" @keyup="typing()" id="chat" v-model="message" placeholder="Message" autocomplete="off">
+          <!-- <input id="file" class="formImageInput" type="file" ref="file" v-on:change="handleFileInput()"> -->
+          <img class="previewFile" v-for="file in previews" :src="file" :key="file" alt="">
+          <input ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" placeholder="Message" autocomplete="off">
           <button v-if="message" type="submit">SEND</button>
-        </form>
+        </form> 
       </div> 
     </div>
   </div>
@@ -48,10 +52,11 @@ export default {
       socket: io('ws://anihuu.moe:8880'),
       me: localStorage.username,
       typingUsers: [],
+      previews: [],
+      attachments: [],
     };
   },
   mounted() {
-
     setTimeout(() => {
       let dummy = document.querySelector(".dummy");
       dummy.scrollIntoView({behavior: "smooth"});
@@ -62,6 +67,8 @@ export default {
     });
     this.socket.on('message', message => {
       if (message.content !== undefined) {
+
+        console.log(message);
 
         // add the message to the total messages
         this.messages.push(message);
@@ -75,15 +82,17 @@ export default {
         };
 
         // Remove this later but for now its here to only show the last 20 messages so the UI doesn't lag
-        if (this.messages.length > 500) this.messages.shift();
+        if (this.messages.length > 100) this.messages.shift();
 
         // Scroll to the bottom everytime someone sends a new message
         setTimeout(() => {
           let dummy = document.querySelector(".dummy");
           dummy.scrollIntoView({behavior: "auto"});
         }, 1);
-
       }
+
+
+
     });
     this.socket.on('typingUser', typingUser => {
       if (this.typingUsers.includes(typingUser.pfp)) return
@@ -107,10 +116,26 @@ export default {
       
       return hr + ':' + m.substr(-2)
     },
+    handleFileDrop(event) {
+      let droppedFiles = event.dataTransfer.files;
+      if(!droppedFiles) return;
+      droppedFiles.forEach(file => {
+        this.attachments.push({file: file, name: file.name});
+        this.previews.push(URL.createObjectURL(file));
+      });
+
+      console.log(this.attachments);
+
+    },
     sendMessage(message) {
+
       // Send new message
-      this.socket.emit('message', {content: this.message.trim(), user: localStorage.token});
+      this.socket.emit('message', {content: this.message.trim(), attachments: this.attachments, user: localStorage.token});
+
+      // Reset
       this.message = "";
+      this.previews = [];
+      this.attachments = [];
 
       // Scroll to last message
       // let dummy = document.querySelector(".dummy");
@@ -122,6 +147,11 @@ export default {
     typing(){
       // Send new message
       this.socket.emit('typing', {user: localStorage.token});
+
+      var typingSound = new Audio(require("../../public/keystroke.wav"));
+      typingSound.volume = 0.2;
+      typingSound.play();
+
     }
   }
 }
@@ -132,7 +162,7 @@ export default {
 
 .typingUsers {
   display: flex;
-  margin: 0px 24px;
+  margin: 0px 18px;
 
 }
 
@@ -160,6 +190,12 @@ export default {
   border-radius: 100%;
 }
 
+.previewFile {
+  border-radius: 8px;
+  height: 64px;
+  width: auto;
+}
+
 .sendMessageContainer {
   position: fixed;
   bottom: 64px;
@@ -169,6 +205,8 @@ export default {
 
 .sendMessage {
   margin: 0px 12px;
+  background: #020204;
+  border-radius: 16px;
 }
 
 .sendMessage button {
@@ -243,13 +281,14 @@ export default {
 
 .message.me .messageBubble .content{
   text-align: end;
+  
 }
 
 .messageBubble .content {
   display: flex;
   align-items: center;
   font-size: 14px;
-  margin: 0px 12px;
+  margin: 6px 12px;
   padding: 10px 12px;
   background: #eee;
   background: #141520; /* darkmode */

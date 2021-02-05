@@ -31,7 +31,7 @@ export default {
 
 
 body {
-  background: white
+  background: #08090E;
 }
 
 .messageBubble .content img, .messageBubble .content video, .messageBubble .content iframe {

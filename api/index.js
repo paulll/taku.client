@@ -91,6 +91,38 @@ async function createToken(user, res) {
   });
 }
 
+// I should probably move this function in the front end instead because
+// I don't like having the html tags in the JSONs on the server
+// Or at least have it run last before sending the the message to the user
+// So it only sends them the HTML but the database keeps the original links intact
+function renderHtml(url){
+  // Check if the content is a url that ends with a image extention
+  if (url.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/ig)) {
+
+    // if so then replace the content with an html image
+    return `<img src=${url} alt="">`;
+  } 
+  
+  // Check if the content is a url that ends with a mp4 extention
+  else if (url.match(/(\.mp4)|(\.webm)|(\.mov)/ig)){
+
+    // if so then replace the content with an html video
+    return `<video controls> <source src=${url}> </video>`;
+  }
+  // Check for audio links
+  else if (url.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/ig)){
+
+    // if so then replace the content with an html video
+    return `<audio controls> <source src=${url}> </audio>`;
+  }
+  else {
+
+    // if its not an image then its probably a normal link therefore
+    // ill make it clickable
+    return linkifyHtml(url, {defaultProtocol: 'https'});
+  }
+}
+
 const currentMessages = [];
 
 // Websockets
@@ -99,8 +131,12 @@ io.on("connection", socket => {
   socket.emit("messages", currentMessages);
 
   socket.on("message", messageEvent => {
-    if (!messageEvent.user) return;
 
+    console.log(messageEvent);
+
+    if (!messageEvent.user) return;
+    // if (!messageEvent.attachments && messageEvent.content.length == 0) return;
+    
     author = {};
 
     // Verify Logged In User
@@ -115,11 +151,23 @@ io.on("connection", socket => {
         )
       )[0];
 
-      if (messageEvent.content.length == 0) return;
+      // Empty array where ill add the links for the attachments for below
+      let attachments = [];
+
+      console.log(messageEvent);
+
+      // Save attachment blobs locally and create a link for them to see
+      messageEvent.attachments.forEach(attachment => {
+        fs.writeFile(`./db/uploads/${attachment.name}`, attachment.file, (err) => {
+          if(!err) console.log('Data written');
+        });
+
+        attachments.push(renderHtml(`http://anihuu.moe:8880/uploads/${attachment.name}`));
+      });
 
       const message = {
         content: messageEvent.content,
-        attachments: [],
+        attachments: attachments,
         date: new Date().getTime(),
         author: {
           username: author.username,
@@ -127,31 +175,9 @@ io.on("connection", socket => {
         },
       };
 
-      // Check if the content is a url that ends with a image extention
-      if (message.content.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/ig)) {
+      console.log(message);
 
-        // if so then replace the content with an html image
-        message["content"] = `<img src=${message.content} alt="">`;
-      } 
-      
-      // Check if the content is a url that ends with a mp4 extention
-      else if (message.content.match(/(\.mp4)|(\.webm)|(\.mov)/ig)){
-
-        // if so then replace the content with an html video
-        message["content"] = `<video controls> <source src=${message.content}> </video>`;
-      }
-      // Check for audio links
-      else if (message.content.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/ig)){
-
-        // if so then replace the content with an html video
-        message["content"] = `<audio controls> <source src=${message.content}> </audio>`;
-      }
-      else {
-
-        // if its not an image then its probably a normal link therefore
-        // ill make it clickable
-        message["content"] = linkifyHtml(message.content, {defaultProtocol: 'https'});
-      }
+      message["content"] = renderHtml(message.content);
 
       currentMessages.push(message);
       if (currentMessages.length > 20) currentMessages.shift();
@@ -163,11 +189,11 @@ io.on("connection", socket => {
       socket.emit("message", message);
     });
   });
-
   socket.on("typing", typingEvent => {
-
     // Verify JWT
     jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
+
+      if (error) return
 
       // Get user's data from db
       user = (await users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
@@ -178,14 +204,13 @@ io.on("connection", socket => {
         pfp: user.pfp
       };
 
-      console.log(typingUser);
-      
       // Besides the client who is typing
       socket.broadcast.emit("typingUser", typingUser);
     });
   });
+  socket.on("disconnect", () => {
 
-  socket.on("disconnect", () => {});
+  });
 });
 
 // Routes
@@ -273,8 +298,6 @@ app.patch("/user/anime", async (req, res) => {
     res.json({ message: "done" });
   });
 });
-
-
 
 app.post("/user/socials", async (req, res) => {
   // Parse body
