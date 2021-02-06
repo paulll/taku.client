@@ -10,8 +10,25 @@
             <h1>Darkmode</h1>
           </div>
           <div class="onOff">
-            <button @click="darkmode(true)" :class="{active: user.settings.appearance.darkmode == true}">on</button>
-            <button @click="darkmode(false)" :class="{active: user.settings.appearance.darkmode == false}">off</button>
+            <button @click="toggleOption(true, 'darkmode')" :class="{active: user.settings.appearance.darkmode == true}">on</button>
+            <button @click="toggleOption(false, 'darkmode')" :class="{active: user.settings.appearance.darkmode == false}">off</button>
+          </div>
+        </div>
+        <div class="splitter"></div>
+        <div class="optionBox">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/keyboard.png" alt="darkmode">
+              <h1>Typing SFX</h1>
+            </div>
+            <div class="onOff">
+              <button @click="toggleOption(true, 'typingSfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == true}">on</button>
+              <button @click="toggleOption(false, 'typingSfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == false}">off</button>
+            </div>
+          </div>
+          <div class="bottom">
+            <!-- <p>{{user.settings.appearance.typing_sfx.url.split("/")[user.settings.appearance.typing_sfx.url.split("/").length - 1]}}</p> -->
+            <p>keystroke.wav</p>
           </div>
         </div>
       </div>
@@ -20,8 +37,12 @@
 </template>
 <script>
 import SettingsBar from '@/components/SettingsBar.vue'
+import MobileHeader from '@/components/MobileHeader.vue'
 
 import axios from 'axios';
+import mitt from 'mitt';
+
+const emitter = mitt();
 
 export default {
   name: 'home',
@@ -40,10 +61,8 @@ export default {
       console.log(this.path);
     }
   },
-  created() {
-    this.getUser();
-  },
   mounted() {
+    this.getUser();
     this.path = this.$route.params.setting;
   },
   methods: {
@@ -63,32 +82,39 @@ export default {
           darkmode: false,
           anime_pfps: true,
           typing_sfx: {
-              enabled: true,
-              url: ""
+            enabled: true,
+            url: ""
           },
           mention_sfx: {
-              enabled: true,
-              url: ""
+            enabled: true,
+            url: ""
           },
           theme_color: "#ff006b"
         }
       }
 
-
-
       console.log(user.data);
     },
-    async darkmode(state){
-      this.user.settings.appearance.darkmode = state;
+    async toggleOption(state, option){
 
-      localStorage.removeItem("darmode");
-      localStorage.setItem('darkmode', state);
+      switch (option) {
+        case "darkmode":
+          this.user.settings.appearance.darkmode = state;
+          localStorage.setItem('darkmode', state);
+          this.emitter.emit('updateTheme');
+          break;
+      
+        case "typingSfx":
+          this.user.settings.appearance.typing_sfx.enabled = state;
+          localStorage.setItem('typingSfx', state);
+          break;
+      }
 
       const response = await axios.patch('http://anihuu.moe:8880/settings', this.user, {
-          withCredentials: true,
-          headers: {
-              'Content-Type': 'application/json'
-          }
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        }
       });
     },
   }
@@ -108,8 +134,8 @@ export default {
   background: #F3F3F3;
   height: inherit;
   transform: translateX(56px);
-  height: calc(100vh - 48px);
-  padding-top: 48px;
+  height: calc(100vh - 60px);
+  padding-top: 60px;
 }
 
 .option {
@@ -117,19 +143,19 @@ export default {
   text-decoration: none;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 8px 16px;
 }
 
-.option div {
+.option div, .optionBox .top .heading {
   display: flex;
 }
 
-.option div img {
+.option div img, .optionBox .top .heading img {
   width: 32px;
   height: 32px;
 }
 
-.option div h1 {
+.option div h1, .optionBox .top .heading h1 {
   font-family: Work Sans;
   font-style: normal;
   white-space: nowrap;
@@ -173,6 +199,44 @@ export default {
 
 .active {
   background: #FF006B !important;
+}
+
+.splitter {
+  width: calc(100% - 32px);
+  height: 1px;
+  background: #D4D4D4;
+  position: relative;
+  margin-top: 16px;
+  left: 16px;
+}
+
+.optionBox {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 24px;
+  margin-left: 16px;
+  margin-right: 16px;
+  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
+}
+
+.optionBox div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bottom {
+  margin-top: 16px;
+  background: #F3F3F3;
+  border-radius: 8px;
+  height: 38px;
+}
+
+.bottom p {
+  font-weight: 500;
+  font-size: 14px;
+  text-indent: 16px;
 }
 
 </style>

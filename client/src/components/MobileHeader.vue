@@ -1,14 +1,29 @@
 <script>
-/* eslint-disable*/
+
 
 export default {
   name: 'MobileHeader',
+  data: () => {
+    return {
+      darkmode: localStorage.darkmode,
+    };
+  },
+  mounted(){
+    // Update the theme from the event emitter
+    this.emitter.on('updateTheme', () => this.updateTheme());
+  },
+  methods: {
+    updateTheme(){
+      this.darkmode = localStorage.darkmode;
+      console.log("ass");
+    },
+  }
 };
 </script>
 
 <template>
   <div class="mh-headerContainer">
-    <header class="mh-header">
+    <header class="mh-header" @update-theme="updateTheme" :class="{darkmode: darkmode == 'true'}">
       <ul class="mh-headerButtons">
         <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
         <li><router-link to="/submit" class="mh-headerButton"><img src="../assets/add.png" alt=""></router-link></li>
@@ -41,7 +56,6 @@ export default {
 .mh-header {
   display: flex;
   background: white;
-  background: #020204; /* darkmode */
   height: 48px;
   width: calc(100% - 32px);
   border-radius: 12px;
@@ -49,6 +63,14 @@ export default {
   justify-content: center;
   align-items: center;
   box-shadow: 0 0px 12px rgba(0, 0, 0, 0.164);
+}
+
+.mh-header.darkmode {
+  background: #020204; /* darkmode */
+}
+
+.mh-header.darkmode img {
+  filter: invert(1);
 }
 
 @media only screen and (max-width: 715px)  {
@@ -63,7 +85,7 @@ export default {
     align-items: center;
     list-style: none; 
   }   
-  .mh-headerButton img { width: 32px; filter: invert(1);}
+  .mh-headerButton img { width: 32px; }
 }
 
 .unreads {

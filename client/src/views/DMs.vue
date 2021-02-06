@@ -12,7 +12,7 @@
               </router-link> {{convert(message.date)}}
             </h4>
             <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase()), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
-            <h2 class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></h2>
+            <h2 class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment.html"></h2>
           </div>
         </div>
 
@@ -55,6 +55,7 @@ export default {
       previews: [],
       attachments: [],
       darkmode: localStorage.darkmode,
+      typingSfx: localStorage.typingSfx,
     };
   },
   mounted() {
@@ -154,6 +155,9 @@ export default {
       this.$refs.message.focus();
     },
     typing(){
+
+      if (this.typingSfx == 'false') return 
+
       // Send new message
       this.socket.emit('typing', {user: localStorage.token});
 
@@ -232,6 +236,12 @@ export default {
 .sendMessage {
   margin: 0px 12px;
   border-radius: 16px;
+  background: white;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
+}
+
+.sendMessage.darkmode {
+  background: #020204;
 }
 
 .sendMessage button {
@@ -254,7 +264,6 @@ export default {
   width: 100%;
   text-indent: 12px;
   background: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
   border-radius: 24px; 
   height: 39px;
   font-style: normal;
@@ -263,8 +272,8 @@ export default {
 }
 
 .sendMessage input[type=text].darkmode {
-  background: #020204; /* darkmode */
   color: white;  /* darkmode */
+  background: #020204;
 }
 
 .sendMessage input[type=text]::placeholder {
@@ -372,6 +381,9 @@ export default {
 @media only screen and (min-width: 715px)  {
   .sendMessageContainer {
     bottom: 8px;
+  }
+  .dummy {
+    height: 8px;
   }
   .DMs {
     transform: translateY(0px);

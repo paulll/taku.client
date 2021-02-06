@@ -1,6 +1,6 @@
 <template>
   <div class="settingsBar" :class="{small: path}" >
-    <router-link :class="{hidden: !path}" to="/settings" class="setting">
+    <router-link :class="{hidden: !path}" to="/settings" class="setting back">
       <img src="../assets/back.png" alt="back">
     </router-link>
     <router-link to="/settings/account" class="setting">
@@ -138,6 +138,9 @@ export default {
     user-select: none;
 }
 
+.back img{
+  padding: 12px 12px 16px 12px;
+}
 
 
 </style>

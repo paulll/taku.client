@@ -151,7 +151,7 @@ io.on("connection", socket => {
           if(!err) console.log('Data written');
         });
 
-        attachment.name = renderHtml(`http://anihuu.moe:8880/uploads/${attachment.name}`);
+        attachment.html = renderHtml(`http://anihuu.moe:8880/uploads/${attachment.name}`);
 
         attachments.push(attachment);
       });
@@ -297,8 +297,6 @@ app.patch("/settings", async (req, res) => {
       return;
     }
     req.user = user;
-
-    console.log(req.body);
 
     await users.update(
       { username: user.username },
