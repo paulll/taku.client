@@ -1,7 +1,7 @@
 <template>
     <!-- HTML here -->
-    <div id="header">
-        <div id="container">
+    <div class="header" :class="{pushRight: path}">
+        <div class="container">
             <div class="searchBox">
                 <img src="../assets/search.svg" alt="">
                 <input class="search" placeholder="SEARCH">
@@ -25,11 +25,19 @@ import axios from 'axios';
 export default {
     data: () => {
         return {
+            path: "",
             token: localStorage.token,
             user: "",
         }
     },
+    watch: {
+        $route(to, from) {
+            this.path = to.params.setting;
+            console.log("log from header", this.path);
+        }
+    },
     mounted(){
+        this.path = this.$route.params.setting;
         this.getUser();
     },
     methods: {
@@ -38,11 +46,15 @@ export default {
             window.location.href = "http://anihuu.moe:8080";
         },
         async getUser() {
-            const settings = await axios.get('http://anihuu.moe:8880/user', {
+            const response = await axios.get('http://anihuu.moe:8880/user', {
                 withCredentials: true,
             });
 
-            this.user = settings.data;
+            this.user = response.data;
+            localStorage.removeItem("darmode");
+            localStorage.setItem('darkmode', response.data.settings.appearance.darkmode);
+
+            console.log(response.data.settings.appearance.darkmode);
         },
     }
 }
@@ -52,23 +64,31 @@ export default {
 /* CSS here */
 
 
-#header {
+.header {
     /* Auto Layout */
     display: flex;
     position: fixed;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     padding: 0px;
+    
+    right: 0px;
     width: 100%;
+    transition: 100ms ease;
     z-index: 1000;
     filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
 }
 
-#container {
+.header.pushRight {
+    width: calc(100% - 56px);
+}
+
+.container {
     display: flex;
     justify-content: space-between;
-    margin: 9px 24px;
-    width: inherit;
+    margin: 9px 12px;
+    width: 100%;
 }
 
 .signup, .login, .logout {

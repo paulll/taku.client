@@ -151,7 +151,9 @@ io.on("connection", socket => {
           if(!err) console.log('Data written');
         });
 
-        attachments.push(renderHtml(`http://anihuu.moe:8880/uploads/${attachment.name}`));
+        attachment.name = renderHtml(`http://anihuu.moe:8880/uploads/${attachment.name}`);
+
+        attachments.push(attachment);
       });
 
       const message = {
@@ -223,7 +225,6 @@ app.get("/user/:username", async (req, res) => {
 });
 app.get("/user", async (req, res) => {
   // Verify Logged In User
-  
   jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
     if (error) {
       res.status(401);
@@ -283,6 +284,29 @@ app.patch("/user/anime", async (req, res) => {
 
     res.status(200);
     res.json({ message: "done" });
+  });
+});
+app.patch("/settings", async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+    if (error) {
+      res.status(401);
+      res.json({
+        message: "You must be logged in to view your user info",
+      });
+      return;
+    }
+    req.user = user;
+
+    console.log(req.body);
+
+    await users.update(
+      { username: user.username },
+      { $set: { settings: req.body.settings } }
+    );
+
+    res.status(200);
+    res.json({"message": "Changes saved successfully"});
   });
 });
 
@@ -421,7 +445,19 @@ app.post("/signup", async (req, res) => {
     result.state = true;
     result.dms = {},
     result.settings = {
-        theme: "light",
+        appearance: {
+            darkmode: false,
+            anime_pfps: true,
+            typing_sfx: {
+                enabled: true,
+                url: ""
+            },
+            mention_sfx: {
+                enabled: true,
+                url: ""
+            },
+            theme_color: "#ff006b"
+        },
         nsfw_referrals: true,
         language: "english",
         billing: {

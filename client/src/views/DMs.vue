@@ -1,5 +1,5 @@
 <template>
-  <div class="DMs" @dragover.prevent @drop.prevent="handleFileDrop">
+  <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop">
     <div class="tag-grid">
 
       <div class="messages">
@@ -11,23 +11,23 @@
                 <strong>{{message.author.username}}</strong>
               </router-link> {{convert(message.date)}}
             </h4>
-            <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase())}" v-html="message.content"></h2>
-            <h2 class="content" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></h2>
+            <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase()), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
+            <h2 class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></h2>
           </div>
         </div>
-        <div class="dummy"></div>
 
         <div class="typingUsers">
           <div v-for="pfp of typingUsers" :key="pfp" class="typing" :style="{ 'background-image': `url(${pfp})`}"></div>
         </div>
         
+        <div class="dummy"></div>
       </div>
 
       <div class="sendMessageContainer">
-        <form class="sendMessage" v-on:submit.prevent="sendMessage">
+        <form class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage">
           <!-- <input id="file" class="formImageInput" type="file" ref="file" v-on:change="handleFileInput()"> -->
           <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="remove(previews.indexOf(file))" alt="">
-          <input ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
+          <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
           <button v-if="message" type="submit">SEND</button>
         </form> 
       </div> 
@@ -54,9 +54,13 @@ export default {
       typingUsers: [],
       previews: [],
       attachments: [],
+      darkmode: localStorage.darkmode,
     };
   },
   mounted() {
+
+    console.log(this);
+
     setTimeout(() => {
       let dummy = document.querySelector(".dummy");
       dummy.scrollIntoView({behavior: "smooth"});
@@ -124,6 +128,7 @@ export default {
       let droppedFiles = event.dataTransfer.files;
       if(!droppedFiles) return;
       droppedFiles.forEach(file => {
+        console.log(file);
         this.attachments.push({file: file, name: file.name});
         this.previews.push(URL.createObjectURL(file));
       });
@@ -181,6 +186,16 @@ export default {
   }
 }
 
+.DMs {
+  background: #F3F3F3;
+  height: 100%;
+  transform: translateY(-56px);
+}
+
+.DMs.darkmode {
+  background: #08090E; /* darkmode */
+} 
+
 .typing {
   animation-name: scaleUp;
   animation-duration: 100ms;
@@ -216,7 +231,6 @@ export default {
 
 .sendMessage {
   margin: 0px 12px;
-  background: #020204;
   border-radius: 16px;
 }
 
@@ -240,8 +254,6 @@ export default {
   width: 100%;
   text-indent: 12px;
   background: white;
-  background: #020204; /* darkmode */
-  color: white;  /* darkmode */
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
   border-radius: 24px; 
   height: 39px;
@@ -250,19 +262,23 @@ export default {
   z-index: 3px;
 }
 
+.sendMessage input[type=text].darkmode {
+  background: #020204; /* darkmode */
+  color: white;  /* darkmode */
+}
+
 .sendMessage input[type=text]::placeholder {
   color: #C4C4C4;
 }
 
 .messages {
   margin-top: 56px;
-  margin-bottom: 56px;
-  height: calc(100vh - 112px);
   overflow: scroll;
   overflow-x: hidden;
+  height: calc(100vh - 56px);
 }
 .dummy {
-  height: 2px;
+  height: 64px;
   width: 100%;
 }
 .message {
@@ -302,8 +318,6 @@ export default {
   margin: 6px 12px;
   padding: 10px 12px;
   background: #eee;
-  background: #141520; /* darkmode */
-  color: white; /* darkmode */
   overflow-wrap: anywhere;
   margin-bottom: 1px;
   max-width: 600px;
@@ -312,12 +326,20 @@ export default {
   border-radius: 12px;
 }
 
+.messageBubble .content.darkmode {
+  background: #141520; /* darkmode */
+  color: white; /* darkmode */
+}
+
 .message .messageBubble .content.mention {
   border-left: 4px solid #ff0084;
   background: #ffe6f3 !important; 
-  background: #3b001f !important; /* darkmode */
   border-radius: 0px 12px 12px 0px !important;
   color: #ff0084;
+}
+
+.message .messageBubble .content.mention.darkmode {
+  background: #3b001f !important; /* darkmode */
 }
 
 .message.me .messageBubble .content.mention{
@@ -326,7 +348,6 @@ export default {
   border-right: 4px solid #ff0084;
 
 }
-
 
 .messageBubble .date {
   color: #8F8F8F;
@@ -352,12 +373,19 @@ export default {
   .sendMessageContainer {
     bottom: 8px;
   }
+  .DMs {
+    transform: translateY(0px);
+  }
 }
 
 @media only screen and (max-width: 715px)  {
   .messages {
-    margin-bottom: 112px;
-    height: calc(100vh - 168px);
+    /* margin-bottom: 112px; */
+    margin-top: 56px;
+    height: calc(100vh - 56px);
+  }
+  .DMs {
+    transform: translateY(0px);
   }
 }
 

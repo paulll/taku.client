@@ -59,7 +59,7 @@ export default {
     transform: translateY(2px);
     flex-direction: row;
     justify-content: space-between;
-    padding: 48px;
+    padding: 0px 48px;
     align-items: center;
     list-style: none; 
   }   

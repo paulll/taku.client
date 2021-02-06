@@ -32,7 +32,7 @@ const routes = [
     component: () => import('../views/Profile.vue')
   },
   {
-    path: '/settings/',
+    path: '/settings/:setting?', // the ? makes the param optional so the default route works
     name: 'Settings',
     component: () => import('../views/Settings.vue'),
     meta: {

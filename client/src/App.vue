@@ -29,9 +29,13 @@ export default {
   box-sizing: none;
 }
 
+html {
+  width: 100vw;
+  height: 100vh;
+}
 
 body {
-  background: #08090E;
+  background: #fff; /* darkmode */
 }
 
 .messageBubble .content img, .messageBubble .content video, .messageBubble .content iframe {
@@ -42,7 +46,7 @@ body {
 
 #app {
   overflow: hidden;
-  background: #08090E; /* darkmode */
+  height: 100vh;
 }
 
 #nav a.router-link-exact-active {

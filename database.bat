@@ -1,0 +1,3 @@
+cd api
+nodemon .
+pause                    
