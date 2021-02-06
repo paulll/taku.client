@@ -29,6 +29,8 @@
           <div class="bottom">
             <!-- <p>{{user.settings.appearance.typing_sfx.url.split("/")[user.settings.appearance.typing_sfx.url.split("/").length - 1]}}</p> -->
             <p>keystroke.wav</p>
+            <img src="../assets/upload.png" alt="" @click="$refs.keystrokeInput.click()">
+            <input class="keystrokeInput" type="file" ref="keystrokeInput" accept="audio/*">
           </div>
         </div>
       </div>
@@ -237,6 +239,17 @@ export default {
   font-weight: 500;
   font-size: 14px;
   text-indent: 16px;
+}
+
+.bottom img {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.bottom .keystrokeInput {
+  display: none;
 }
 
 </style>

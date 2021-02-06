@@ -3,46 +3,57 @@
     <router-link :class="{hidden: !path}" to="/settings" class="setting back">
       <img src="../assets/back.png" alt="back">
     </router-link>
-    <router-link to="/settings/account" class="setting">
+
+    <!-- <router-link to="/settings/account" class="setting">
       <img src="../assets/account.png" alt="account">
       <h1>Account</h1>
     </router-link>
+
     <router-link to="/settings/notification" class="setting">
       <img src="../assets/notification.png" alt="notification">
       <h1>Notifications</h1>
-    </router-link>
+    </router-link> -->
+
     <router-link to="/settings/appearance" class="setting">
       <img src="../assets/appearance.png" alt="appearance">
       <h1>Appearance & Sounds</h1>
     </router-link>
-    <router-link to="/settings/nsfw" class="setting">
+
+    <!-- <router-link to="/settings/nsfw" class="setting">
       <img src="../assets/nsfw.png" alt="nsfw">
       <h1>NSFW Content</h1>
     </router-link>
+
     <router-link to="/settings/language" class="setting">
       <img src="../assets/language.png" alt="language">
       <h1>Language</h1>
     </router-link>
+
     <router-link to="/settings/feedback" class="setting">
       <img src="../assets/feedback.png" alt="feedback">
       <h1>Feedback</h1>
     </router-link>
+
     <router-link to="/settings/privacy" class="setting">
       <img src="../assets/privacy.png" alt="privacy">
       <h1>Privacy</h1>
     </router-link>
+
     <router-link to="/settings/guidelines" class="setting">
       <img src="../assets/guidelines.png" alt="guidelines">
       <h1>Guidelines</h1>
     </router-link>
+
     <router-link to="/settings/acknowledgements" class="setting">
       <img src="../assets/acknowledgements.png" alt="acknowledgements">
       <h1>Acknowledgements</h1>
     </router-link>
+
     <router-link to="/settings/info" class="setting">
       <img src="../assets/info.png" alt="info">
       <h1>Information</h1>
-    </router-link>
+    </router-link> -->
+
   </div>
 </template>
 

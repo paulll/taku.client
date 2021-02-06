@@ -3,7 +3,7 @@
     <div class="tag-grid">
 
       <div class="messages">
-        <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me == message.author.username}">
+        <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me == message.author.username, same: message.author.sameAsLast}">
           <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('${message.author.pfp}')`}"></div></router-link>
           <div class="messageBubble">
             <h4 class="date">
@@ -67,15 +67,28 @@ export default {
       dummy.scrollIntoView({behavior: "smooth"});
     }, 500);
 
+    let lastMessage = {};
+
     this.socket.on('messages', messages => {
-        this.messages.push(...messages);
+      lastMessage = messages[0];
+
+      messages.forEach(message => {
+        // Parse all the messages when loading the site 
+        // So we group the messages by the same users together like below
+        if (lastMessage.author.username == message.author.username) message.author.sameAsLast = true;
+        lastMessage = message;
+        this.messages.push(message);
+      });
     });
+
+
     this.socket.on('message', message => {
       if (message.content !== undefined) {
 
-        console.log(message);
-
-        // add the message to the total messages
+        // If the last message is by the same user just add the message content itself without
+        // Their username etc
+        if (lastMessage.author.username == message.author.username) message.author.sameAsLast = true;
+        lastMessage = message;
         this.messages.push(message);
 
         // Play notification sound if they got mentioned
@@ -85,6 +98,8 @@ export default {
           notificationSound.play();
           console.log("playing sound");
         };
+
+        this.lastMessage = message;
 
         // Remove this later but for now its here to only show the last 20 messages so the UI doesn't lag
         if (this.messages.length > 100) this.messages.shift();
@@ -140,7 +155,11 @@ export default {
     sendMessage(message) {
 
       // Send new message
-      this.socket.emit('message', {content: this.message.trim(), attachments: this.attachments, user: localStorage.token});
+      this.socket.emit('message', {
+        content: this.message.trim(), 
+        attachments: this.attachments,
+        user: localStorage.token
+      });
 
       // Reset
       this.message = "";
@@ -234,7 +253,7 @@ export default {
 }
 
 .sendMessage {
-  margin: 0px 12px;
+  margin: 0px 16px;
   border-radius: 16px;
   background: white;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
@@ -355,7 +374,6 @@ export default {
   border-radius: 12px 0px 0px 12px !important;
   border-left: none;
   border-right: 4px solid #ff0084;
-
 }
 
 .messageBubble .date {
@@ -363,6 +381,23 @@ export default {
   font-size: 10px;
   font-weight: 500;
   margin-left: 24px;
+}
+
+.message.same .messageBubble .date {
+  display: none;
+}
+
+.message.same .content {
+  margin: -4px 12px;
+  transform: translateY(-5px);
+}
+
+.message.same.me .content {
+  margin-right: 51.25px; /* what the fuck why isn't this on the grid */
+}
+
+.message.same .content {
+  margin-left: 51.25px; /* what the fuck why isn't this on the grid */
 }
 
 .date a {
@@ -377,6 +412,11 @@ export default {
   background-position: center;
   background-size: cover;
 }
+
+.message.same .pfp {
+  display: none;
+}
+
 
 @media only screen and (min-width: 715px)  {
   .sendMessageContainer {
