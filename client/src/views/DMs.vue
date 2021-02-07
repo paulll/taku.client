@@ -133,8 +133,8 @@ export default {
     // Gotta fix this, apparently its some weird ass timezone in europe
     convert(epoch) {
       const dt = new Date(epoch);
-      const hr = dt.getUTCHours();
-      const m = "0" + dt.getUTCMinutes();
+      const hr = dt.getHours();
+      const m = "0" + dt.getMinutes();
       
       return hr + ':' + m.substr(-2)
     },
@@ -309,7 +309,7 @@ export default {
 }
 .message {
   padding: 6px 0px;
-  margin: 0px 16px;
+  margin: 0px 4px 0px 16px;
   align-items: flex-end;
   display: flex;
   align-items: top;
