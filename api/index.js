@@ -5,7 +5,7 @@ var cors = require("cors");
 const { date } = require("joi");
 var bodyParser = require("body-parser");
 var multer = require("multer");
-var upload = multer({ dest: "./uploads/" });
+var upload = multer({ dest: "./db/uploads/" });
 var http = require("http");
 var Jimp = require("jimp");
 const Joi = require("joi");
@@ -35,6 +35,7 @@ const schema = Joi.object({
 // Database
 var monk = require("monk");
 const { format } = require("path");
+const { log } = require("console");
 const url = "localhost:27017/animebackgrounds";
 const db = monk(url);
 db.then(() => {
@@ -266,7 +267,7 @@ app.post("/user/anime", async (req, res) => {
     res.json({ message: "done" });
   });
 });
-app.patch("/user/anime", async (req, res) => {
+app.post("/user/anime", async (req, res) => {
   // Parse body
   const body = req.body;
 
@@ -286,7 +287,9 @@ app.patch("/user/anime", async (req, res) => {
     res.json({ message: "done" });
   });
 });
-app.patch("/settings", async (req, res) => {
+
+// Setting Routes
+app.post("/settings", async (req, res) => {
   // Verify Logged In User
   jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
     if (error) {
@@ -305,6 +308,28 @@ app.patch("/settings", async (req, res) => {
 
     res.status(200);
     res.json({"message": "Changes saved successfully"});
+  });
+});
+app.post("/settings/upload", upload.any(), async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+    if (error) {
+      res.status(401);
+      res.json({
+        message: "You must be logged in to view your user info",
+      });
+      return;
+    }
+    req.user = user;
+
+    let file = req.files[0];
+    file.originalname = file.originalname.replace(/\s/g, "_");
+
+    // Rename the file back to the original name cus multer is stupid
+    fs.renameSync(`./db/uploads/${file.filename}`, `./db/uploads/${file.originalname}`);
+
+    res.status(200);
+    res.json({"message": "File uploaded successfully", "link": `http://anihuu.moe:8880/uploads/${file.originalname}`});
   });
 });
 

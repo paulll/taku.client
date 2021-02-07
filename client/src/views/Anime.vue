@@ -70,7 +70,7 @@ export default {
 
             // Reset animation
             const json = JSON.stringify({anime: [id], user: localStorage.token});
-            const response = await axios.patch('http://anihuu.moe:8880/user/anime', json, {
+            const response = await axios.post('http://anihuu.moe:8880/user/anime', json, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

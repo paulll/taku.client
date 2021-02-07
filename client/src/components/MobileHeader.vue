@@ -1,6 +1,5 @@
 <script>
 
-
 export default {
   name: 'MobileHeader',
   data: () => {
@@ -15,7 +14,6 @@ export default {
   methods: {
     updateTheme(){
       this.darkmode = localStorage.darkmode;
-      console.log("ass");
     },
   }
 };
@@ -62,6 +60,7 @@ export default {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  transition: 100ms ease;
   box-shadow: 0 0px 12px rgba(0, 0, 0, 0.164);
 }
 

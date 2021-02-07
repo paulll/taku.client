@@ -56,6 +56,7 @@ export default {
       attachments: [],
       darkmode: localStorage.darkmode,
       typingSfx: localStorage.typingSfx,
+      typingSoundUrl: localStorage.typingSoundUrl,
     };
   },
   mounted() {
@@ -180,7 +181,9 @@ export default {
       // Send new message
       this.socket.emit('typing', {user: localStorage.token});
 
-      var typingSound = new Audio(require("../../public/keystroke.wav"));
+      if (!this.typingSoundUrl) this.typingSoundUrl = require("../../public/keystroke.wav");
+
+      var typingSound = new Audio(this.typingSoundUrl);
       typingSound.volume = 0.2;
       typingSound.play();
 
@@ -393,11 +396,11 @@ export default {
 }
 
 .message.same.me .content {
-  margin-right: 51.25px; /* what the fuck why isn't this on the grid */
+  margin-right: 50.8px; /* what the fuck why isn't this on the grid */
 }
 
 .message.same .content {
-  margin-left: 51.25px; /* what the fuck why isn't this on the grid */
+  margin-left: 50.8px; /* what the fuck why isn't this on the grid */
 }
 
 .date a {

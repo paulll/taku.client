@@ -1,58 +1,58 @@
 <template>
-  <div class="settingsBar" :class="{small: path}" >
-    <router-link :class="{hidden: !path}" to="/settings" class="setting back">
+  <div @update-theme="updateTheme" class="settingsBar" :class="{small: path, darkmode: darkmode == 'true'}" >
+    <router-link :class="{hidden: !path, darkmode: darkmode == 'true'}" to="/settings" class="setting">
       <img src="../assets/back.png" alt="back">
     </router-link>
 
-    <!-- <router-link to="/settings/account" class="setting">
+    <router-link to="/settings/account" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/account.png" alt="account">
       <h1>Account</h1>
     </router-link>
 
-    <router-link to="/settings/notification" class="setting">
+    <router-link to="/settings/notification" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/notification.png" alt="notification">
       <h1>Notifications</h1>
-    </router-link> -->
+    </router-link>
 
-    <router-link to="/settings/appearance" class="setting">
+    <router-link to="/settings/appearance" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/appearance.png" alt="appearance">
       <h1>Appearance & Sounds</h1>
     </router-link>
 
-    <!-- <router-link to="/settings/nsfw" class="setting">
+    <router-link to="/settings/nsfw" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/nsfw.png" alt="nsfw">
       <h1>NSFW Content</h1>
     </router-link>
 
-    <router-link to="/settings/language" class="setting">
+    <router-link to="/settings/language" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/language.png" alt="language">
       <h1>Language</h1>
     </router-link>
 
-    <router-link to="/settings/feedback" class="setting">
+    <router-link to="/settings/feedback" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/feedback.png" alt="feedback">
       <h1>Feedback</h1>
     </router-link>
 
-    <router-link to="/settings/privacy" class="setting">
+    <router-link to="/settings/privacy" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/privacy.png" alt="privacy">
       <h1>Privacy</h1>
     </router-link>
 
-    <router-link to="/settings/guidelines" class="setting">
+    <router-link to="/settings/guidelines" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/guidelines.png" alt="guidelines">
       <h1>Guidelines</h1>
     </router-link>
 
-    <router-link to="/settings/acknowledgements" class="setting">
+    <router-link to="/settings/acknowledgements" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/acknowledgements.png" alt="acknowledgements">
       <h1>Acknowledgements</h1>
     </router-link>
 
-    <router-link to="/settings/info" class="setting">
+    <router-link to="/settings/info" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/info.png" alt="info">
       <h1>Information</h1>
-    </router-link> -->
+    </router-link>
 
   </div>
 </template>
@@ -65,19 +65,26 @@ export default {
   data: () => {
     return {
       path: {},
+      darkmode: localStorage.darkmode,
     };
   },
   watch: {
     $route(to, from) {
-        this.path = to.params.setting;
-        console.log(this.path);
+      this.path = to.params.setting; // watch for changes on URL
     }
   },
   mounted() {
-    this.path = this.$route.params.setting;
-    console.log(this.path);
-  },
+    this.path = this.$route.params.setting; // get current path from url
 
+    // Update the theme from the event emitter
+    this.emitter.on('updateTheme', () => this.updateTheme());
+  },
+  methods: {
+    updateTheme(){
+      this.darkmode = localStorage.darkmode;
+      console.log("updating settings component");
+    },
+  }
 }
 
 </script>
@@ -93,6 +100,10 @@ export default {
   z-index: 2;
 }
 
+.settingsBar.darkmode { /* darkmode */
+  background: #020204;
+}
+
 .settingsbar:not(.small) {
   padding-top: 0px;
 }
@@ -103,8 +114,16 @@ export default {
   text-decoration: none;
 }
 
+.setting.darkmode { /* darkmode */
+  filter: invert(1);
+}
+
 .setting.router-link-active {
    background: #ff006b; 
+}
+
+.setting.setting.router-link-active.darkmode { /* darkmode */
+  background: #00ff94;
 }
 
 .setting.router-link-active img {

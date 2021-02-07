@@ -2,20 +2,22 @@
   <div class="settings">
     <SettingsBar/>
 
-    <div class="settingsArea">
+    <div class="settingsArea" :class="{darkmode: darkmode == 'true'}">
       <div v-if="path == 'appearance'" class="appearanceAndSounds">
-        <div class="option">
-          <div>
-            <img src="../assets/darkmode.png" alt="darkmode">
-            <h1>Darkmode</h1>
-          </div>
-          <div class="onOff">
-            <button @click="toggleOption(true, 'darkmode')" :class="{active: user.settings.appearance.darkmode == true}">on</button>
-            <button @click="toggleOption(false, 'darkmode')" :class="{active: user.settings.appearance.darkmode == false}">off</button>
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/darkmode.png" alt="darkmode">
+              <h1>Darkmode</h1>
+            </div>
+            <div class="onOff">
+              <button @click="toggleOption(true, 'darkmode')" :class="{active: user.settings.appearance.darkmode == true}">on</button>
+              <button @click="toggleOption(false, 'darkmode')" :class="{active: user.settings.appearance.darkmode == false}">off</button>
+            </div>
           </div>
         </div>
-        <div class="splitter"></div>
-        <div class="optionBox">
+        <!-- <div class="splitter"></div> -->
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
               <img src="../assets/keyboard.png" alt="darkmode">
@@ -27,13 +29,34 @@
             </div>
           </div>
           <div class="bottom">
-            <!-- <p>{{user.settings.appearance.typing_sfx.url.split("/")[user.settings.appearance.typing_sfx.url.split("/").length - 1]}}</p> -->
-            <p>keystroke.wav</p>
-            <img src="../assets/upload.png" alt="" @click="$refs.keystrokeInput.click()">
-            <input class="keystrokeInput" type="file" ref="keystrokeInput" accept="audio/*">
+            <a target="_blank" :href="user.settings.appearance.typing_sfx.url"><p>{{user.settings.appearance.typing_sfx.url.split("/")[user.settings.appearance.typing_sfx.url.split("/").length - 1]}}</p></a>
+            <img v-if="typingSoundUrl" src="../assets/x.png" alt="" @click="resetSfx()">
+            <img v-if="!typingSoundUrl" src="../assets/upload.png" alt="" @click="$refs.keystrokeInput.click()">
+            <input class="keystrokeInput" type="file" ref="keystrokeInput" accept="audio/*" @change="uploadFile('keystrokeInput', 'typingSfx')">
           </div>
         </div>
       </div>
+
+      <div v-if="path == 'privacy'" class="privacy">
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/keyboard.png" alt="darkmode">
+              <h1>Blocked Users</h1>
+            </div>
+          </div>
+          <div class="bottom blockedUsers">
+            <a class="blockedUser" v-for="blockedUser in user.settings.privacy.blocked_users" :key="blockedUser" target="_blank" :href="user.settings.appearance.typing_sfx.url">
+              <div>
+                <img class="pfp" :src="blockedUser.pfp" alt="">
+                <p>{{blockedUser.username}}</p>
+              </div>
+              <img src="../assets/x.png" alt="" @click="resetSfx()">
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -55,6 +78,8 @@ export default {
     return {
       path: "",
       user: {},
+      typingSoundUrl: localStorage.typingSoundUrl,
+      darkmode: localStorage.darkmode,
     };
   },
   watch: {
@@ -66,6 +91,8 @@ export default {
   mounted() {
     this.getUser();
     this.path = this.$route.params.setting;
+
+    this.emitter.on('updateTheme', () => this.updateTheme());
   },
   methods: {
     async getUser() {
@@ -97,6 +124,14 @@ export default {
 
       console.log(user.data);
     },
+    async updateSettings(){
+      const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+      });
+    },
     async toggleOption(state, option){
 
       switch (option) {
@@ -108,16 +143,52 @@ export default {
       
         case "typingSfx":
           this.user.settings.appearance.typing_sfx.enabled = state;
+          localStorage.setItem('typingSoundUrl', this.user.settings.appearance.typing_sfx.url);
           localStorage.setItem('typingSfx', state);
           break;
       }
 
-      const response = await axios.patch('http://anihuu.moe:8880/settings', this.user, {
+      this.updateSettings();
+    },
+    async uploadFile(ref, option){
+
+      const file = this.$refs[ref].files[0];
+
+      let formData = new FormData();
+      formData.append('audio', file);
+
+      const response = await axios.post('http://anihuu.moe:8880/settings/upload', formData, {
         withCredentials: true,
         headers: {
-            'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data'
         }
       });
+
+
+      console.log(response.data.link);
+      console.log(response.data.link);
+      let link = response.data.link;
+
+      if (response.status == 200) {
+        switch (option) {
+          case "typingSfx":
+            localStorage.setItem('typingSoundUrl', link);
+            this.typingSoundUrl = localStorage.typingSoundUrl;
+            this.user.settings.appearance.typing_sfx.url = link;
+            break;
+        }
+        this.updateSettings();
+      }
+    },
+    async resetSfx(){
+      localStorage.removeItem('typingSoundUrl');
+      this.typingSoundUrl = localStorage.typingSoundUrl;
+      this.user.settings.appearance.typing_sfx.url = require("../../public/keystroke.wav");
+
+      this.updateSettings();
+    },
+    updateTheme(){
+      this.darkmode = localStorage.darkmode;
     },
   }
 }
@@ -125,7 +196,6 @@ export default {
 </script>
 
 <style scoped>
-
 .settings {
   min-height: 100vh;
   width: 100%;
@@ -138,6 +208,11 @@ export default {
   transform: translateX(56px);
   height: calc(100vh - 60px);
   padding-top: 60px;
+  transition: 100ms ease;
+}
+
+.settingsArea.darkmode { /* darkmode */
+  background: #08090E; 
 }
 
 .option {
@@ -167,7 +242,6 @@ export default {
   /* or 21px */
 
   text-decoration: none;
-  color: black;
 
   display: flex;
   align-items: center;
@@ -184,6 +258,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: 100ms ease;
+}
+
+.onOff:hover {
+  background: #810036;
 }
 
 .onOff button {
@@ -216,11 +295,22 @@ export default {
   background: white;
   padding: 12px;
   border-radius: 8px;
-  margin-top: 24px;
+  margin-top: 16px;
   margin-left: 16px;
   margin-right: 16px;
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
 }
+
+.optionBox.darkmode { /* darkmode */
+  background: #10121D;
+  color: white;
+} 
+
+.optionBox.darkmode .top .heading img         { filter: invert(1); }      /* darkmode */ 
+.optionBox.darkmode .bottom                   { background: #171A28; }  /* darkmode */
+.optionBox.darkmode .bottom a:not(:hover)     { color: white; }         /* darkmode */
+.optionBox.darkmode .bottom img:not(:hover)   { filter: invert(1); }      /* darkmode */
+
 
 .optionBox div {
   display: flex;
@@ -232,13 +322,24 @@ export default {
   margin-top: 16px;
   background: #F3F3F3;
   border-radius: 8px;
-  height: 38px;
+  min-height: 38px;
+  overflow: hidden;
 }
 
-.bottom p {
+.bottom a {
+  text-decoration: none;
+  color: black;
+  transition: 100ms ease;
+  margin-left: 16px;
+}
+
+.bottom a:hover {
+  color: #FF006B;
+}
+
+.bottom a p {
   font-weight: 500;
   font-size: 14px;
-  text-indent: 16px;
 }
 
 .bottom img {
@@ -248,8 +349,34 @@ export default {
   cursor: pointer;
 }
 
+.bottom img:hover {
+  filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%);
+}
+
 .bottom .keystrokeInput {
   display: none;
 }
+
+.bottom.blockedUsers {
+  display: flex;
+  flex-direction: column;
+}
+
+.blockedUser {
+  display: flex;
+  margin-left: 0px !important;
+  padding: 8px 8px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.blockedUser .pfp {
+  height: 40px;
+  margin: 0px 12px;
+  width: 40px;
+  border-radius: 100%;
+}
+
 
 </style>
