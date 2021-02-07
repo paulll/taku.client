@@ -211,9 +211,7 @@ export default {
   transition: 100ms ease;
 }
 
-.settingsArea.darkmode { /* darkmode */
-  background: #08090E; 
-}
+.settingsArea.darkmode { background: #08090E; } /* darkmode */ 
 
 .option {
   display: flex;
@@ -223,10 +221,7 @@ export default {
   padding: 8px 16px;
 }
 
-.option div, .optionBox .top .heading {
-  display: flex;
-}
-
+.option div, .optionBox .top .heading { display: flex;}
 .option div img, .optionBox .top .heading img {
   width: 32px;
   height: 32px;
@@ -261,10 +256,7 @@ export default {
   transition: 100ms ease;
 }
 
-.onOff:hover {
-  background: #810036;
-}
-
+.onOff:hover { background: #810036;}
 .onOff button {
   border: none;
   cursor: pointer;
@@ -278,10 +270,7 @@ export default {
   border-radius: 24px;
 }
 
-.active {
-  background: #FF006B !important;
-}
-
+.active { background: #FF006B !important;}
 .splitter {
   width: calc(100% - 32px);
   height: 1px;
@@ -311,7 +300,6 @@ export default {
 .optionBox.darkmode .bottom a:not(:hover)     { color: white; }         /* darkmode */
 .optionBox.darkmode .bottom img:not(:hover)   { filter: invert(1); }      /* darkmode */
 
-
 .optionBox div {
   display: flex;
   align-items: center;
@@ -333,10 +321,7 @@ export default {
   margin-left: 16px;
 }
 
-.bottom a:hover {
-  color: #FF006B;
-}
-
+.bottom a:hover { color: #FF006B; }
 .bottom a p {
   font-weight: 500;
   font-size: 14px;
@@ -349,13 +334,8 @@ export default {
   cursor: pointer;
 }
 
-.bottom img:hover {
-  filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%);
-}
-
-.bottom .keystrokeInput {
-  display: none;
-}
+.bottom img:hover { filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%); }
+.bottom .keystrokeInput { display: none; }
 
 .bottom.blockedUsers {
   display: flex;
@@ -377,6 +357,5 @@ export default {
   width: 40px;
   border-radius: 100%;
 }
-
 
 </style>

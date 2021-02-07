@@ -100,39 +100,19 @@ export default {
   z-index: 2;
 }
 
-.settingsBar.darkmode { /* darkmode */
-  background: #020204;
-}
-
-.settingsbar:not(.small) {
-  padding-top: 0px;
-}
-
+.settingsBar.darkmode { background: #020204; } /* darkmode */
+.settingsbar:not(.small) { padding-top: 0px; }
 .setting {
   display: flex;
   cursor: pointer;
   text-decoration: none;
 }
 
-.setting.darkmode { /* darkmode */
-  filter: invert(1);
-}
-
-.setting.router-link-active {
-   background: #ff006b; 
-}
-
-.setting.setting.router-link-active.darkmode { /* darkmode */
-  background: #00ff94;
-}
-
-.setting.router-link-active img {
-  filter: invert(1);  
-}
-
-.setting:hover:not(.router-link-active) {
-  filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%);
-}
+.setting.darkmode { filter: invert(1); } /* darkmode */ 
+.setting.router-link-active { background: #ff006b;  }
+.setting.setting.router-link-active.darkmode { background: #00ff94; } /* darkmode */ 
+.setting.router-link-active img { filter: invert(1);   }
+.setting:hover:not(.router-link-active) { filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%); }
 
 .setting img {
   width: 32px;
@@ -159,18 +139,11 @@ export default {
   margin-left: 4px;
 }
 
-.small {
-    width: 56px;
-}
-
+.small { width: 56px; }
+.back img { padding: 12px 12px 16px 12px; }
 .hidden {
     opacity: 0%;
     user-select: none;
 }
-
-.back img{
-  padding: 12px 12px 16px 12px;
-}
-
 
 </style>

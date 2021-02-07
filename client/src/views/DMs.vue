@@ -26,7 +26,7 @@
       <div class="sendMessageContainer">
         <form class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage">
           <!-- <input id="file" class="formImageInput" type="file" ref="file" v-on:change="handleFileInput()"> -->
-          <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="remove(previews.indexOf(file))" alt="">
+          <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
           <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
           <button v-if="message" type="submit">SEND</button>
         </form> 
@@ -41,7 +41,6 @@ import io from 'socket.io-client';
 
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
-
 
 export default {
   name: 'home',
@@ -130,6 +129,8 @@ export default {
     this.socket.disconnect();
   },
   methods: {
+    // This is to convert epoch to the user's time
+    // Gotta fix this, apparently its some weird ass timezone in europe
     convert(epoch) {
       const dt = new Date(epoch);
       const hr = dt.getUTCHours();
@@ -137,10 +138,12 @@ export default {
       
       return hr + ':' + m.substr(-2)
     },
-    remove(i){
+    // This function deselects a file so users can cancel
+    deselect(i){
       this.attachments.splice(i, 1);
       this.previews.splice(i, 1);
     },
+    // This function parses files when dragging and dropping on the DM
     handleFileDrop(event) {
       let droppedFiles = event.dataTransfer.files;
       if(!droppedFiles) return;
@@ -153,6 +156,7 @@ export default {
       console.log(this.attachments);
 
     },
+    // This function handles sending messages
     sendMessage(message) {
 
       // Send new message
@@ -174,6 +178,8 @@ export default {
       // Maintain focus on keyboard for mobile
       this.$refs.message.focus();
     },
+    // This is the function that triggers the typing sounds
+    // It can be turned off from the settings
     typing(){
 
       if (this.typingSfx == 'false') return 
@@ -198,7 +204,6 @@ export default {
 .typingUsers {
   display: flex;
   margin: 0px 18px;
-
 }
 
 @keyframes scaleUp {
@@ -218,9 +223,7 @@ export default {
   transform: translateY(-56px);
 }
 
-.DMs.darkmode {
-  background: #08090E; /* darkmode */
-} 
+.DMs.darkmode { background: #08090E; /* darkmode */ }
 
 .typing {
   animation-name: scaleUp;
@@ -244,9 +247,7 @@ export default {
   transition: 100ms ease;
 }
 
-.previewFile:hover {
-  opacity: 50%;
-}
+.previewFile:hover { opacity: 50%; }
 
 .sendMessageContainer {
   position: fixed;
@@ -262,9 +263,7 @@ export default {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
 }
 
-.sendMessage.darkmode {
-  background: #020204;
-}
+.sendMessage.darkmode { background: #020204; }
 
 .sendMessage button {
   outline: none;
@@ -276,9 +275,7 @@ export default {
   transform: translate(-55px, 11px);
 }
 
-.sendMessage button:hover {
-  cursor: pointer;
-}
+.sendMessage button:hover { cursor: pointer; }
 
 .sendMessage input[type=text] {
   outline: none;
@@ -298,9 +295,7 @@ export default {
   background: #020204;
 }
 
-.sendMessage input[type=text]::placeholder {
-  color: #C4C4C4;
-}
+.sendMessage input[type=text]::placeholder { color: #C4C4C4; }
 
 .messages {
   margin-top: 56px;
@@ -321,8 +316,7 @@ export default {
 }
 
 .message.me {
-  flex-direction: row-reverse;
-}
+  flex-direction: row-reverse; }
 
 .message.me .messageBubble {
   align-items: flex-end;
@@ -337,10 +331,7 @@ export default {
 
 }
 
-.message.me .messageBubble .content{
-  text-align: end;
-  
-}
+.message.me .messageBubble .content{ text-align: end; }
 
 .messageBubble .content {
   display: flex;
@@ -369,10 +360,7 @@ export default {
   color: #ff0084;
 }
 
-.message .messageBubble .content.mention.darkmode {
-  background: #3b001f !important; /* darkmode */
-}
-
+.message .messageBubble .content.mention.darkmode { background: #3b001f !important; /* darkmode */ }
 .message.me .messageBubble .content.mention{
   border-radius: 12px 0px 0px 12px !important;
   border-left: none;
@@ -386,22 +374,16 @@ export default {
   margin-left: 24px;
 }
 
-.message.same .messageBubble .date {
-  display: none;
-}
+.message.same .messageBubble .date { display: none; }
 
 .message.same .content {
   margin: -4px 12px;
   transform: translateY(-5px);
 }
 
-.message.same.me .content {
-  margin-right: 50.8px; /* what the fuck why isn't this on the grid */
-}
+.message.same.me .content { margin-right: 50.8px; /* what the fuck why isn't this on the grid */ }
 
-.message.same .content {
-  margin-left: 50.8px; /* what the fuck why isn't this on the grid */
-}
+.message.same .content { margin-left: 50.8px; /* what the fuck why isn't this on the grid */ }
 
 .date a {
   text-decoration: none;
@@ -416,21 +398,12 @@ export default {
   background-size: cover;
 }
 
-.message.same .pfp {
-  display: none;
-}
-
+.message.same .pfp { display: none; }
 
 @media only screen and (min-width: 715px)  {
-  .sendMessageContainer {
-    bottom: 8px;
-  }
-  .dummy {
-    height: 8px;
-  }
-  .DMs {
-    transform: translateY(0px);
-  }
+  .sendMessageContainer { bottom: 8px; }
+  .dummy { height: 8px; }
+  .DMs { transform: translateY(0px); }
 }
 
 @media only screen and (max-width: 715px)  {
@@ -439,9 +412,7 @@ export default {
     margin-top: 56px;
     height: calc(100vh - 56px);
   }
-  .DMs {
-    transform: translateY(0px);
-  }
+  .DMs { transform: translateY(0px); }
 }
 
 

@@ -48,7 +48,6 @@ export default {
   bottom: 8px;
   width: 100%;
   z-index: 2; 
-
 }
 
 .mh-header {
@@ -64,13 +63,8 @@ export default {
   box-shadow: 0 0px 12px rgba(0, 0, 0, 0.164);
 }
 
-.mh-header.darkmode {
-  background: #020204; /* darkmode */
-}
-
-.mh-header.darkmode img {
-  filter: invert(1);
-}
+.mh-header.darkmode { background: #020204; } /* darkmode */
+.mh-header.darkmode img { filter: invert(1); }
 
 @media only screen and (max-width: 715px)  {
   .mh-headerContainer { display: flex; }
