@@ -1,10 +1,10 @@
 <template>
-  <div @update-theme="updateTheme" class="settingsBar" :class="{small: path, darkmode: darkmode == 'true'}" >
+  <div @update-theme="updateTheme" class="settingsBar back" :class="{small: path, darkmode: darkmode == 'true'}" >
     <router-link :class="{hidden: !path, darkmode: darkmode == 'true'}" to="/settings" class="setting">
       <img src="../assets/back.png" alt="back">
     </router-link>
 
-    <router-link to="/settings/account" class="setting" :class="{darkmode: darkmode == 'true'}" >
+    <!-- <router-link to="/settings/account" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/account.png" alt="account">
       <h1>Account</h1>
     </router-link>
@@ -12,14 +12,14 @@
     <router-link to="/settings/notification" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/notification.png" alt="notification">
       <h1>Notifications</h1>
-    </router-link>
+    </router-link> -->
 
     <router-link to="/settings/appearance" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/appearance.png" alt="appearance">
       <h1>Appearance & Sounds</h1>
     </router-link>
 
-    <router-link to="/settings/nsfw" class="setting" :class="{darkmode: darkmode == 'true'}" >
+    <!-- <router-link to="/settings/nsfw" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/nsfw.png" alt="nsfw">
       <h1>NSFW Content</h1>
     </router-link>
@@ -52,7 +52,7 @@
     <router-link to="/settings/info" class="setting" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/info.png" alt="info">
       <h1>Information</h1>
-    </router-link>
+    </router-link> -->
 
   </div>
 </template>
@@ -140,7 +140,7 @@ export default {
 }
 
 .small { width: 56px; }
-.back img { padding: 12px 12px 16px 12px; }
+.back img { padding: 12px; }
 .hidden {
     opacity: 0%;
     user-select: none;

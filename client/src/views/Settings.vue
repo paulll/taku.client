@@ -24,15 +24,36 @@
               <h1>Typing SFX</h1>
             </div>
             <div class="onOff">
-              <button @click="toggleOption(true, 'typingSfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == true}">on</button>
-              <button @click="toggleOption(false, 'typingSfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == false}">off</button>
+              <button @click="toggleOption(true, 'typing_sfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == true}">on</button>
+              <button @click="toggleOption(false, 'typing_sfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == false}">off</button>
             </div>
           </div>
           <div class="bottom">
-            <a target="_blank" :href="user.settings.appearance.typing_sfx.url"><p>{{user.settings.appearance.typing_sfx.url.split("/")[user.settings.appearance.typing_sfx.url.split("/").length - 1]}}</p></a>
-            <img v-if="typingSoundUrl" src="../assets/x.png" alt="" @click="resetSfx()">
+            <a v-if="typingSoundUrl" target="_blank" :href="user.settings.appearance.typing_sfx.url"><p>{{user.settings.appearance.typing_sfx.url.split("/")[user.settings.appearance.typing_sfx.url.split("/").length - 1]}}</p></a>
+            <a href=""><p v-if="!typingSoundUrl">Default</p></a>
+            <img v-if="typingSoundUrl" src="../assets/x.png" alt="" @click="resetSfx('typingSoundUrl')">
             <img v-if="!typingSoundUrl" src="../assets/upload.png" alt="" @click="$refs.keystrokeInput.click()">
-            <input class="keystrokeInput" type="file" ref="keystrokeInput" accept="audio/*" @change="uploadFile('keystrokeInput', 'typingSfx')">
+            <input class="fileInput" type="file" ref="keystrokeInput" accept="audio/*" @change="uploadFile('keystrokeInput', 'typing_sfx')">
+          </div>
+        </div>
+
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/notification.png" alt="darkmode">
+              <h1>Mention SFX</h1>
+            </div>
+            <div class="onOff">
+              <button @click="toggleOption(true, 'mention_sfx')" :class="{active: user.settings.appearance.mention_sfx.enabled == true}">on</button>
+              <button @click="toggleOption(false, 'mention_sfx')" :class="{active: user.settings.appearance.mention_sfx.enabled == false}">off</button>
+            </div>
+          </div>
+          <div class="bottom">
+            <a v-if="mentionSoundUrl" target="_blank" :href="user.settings.appearance.mention_sfx.url"><p>{{user.settings.appearance.mention_sfx.url.split("/")[user.settings.appearance.mention_sfx.url.split("/").length - 1]}}</p></a>
+            <a href=""><p v-if="!mentionSoundUrl">Default</p></a>
+            <img v-if="mentionSoundUrl" src="../assets/x.png" alt="" @click="resetSfx('mentionSoundUrl')">
+            <img v-if="!mentionSoundUrl" src="../assets/upload.png" alt="" @click="$refs.mentionInput.click()">
+            <input class="fileInput" type="file" ref="mentionInput" accept="audio/*" @change="uploadFile('mentionInput', 'mention_sfx')">
           </div>
         </div>
       </div>
@@ -79,6 +100,7 @@ export default {
       path: "",
       user: {},
       typingSoundUrl: localStorage.typingSoundUrl,
+      mentionSoundUrl: localStorage.mentionSoundUrl,
       darkmode: localStorage.darkmode,
     };
   },
@@ -140,11 +162,15 @@ export default {
           localStorage.setItem('darkmode', state);
           this.emitter.emit('updateTheme');
           break;
-      
-        case "typingSfx":
+        case "typing_sfx":
           this.user.settings.appearance.typing_sfx.enabled = state;
           localStorage.setItem('typingSoundUrl', this.user.settings.appearance.typing_sfx.url);
-          localStorage.setItem('typingSfx', state);
+          localStorage.setItem('typing_sfx', state);
+          break;
+        case "mention_sfx":
+          this.user.settings.appearance.mention_sfx.enabled = state;
+          localStorage.setItem('mentionSoundUrl', this.user.settings.appearance.mention_sfx.url);
+          localStorage.setItem('mention_sfx', state);
           break;
       }
 
@@ -164,27 +190,33 @@ export default {
         }
       });
 
-
       console.log(response.data.link);
       console.log(response.data.link);
       let link = response.data.link;
 
       if (response.status == 200) {
         switch (option) {
-          case "typingSfx":
+          case "typing_sfx":
             localStorage.setItem('typingSoundUrl', link);
             this.typingSoundUrl = localStorage.typingSoundUrl;
             this.user.settings.appearance.typing_sfx.url = link;
+            break;
+          case "mention_sfx":
+            localStorage.setItem('mentionSoundUrl', link);
+            this.mentionSoundUrl = localStorage.mentionSoundUrl;
+            this.user.settings.appearance.mention_sfx.url = link;
             break;
         }
         this.updateSettings();
       }
     },
-    async resetSfx(){
-      localStorage.removeItem('typingSoundUrl');
-      this.typingSoundUrl = localStorage.typingSoundUrl;
-      this.user.settings.appearance.typing_sfx.url = require("../../public/keystroke.wav");
+    async resetSfx(sfx){
+      localStorage.removeItem(sfx);
+      this[sfx] = localStorage[sfx];
 
+      console.log(this.user.settings.appearance);
+
+      this.user.settings.appearance[sfx].url = '';
       this.updateSettings();
     },
     updateTheme(){
@@ -335,7 +367,7 @@ export default {
 }
 
 .bottom img:hover { filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%); }
-.bottom .keystrokeInput { display: none; }
+.bottom .fileInput { display: none; }
 
 .bottom.blockedUsers {
   display: flex;

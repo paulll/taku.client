@@ -54,8 +54,10 @@ export default {
       previews: [],
       attachments: [],
       darkmode: localStorage.darkmode,
-      typingSfx: localStorage.typingSfx,
+      typingSfx: localStorage.typing_sfx,
       typingSoundUrl: localStorage.typingSoundUrl,
+      mentionSfx: localStorage.mention_sfx,
+      mentionSoundUrl: localStorage.mentionSoundUrl,
     };
   },
   mounted() {
@@ -92,11 +94,10 @@ export default {
         this.messages.push(message);
 
         // Play notification sound if they got mentioned
-        if (message.content.includes('@') && message.content.toLowerCase().includes(this.me.toLowerCase())) {
+        if (this.mentionSfx == 'true' && message.content.includes('@') && message.content.toLowerCase().includes(this.me.toLowerCase())) {
           window.navigator.vibrate(100);
-          var notificationSound = new Audio("https://cdn.discordapp.com/attachments/755597803102928966/806690267784151060/notification.mp3");
-          notificationSound.play();
-          console.log("playing sound");
+          mentionSound.play();
+          console.log("playing mention sound");
         };
 
         this.lastMessage = message;
