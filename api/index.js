@@ -121,14 +121,24 @@ io.on("connection", socket => {
   socket.emit("message", "Connected to anihuu DMs");
   socket.emit("messages", currentMessages);
 
-  socket.on("message", messageEvent => {
+  // The reason i use a normal post method here is because
+  // apparently theres a 1mb limit to a ws header
+  // therefore if people want to send images that are bigger
+  // than 1mb we have to use a traditional post method
+  // it still can emit the socket for whenever we get a message
+  app.post("/message", upload.any(), async (req, res) => {
 
+    let messageEvent = JSON.parse(req.body.message);
+    messageEvent.attachments = req.files;
+  
+    res.json({"message": "got message"});
+  
     if (!messageEvent.user) return;
     if (!messageEvent.attachments) return;
     if (messageEvent.attachments.length == 0 && messageEvent.content.length == 0) return;
     
-    author = {};
-
+    let author = {};
+  
     // Verify Logged In User
     jwt.verify(messageEvent.user, "h4x0r", async (error, user) => {
       if (error) {
@@ -140,24 +150,20 @@ io.on("connection", socket => {
           { collation: { locale: "en", strength: 2 } }
         )
       )[0];
-
+  
       // Empty array where ill add the links for the attachments for below
       let attachments = [];
-
+  
       // Save attachment blobs locally and create a link for them to see
-      messageEvent.attachments.forEach(attachment => {
-
-        attachment.name = attachment.name.replace(/\s/g, "_"); // Remove spaces with underscores
-
-        fs.writeFile(`./db/uploads/${attachment.name}`, attachment.file, (err) => {
-          if(!err) console.log('Data written');
-        });
-
-        attachment.html = renderHtml(`http://anihuu.moe:8880/uploads/${attachment.name}`);
-
+      req.files.forEach(attachment => {
+        attachment.originalname = attachment.originalname.replace(/\s/g, "_"); // Remove spaces with underscores
+  
+        // Rename the file back to the original name cus multer is stupid
+        fs.renameSync(`./db/uploads/${attachment.filename}`, `./db/uploads/${attachment.originalname}`);
+        attachment.html = renderHtml(`http://anihuu.moe:8880/uploads/${attachment.originalname}`);
         attachments.push(attachment);
       });
-
+  
       const message = {
         content: messageEvent.content,
         attachments: attachments,
@@ -167,19 +173,20 @@ io.on("connection", socket => {
           pfp: author.pfp,
         },
       };
-
+  
       message["content"] = renderHtml(message.content);
-
+  
       currentMessages.push(message);
       if (currentMessages.length > 20) currentMessages.shift();
-
+  
       // Send to all other users
       socket.broadcast.emit("message", message);
-
+  
       // Send to current user
       socket.emit("message", message);
     });
   });
+
   socket.on("typing", typingEvent => {
     // Verify JWT
     jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
@@ -288,6 +295,26 @@ app.post("/user/anime", async (req, res) => {
     res.json({ message: "done" });
   });
 });
+app.post("/user/socials", async (req, res) => {
+  // Parse body
+  const body = req.body;
+
+  // Verify Logged In User
+  jwt.verify(body.user, "h4x0r", async (error, user) => {
+    if (error) {
+      console.log(error);
+    }
+    req.user = user;
+
+    await users.update(
+      { username: req.user.username },
+      { $set: { socials: body.socials } }
+    );
+
+    res.status(200);
+    res.json({ message: "done" });
+  });
+});
 
 // Setting Routes
 app.post("/settings", async (req, res) => {
@@ -334,32 +361,6 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
   });
 });
 
-app.post("/user/socials", async (req, res) => {
-  // Parse body
-  const body = req.body;
-
-  // Verify Logged In User
-  jwt.verify(body.user, "h4x0r", async (error, user) => {
-    if (error) {
-      console.log(error);
-    }
-    req.user = user;
-
-    await users.update(
-      { username: req.user.username },
-      { $set: { socials: body.socials } }
-    );
-
-    res.status(200);
-    res.json({ message: "done" });
-  });
-});
-app.get("/banner/:id", async (req, res) => {
-  const id = req.params.id;
-  const response = await backgrounds.find({ id: parseInt(id) });
-  res.status(200);
-  res.json(response[0].url);
-});
 app.get("/message/:user_id", async (req, res) => {
   // Parse body
   const body = req.body;
@@ -411,6 +412,12 @@ app.get("/anime/id/:id", async (req, res) => {
     const result = await anime.find({ id: parseInt(req.params.id) });
     res.status(200);
     res.json({ anime: result });
+});
+app.get("/banner/:id", async (req, res) => {
+  const id = req.params.id;
+  const response = await backgrounds.find({ id: parseInt(id) });
+  res.status(200);
+  res.json(response[0].url);
 });
 
 // Auth

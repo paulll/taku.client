@@ -179,7 +179,7 @@ export default {
       console.log(this.attachments);
     },
     // This function handles sending messages
-    sendMessage(message) {
+    async sendMessage(message) {
 
       // Send new message
       this.socket.emit('message', {
@@ -188,14 +188,40 @@ export default {
         user: localStorage.token
       });
 
+      let attachments = this.attachments;
+
+      // Make a JSON out of the thing
+      let json = JSON.stringify({
+        content: this.message.trim(), 
+        attachments: attachments,
+        user: localStorage.token
+      });
+
+
+      // Init a formdata and add the message json
+      let formData = new FormData();
+      formData.append('message', json);
+
+      // Add files on the formdata if theres any
+      if (this.attachments.length > 0) {
+        this.attachments.forEach(attachment => {
+          console.log(attachment.file);
+          formData.append('file', attachment.file);
+        });
+      }
+
+      // Send
+      axios.post('http://anihuu.moe:8880/message', formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }); 
+
       // Reset
       this.message = "";
       this.previews = [];
       this.attachments = [];
-
-      // Scroll to last message
-      // let dummy = document.querySelector(".dummy");
-      // dummy.scrollIntoView({behavior: "smooth"});
 
       // Maintain focus on keyboard for mobile
       this.$refs.message.focus();
