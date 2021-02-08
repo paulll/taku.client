@@ -1,5 +1,5 @@
 <template>
-  <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop">
+  <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
     <div class="tag-grid">
 
       <div class="messages" :class="{darkmode: darkmode == 'true'}">
@@ -24,15 +24,15 @@
       </div>
 
       <div class="sendMessageContainer">
-        <form class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage">
+        <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
           <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
           <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
           
           <div class="inputFields">
             <img class="plusButton" src="../assets/plus.svg" alt="" @click="$refs.files.click()">
             <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
-            <button v-if="previews.length > 0" type="file" class="quickButton removeAll" @click="deselectAll()">REMOVE ALL</button>
-            <button v-if="message || previews.length > 0" type="file" class="quickButton submit">SEND</button>
+            <div v-if="previews.length > 0" type="file" class="quickButton removeAll" @click.prevent="deselectAll()">REMOVE ALL</div>
+            <button v-if="message || previews.length > 0" type="file" class="quickButton submit" form="sendMessage">SEND</button>
           </div>
         </form> 
       </div> 
@@ -61,13 +61,19 @@ export default {
       darkmode: localStorage.darkmode,
       typingSfx: localStorage.typing_sfx,
       typingSoundUrl: localStorage.typingSoundUrl,
+      typingSound: '',
       mentionSfx: localStorage.mention_sfx,
       mentionSoundUrl: localStorage.mentionSoundUrl,
+      mentionSound: '',
     };
   },
   mounted() {
+    // Load Sounds
+    if (!this.typingSoundUrl) this.typingSoundUrl = require("../../public/keystroke.wav");
+    this.typingSound = new Audio(this.typingSoundUrl);
+    this.typingSound.volume = 0.2;
 
-    console.log(this);
+    this.mentionSound = new Audio(this.mentionSoundUrl);
 
     setTimeout(() => {
       let dummy = document.querySelector(".dummy");
@@ -89,8 +95,6 @@ export default {
         this.messages.push(message);
       });
     });
-
-
     this.socket.on('message', message => {
       if (message.content !== undefined) {
 
@@ -102,10 +106,10 @@ export default {
 
         // Play notification sound if they got mentioned
         if (this.mentionSfx == 'true' && message.content.includes('@') && message.content.toLowerCase().includes(this.me.toLowerCase())) {
-          let mentionSound = new Audio(this.mentionSoundUrl);
           window.navigator.vibrate(100);
-          mentionSound.play();
-          console.log("playing mention sound");
+          this.mentionSound = new Audio(this.mentionSoundUrl);
+          this.mentionSound.currentTime = 0;
+          this.mentionSound.play();
         };
 
         this.lastMessage = message;
@@ -155,38 +159,35 @@ export default {
       this.previews = [];
     },
     // This function parses files when dragging and dropping on the DM
+    handleFilePaste(event) {
+      let files = event.clipboardData.items;
+      if(!files) return;
+      files.forEach(file => {
+        var blob = file.getAsFile();
+        this.attachments.push({file: blob});
+        this.previews.push(URL.createObjectURL(blob));
+      });
+    },
+    // This function parses files when dragging and dropping on the DM
     handleFileDrop(event) {
-      let droppedFiles = event.dataTransfer.files;
-      if(!droppedFiles) return;
-      droppedFiles.forEach(file => {
-        console.log(file);
+      let files = event.dataTransfer.files;
+      if(!files) return;
+      files.forEach(file => {
         this.attachments.push({file: file, name: file.name});
         this.previews.push(URL.createObjectURL(file));
       });
-
-      console.log(this.attachments);
     },
     // This function parses files when adding them through the input box
     handleFileInput() {
-      let selectedFiles = this.$refs.files.files;
-      if(!selectedFiles) return;
-      selectedFiles.forEach(file => {
-        console.log(file);
+      let files = this.$refs.files.files;
+      if(!files) return;
+      files.forEach(file => {
         this.attachments.push({file: file, name: file.name});
         this.previews.push(URL.createObjectURL(file));
       });
-
-      console.log(this.attachments);
     },
     // This function handles sending messages
     async sendMessage(message) {
-
-      // Send new message
-      this.socket.emit('message', {
-        content: this.message.trim(), 
-        attachments: this.attachments,
-        user: localStorage.token
-      });
 
       let attachments = this.attachments;
 
@@ -197,15 +198,14 @@ export default {
         user: localStorage.token
       });
 
-
       // Init a formdata and add the message json
       let formData = new FormData();
       formData.append('message', json);
 
       // Add files on the formdata if theres any
-      if (this.attachments.length > 0) {
+      console.log(this.attachments);
+      if (this.attachments) {
         this.attachments.forEach(attachment => {
-          console.log(attachment.file);
           formData.append('file', attachment.file);
         });
       }
@@ -234,13 +234,10 @@ export default {
 
       // Send new message
       this.socket.emit('typing', {user: localStorage.token});
-
-      if (!this.typingSoundUrl) this.typingSoundUrl = require("../../public/keystroke.wav");
-
-      var typingSound = new Audio(this.typingSoundUrl);
-      typingSound.volume = 0.2;
-      typingSound.play();
-
+      this.typingSound = new Audio(this.typingSoundUrl);
+      this.typingSound.volume = 0.2;
+      this.typingSound.play();
+      this.typingSound.currentTime = 0;
     }
   }
 }
@@ -319,9 +316,11 @@ export default {
   border-radius: 8px;
   height: 64px;
   width: auto;
-  margin: 8px 0px 8px 8px;
+  margin: 8px;
   cursor: pointer;
   transition: 100ms ease;
+  max-width: -moz-available;
+  max-width: -webkit-fill-available;
 }
 
 .previewFile:hover { opacity: 50%; }
@@ -361,6 +360,8 @@ export default {
   background: transparent;
   font-weight: 500;
   color: #0094FF;
+  cursor: pointer;
+  font-size: 14px;
   margin-right: 16px;
 }
 .sendMessage .inputFields .quickButton.removeAll { color: #888888 !important }
@@ -439,6 +440,8 @@ export default {
   width: fit-content;
   border-radius: 12px;
 }
+
+.messageBubble .content img { width: 100%; cursor: pointer; }
 
 .messageBubble .content.darkmode {
   background: #141520; /* darkmode */

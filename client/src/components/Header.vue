@@ -33,7 +33,6 @@ export default {
     watch: {
         $route(to, from) {
             this.path = to.params.setting;
-            console.log("log from header", this.path);
         }
     },
     mounted(){
@@ -54,7 +53,6 @@ export default {
             localStorage.removeItem("darmode");
             localStorage.setItem('darkmode', response.data.settings.appearance.darkmode);
 
-            console.log(response.data.settings.appearance.darkmode);
         },
     }
 }

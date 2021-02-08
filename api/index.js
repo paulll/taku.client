@@ -157,12 +157,14 @@ io.on("connection", socket => {
         )
       )[0];
   
+      if (!author) return
+
       // Empty array where ill add the links for the attachments for below
       let attachments = [];
   
       // Save attachment blobs locally and create a link for them to see
       req.files.forEach(attachment => {
-        attachment.originalname = attachment.originalname.replace(/\s/g, "_"); // Remove spaces with underscores
+        attachment.originalname = `${new Date().getTime().toString()}-${attachment.originalname.replace(/\s/g, "_")}`; // Remove spaces with underscores
   
         // Rename the file back to the original name cus multer is stupid
         fs.renameSync(`./db/uploads/${attachment.filename}`, `./db/uploads/${attachment.originalname}`);

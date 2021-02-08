@@ -107,7 +107,6 @@ export default {
   watch: {
     $route(to, from) {
       this.path = to.params.setting;
-      console.log(this.path);
     }
   },
   mounted() {
@@ -144,7 +143,6 @@ export default {
         }
       }
 
-      console.log(user.data);
     },
     async updateSettings(){
       const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
@@ -190,8 +188,6 @@ export default {
         }
       });
 
-      console.log(response.data.link);
-      console.log(response.data.link);
       let link = response.data.link;
 
       if (response.status == 200) {
@@ -213,8 +209,6 @@ export default {
     async resetSfx(sfx){
       localStorage.removeItem(sfx);
       this[sfx] = localStorage[sfx];
-
-      console.log(this.user.settings.appearance);
 
       this.user.settings.appearance[sfx].url = '';
       this.updateSettings();
