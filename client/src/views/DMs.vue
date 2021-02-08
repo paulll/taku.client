@@ -2,7 +2,7 @@
   <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop">
     <div class="tag-grid">
 
-      <div class="messages">
+      <div class="messages" :class="{darkmode: darkmode == 'true'}">
         <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me == message.author.username, same: message.author.sameAsLast}">
           <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('${message.author.pfp}')`}"></div></router-link>
           <div class="messageBubble">
@@ -29,9 +29,10 @@
           <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
           
           <div class="inputFields">
-            <img class="plusButton" src="../assets/plus.png" alt="" @click="$refs.files.click()">
+            <img class="plusButton" src="../assets/plus.svg" alt="" @click="$refs.files.click()">
             <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
-            <button v-if="message" type="submit">SEND</button>
+            <button v-if="previews.length > 0" type="file" class="quickButton removeAll" @click="deselectAll()">REMOVE ALL</button>
+            <button v-if="message || previews.length > 0" type="file" class="quickButton submit">SEND</button>
           </div>
         </form> 
       </div> 
@@ -149,6 +150,10 @@ export default {
       this.attachments.splice(i, 1);
       this.previews.splice(i, 1);
     },
+    deselectAll(){
+      this.attachments = [];
+      this.previews = [];
+    },
     // This function parses files when dragging and dropping on the DM
     handleFileDrop(event) {
       let droppedFiles = event.dataTransfer.files;
@@ -218,6 +223,26 @@ export default {
 
 <style>
 
+.messages::-webkit-scrollbar {
+  width: 12px;  
+  position: absolute; 
+
+}
+.messages::-webkit-scrollbar-track {
+  background-color: transparent; 
+}
+.messages::-webkit-scrollbar-thumb {
+  background-color: #888888;
+  border: 5px solid #F3F3F3; 
+  border-radius: 16px;
+}
+
+.messages.darkmode::-webkit-scrollbar-thumb {
+  background-color: #363952;
+  border: 5px solid #08090E; 
+}
+
+
 .typingUsers {
   display: flex;
   margin: 0px 18px;
@@ -286,25 +311,24 @@ export default {
 }
 
 .sendMessage .plusButton {
-  filter: invert(1);
   cursor: pointer;
   width: 24px;
   height: 24px;
   margin-left: 8px;
 }
 
-.sendMessage .plusButton:hover { filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%);  }
-
 .sendMessage.darkmode { background: #020204; }
 
-.sendMessage button {
+.sendMessage .inputFields .quickButton {
   outline: none;
+  white-space: nowrap;
   border: none;
   background: transparent;
   font-weight: 500;
   color: #0094FF;
   margin-right: 16px;
 }
+.sendMessage .inputFields .quickButton.removeAll { color: #888888 !important }
 
 .sendMessage button:hover { cursor: pointer; }
 
@@ -326,7 +350,7 @@ export default {
   background: #020204;
 }
 
-.sendMessage input[type=text]::placeholder { color: #C4C4C4; }
+.sendMessage input[type=text]::placeholder { color: #888888; }
 .formImageInput {
   display: none;
 }

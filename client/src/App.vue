@@ -29,16 +29,6 @@ export default {
   box-sizing: none;
 }
 
-*::-webkit-scrollbar {
-    width: 12px;  
-    position: absolute; }
-*::-webkit-scrollbar-track {
-    background-color: transparent; }
-*::-webkit-scrollbar-thumb {
-    background-color: #363952;
-    border-radius: 20px;
-    border: 5px solid #08090E; }
-
 html {
   width: 100vw;
   height: 100vh;
