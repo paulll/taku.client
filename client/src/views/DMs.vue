@@ -223,6 +223,15 @@ export default {
 
 <style>
 
+.messages {
+  scrollbar-color: #888888#F3F3F3 ;
+  scrollbar-width: thin;
+}
+
+.messages.darkmode {
+  scrollbar-color: #363952#08090E ;
+}
+
 .messages::-webkit-scrollbar {
   width: 12px;  
   position: absolute; 
