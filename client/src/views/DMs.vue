@@ -74,7 +74,9 @@ export default {
       dummy.scrollIntoView({behavior: "smooth"});
     }, 500);
 
-    let lastMessage = {};
+    let lastMessage = {
+      author: ""
+    };
 
     this.socket.on('messages', messages => {
       lastMessage = messages[0];
@@ -117,8 +119,6 @@ export default {
           dummy.scrollIntoView({behavior: "auto"});
         }, 1);
       }
-
-
 
     });
     this.socket.on('typingUser', typingUser => {

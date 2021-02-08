@@ -76,6 +76,11 @@ app.use(cookieParser());
 async function createToken(user, res) {
   user = user[0];
 
+  const dbUser = await users.find(
+    { username: user.username },
+    { collation: { locale: "en", strength: 2 } }
+  );
+
   const payload = {
     _id: user._id,
     username: user.username,
@@ -88,6 +93,7 @@ async function createToken(user, res) {
       message: "Logged in",
       token: token,
       username: user.username,
+      user: dbUser
     });
     res.status(200);
   });

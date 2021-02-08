@@ -94,8 +94,14 @@ export default {
 
         // Redirect to home
         if (response.status == 200) {
+
             localStorage.token = response.data.token;
             localStorage.username = response.data.username;
+            localStorage.setItem('typing_sfx', response.data.user[0].settings.appearance.typing_sfx.enabled);
+            localStorage.setItem('mention_sfx', response.data.user[0].settings.appearance.mention_sfx.enabled);
+            localStorage.setItem('typingSoundUrl', response.data.user[0].settings.appearance.typing_sfx.url);
+            localStorage.setItem('mentionSoundUrl', response.data.user[0].settings.appearance.mention_sfx.url);
+            
             window.location.href = `/profile/${this.username.toLowerCase()}`;
         }
     },

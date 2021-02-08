@@ -164,12 +164,12 @@ export default {
           break;
         case "typing_sfx":
           this.user.settings.appearance.typing_sfx.enabled = state;
-          localStorage.setItem('typingSoundUrl', this.user.settings.appearance.typing_sfx.url);
+          if (localStorage.typingSoundUrl) localStorage.setItem('typingSoundUrl', this.user.settings.appearance.typing_sfx.url);
           localStorage.setItem('typing_sfx', state);
           break;
         case "mention_sfx":
           this.user.settings.appearance.mention_sfx.enabled = state;
-          localStorage.setItem('mentionSoundUrl', this.user.settings.appearance.mention_sfx.url);
+          if (localStorage.mentionSoundUrl) localStorage.setItem('mentionSoundUrl', this.user.settings.appearance.mention_sfx.url);
           localStorage.setItem('mention_sfx', state);
           break;
       }
