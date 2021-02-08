@@ -14,6 +14,7 @@ const saltRounds = 12;
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const linkifyHtml = require('linkifyjs/html');
+const axios = require('axios');
 
 // const options = {
 //     key: fs.readFileSync("./key.pem"),
@@ -395,7 +396,7 @@ app.get("/message/:user_id", async (req, res) => {
 // Search Endpoints
 app.get("/search/anime/:name", async (req, res) => {
     const keywords = String.raw`.*${req.params.name}.*`;
-    const animelist = await anime.find({ title: new RegExp(keywords, "i") });
+    const animelist = await anime.find({ "title.english": new RegExp(keywords, "i") });
     res.status(200);
     res.json({ animelist: animelist });
 });
@@ -539,6 +540,43 @@ app.post("/login", async (req, res) => {
     }
   }
 });
+
+async function getAnimeList(){
+  let animeList = await axios.get('https://notify.moe/api/animelist/4J6qpK1ve');
+  animeList = animeList.data.items
+
+  for (i in animeList) {
+    let animeItem = await axios.get(`https://notify.moe/api/anime/${animeList[i].animeId}`);
+    animeItem = animeItem.data;
+    
+    
+    // animeItem = {
+    //   title: {
+    //     english: animeItem.title.english,
+    //     romaji: animeItem.title.romaji
+    //   },
+    //   description: animeItem.summary,
+    //   year: parseInt(animeItem.startDate.split("-")[0]),
+    //   tags: animeItem.genres,
+    //   nsfw: false,
+    //   submitted_by: "Geoxor",
+    //   id: parseInt(i) + 11,
+    // }
+
+    const httpForImage = require('https'); // or 'https' for https:// URLs
+    const file = fs.createWriteStream(`./db/anime/posters/${parseInt(i) + 11}.jpg`);
+
+    console.log(`Fetching anime https://media.notify.moe/images/anime/original/${animeItem.id}${animeItem.image.extension}`);
+    const image = httpForImage.get(`https://media.notify.moe/images/anime/original/${animeItem.id}${animeItem.image.extension}`, function(response) {
+      response.pipe(file);
+    });
+    
+    console.log(animeItem.image);
+  }
+}
+
+// getAnimeList();
+
 
 const port = process.env.PORT || 8880;
 http.listen(port, () => {

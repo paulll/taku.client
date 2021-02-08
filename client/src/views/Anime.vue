@@ -5,7 +5,7 @@
                 <img class="poster" :src="`http://anihuu.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
                 <div class="info">
                     <div class="title">
-                        <h1>{{anime.title}} 
+                        <h1>{{anime.title.english}} 
                             <img v-if="!saved && token" @click="saveAnime(anime.id)" src="../assets/bookmark.svg" alt="">
                             <img v-if="saved && token" @click="removeAnime(anime.id)" src="../assets/bookmark-filled.svg" alt="">
                         </h1>

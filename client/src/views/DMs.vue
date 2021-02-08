@@ -25,10 +25,14 @@
 
       <div class="sendMessageContainer">
         <form class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage">
-          <!-- <input id="file" class="formImageInput" type="file" ref="file" v-on:change="handleFileInput()"> -->
+          <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
           <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
-          <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
-          <button v-if="message" type="submit">SEND</button>
+          
+          <div class="inputFields">
+            <img class="plusButton" src="../assets/plus.png" alt="" @click="$refs.files.click()">
+            <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
+            <button v-if="message" type="submit">SEND</button>
+          </div>
         </form> 
       </div> 
     </div>
@@ -95,6 +99,7 @@ export default {
 
         // Play notification sound if they got mentioned
         if (this.mentionSfx == 'true' && message.content.includes('@') && message.content.toLowerCase().includes(this.me.toLowerCase())) {
+          let mentionSound = new Audio(this.mentionSoundUrl);
           window.navigator.vibrate(100);
           mentionSound.play();
           console.log("playing mention sound");
@@ -155,7 +160,18 @@ export default {
       });
 
       console.log(this.attachments);
+    },
+    // This function parses files when adding them through the input box
+    handleFileInput() {
+      let selectedFiles = this.$refs.files.files;
+      if(!selectedFiles) return;
+      selectedFiles.forEach(file => {
+        console.log(file);
+        this.attachments.push({file: file, name: file.name});
+        this.previews.push(URL.createObjectURL(file));
+      });
 
+      console.log(this.attachments);
     },
     // This function handles sending messages
     sendMessage(message) {
@@ -264,6 +280,21 @@ export default {
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
 }
 
+.sendMessage .inputFields {
+  display: flex;
+  align-items: center;
+}
+
+.sendMessage .plusButton {
+  filter: invert(1);
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  margin-left: 8px;
+}
+
+.sendMessage .plusButton:hover { filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%);  }
+
 .sendMessage.darkmode { background: #020204; }
 
 .sendMessage button {
@@ -272,8 +303,7 @@ export default {
   background: transparent;
   font-weight: 500;
   color: #0094FF;
-  position: absolute;
-  transform: translate(-55px, 11px);
+  margin-right: 16px;
 }
 
 .sendMessage button:hover { cursor: pointer; }
@@ -282,7 +312,7 @@ export default {
   outline: none;
   border: none;
   width: 100%;
-  text-indent: 12px;
+  text-indent: 8px;
   background: white;
   border-radius: 24px; 
   height: 39px;
@@ -297,7 +327,9 @@ export default {
 }
 
 .sendMessage input[type=text]::placeholder { color: #C4C4C4; }
-
+.formImageInput {
+  display: none;
+}
 .messages {
   margin-top: 56px;
   overflow: scroll;
