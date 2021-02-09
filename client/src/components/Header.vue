@@ -12,7 +12,13 @@
                 <router-link to="/signup" class="signup">SIGNUP</router-link>
             </div>
             <div class="buttons" v-if="token">
-                <button @click="logout()" class="logout">LOGOUT</button>
+                <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
+            </div>
+            <div class="buttons" v-if="token">
+                <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
+            </div>
+            <div class="buttons" v-if="token">
+                <button @click="logout()" class="button">LOGOUT</button>
                 <router-link :to='`/profile/${user.username}`'><div class="pfp" :style="{'background-image' : `url('${user.pfp}')`}"></div></router-link>
             </div>
         </div>
@@ -89,7 +95,7 @@ export default {
     width: 100%;
 }
 
-.signup, .login, .logout {
+.signup, .login, .button {
     display: flex;
     align-items: center;
     padding: 0px 18px;
@@ -119,9 +125,16 @@ export default {
     display: flex;
 }
 
-.logout {
+.button {
     margin-right: 14px;
+    padding: 0px 8px;
 }
+
+.button img {
+    width: 24px;
+    height: 24px;
+}
+
 
 .login {
     margin-right: 14px;
@@ -129,7 +142,7 @@ export default {
     color: white;
 }
 
-.signup:hover, .login:hover, .logout:hover {
+.signup:hover, .login:hover, .button:hover {
     cursor:pointer;
 }
 

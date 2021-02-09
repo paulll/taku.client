@@ -24,6 +24,8 @@
 - [x] Fix 1mb websocket limit
 - [x] Fix scrollbar on firefox
 - [x] Fix scrollbar colors for darkmode/lightmode
+- [x] Fix header getting white on DMs
+- [ ] Fix default mention sound
 - [ ] Fix wide images getting out of the message bubble on desktop
 - [ ] Fix android ribbon dissapearing on mobile
 

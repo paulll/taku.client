@@ -9,7 +9,9 @@
             <h4 class="date">
               <router-link :to='`/profile/${message.author.username}`'>
                 <strong>{{message.author.username}}</strong>
-              </router-link> {{convert(message.date)}}
+              </router-link> 
+              <div class="flare" v-if="message.author.flare && message.author.flare.enabled" :style="{'background': message.author.flare.color}">{{message.author.flare.content}}</div>
+              {{convert(message.date)}}
             </h4>
             <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase()), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
             <h2 class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment.html"></h2>
@@ -81,7 +83,9 @@ export default {
     }, 500);
 
     let lastMessage = {
-      author: ""
+      author: {
+        username: "a72bd87a2nh3hjd"
+      }
     };
 
     this.socket.on('messages', messages => {
@@ -96,6 +100,7 @@ export default {
       });
     });
     this.socket.on('message', message => {
+      console.log(message);
       if (message.content !== undefined) {
 
         // If the last message is by the same user just add the message content itself without
@@ -391,7 +396,6 @@ export default {
   display: none;
 }
 .messages {
-  margin-top: 56px;
   overflow: scroll;
   overflow-x: hidden;
   height: calc(100vh - 56px);
@@ -441,7 +445,9 @@ export default {
   border-radius: 12px;
 }
 
-.messageBubble .content img { width: 100%; cursor: pointer; }
+.messageBubble .content img { 
+  cursor: pointer; 
+}
 
 .messageBubble .content.darkmode {
   background: #141520; /* darkmode */
@@ -467,6 +473,7 @@ export default {
   font-size: 10px;
   font-weight: 500;
   margin-left: 24px;
+  display: flex;
 }
 
 .message.same .messageBubble .date { display: none; }
@@ -483,6 +490,7 @@ export default {
 .date a {
   text-decoration: none;
   color: #8F8F8F;
+  margin-right: 4px;
 }
 
 .message .pfp {
@@ -494,6 +502,17 @@ export default {
 }
 
 .message.same .pfp { display: none; }
+
+.flare {
+  border-radius: 32px;
+  color: #08090E;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 4px;
+  padding: 0px 8px;
+}
 
 @media only screen and (min-width: 715px)  {
   .sendMessageContainer { bottom: 8px; }

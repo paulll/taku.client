@@ -172,12 +172,14 @@ io.on("connection", socket => {
         attachments.push(attachment);
       });
   
+      // Construct message object
       const message = {
         content: messageEvent.content,
         attachments: attachments,
         date: new Date().getTime(),
         author: {
           username: author.username,
+          flare: author.settings.appearance.flare,
           pfp: author.pfp,
         },
       };
@@ -337,6 +339,8 @@ app.post("/settings", async (req, res) => {
     }
     req.user = user;
 
+    console.log(req.body.settings);
+
     await users.update(
       { username: user.username },
       { $set: { settings: req.body.settings } }
@@ -486,7 +490,7 @@ app.post("/signup", async (req, res) => {
     result.settings = {
         appearance: {
             darkmode: false,
-            anime_pfps: true,
+            animate_pfps: true,
             typing_sfx: {
                 enabled: true,
                 url: ""
@@ -495,7 +499,12 @@ app.post("/signup", async (req, res) => {
                 enabled: true,
                 url: ""
             },
-            theme_color: "#ff006b"
+            theme_color: "#ff006b",
+            flare: {
+              enabled: false,
+              color: '#ff006b',
+              content: "",
+            }
         },
         nsfw_referrals: true,
         language: "english",
