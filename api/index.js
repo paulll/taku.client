@@ -339,8 +339,6 @@ app.post("/settings", async (req, res) => {
     }
     req.user = user;
 
-    console.log(req.body.settings);
-
     await users.update(
       { username: user.username },
       { $set: { settings: req.body.settings } }

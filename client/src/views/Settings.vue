@@ -3,7 +3,7 @@
     <SettingsBar/>
 
     <div class="settingsArea" :class="{darkmode: darkmode == 'true'}">
-      <div v-if="path == 'appearance'" class="appearanceAndSounds">
+      <div v-if="path == 'appearance'" class="appearanceAndSounds" :class="{darkmode: darkmode == 'true'}">
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
@@ -69,8 +69,20 @@
             </div>
           </div>
           <div class="bottomTextFields">
-            <input class="textField" v-model="user.settings.appearance.flare.content" type="text" maxlength="32" @change="updateSettings()">
-            <input class="textField" v-model="user.settings.appearance.flare.color" type="text" maxlength="32" @change="updateSettings()">
+            <input placeholder="e.g. Shimakaze" class="textField" v-model="user.settings.appearance.flare.content" type="text" maxlength="32" @change="user.settings.appearance.flare.content.trim(); updateSettings()">
+            <input placeholder="e.g. #ff0022" class="textField" v-model="user.settings.appearance.flare.color" type="text" maxlength="32" @change="updateSettings()">
+          </div>
+        </div>
+
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/theme_color.png" alt="darkmode">
+              <h1>Theme Color</h1>
+            </div>
+          </div>
+          <div class="bottomTextFields">
+            <input class="textField" v-model="user.settings.appearance.theme_color" type="text" maxlength="7" @change="updateSettings()">
           </div>
         </div>
       </div>
@@ -261,6 +273,36 @@ export default {
   width: 100%;
 }
 
+.appearanceAndSounds {
+  overflow: scroll;
+  height: inherit;
+  scrollbar-color: #888888#F3F3F3 ;
+  scrollbar-width: thin;
+}
+
+.appearanceAndSounds.darkmode {
+  scrollbar-color: #363952#08090E ;
+}
+
+.appearanceAndSounds::-webkit-scrollbar {
+  width: 12px;  
+  position: absolute; 
+
+}
+.appearanceAndSounds::-webkit-scrollbar-track {
+  background-color: transparent; 
+}
+.appearanceAndSounds::-webkit-scrollbar-thumb {
+  background-color: #888888;
+  border: 5px solid #F3F3F3; 
+  border-radius: 16px;
+}
+
+.appearanceAndSounds.darkmode::-webkit-scrollbar-thumb {
+  background-color: #363952;
+  border: 5px solid #08090E; 
+}
+
 .settingsArea {
   width: calc(100% - 56px);
   background: #F3F3F3;
@@ -393,6 +435,11 @@ export default {
   font-size: 14px;
   min-height: 38px;
   border-radius: 8px;
+  min-width: 0px;
+}
+
+.textField::placeholder {
+  color: #575b77;
 }
 
 .bottom a {

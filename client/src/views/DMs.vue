@@ -13,7 +13,7 @@
               <div class="flare" v-if="message.author.flare && message.author.flare.enabled" :style="{'background': message.author.flare.color}">{{message.author.flare.content}}</div>
               {{convert(message.date)}}
             </h4>
-            <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && message.content.toLowerCase().includes(me.toLowerCase()), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
+            <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && (message.content.toLowerCase().includes(me.toLowerCase()) || message.content.toLowerCase().includes('everyone')), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
             <h2 class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment.html"></h2>
           </div>
         </div>
@@ -75,6 +75,7 @@ export default {
     this.typingSound = new Audio(this.typingSoundUrl);
     this.typingSound.volume = 0.2;
 
+    if (!this.mentionSoundUrl) this.mentionSoundUrl = require("../../public/notification.wav");
     this.mentionSound = new Audio(this.mentionSoundUrl);
 
     setTimeout(() => {
@@ -110,7 +111,11 @@ export default {
         this.messages.push(message);
 
         // Play notification sound if they got mentioned
-        if (this.mentionSfx == 'true' && message.content.includes('@') && message.content.toLowerCase().includes(this.me.toLowerCase())) {
+        if (
+          this.mentionSfx == 'true' 
+          && message.content.includes('@') 
+          && (message.content.toLowerCase().includes(this.me.toLowerCase()) || message.content.toLowerCase().includes("everyone"))
+          ){
           window.navigator.vibrate(100);
           this.mentionSound = new Audio(this.mentionSoundUrl);
           this.mentionSound.currentTime = 0;
