@@ -14,7 +14,7 @@
               {{convert(message.date)}}
             </h4>
             <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && (message.content.toLowerCase().includes(me.toLowerCase()) || message.content.toLowerCase().includes('everyone')), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
-            <h2 class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment.html"></h2>
+            <div class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
           </div>
         </div>
 
@@ -28,8 +28,9 @@
       <div class="sendMessageContainer">
         <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
           <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
-          <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
-          
+          <div class="images" :class="{darkmode: darkmode == 'true'}">
+            <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
+          </div>
           <div class="inputFields">
             <img class="plusButton" src="../assets/plus.svg" alt="" @click="$refs.files.click()">
             <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
@@ -45,7 +46,7 @@
 <script>
 import axios from 'axios';
 import io from 'socket.io-client';
-
+import linkifyHtml from 'linkifyjs/html';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
@@ -57,6 +58,7 @@ export default {
       messages: [],
       socket: io('ws://anihuu.moe:8880'),
       me: localStorage.username,
+      blockedUsers: [],
       typingUsers: [],
       previews: [],
       attachments: [],
@@ -69,7 +71,15 @@ export default {
       mentionSound: '',
     };
   },
+  computed: {
+    messages: function () {
+      return this.messages.filter(message => !this.blockedUsers.includes(message.author.username));
+    },
+  },
   mounted() {
+
+    this.getBlockedUsers();
+
     // Load Sounds
     if (!this.typingSoundUrl) this.typingSoundUrl = require("../../public/keystroke.wav");
     this.typingSound = new Audio(this.typingSoundUrl);
@@ -95,18 +105,23 @@ export default {
       messages.forEach(message => {
         // Parse all the messages when loading the site 
         // So we group the messages by the same users together like below
-        if (lastMessage.author.username == message.author.username) message.author.sameAsLast = true;
+        if (lastMessage?.author?.username == message.author.username) message.author.sameAsLast = true;
         lastMessage = message;
+        message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
         this.messages.push(message);
       });
     });
     this.socket.on('message', message => {
-      console.log(message);
       if (message.content !== undefined) {
 
         // If the last message is by the same user just add the message content itself without
         // Their username etc
-        if (lastMessage.author.username == message.author.username) message.author.sameAsLast = true;
+        if (lastMessage?.author?.username == message.author.username) message.author.sameAsLast = true;
+        message.content = this.renderHtml(message.content);
+
+        console.log(message.attachments);
+
+        message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
         lastMessage = message;
         this.messages.push(message);
 
@@ -236,6 +251,16 @@ export default {
       // Maintain focus on keyboard for mobile
       this.$refs.message.focus();
     },
+    // This gets the blocked users of the current user
+    async getBlockedUsers(){
+      const response = await axios.get('http://anihuu.moe:8880/blockedUsers', {
+        withCredentials: true,
+      });
+
+      this.blockedUsers = response.data
+
+      console.log(this.blockedUsers);
+    },
     // This is the function that triggers the typing sounds
     // It can be turned off from the settings
     typing(){
@@ -248,6 +273,53 @@ export default {
       this.typingSound.volume = 0.2;
       this.typingSound.play();
       this.typingSound.currentTime = 0;
+    },
+    // takes URLS and makes them embedded HTMLs
+    renderHtml(url, originalurl, filesize){
+      if (url.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/ig)) {
+        return `<a target="_blank" href="${originalurl}"><img src=${url}></a>`;
+      } 
+      else if (url.match(/(\.mp4)|(\.webm)|(\.mov)/ig)){
+        return `<video controls> <source src=${url}> </video>`;
+      }
+      else if (url.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/ig)){
+        return `<audio controls> <source src=${url}> </audio>`;
+      }
+      else if (url.match(/(\.rar)|(\.7z)|(\.zip)|(\.tar)/ig)){
+        return `
+          <img class="fileIcon" src="${require("../assets/archive.png")}")}>
+            <div class="fileInfo">
+              <a class="file" target="_blank" href="${url}">
+                <p class="fileName"><strong>${url.split("/")[url.split("/").length - 1]}</strong></p>
+              </a>
+              <p class="fileSize">${filesize} bytes</p>
+            </div>`;
+      }
+      else if (url.match(/(\.exe)/ig)){
+        return `
+          <img class="fileIcon" src="${require("../assets/exe.png")}")}>
+            <div class="fileInfo">
+              <a class="file" target="_blank" href="${url}">
+                <p class="fileName"><strong>${url.split("/")[url.split("/").length - 1]}</strong></p>
+              </a>
+              <p class="fileSize">${filesize} bytes</p>
+            </div>`;
+      }
+      else if (url.match(/(\.pdf)/ig)){
+        return `
+          <img class="fileIcon" src="${require("../assets/pdf.png")}")}>
+            <div class="fileInfo">
+              <a class="file" target="_blank" href="${url}">
+                <p class="fileName"><strong>${url.split("/")[url.split("/").length - 1]}</strong></p>
+              </a>
+              <p class="fileSize">${filesize} bytes</p>
+            </div>`;
+      }
+      else {
+        // if its not an image then its probably a normal link therefore
+        // ill make it clickable
+        return linkifyHtml(url, {defaultProtocol: 'https'});
+      }
     }
   }
 }
@@ -255,6 +327,10 @@ export default {
 </script>
 
 <style>
+
+.ganyu {
+  mix-blend-mode: screen;
+}
 
 .messages {
   scrollbar-color: #888888#F3F3F3 ;
@@ -265,21 +341,21 @@ export default {
   scrollbar-color: #363952#08090E ;
 }
 
-.messages::-webkit-scrollbar {
+*::-webkit-scrollbar {
   width: 12px;  
   position: absolute; 
 
 }
-.messages::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background-color: transparent; 
 }
-.messages::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background-color: #888888;
   border: 5px solid #F3F3F3; 
   border-radius: 16px;
 }
 
-.messages.darkmode::-webkit-scrollbar-thumb {
+*.darkmode::-webkit-scrollbar-thumb {
   background-color: #363952;
   border: 5px solid #08090E; 
 }
@@ -308,6 +384,34 @@ export default {
 }
 
 .DMs.darkmode { background: #08090E; /* darkmode */ }
+
+.file {
+  color: black;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.fileInfo {
+  display: flex;
+  flex-direction: column;
+  margin-left: 8px;
+}
+
+.fileIcon {
+  /* filter:invert(1); */
+  width: 48px;
+  cursor: inherit;
+}
+
+.fileName {
+  transition: 100ms ease;
+}
+
+.fileName:hover {
+  color: #ff0084;
+
+}
 
 .typing {
   animation-name: scaleUp;
@@ -347,6 +451,11 @@ export default {
   border-radius: 16px;
   background: white;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
+}
+
+.sendMessage .images {
+  max-height: 368px;
+  overflow-y: scroll;
 }
 
 .sendMessage .inputFields {
@@ -444,7 +553,7 @@ export default {
   background: #eee;
   overflow-wrap: anywhere;
   margin-bottom: 1px;
-  max-width: 600px;
+  /* max-width: 600px; */
   font-weight: 500;
   width: fit-content;
   border-radius: 12px;
@@ -452,6 +561,7 @@ export default {
 
 .messageBubble .content img { 
   cursor: pointer; 
+  max-width: 512px;
 }
 
 .messageBubble .content.darkmode {
@@ -528,7 +638,6 @@ export default {
 @media only screen and (max-width: 715px)  {
   .messages {
     /* margin-bottom: 112px; */
-    margin-top: 56px;
     height: calc(100vh - 56px);
   }
   .DMs { transform: translateY(0px); }

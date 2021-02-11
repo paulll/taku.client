@@ -13,8 +13,9 @@ const bcrypt = require("bcrypt");
 const saltRounds = 12;
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const linkifyHtml = require('linkifyjs/html');
 const axios = require('axios');
+const colors = require('colors');
+
 
 // const options = {
 //     key: fs.readFileSync("./key.pem"),
@@ -99,25 +100,21 @@ async function createToken(user, res) {
   });
 }
 
-// I should probably move this function in the front end instead because
-// I don't like having the html tags in the JSONs on the server
-// Or at least have it run last before sending the the message to the user
-// So it only sends them the HTML but the database keeps the original links intact
-function renderHtml(url){
-  if (url.match(/(\.png)|(\.jpg)|(\.jpeg)|(\.gif)|(\.webp)/ig)) {
-    return `<img src=${url} alt="">`;
-  } 
-  else if (url.match(/(\.mp4)|(\.webm)|(\.mov)/ig)){
-    return `<video controls> <source src=${url}> </video>`;
-  }
-  else if (url.match(/(\.mp3)|(\.ogg)|(\.wav)|(\.flac)|(\.aac)/ig)){
-    return `<audio controls> <source src=${url}> </audio>`;
-  }
-  else {
-    // if its not an image then its probably a normal link therefore
-    // ill make it clickable
-    return linkifyHtml(url, {defaultProtocol: 'https'});
-  }
+async function cacheImage(attachment){
+  return new Promise((resolve, reject) => { 
+
+    console.log('Processing Image'.cyan);
+    Jimp.read(`./db/uploads/${attachment.filename}`, async (err, image) => {
+      if (err) throw err;
+      if (image.bitmap.width > 368) {
+        image.resize(Jimp.AUTO, 368) // resize
+      }
+
+      await image.writeAsync(`./db/uploads/cache/${attachment.originalname}`); // save
+
+      resolve();
+    });
+  });
 }
 
 const currentMessages = [];
@@ -163,14 +160,22 @@ io.on("connection", socket => {
       let attachments = [];
   
       // Save attachment blobs locally and create a link for them to see
-      req.files.forEach(attachment => {
+      for (attachment of req.files){
         attachment.originalname = `${new Date().getTime().toString()}-${attachment.originalname.replace(/\s/g, "_")}`; // Remove spaces with underscores
   
+        attachment.html = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
+        attachment.originalurl = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
+
+        if (attachment.mimetype.startsWith("image/")) {
+          await cacheImage(attachment);
+          attachment.html = `http://anihuu.moe:8880/uploads/cache/${attachment.originalname}`;
+        }
+
         // Rename the file back to the original name cus multer is stupid
         fs.renameSync(`./db/uploads/${attachment.filename}`, `./db/uploads/${attachment.originalname}`);
-        attachment.html = renderHtml(`http://anihuu.moe:8880/uploads/${attachment.originalname}`);
+        
         attachments.push(attachment);
-      });
+      };
   
       // Construct message object
       const message = {
@@ -184,7 +189,7 @@ io.on("connection", socket => {
         },
       };
   
-      message["content"] = renderHtml(message.content);
+      message["content"] = message.content;
   
       currentMessages.push(message);
       if (currentMessages.length > 20) currentMessages.shift();
@@ -248,7 +253,7 @@ app.get("/user", async (req, res) => {
     if (error) {
       res.status(401);
       res.json({
-        message: "You must be logged in to view your user info",
+        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
       });
       return;
     }
@@ -260,6 +265,7 @@ app.get("/user", async (req, res) => {
     );
 
     delete response[0].password;
+    delete response[0].email;
 
     res.status(200);
     res.json(response[0]);
@@ -326,6 +332,28 @@ app.post("/user/socials", async (req, res) => {
   });
 });
 
+app.get("/blockedUsers", async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+    if (error) {
+      res.status(401);
+      res.json({
+        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
+      });
+      return;
+    }
+    req.user = user;
+
+    const response = await users.find(
+      { username: user.username },
+      { collation: { locale: "en", strength: 2 } }
+    );
+
+    res.status(200);
+    res.json(response[0].settings.privacy.blocked_users);
+    });
+});
+
 // Setting Routes
 app.post("/settings", async (req, res) => {
   // Verify Logged In User
@@ -339,9 +367,11 @@ app.post("/settings", async (req, res) => {
     }
     req.user = user;
 
+    console.log(req.body.settings.privacy.blocked_users);
+
     await users.update(
       { username: user.username },
-      { $set: { settings: req.body.settings } }
+      { $set: { settings: req.body.settings, friends: req.body.friends } }
     );
 
     res.status(200);
@@ -367,7 +397,11 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
     fs.renameSync(`./db/uploads/${file.filename}`, `./db/uploads/${file.originalname}`);
 
     res.status(200);
-    res.json({"message": "File uploaded successfully", "link": `http://anihuu.moe:8880/uploads/${file.originalname}`});
+    res.json({
+      "message": "File uploaded successfully",
+      "link": `http://anihuu.moe:8880/uploads/${file.originalname}`,
+      "cache_link": `http://anihuu.moe:8880/uploads/cache/${file.originalname}`
+    });
   });
 });
 
@@ -533,7 +567,7 @@ app.post("/signup", async (req, res) => {
 
     // Respond to user
     res.status(200);
-    res.json(result);
+    res.json(result); 
 });
 app.post("/login", async (req, res) => {
   // Parse body
@@ -589,7 +623,7 @@ async function getAnimeList(){
     const file = fs.createWriteStream(`./db/anime/posters/${parseInt(i) + 11}.jpg`);
 
     console.log(`Fetching anime https://media.notify.moe/images/anime/original/${animeItem.id}${animeItem.image.extension}`);
-    const image = httpForImage.get(`https://media.notify.moe/images/anime/original/${animeItem.id}${animeItem.image.extension}`, function(response) {
+    httpForImage.get(`https://media.notify.moe/images/anime/original/${animeItem.id}${animeItem.image.extension}`, function(response) {
       response.pipe(file);
     });
     

@@ -2,43 +2,46 @@
     <div class="user">
         <div class="bannerContainer">
             <div class="gradient"></div>
-            <div class="banner" :style="{'background-image' : `url('${user.bannerURL}')`}"></div>
+            <div class="banner" :style="{'background-image' : `url('${profile.bannerURL}')`}"></div>
             <div class="heading">
                 <div class="pfp">
-                    <div v-if="user.username" class="image" :style="{'background-image' : `url('${user.pfp}')`}"></div>
-                    <svg v-if="user.vip" class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <div v-if="profile.username" class="image" :style="{'background-image' : `url('${profile.pfp}')`}"></div>
+                    <svg v-if="profile.vip" class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.9644 26C11.1836 26 9.50959 25.6676 7.94247 25.0027C6.37534 24.3142 4.99817 23.3763 3.81096 22.189C2.62374 20.9781 1.68584 19.589 0.99726 18.0219C0.33242 16.4548 0 14.769 0 12.9644C0 11.1361 0.33242 9.43836 0.99726 7.87123C1.68584 6.28037 2.62374 4.9032 3.81096 3.73973C4.99817 2.55251 6.37534 1.63836 7.94247 0.99726C9.50959 0.33242 11.1836 0 12.9644 0C14.7927 0 16.4904 0.344293 18.0575 1.03288C19.6484 1.69772 21.0374 2.63562 22.2247 3.84658C23.4119 5.03379 24.3379 6.41096 25.0027 7.97808C25.6676 9.52146 26 11.1836 26 12.9644C26 14.769 25.6557 16.4548 24.9671 18.0219C24.3023 19.589 23.3763 20.9781 22.189 22.189C21.0018 23.3763 19.6128 24.3142 18.0219 25.0027C16.4548 25.6676 14.769 26 12.9644 26ZM6.91151 19.5383C6.601 20.4617 7.65966 21.2388 8.44753 20.6658L12.3792 17.8064C12.7284 17.5525 13.2012 17.5513 13.5516 17.8036L17.5645 20.6929C18.3531 21.2607 19.4064 20.4837 19.0967 19.5626L17.6237 15.1825C17.4802 14.7559 17.6394 14.286 18.0127 14.0345L21.2199 11.8731C22.0382 11.3216 21.6478 10.0438 20.661 10.0438H16.6038C16.1743 10.0438 15.7928 9.76954 15.6559 9.36239L13.924 4.20888C13.6175 3.29675 12.3257 3.30152 12.0259 4.21589L10.3408 9.35539C10.2061 9.76612 9.8228 10.0438 9.39056 10.0438H5.339C4.35218 10.0438 3.96181 11.3216 4.78015 11.8731L7.98733 14.0345C8.36056 14.286 8.51977 14.7559 8.37632 15.1825L6.91151 19.5383Z" fill="#FF006B"/>
                     </svg>
-                    <h1 class="username">{{user.username}}</h1>
+                    <h1 class="username">{{profile.username}}</h1>
                 </div>
                 <div class="row info">
                     <div class="infoField" v-if="token">
-                        <button v-if="user.username != me.username" class="button">FOLLOW</button>
-                        <button v-if="user.username == me.username" class="button"> <img src="../assets/edit.svg" alt="Edit"> EDIT</button>
+                        <button @click="toggleFriend()" v-if="profile.username != me.username && !user.friends?.includes(profile?.username)" class="button">ADD FRIEND</button>
+                        <button @click="toggleFriend()" v-if="profile.username != me.username && user.friends?.includes(profile?.username)" class="button">REMOVE FRIEND</button>
+                        <button @click="block()" v-if="profile.username != me.username && !user.settings?.privacy.blocked_users.includes(profile?.username)" class="button">BLOCK</button>
+                        <button @click="block()" v-if="profile.username != me.username && user.settings?.privacy.blocked_users.includes(profile?.username)" class="button">UNBLOCK</button>
+                        <button v-if="profile.username == me.username" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
                     </div>
                     <div class="splitter" v-if="token"></div>
                     <div class="infoField">
-                        <h1 class="uploads">{{user.total_uploads}}</h1>
+                        <h1 class="uploads">{{profile.total_uploads}}</h1>
                         <p>Uploads</p>
                     </div>
                 </div>
 
                 <div class="row socials">
                     <div class="socials">
-                        <a v-if="user.socials.twitter" class="twitter" target="_blank" :href="user.socials.twitter"><img src="../assets/twitter.svg" alt="Twitter"></a>
-                        <a v-if="user.socials.youtube" class="youtube" target="_blank" :href="user.socials.youtube"><img src="../assets/youtube.svg" alt="YouTube"></a>
-                        <a v-if="user.socials.instagram" class="instagram" target="_blank" :href="user.socials.instagram"><img src="../assets/instagram.svg" alt="Instagram"></a>
-                        <a v-if="user.socials.twitch" class="twitch" target="_blank" :href="user.socials.twitch"><img src="../assets/twitch.svg" alt="Twitch"></a>
-                        <a v-if="user.socials.tiktok" class="tiktok" target="_blank" :href="user.socials.tiktok"><img src="../assets/tiktok.svg" alt="tiktok"></a>
-                        <a v-if="user.socials.tumblr" class="tumblr" target="_blank" :href="user.socials.tumblr"><img src="../assets/tumblr.svg" alt="tumblr"></a>
-                        <a v-if="user.socials.pinterest" class="pinterest" target="_blank" :href="user.socials.pinterest"><img src="../assets/pinterest.svg" alt="pinterest"></a>
-                        <a v-if="user.socials.facebook" class="facebook" target="_blank" :href="user.socials.facebook"><img src="../assets/facebook.svg" alt="facebook"></a>
-                        <a v-if="user.socials.deviantart" class="deviantart" target="_blank" :href="user.socials.deviantart"><img src="../assets/deviantart.svg" alt="deviantart"></a>
-                        <a v-if="user.socials.linkedin" class="linkedin" target="_blank" :href="user.socials.linkedin"><img src="../assets/linkedin.svg" alt="linkedin"></a>
-                        <a v-if="user.socials.snapchat" class="snapchat" target="_blank" :href="user.socials.snapchat"><img src="../assets/snapchat.svg" alt="snapchat"></a>
-                        <a v-if="user.socials.vkontakte" class="vkontakte" target="_blank" :href="user.socials.vkontakte"><img src="../assets/vkontakte.svg" alt="vkontakte"></a>
-                        <a v-if="user.socials.reddit" class="reddit" target="_blank" :href="user.socials.reddit"><img src="../assets/reddit.svg" alt="reddit"></a>
-                        <a v-if="user.socials.discord" class="discord" target="_blank" :href="user.socials.discord"><img src="../assets/discord.svg" alt="discord"></a>
+                        <a v-if="profile.socials.twitter" class="twitter" target="_blank" :href="profile.socials.twitter"><img src="../assets/twitter.svg" alt="Twitter"></a>
+                        <a v-if="profile.socials.youtube" class="youtube" target="_blank" :href="profile.socials.youtube"><img src="../assets/youtube.svg" alt="YouTube"></a>
+                        <a v-if="profile.socials.instagram" class="instagram" target="_blank" :href="profile.socials.instagram"><img src="../assets/instagram.svg" alt="Instagram"></a>
+                        <a v-if="profile.socials.twitch" class="twitch" target="_blank" :href="profile.socials.twitch"><img src="../assets/twitch.svg" alt="Twitch"></a>
+                        <a v-if="profile.socials.tiktok" class="tiktok" target="_blank" :href="profile.socials.tiktok"><img src="../assets/tiktok.svg" alt="tiktok"></a>
+                        <a v-if="profile.socials.tumblr" class="tumblr" target="_blank" :href="profile.socials.tumblr"><img src="../assets/tumblr.svg" alt="tumblr"></a>
+                        <a v-if="profile.socials.pinterest" class="pinterest" target="_blank" :href="profile.socials.pinterest"><img src="../assets/pinterest.svg" alt="pinterest"></a>
+                        <a v-if="profile.socials.facebook" class="facebook" target="_blank" :href="profile.socials.facebook"><img src="../assets/facebook.svg" alt="facebook"></a>
+                        <a v-if="profile.socials.deviantart" class="deviantart" target="_blank" :href="profile.socials.deviantart"><img src="../assets/deviantart.svg" alt="deviantart"></a>
+                        <a v-if="profile.socials.linkedin" class="linkedin" target="_blank" :href="profile.socials.linkedin"><img src="../assets/linkedin.svg" alt="linkedin"></a>
+                        <a v-if="profile.socials.snapchat" class="snapchat" target="_blank" :href="profile.socials.snapchat"><img src="../assets/snapchat.svg" alt="snapchat"></a>
+                        <a v-if="profile.socials.vkontakte" class="vkontakte" target="_blank" :href="profile.socials.vkontakte"><img src="../assets/vkontakte.svg" alt="vkontakte"></a>
+                        <a v-if="profile.socials.reddit" class="reddit" target="_blank" :href="profile.socials.reddit"><img src="../assets/reddit.svg" alt="reddit"></a>
+                        <a v-if="profile.socials.discord" class="discord" target="_blank" :href="profile.socials.discord"><img src="../assets/discord.svg" alt="discord"></a>
                     </div>
                 </div>
 
@@ -49,7 +52,7 @@
         <div class="pageContent">
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="animePosters">
-                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.anime_showcase" :key="id" :id="id">
+                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.anime_showcase" :key="id" :id="id">
                     <img class="anime" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`" alt="Anime">
                 </router-link>
             </div>
@@ -57,26 +60,26 @@
             <p class="tags"><strong>STATS</strong></p>
             <div class="stats">
                 <div class="stat">
-                    <h1>{{user.total_anime}}</h1>
+                    <h1>{{profile.total_anime}}</h1>
                     <p>Anime</p>
                 </div>
                 <div class="stat">
-                    <h1>{{user.total_likes}}</h1>
+                    <h1>{{profile.total_likes}}</h1>
                     <p>Likes</p>
                 </div>
                 <div class="stat">
-                    <h1>{{user.total_comments}}</h1>
+                    <h1>{{profile.total_comments}}</h1>
                     <p>Comments</p>
                 </div>
                 <div class="stat">
-                    <h1>{{user.total_uploads}}</h1>
+                    <h1>{{profile.total_uploads}}</h1>
                     <p>Uploads</p>
                 </div>
 
             </div>
             <p class="tags"><strong>DESCRIPTION</strong></p>
-            <p class="description">{{user.description}}</p>
-            <p v-if="user.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
+            <p class="description">{{profile.description}}</p>
+            <p v-if="profile.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
         </div>
     </div>
 </template>
@@ -93,7 +96,7 @@ export default {
         me: {
             username: localStorage.username,
         },
-        user: {
+        profile: {
             socials: {
                 twitter: "",
                 instagram: "",
@@ -101,25 +104,101 @@ export default {
                 youtube: "",
             }
         },
+        user: {
+            friends: []
+        },
     };
   },
   mounted() {
-    this.getData();
+    this.getProfileData();
+    this.getUser();
+  },
+  watch: {
+    $route(to, from) {
+      this.getUser();
+      this.getProfileData();
+    }
   },
   methods: {
-    async getData() {
+    async getUser() {
+      const user = await axios.get('http://anihuu.moe:8880/user', {
+        withCredentials: true,
+      });
+
+      // Add the new settings structure on the user
+      // This is here so old users don't have an issue with loading the settings
+      // Once they will update their settings this will go on their database
+      // In v1.0 this should be removed
+
+
+      if (!user.data.settings.appearance) {
+        user.data.settings.appearance = {
+          darkmode: false,
+          anime_pfps: true,
+          typing_sfx: {
+            enabled: true,
+            url: ""
+          },
+          mention_sfx: {
+            enabled: true,
+            url: ""
+          },
+          theme_color: "#ff006b"
+        }
+      }
+
+      if (!user.data.settings.appearance.flare) {
+        user.data.settings.appearance.flare = {
+          enabled: false,
+          content: "",
+          color: "#ffffff"
+        }
+      }
+
+      console.log(user.data);
+      this.user = user.data;
+
+    },
+    async getProfileData() {
 
         // Get user data
         let result = await axios.get(`http://anihuu.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
         console.log(result);
         result.total_anime = result.anime_showcase.length
-        this.user = result;
+        this.profile = result;
 
         // Get banner URL
         let bannerURL = await axios.get(`http://anihuu.moe:8880/banner/${result.banner}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         bannerURL = Object.assign({}, bannerURL).data;
-        this.user.bannerURL = bannerURL;
+        this.profile.bannerURL = bannerURL;
+    },
+    async toggleFriend(){
+        if (!this.user.friends) {
+            this.user.friends = [];
+        }
+        if (!this.user.friends.includes(this.profile.username)) this.user.friends.push(this.profile.username)
+        else this.user.friends.splice(this.user.friends.indexOf(this.profile.username), 1);
+        this.updateSettings();
+
+        console.log(this.user);
+    },
+    async block(){
+        if (!this.profile.username) return
+
+        if (!this.user.settings.privacy.blocked_users.includes(this.profile.username)) this.user.settings.privacy.blocked_users.push(this.profile.username)
+        else this.user.settings.privacy.blocked_users.splice(this.user.settings.privacy.blocked_users.indexOf(this.profile.username), 1);
+        this.updateSettings();
+
+        console.log(this.user);
+    },
+    async updateSettings(){
+      const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+      });
     },
   }
 }
@@ -191,10 +270,11 @@ export default {
 .button {
     border: none;
     height: 38px;
-    background: #FF006B;
     border-radius: 32px;
-    color: white;
     outline: none;
+    background: #FF006B;
+    color: white;
+
     font-size: 14px;
     letter-spacing: 0.11rem;
     right: 206px;
@@ -204,6 +284,8 @@ export default {
     display: flex;
     align-items: center;
     padding: 7px 25px;
+    margin-right: 8px;
+    transition: 100ms ease;
 }
 
 .button img {
@@ -212,10 +294,12 @@ export default {
     margin-right: 4px;
 }
 
+.button:hover {
+    background: #d30058;
+}
 .settings:hover {
     cursor:pointer;
 }
-
 
 .badge {
     position: absolute;
@@ -241,9 +325,10 @@ export default {
 
 .infoField {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     margin-left: 16px;
     margin-top: 16px;
+
     height: fit-content;
     user-select: none;
 }

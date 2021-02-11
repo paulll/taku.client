@@ -99,7 +99,7 @@
             <a class="blockedUser" v-for="blockedUser in user.settings.privacy.blocked_users" :key="blockedUser" target="_blank" :href="user.settings.appearance.typing_sfx.url">
               <div>
                 <img class="pfp" :src="blockedUser.pfp" alt="">
-                <p>{{blockedUser.username}}</p>
+                <p>{{blockedUser}}</p>
               </div>
               <img src="../assets/x.png" alt="" @click="resetSfx()">
             </a>
