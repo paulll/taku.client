@@ -44,6 +44,8 @@ export default {
     mounted(){
         this.path = this.$route.params.setting;
         this.getUser();
+
+        this.emitter.on('refreshHeader', () => this.getUser());
     },
     methods: {
         logout(){
@@ -55,10 +57,12 @@ export default {
                 withCredentials: true,
             });
 
+            if (response.data.settings.pfp) response.data.pfp = response.data.settings.pfp;
+            console.log(response.data);
+
             this.user = response.data;
             localStorage.removeItem("darmode");
             localStorage.setItem('darkmode', response.data.settings.appearance.darkmode);
-
         },
     }
 }

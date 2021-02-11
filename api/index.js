@@ -185,7 +185,7 @@ io.on("connection", socket => {
         author: {
           username: author.username,
           flare: author.settings.appearance.flare,
-          pfp: author.pfp,
+          pfp: author.settings.pfp,
         },
       };
   
@@ -214,7 +214,7 @@ io.on("connection", socket => {
       // Create a typing user object
       let typingUser = {
         username: user.username,
-        pfp: user.pfp
+        pfp: user.settings.pfp
       };
 
       // Besides the client who is typing
@@ -367,7 +367,7 @@ app.post("/settings", async (req, res) => {
     }
     req.user = user;
 
-    console.log(req.body.settings.privacy.blocked_users);
+    console.log(req.body.settings.pfp);
 
     await users.update(
       { username: user.username },
@@ -391,13 +391,14 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
     req.user = user;
 
     let file = req.files[0];
-    file.originalname = file.originalname.replace(/\s/g, "_");
+    file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
     // Rename the file back to the original name cus multer is stupid
     fs.renameSync(`./db/uploads/${file.filename}`, `./db/uploads/${file.originalname}`);
 
     res.status(200);
     res.json({
+      "status": 200,
       "message": "File uploaded successfully",
       "link": `http://anihuu.moe:8880/uploads/${file.originalname}`,
       "cache_link": `http://anihuu.moe:8880/uploads/cache/${file.originalname}`
