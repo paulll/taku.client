@@ -166,7 +166,7 @@ io.on("connection", socket => {
         attachment.html = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
         attachment.originalurl = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
 
-        if (attachment.mimetype.startsWith("image/")) {
+        if (attachment.mimetype.startsWith("image/") && !attachment.mimetype.startsWith("image/gif")) {
           await cacheImage(attachment);
           attachment.html = `http://anihuu.moe:8880/uploads/cache/${attachment.originalname}`;
         }
@@ -266,6 +266,7 @@ app.get("/user", async (req, res) => {
 
     delete response[0].password;
     delete response[0].email;
+
 
     res.status(200);
     res.json(response[0]);
@@ -393,6 +394,13 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
     let file = req.files[0];
     file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
+    let link = `http://anihuu.moe:8880/uploads/${file.originalname}`;
+
+    if (file.mimetype.startsWith("image/") && !file.mimetype.startsWith("image/gif")) {
+      await cacheImage(file);
+      link = `http://anihuu.moe:8880/uploads/cache/${file.originalname}`;
+    }
+
     // Rename the file back to the original name cus multer is stupid
     fs.renameSync(`./db/uploads/${file.filename}`, `./db/uploads/${file.originalname}`);
 
@@ -400,8 +408,7 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
     res.json({
       "status": 200,
       "message": "File uploaded successfully",
-      "link": `http://anihuu.moe:8880/uploads/${file.originalname}`,
-      "cache_link": `http://anihuu.moe:8880/uploads/cache/${file.originalname}`
+      "link": link,
     });
   });
 });

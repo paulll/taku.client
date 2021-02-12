@@ -12,6 +12,12 @@
                 <router-link to="/signup" class="signup">SIGNUP</router-link>
             </div>
             <div class="buttons" v-if="token">
+                <router-link to="/home" class="button"><img src="../assets/home.svg" alt=""></router-link>
+            </div>
+            <div class="buttons" v-if="token">
+                <router-link to="/anime" class="button"><img src="../assets/anime.svg" alt=""></router-link>
+            </div>
+            <div class="buttons" v-if="token">
                 <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
             </div>
             <div class="buttons" v-if="token">
@@ -132,6 +138,16 @@ export default {
 .button {
     margin-right: 14px;
     padding: 0px 8px;
+    transition: 100ms ease;
+}
+
+.button:hover {
+    background: #FF006B;
+    color: white;
+}
+
+.button:hover img {
+    filter: invert(1);
 }
 
 .button img {

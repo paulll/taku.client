@@ -108,6 +108,7 @@ export default {
         if (lastMessage?.author?.username == message.author.username) message.author.sameAsLast = true;
         lastMessage = message;
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
+        message.content = this.renderHtml(message.content);
         this.messages.push(message);
       });
     });

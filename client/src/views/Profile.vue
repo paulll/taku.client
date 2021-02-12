@@ -1,9 +1,13 @@
 <template>
     <div class="user">
         <div class="bannerContainer">
-            <div class="gradient"></div>
-            <div class="banner" :style="{'background-image' : `url('${profile.bannerURL}')`}"></div>
-            <div class="heading">
+            <div class="gradient">
+                <input type="file" ref="banner" style="display: none" accept="image/*" v-on:change="uploadFile('banner')">
+                <img @click="$refs.banner.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
+            </div>
+            <div class="banner" :style="{'background-image' : `url('${profile.settings?.banner}')`}">
+            </div>
+            <div class="heading" :class="{darkmode: darkmode == 'true'}">
                 <div class="pfp">
                     <div v-if="profile.username" class="image" :style="{'background-image': `url('${profile.pfp}')`}">
                         <input type="file" ref="pfp" style="display: none" accept="image/*" v-on:change="uploadFile('pfp')">
@@ -25,13 +29,13 @@
                     </div>
                     <div class="splitter" v-if="token"></div>
                     <div class="infoField">
-                        <h1 class="uploads">{{profile.total_uploads}}</h1>
-                        <p>Uploads</p>
+                        <h1 class="friends">{{profile.total_friends}}</h1>
+                        <p>Friends</p>
                     </div>
                 </div>
 
                 <div class="row socials">
-                    <div class="socials">
+                    <div class="socials" :class="{darkmode: darkmode == 'true'}">
                         <a v-if="profile.socials.twitter" class="twitter" target="_blank" :href="profile.socials.twitter"><img src="../assets/twitter.svg" alt="Twitter"></a>
                         <a v-if="profile.socials.youtube" class="youtube" target="_blank" :href="profile.socials.youtube"><img src="../assets/youtube.svg" alt="YouTube"></a>
                         <a v-if="profile.socials.instagram" class="instagram" target="_blank" :href="profile.socials.instagram"><img src="../assets/instagram.svg" alt="Instagram"></a>
@@ -53,9 +57,9 @@
             </div>
         </div>
 
-        <div class="pageContent">
+        <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
-            <div class="animePosters">
+            <div class="animePosters" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.anime_showcase" :key="id" :id="id">
                     <img class="anime" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`" alt="Anime">
                 </router-link>
@@ -96,6 +100,7 @@ export default {
   name: 'user',
   data: () => {
     return {
+        darkmode: localStorage.darkmode,
         token: localStorage.token,
         edit: false,
         me: {
@@ -160,7 +165,6 @@ export default {
         }
       }
 
-      console.log(user.data);
       this.user = user.data;
 
     },
@@ -189,7 +193,6 @@ export default {
         else this.user.friends.splice(this.user.friends.indexOf(this.profile.username), 1);
         this.updateSettings();
 
-        console.log(this.user);
     },
     toggleEdit(){
         this.edit = !this.edit;
@@ -211,11 +214,11 @@ export default {
         }
       });
     },
-    async uploadFile(ref, option){
+    async uploadFile(ref){
       const file = this.$refs[ref].files[0];
 
       let formData = new FormData();
-      formData.append('pfp', file);
+      formData.append(ref, file);
 
       const response = await axios.post('http://anihuu.moe:8880/settings/upload', formData, {
         withCredentials: true,
@@ -228,7 +231,7 @@ export default {
 
       // If form submitted with no error:
       if(response.data.status == 200) {
-        this.user.settings.pfp = response.data.link;
+        this.user.settings[ref] = response.data.link;
         await this.updateSettings();
         this.emitter.emit('refreshHeader');
         this.getProfileData();
@@ -250,6 +253,15 @@ export default {
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 100%);
     height: 256px;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.gradient img {
+    width: 96px;
+    height: 96px;
+    cursor: pointer;
 }
 
 .banner {
@@ -268,6 +280,11 @@ export default {
     justify-content: left;
     flex-direction: column;
     position: relative;
+}
+
+.heading.darkmode {
+    background: #10121D;
+    color: white;
 }
 
 .pfp {
@@ -408,7 +425,7 @@ export default {
     margin-top: 16px;
 }
 
-.uploads { 
+.friends { 
     font-size: 36px;
     line-height: 23px;
     color: #FF006B;
@@ -416,6 +433,11 @@ export default {
 
 .socials {
     transform: translateY(4px);
+}
+
+
+.socials.darkmode {
+    filter: invert(1);
 }
 
 .socials a {
@@ -429,9 +451,16 @@ export default {
 .pageContent {
     color: #414141;
     background: #F3F3F3;
-    height: 710px;
+    height: 100vh;
     width: 100%;
 }
+
+.pageContent.darkmode {
+    background:  #08090E;
+    color: white;
+}
+
+
 
 .discord:hover { filter: invert(51%) sepia(97%) saturate(374%) hue-rotate(193deg) brightness(90%) contrast(89%); }
 .twitter:hover { filter: invert(54%) sepia(35%) saturate(3150%) hue-rotate(175deg) brightness(97%) contrast(96%); }
@@ -465,6 +494,11 @@ export default {
     background: #F3F3F3;
 }
 
+.animePosters.darkmode {
+    background:  #08090E;
+    color: white;
+}
+
 .animePosters::-webkit-scrollbar {
   width: 12px;
 }
@@ -479,6 +513,30 @@ export default {
   border-radius: 20px;    
   border: 6px solid #F3F3F3;
 }
+
+.animePosters.darkmode {
+  scrollbar-color: #363952#08090E ;
+}
+
+.animePosters::-webkit-scrollbar {
+  width: 12px;  
+  position: absolute; 
+
+}
+.animePosters::-webkit-scrollbar-track {
+  background-color: transparent; 
+}
+.animePosters::-webkit-scrollbar-thumb {
+  background-color: #888888;
+  border: 6px solid #F3F3F3; 
+  border-radius: 16px;
+}
+
+.animePosters.darkmode::-webkit-scrollbar-thumb {
+  background-color: #363952;
+  border: 6px solid #08090E; 
+}
+
 
 .posterContainer {
     margin-right: 8px;
@@ -522,6 +580,13 @@ export default {
 
 .stat p {
     font-size: 14px;
+}
+
+@media only screen and (min-width: 715px)  {
+    .banner {
+        height: 368px;
+    }
+
 }
 
 </style>
