@@ -40,6 +40,11 @@ export default {
     mounted() {
         this.getData();
     },
+    watch: {
+        $route(to, from) {
+            this.getData();
+        }
+    },
     methods: {
         async saveAnime(id) {
 

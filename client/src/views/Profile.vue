@@ -1,5 +1,5 @@
 <template>
-    <div class="user">
+    <div class="userProfile" :class="{darkmode: darkmode == 'true'}">
         <div class="bannerContainer">
             <div class="gradient">
                 <input type="file" ref="banner" style="display: none" accept="image/*" v-on:change="uploadFile('banner')">
@@ -63,6 +63,21 @@
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.anime_showcase" :key="id" :id="id">
                     <img class="anime" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`" alt="Anime">
                 </router-link>
+            </div>
+            <p v-if="profile.connections?.osu" class="tags"><strong>osu!</strong> Profile</p>
+            <div v-if="profile.connections?.osu" class="stats" :class="{darkmode: darkmode == 'true'}">
+                <div class="stat">
+                    <a :href="`https://osu.ppy.sh/users/${profile.connections?.osu.user_id}`" target="_blank"><h1>{{profile.connections?.osu.username}}</h1></a>
+                    <p>Username</p>
+                </div>
+                <div class="stat">
+                    <h1>#{{numberWithCommas(profile.connections?.osu.pp_rank)}}</h1>
+                    <p>Position</p>
+                </div>
+                <div class="stat">
+                    <h1>{{secondsToHours(profile.connections?.osu.total_seconds_played)}}</h1>
+                    <p>Time Wasted</p>
+                </div>
             </div>
             <p class="tags"><strong>TOP</strong> Backgrounds</p>
             <p class="tags"><strong>STATS</strong></p>
@@ -240,12 +255,36 @@ export default {
         console.log(response.data.error);
       }
     },
+    numberWithCommas(x) {
+        if (x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    },
+    secondsToHours(d) {
+        if (!d) return
+        d = Number(d);
+        var h = Math.floor(d / 3600);
+
+        var hDisplay = h > 0 ? h + (h == 1 ? " hour" : " hours") : "";
+        return hDisplay; 
+    }
   }
 }
 
 </script>
 
 <style scoped>
+
+.userProfile::-webkit-scrollbar {
+  width: 12px;  
+  position: absolute; 
+  display: none;
+}
+
+.bannerContainer {
+    width: 100%;
+    position: relative;
+}
 
 .gradient {
     z-index: 2;
@@ -292,7 +331,7 @@ export default {
     width: 122px;
     height: 122px;
     min-width: 122px;
-    z-index: 3000;
+    z-index: 4;
     position: absolute;
 }
 
@@ -374,6 +413,10 @@ export default {
     user-select: none;
 }
 
+.userProfile {
+    height: 100%;
+    overflow-y: scroll;
+}
 
 .row {
     display: flex;
@@ -576,6 +619,7 @@ export default {
     line-height: 23px;
     display: flex;
     flex-direction: column;
+    white-space: nowrap;
 }
 
 .stat p {

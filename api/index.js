@@ -15,7 +15,7 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const axios = require('axios');
 const colors = require('colors');
-
+const osuKey = '6872281f03363bb78de4e7ee53cb574e05a1cbe6';
 
 // const options = {
 //     key: fs.readFileSync("./key.pem"),
@@ -244,6 +244,11 @@ app.get("/user/:username", async (req, res) => {
     { collation: { locale: "en", strength: 2 } }
   );
 
+  if (response[0] && response[0].connections) {
+    response[0].connections = {
+      osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].connections.osu.user_id}&k=${osuKey}`)).data[0]
+    }
+  }
   res.status(200);
   res.json(response);
 });
@@ -266,7 +271,6 @@ app.get("/user", async (req, res) => {
 
     delete response[0].password;
     delete response[0].email;
-
 
     res.status(200);
     res.json(response[0]);
@@ -447,6 +451,29 @@ app.get("/message/:user_id", async (req, res) => {
 });
 
 // Search Endpoints
+app.post("/search", async (req, res) => {
+
+  let searchString = req.body.searchString.toLowerCase();
+
+  const keywords = String.raw`.*${searchString}.*`;
+  const animelist = await anime.find(
+    { "title.english": new RegExp(keywords, "i") }
+  );
+  
+  const userlist = await users.find(
+    { username: {$regex:  new RegExp(keywords, "gi")} },
+    { collation: { locale: "en", strength: 2 } }
+  );
+
+  let searchResults = {
+    users: userlist,
+    anime: animelist,
+  }
+  
+  res.status(200);
+  res.json(searchResults);
+
+});
 app.get("/search/anime/:name", async (req, res) => {
     const keywords = String.raw`.*${req.params.name}.*`;
     const animelist = await anime.find({ "title.english": new RegExp(keywords, "i") });
