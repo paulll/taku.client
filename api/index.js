@@ -73,6 +73,10 @@ app.use(express.static("db"));
 app.use(express.static("uploads"));
 app.use(cookieParser());
 
+// Online users
+
+let onlineUsers = [];
+
 // Functions
 async function createToken(user, res) {
   user = user[0];
@@ -115,6 +119,39 @@ async function cacheImage(attachment){
       resolve();
     });
   });
+}
+
+function addToOnlineUsers(username) {
+
+  // Check if the user is already in there
+  const found = onlineUsers.some(el => el.username == username);
+
+  // If they aren't, add them
+  if (!found) onlineUsers.push({ username, lastSeen: new Date().getTime() });
+
+  // Otherwise if they are found, update their lastSeen
+  else {
+    onlineUsers = onlineUsers.map(el => {
+
+      // Remove old users that havent been seen for more than 60 sec
+      if (el.lastSeen + 120000 < new Date().getTime()) {
+        console.log(`Timeout clearing: ${el.username}`);
+        return undefined;
+      }
+
+      // Find where the user that heartbeated is in the array and update their last seen
+      if (el.username == username) {
+        console.log(`Updating: ${el.username}`);
+        return ({username: el.username, lastSeen: new Date().getTime() });
+      }
+
+      // And return the rest untouched
+      return el
+    }).filter(user => user !== undefined);
+  }
+
+  console.log(onlineUsers);
+  return onlineUsers;
 }
 
 const currentMessages = [];
@@ -166,7 +203,7 @@ io.on("connection", socket => {
         attachment.html = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
         attachment.originalurl = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
 
-        if (attachment.mimetype.startsWith("image/") && !attachment.mimetype.startsWith("image/gif")) {
+        if (attachment.mimetype.startsWith("image/") && !attachment.mimetype.startsWith("image/gif") || !attachment.mimetype.startsWith("image/webp")) {
           await cacheImage(attachment);
           attachment.html = `http://anihuu.moe:8880/uploads/cache/${attachment.originalname}`;
         }
@@ -176,6 +213,9 @@ io.on("connection", socket => {
         
         attachments.push(attachment);
       };
+
+      // let attachments = cacheImages(req.files);
+
   
       // Construct message object
       const message = {
@@ -221,9 +261,25 @@ io.on("connection", socket => {
       socket.broadcast.emit("typingUser", typingUser);
     });
   });
+  
+  socket.on("heartbeat", heartbeat => {
+    jwt.verify(heartbeat.user, "h4x0r", async (error, user) => {
+      if (!user || user === undefined) return
+
+      // Add user to onlineUsers list
+      addToOnlineUsers(user.username);
+
+      // console.log(onlineUsers.length.toString().green + " users online");
+    });
+  });
+  
+  
   socket.on("disconnect", () => {
 
   });
+
+
+
 });
 
 // Routes
@@ -249,6 +305,14 @@ app.get("/user/:username", async (req, res) => {
       osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].connections.osu.user_id}&k=${osuKey}`)).data[0]
     }
   }
+
+  if (onlineUsers.some(user => user.username == username)) {
+    response[0].online = true
+  }
+  else {
+    response[0].online = false
+  }
+
   res.status(200);
   res.json(response);
 });
@@ -400,7 +464,7 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
 
     let link = `http://anihuu.moe:8880/uploads/${file.originalname}`;
 
-    if (file.mimetype.startsWith("image/") && !file.mimetype.startsWith("image/gif")) {
+    if (file.mimetype.startsWith("image/") && !file.mimetype.startsWith("image/gif") || !file.mimetype.startsWith("image/webp")) {
       await cacheImage(file);
       link = `http://anihuu.moe:8880/uploads/cache/${file.originalname}`;
     }
@@ -492,12 +556,12 @@ app.get("/anime/id/:id", async (req, res) => {
     res.status(200);
     res.json({ anime: result });
 });
-app.get("/banner/:id", async (req, res) => {
-  const id = req.params.id;
-  const response = await backgrounds.find({ id: parseInt(id) });
-  res.status(200);
-  res.json(response[0].url);
-});
+// app.get("/banner/:id", async (req, res) => {
+//   const id = req.params.id;
+//   const response = await backgrounds.find({ id: parseInt(id) });
+//   res.status(200);
+//   res.json(response[0].url);
+// });
 
 // Auth
 app.post("/signup", async (req, res) => {

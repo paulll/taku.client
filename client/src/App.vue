@@ -7,12 +7,34 @@
 <script>
 import Header from '@/components/Header.vue'
 import MobileHeader from '@/components/MobileHeader.vue'
+import io from 'socket.io-client';
 
 export default {
   name: 'Home',
+  data: () => {
+    return {
+      socket: io('ws://anihuu.moe:8880'),
+      
+    };
+  },
   components: {
     Header,
     MobileHeader
+  },
+  created(){
+    let heartbeatSpeed = 60000;
+
+    if (localStorage.token) {
+      this.socket.emit('heartbeat', {user: localStorage.token});
+
+      console.log("Emitting Heartbeat");
+      setInterval(() => {
+        this.socket.emit('heartbeat', {user: localStorage.token});
+      }, heartbeatSpeed);
+    }
+  },
+  unmounted() {
+    this.socket.disconnect();
   },
 }
 
