@@ -61,20 +61,32 @@
 
         <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
-            <div class="animePosters" :class="{darkmode: darkmode == 'true'}">
+            <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.anime_showcase" :key="id" :id="id">
                     <img class="anime" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`" alt="Anime">
                 </router-link>
             </div>
             <p v-if="profile.connections?.osu" class="tags"><strong>osu!</strong> Profile</p>
-            <div v-if="profile.connections?.osu" class="stats" :class="{darkmode: darkmode == 'true'}">
+            <div v-if="profile.connections?.osu" class="scrollableRegion stats osu" :class="{darkmode: darkmode == 'true'}">
                 <div class="stat">
-                    <a :href="`https://osu.ppy.sh/users/${profile.connections?.osu.user_id}`" target="_blank"><h1>{{profile.connections?.osu.username}}</h1></a>
-                    <p>Username</p>
+                    <a :href="`https://osu.ppy.sh/users/${profile.connections?.osu.user_id}`" target="_blank"><img class="osuPfp" :src="`http://s.ppy.sh/a/${profile.connections?.osu.user_id}`" alt=""></a>
+                </div>
+                <div class="stat">
+                   <h1 class="osuUsername">{{profile.connections?.osu.username}}</h1>
+                   <a :href="`https://osu.ppy.sh/rankings/osu/performance?country=${profile.connections?.osu.country}`" target="_blank"><img class="osuFlag" :src="`https://osu.ppy.sh/images/flags/${profile.connections?.osu.country}.png`" alt=""></a> 
+                </div>
+                
+                <div class="stat">
+                    <h1>{{Math.ceil(parseInt(profile.connections?.osu.pp_raw))}}</h1>
+                    <p>pp</p>
                 </div>
                 <div class="stat">
                     <h1>#{{numberWithCommas(profile.connections?.osu.pp_rank)}}</h1>
-                    <p>Position</p>
+                    <p>Global Ranking</p>
+                </div>
+                <div class="stat">
+                    <h1>{{numberWithCommas(profile.connections?.osu.playcount)}}</h1>
+                    <p>Maps Played</p>
                 </div>
                 <div class="stat">
                     <h1>{{secondsToHours(profile.connections?.osu.total_seconds_played)}}</h1>
@@ -561,40 +573,25 @@ export default {
     color: white;
 }
 
-.animePosters::-webkit-scrollbar {
-  width: 12px;
-}
-
-.animePosters::-webkit-scrollbar-track {
-  background:  #F3F3F3;
-}
-
-.animePosters::-webkit-scrollbar-thumb {
-  background-color: lightgray;
-  padding: 0px;
-  border-radius: 20px;    
-  border: 6px solid #F3F3F3;
-}
-
 .animePosters.darkmode {
   scrollbar-color: #363952#08090E ;
 }
 
-.animePosters::-webkit-scrollbar {
+.scrollableRegion::-webkit-scrollbar {
   width: 12px;  
   position: absolute; 
 
 }
-.animePosters::-webkit-scrollbar-track {
+.scrollableRegion::-webkit-scrollbar-track {
   background-color: transparent; 
 }
-.animePosters::-webkit-scrollbar-thumb {
+.scrollableRegion::-webkit-scrollbar-thumb {
   background-color: #888888;
   border: 6px solid #F3F3F3; 
   border-radius: 16px;
 }
 
-.animePosters.darkmode::-webkit-scrollbar-thumb {
+.scrollableRegion.darkmode::-webkit-scrollbar-thumb {
   background-color: #363952;
   border: 6px solid #08090E; 
 }
@@ -627,22 +624,41 @@ export default {
 }
 
 .stats {
-    display: grid;
-    gap: 16px;
-    justify-items: left;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    justify-content: left;
     padding: 8px 24px 0px;
 } 
+.stats.osu {
+    grid-template-columns: repeat(6, 1fr);
+    overflow-x: scroll;
+}
 
 .stat {
     line-height: 23px;
     display: flex;
     flex-direction: column;
     white-space: nowrap;
+    margin-right: 16px;
 }
 
 .stat p {
     font-size: 14px;
+}
+
+.osuPfp {
+    border-radius: 32px;
+    width: 122px;
+    height: 122px;
+}
+
+.osuUsername {
+    font-size: 24px;
+}
+
+.osuFlag {
+    margin-top: 8px;
+    width: 48px;
+    height: auto;
 }
 
 @media only screen and (min-width: 715px)  {

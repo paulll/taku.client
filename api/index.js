@@ -30,7 +30,7 @@ const schema = Joi.object({
   repeat_password: Joi.ref("password"),
 
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "ru", "gr"] } })
     .required(),
 });
 
@@ -135,13 +135,13 @@ function addToOnlineUsers(username) {
 
       // Remove old users that havent been seen for more than 60 sec
       if (el.lastSeen + 120000 < new Date().getTime()) {
-        console.log(`Timeout clearing: ${el.username}`);
+        // console.log(`${"Heartbeat:".bgRed.white} Timeout clearing: ${el.username}`);
         return undefined;
       }
 
       // Find where the user that heartbeated is in the array and update their last seen
       if (el.username == username) {
-        console.log(`Updating: ${el.username}`);
+        // console.log(`${"Heartbeat:".bgRed.white} Updating: ${el.username}`);
         return ({username: el.username, lastSeen: new Date().getTime() });
       }
 
@@ -150,7 +150,7 @@ function addToOnlineUsers(username) {
     }).filter(user => user !== undefined);
   }
 
-  console.log(onlineUsers);
+  // console.log(`${"Heartbeat:".bgRed.white} ${onlineUsers.length} Users`);
   return onlineUsers;
 }
 
@@ -203,7 +203,7 @@ io.on("connection", socket => {
         attachment.html = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
         attachment.originalurl = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
 
-        if (attachment.mimetype.startsWith("image/") && !attachment.mimetype.startsWith("image/gif") || !attachment.mimetype.startsWith("image/webp")) {
+        if (attachment.mimetype.startsWith("image/jpeg") || attachment.mimetype.startsWith("image/png")) {
           await cacheImage(attachment);
           attachment.html = `http://anihuu.moe:8880/uploads/cache/${attachment.originalname}`;
         }
@@ -261,24 +261,19 @@ io.on("connection", socket => {
       socket.broadcast.emit("typingUser", typingUser);
     });
   });
-  
   socket.on("heartbeat", heartbeat => {
     jwt.verify(heartbeat.user, "h4x0r", async (error, user) => {
       if (!user || user === undefined) return
 
       // Add user to onlineUsers list
       addToOnlineUsers(user.username);
-
+      // console.log(onlineUsers);
       // console.log(onlineUsers.length.toString().green + " users online");
     });
   });
-  
-  
   socket.on("disconnect", () => {
 
   });
-
-
 
 });
 
@@ -306,12 +301,16 @@ app.get("/user/:username", async (req, res) => {
     }
   }
 
-  if (onlineUsers.some(user => user.username == username)) {
-    response[0].online = true
+  if (response[0]) {
+    if (onlineUsers.some(user => user.username == username)) {
+      response[0].online = true
+    }
+    else {
+      response[0].online = false
+    }
   }
-  else {
-    response[0].online = false
-  }
+
+  console.log(response[0]);
 
   res.status(200);
   res.json(response);
@@ -464,7 +463,7 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
 
     let link = `http://anihuu.moe:8880/uploads/${file.originalname}`;
 
-    if (file.mimetype.startsWith("image/") && !file.mimetype.startsWith("image/gif") || !file.mimetype.startsWith("image/webp")) {
+    if (file.mimetype.startsWith("image/jpeg") || file.mimetype.startsWith("image/png")) {
       await cacheImage(file);
       link = `http://anihuu.moe:8880/uploads/cache/${file.originalname}`;
     }

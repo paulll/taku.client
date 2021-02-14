@@ -22,7 +22,7 @@ export default {
     MobileHeader
   },
   created(){
-    let heartbeatSpeed = 60000;
+    let heartbeatSpeed = 10000;
 
     if (localStorage.token) {
       this.socket.emit('heartbeat', {user: localStorage.token});
