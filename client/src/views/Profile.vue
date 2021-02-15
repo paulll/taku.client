@@ -1,4 +1,4 @@
-<template>
+hi<template>
     <div class="userProfile" :class="{darkmode: darkmode == 'true'}">
         <div class="bannerContainer">
             <div class="gradient">
@@ -24,7 +24,8 @@
                     <div class="infoField" v-if="token">
                         <button @click="toggleFriend()" v-if="profile.username != me.username && !user.friends?.includes(profile?.username)" class="button">ADD FRIEND</button>
                         <button @click="toggleFriend()" v-if="profile.username != me.username && user.friends?.includes(profile?.username)" class="button">REMOVE FRIEND</button>
-                        <button @click="block()" v-if="profile.username != me.username && !user.settings?.privacy.blocked_users.includes(profile?.username)" class="button">BLOCK</button>
+                        <button class="button" v-if="profile.username != me.username"><router-link :to="`/messages/${profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                        <button @click="block()" v-if="profile.username != me.username && !user.settings?.privacy.blocked_users.includes(profile?.username)" class="button"><img src="../assets/flag.png" alt=""></button>
                         <button @click="block()" v-if="profile.username != me.username && user.settings?.privacy.blocked_users.includes(profile?.username)" class="button">UNBLOCK</button>
                         <button v-if="profile.username == me.username && !edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
                         <button v-if="profile.username == me.username && edit" @click="toggleEdit()" class="button">SAVE</button>
@@ -417,15 +418,19 @@ export default {
     width: fit-content;
     display: flex;
     align-items: center;
-    padding: 7px 25px;
+    padding: 7px 8px;
     margin-right: 8px;
     transition: 100ms ease;
+}
+
+.button a {
+    height: 22px;
 }
 
 .button img {
     width: 22px;
     height: auto;
-    margin-right: 4px;
+    filter: invert(1);
 }
 
 .button:hover {
@@ -533,8 +538,6 @@ export default {
     background:  #08090E;
     color: white;
 }
-
-
 
 .discord:hover { filter: invert(51%) sepia(97%) saturate(374%) hue-rotate(193deg) brightness(90%) contrast(89%); }
 .twitter:hover { filter: invert(54%) sepia(35%) saturate(3150%) hue-rotate(175deg) brightness(97%) contrast(96%); }

@@ -40,6 +40,14 @@ const routes = [
     },
   },
   {
+    path: '/messages/:user?', // the ? makes the param optional so the default route works
+    name: 'Messages',
+    component: () => import('../views/Messages.vue'),
+    meta: {
+      title: '⚙ Messages',
+    },
+  },
+  {
     path: '/dm/',
     name: 'DMs',
     component: () => import('../views/DMs.vue'),

@@ -28,15 +28,17 @@
 
 import axios from 'axios';
 
+// Lifecycles
 export default {
-  name: 'anime',
-  data: () => {
-      return {
-          token: localStorage.token,
-          anime: {},
-          saved: false,
-      };
-  },
+    name: 'anime',
+    data: () => {
+        return {
+            token: localStorage.token,
+            anime: {},
+            name: "ass",
+            saved: false,
+        };
+    },
     mounted() {
         this.getData();
     },

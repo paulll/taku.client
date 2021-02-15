@@ -234,6 +234,9 @@ io.on("connection", socket => {
       currentMessages.push(message);
       if (currentMessages.length > 20) currentMessages.shift();
   
+      // Add to database
+      messages.insert(message);
+
       // Send to all other users
       socket.broadcast.emit("message", message);
   
@@ -295,7 +298,7 @@ app.get("/user/:username", async (req, res) => {
     { collation: { locale: "en", strength: 2 } }
   );
 
-  if (response[0] && response[0].connections) {
+  if (response[0] && response[0].connections && response[0].connections.osu) {
     response[0].connections = {
       osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].connections.osu.user_id}&k=${osuKey}`)).data[0]
     }
@@ -310,7 +313,7 @@ app.get("/user/:username", async (req, res) => {
     }
   }
 
-  console.log(response[0]);
+  // console.log(response[0]);
 
   res.status(200);
   res.json(response);
@@ -339,6 +342,7 @@ app.get("/user", async (req, res) => {
     res.json(response[0]);
   });
 });
+
 app.post("/user/anime", async (req, res) => {
   // Parse body
   const body = req.body;
@@ -421,7 +425,27 @@ app.get("/blockedUsers", async (req, res) => {
     res.json(response[0].settings.privacy.blocked_users);
     });
 });
+app.get("/dms", async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+    if (error) {
+      res.status(401);
+      res.json({
+        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
+      });
+      return;
+    }
+    req.user = user;
 
+    const response = await users.find(
+      { username: user.username },
+      { collation: { locale: "en", strength: 2 } }
+    );
+
+    res.status(200);
+    res.json(response[0].dms);
+    });
+});
 // Setting Routes
 app.post("/settings", async (req, res) => {
   // Verify Logged In User
@@ -616,7 +640,7 @@ app.post("/signup", async (req, res) => {
     result.vip = false;
     result.banner = 0;
     result.state = true;
-    result.dms = {},
+    result.dms = {};
     result.settings = {
         appearance: {
             darkmode: false,
@@ -657,6 +681,7 @@ app.post("/signup", async (req, res) => {
             blocked_users: [],
         },
     }
+    result.connections = {};
 
     // Add to database
     await users.insert(result);

@@ -14,7 +14,6 @@ export default {
   data: () => {
     return {
       socket: io('ws://anihuu.moe:8880'),
-      
     };
   },
   components: {

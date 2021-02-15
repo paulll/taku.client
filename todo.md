@@ -1,3 +1,6 @@
+https://v3.vuejs.org/guide/introduction.html
+
+
 ## To-do
 
 - [x] Add a Mobile add file + button
@@ -13,6 +16,13 @@
 - [ ] Add the logout button in the settings
 - [x] Add nav buttons at the top right of the header on desktop
 - [x] Add search feature
+- [ ] Add Loading bar at the top
+- [ ] Add Reply feature, double tap on pc, slide on mobile
+- [ ] Add Flags
+- [ ] Add Ping at the top right next to the buttons on the header
+
+- [ ] Add the Guidelines in the settings
+
 
 - [x] Cache user settings on login
 - [x] Cache the typing sounds etc on mount because they seem to unload after a bit
@@ -30,6 +40,7 @@
 - [x] Fix wide images getting out of the message bubble on desktop
 - [x] Fix android ribbon dissapearing on mobile
 - [ ] Fix images from being downscaled for the banner
+- [ ] Fix too many socials from wrapping out of their container on mobile
 
 
 
