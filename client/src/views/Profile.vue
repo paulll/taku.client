@@ -73,23 +73,41 @@ hi<template>
                     <a :href="`https://osu.ppy.sh/users/${profile.connections?.osu.user_id}`" target="_blank"><img class="osuPfp" :src="`http://s.ppy.sh/a/${profile.connections?.osu.user_id}`" alt=""></a>
                 </div>
                 <div class="stat">
-                   <h1 class="osuUsername">{{profile.connections?.osu.username}}</h1>
-                   <a :href="`https://osu.ppy.sh/rankings/osu/performance?country=${profile.connections?.osu.country}`" target="_blank"><img class="osuFlag" :src="`https://osu.ppy.sh/images/flags/${profile.connections?.osu.country}.png`" alt=""></a> 
-                </div>
+                    <h1 class="osuUsername">{{profile.connections?.osu.username}}</h1>
+                    <a :href="`https://osu.ppy.sh/rankings/osu/performance?country=${profile.connections?.osu.country}`" target="_blank"><img class="osuFlag" :src="`https://osu.ppy.sh/images/flags/${profile.connections?.osu.country}.png`" alt=""></a> 
+                    <div class="ranks">
+                        <div>{{profile.connections?.osu.count_rank_ssh}}<img class="rank" src="../assets/osu/ssh.svg" alt=""></div>
+                        <div>{{profile.connections?.osu.count_rank_ss}}<img class="rank" src="../assets/osu/ss.svg" alt=""></div>
+                        <div>{{profile.connections?.osu.count_rank_sh}}<img class="rank" src="../assets/osu/sh.svg" alt=""></div>
+                        <div>{{profile.connections?.osu.count_rank_s}}<img class="rank" src="../assets/osu/s.svg" alt=""></div>
+                        <div>{{profile.connections?.osu.count_rank_a}}<img class="rank" src="../assets/osu/a.svg" alt=""></div>
+                    </div>
                 
-                <div class="stat">
-                    <h1>{{Math.ceil(parseInt(profile.connections?.osu.pp_raw))}}</h1>
-                    <p>pp</p>
+                
                 </div>
-                <div class="stat">
+                <div class="stat big">
                     <h1>#{{numberWithCommas(profile.connections?.osu.pp_rank)}}</h1>
                     <p>Global Ranking</p>
                 </div>
-                <div class="stat">
+
+                <div class="stat big">
+                    <h1>{{parseInt(profile.connections?.osu.level).toFixed(0)}}</h1>
+                    <p>Level</p>
+                </div>
+                <div class="stat big">
+                    <h1>{{Math.ceil(parseInt(profile.connections?.osu.pp_raw))}}</h1>
+                    <p>pp</p>
+                </div>
+
+                <div class="stat big">
                     <h1>{{numberWithCommas(profile.connections?.osu.playcount)}}</h1>
                     <p>Maps Played</p>
                 </div>
-                <div class="stat">
+                <div class="stat big">
+                    <h1>{{Math.floor(profile.connections?.osu.accuracy)}}%</h1>
+                    <p>Accuracy</p>
+                </div>
+                <div class="stat big">
                     <h1>{{secondsToHours(profile.connections?.osu.total_seconds_played)}}</h1>
                     <p>Time Wasted</p>
                 </div>
@@ -118,6 +136,9 @@ hi<template>
             <p class="tags"><strong>DESCRIPTION</strong></p>
             <p class="description">{{profile.description}}</p>
             <p v-if="profile.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
+
+
+
         </div>
     </div>
 </template>
@@ -284,6 +305,30 @@ export default {
 </script>
 
 <style scoped>
+
+
+.ranks {
+    position: absolute;
+    bottom: 8px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.ranks div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500;
+    margin-right: 8px;
+}
+
+.rank {
+    width: 40px;
+    height: auto;
+}
+
+
 
 .userProfile::-webkit-scrollbar {
   width: 12px;  
@@ -634,22 +679,26 @@ export default {
 .stats.osu {
     grid-template-columns: repeat(6, 1fr);
     overflow-x: scroll;
+    gap: 16px
 }
 
 .stat {
     line-height: 23px;
     display: flex;
     flex-direction: column;
+    position: relative;
     white-space: nowrap;
-    margin-right: 16px;
 }
-
 .stat p {
     font-size: 14px;
 }
 
+.stat.big {
+    margin-top: 6px;
+}
+
 .osuPfp {
-    border-radius: 32px;
+    border-radius: 16px;
     width: 122px;
     height: 122px;
 }

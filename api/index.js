@@ -313,7 +313,7 @@ app.get("/user/:username", async (req, res) => {
     }
   }
 
-  // console.log(response[0]);
+  console.log(response[0]);
 
   res.status(200);
   res.json(response);
