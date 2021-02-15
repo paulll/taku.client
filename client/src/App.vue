@@ -8,6 +8,11 @@
 import Header from '@/components/Header.vue'
 import MobileHeader from '@/components/MobileHeader.vue'
 import io from 'socket.io-client';
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+
+NProgress.configure({ showSpinner: false });
+
 
 export default {
   name: 'Home',
@@ -21,6 +26,9 @@ export default {
     MobileHeader
   },
   created(){
+
+    NProgress.start();
+
     let heartbeatSpeed = 10000;
 
     if (localStorage.token) {
@@ -31,6 +39,9 @@ export default {
         this.socket.emit('heartbeat', {user: localStorage.token});
       }, heartbeatSpeed);
     }
+  },
+  mounted(){
+    NProgress.done();
   },
   unmounted() {
     this.socket.disconnect();

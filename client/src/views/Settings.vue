@@ -107,6 +107,19 @@
         </div>
       </div>
 
+      <!-- acknowledgements -->
+      <div v-if="path == 'acknowledgements'" class="acknowledgements">
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/dev.png" alt="darkmode">
+              <h1>Developers</h1>
+              <p>Geoxor - Lead Programmer  / UI & UX Designer</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Guidelines -->
       <div v-if="path == 'guidelines'" class="guidelines">
         <div class="textHeader" :class="{darkmode: darkmode == 'true'}">
@@ -157,6 +170,11 @@
 <script>
 import SettingsBar from '@/components/SettingsBar.vue'
 import MobileHeader from '@/components/MobileHeader.vue'
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+
+NProgress.configure({ showSpinner: false });
+
 
 import axios from 'axios';
 import mitt from 'mitt';
@@ -232,15 +250,18 @@ export default {
 
     },
     async updateSettings(){
+      NProgress.start();
       const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
         withCredentials: true,
         headers: {
             'Content-Type': 'application/json'
         }
       });
+      NProgress.done();
+
     },
     async toggleOption(state, option){
-
+      NProgress.start();
       switch (option) {
         case "darkmode":
           this.user.settings.appearance.darkmode = state;
@@ -261,10 +282,11 @@ export default {
           this.user.settings.appearance.flare.enabled = state;
           break;
       }
-
+      NProgress.done();
       this.updateSettings();
     },
     async uploadFile(ref, option){
+      NProgress.start();
 
       const file = this.$refs[ref].files[0];
 
@@ -293,10 +315,12 @@ export default {
             this.user.settings.appearance.mention_sfx.url = link;
             break;
         }
+        NProgress.done();
         this.updateSettings();
       }
     },
     async resetSfx(sfx){
+
       localStorage.removeItem(sfx);
       this[sfx] = localStorage[sfx];
 

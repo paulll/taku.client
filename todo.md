@@ -15,10 +15,10 @@
 - [x] Add search feature
 - [ ] Add Loading bar at the top
 - [ ] Add Reply feature, double tap on pc, slide on mobile
-- [ ] Add Flags
+- [x] Add Flags
 - [ ] Add Ping at the top right next to the buttons on the header
 
-- [ ] Add the Guidelines in the settings
+- [x] Add the Guidelines in the settings
 - [ ] Fix the header overlaying the chats
 
 
