@@ -1,6 +1,3 @@
-https://v3.vuejs.org/guide/introduction.html
-
-
 ## To-do
 
 - [x] Add a Mobile add file + button
@@ -22,6 +19,7 @@ https://v3.vuejs.org/guide/introduction.html
 - [ ] Add Ping at the top right next to the buttons on the header
 
 - [ ] Add the Guidelines in the settings
+- [ ] Fix the header overlaying the chats
 
 
 - [x] Cache user settings on login
