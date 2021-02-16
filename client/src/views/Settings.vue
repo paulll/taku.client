@@ -133,6 +133,18 @@
         </div>
       </div>
 
+      <!-- Info -->
+      <div v-if="path == 'info'" class="info">
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/dev.png" alt="darkmode">
+              <h1>WHO WE ARE</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- acknowledgements -->
       <div v-if="path == 'acknowledgements'" class="acknowledgements">
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
@@ -508,7 +520,6 @@ export default {
 }
 
 .settingsArea.darkmode { background: #08090E; } /* darkmode */ 
-
 .option {
   display: flex;
   text-decoration: none;
@@ -516,24 +527,20 @@ export default {
   justify-content: space-between;
   padding: 8px 16px;
 }
-
 .option div, .optionBox .top .heading { display: flex;}
 .option div img, .optionBox .top .heading img {
   width: 32px;
   height: 32px;
 }
-
 .top {
   justify-content: space-between;
 }
 .bottom {
   justify-content: space-between;
 }
-
 .heading p {
   margin-bottom: 64px;
 }
-
 .option div h1, .optionBox .top .heading h1 {
   font-family: Work Sans;
   font-style: normal;
@@ -542,16 +549,12 @@ export default {
   font-size: 16px;
   line-height: 117.9%;
   /* or 21px */
-
   text-decoration: none;
-
   display: flex;
   align-items: center;
   text-transform: capitalize;
-
   margin-left: 12px;
 }
-
 
 .onOff {
   height: 24px;
@@ -577,6 +580,7 @@ export default {
   height: calc(100% + 4px);
   border-radius: 24px;
 }
+
 
 .active { background: #FF006B !important;}
 .splitter {
@@ -634,7 +638,6 @@ export default {
 .textHeader.darkmode .bottom, .textHeader.darkmode .textField                 { background: #10121d00; }  /* darkmode */
 .textHeader.darkmode .bottom a:not(:hover), .textHeader.darkmode .textField   { color: white; }         /* darkmode */
 .textHeader.darkmode .bottom img:not(:hover)                                 { filter: invert(1); }      /* darkmode */
-
 .textHeader div {
   display: flex;
   align-items: center;
@@ -736,11 +739,6 @@ export default {
   align-items: left;
 }
 
-
-
-
-
-
 .blockedUser {
   display: flex;
   margin-left: 0px !important;
@@ -749,7 +747,6 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-
 .blockedUser .pfp {
   height: 40px;
   margin: 0px 12px;

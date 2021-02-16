@@ -290,6 +290,11 @@ app.get("/", (req, res) => {
   );
 });
 
+app.get("/ping", async (req, res) => {
+  res.status(200);
+  res.json({status: "200", message: "pong"});
+});
+
 // User Endpoints
 app.get("/user/:username", async (req, res) => {
   

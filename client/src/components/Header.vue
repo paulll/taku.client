@@ -31,6 +31,9 @@
                 <router-link to="/login" class="login">LOGIN</router-link>
                 <router-link to="/signup" class="signup">SIGNUP</router-link>
             </div>
+            <div class="ping" v-if="token">
+                <p :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250}">{{ping}}ms</p>
+            </div>
             <div class="buttons small" v-if="token">
                 <router-link to="/home" class="button"><img src="../assets/home.svg" alt=""></router-link>
             </div>
@@ -61,6 +64,7 @@ export default {
             path: "",
             token: localStorage.token,
             user: "",
+            ping: null,
             searchString: "",
             searchResults: [],
             darkmode: localStorage.darkmode,
@@ -77,6 +81,11 @@ export default {
     mounted(){
         this.path = this.$route.params.setting;
         this.getUser();
+
+        setInterval(async () => {
+            this.ping = await this.getPing();
+        }, 1000);
+
 
         this.emitter.on('refreshHeader', () => this.getUser());
     },
@@ -111,6 +120,14 @@ export default {
             this.searchResults = response.data;
             console.log(this.searchResults);
         },
+        async getPing(){
+            const startTime = new Date().getTime();
+            const response  = await axios.get('http://anihuu.moe:8880/ping/')
+            if (response.status == 200) {
+                const ping = new Date().getTime() - startTime;
+                return ping
+            }
+        }
     }
 }
 </script>
@@ -308,6 +325,20 @@ export default {
     height: 24px;
 }
 
+.ping {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.ping p {
+    transition: 200ms ease;
+}
+
+.ping .ok { color: #3BE220; }
+.ping .ohshit { color: rgb(255, 208, 0); }
+.ping .dragan { color: #FF006B; }
 
 .login {
     margin-right: 14px;
