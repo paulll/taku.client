@@ -87,7 +87,22 @@
         </div>
       </div>
 
+      <!-- Privacy -->
       <div v-if="path == 'privacy'" class="privacy">
+
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/activity.png" alt="darkmode">
+              <h1>Show Activity</h1>
+            </div>
+            <div class="onOff">
+              <button @click="toggleOption(true, 'activity')" :class="{active: user.settings.privacy.show_activity == true}">on</button>
+              <button @click="toggleOption(false, 'activity')" :class="{active: user.settings.privacy.show_activity == false}">off</button>
+            </div>
+          </div>
+        </div>
+
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
@@ -127,13 +142,31 @@
               <h1>Developers</h1>
             </div>
           </div>
-          <div class="splitter"></div>
+          <div class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
           <div class="devsBottom">
             <div class="credits" :class="{darkmode: darkmode == 'true'}" v-for="user in credits" :key="user">
               <p><router-link :to="`/profile/${user.user}`"><strong>{{user.user}}</strong></router-link> - {{user.role}}</p>
             </div>
           </div>
         </div>
+        
+        <!-- libraries -->
+        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <img src="../assets/library.png" alt="darkmode">
+              <h1>Libraries</h1>
+            </div>
+          </div>
+          <div class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
+          <div class="devsBottom">
+            <div class="credits" :class="{darkmode: darkmode == 'true'}" v-for="lib in libraries" :key="lib">
+              <img class="libIcon" :src="lib.img" alt="darkmode">
+              <p><a :href="lib.link" target="_blank"><strong>{{lib.lib}}</strong></a> - {{lib.creator}}</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Guidelines -->
@@ -179,8 +212,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   </div>
@@ -208,13 +239,27 @@ export default {
   data: () => {
     return {
       path: "",
+      // These 2 should be moved to the backend later so we can easily add more things as we go along
+      // so its easy to just update the site without having to hardcode it all
+      // So yeah make this dynamic // Ephemeral
       credits: [
-        {user: "Geoxor", role: "Fuckwit fixed the nloaderbar"},
-        {user: "Bustean", role: "idk he 3d doing something"},
-        {user: "N1kO23", role: "n1ko23 dying laughing every sec"},
-        {user: "bearr", role: "he good on osu settings.vue manager"},
-        {user: "daev", role: "whos this guy"},
-        {user: "SVRGE", role: "shut the fuck up"},
+        // {user: "Bustean",           role: "idk he 3d doing something"},
+        {user: "Geoxor",            role: "Head Programmer  / UI & UX Designer"},
+        {user: "N1kO23",            role: "Front-end Programmer"},
+        {user: "bearr",             role: "Front-end Programmer"},
+        {user: "JPEG",              role: "UI/UX Assistant"},
+        {user: "SVRGE",             role: "UI Assistant"},
+        {user: "MihaiStreames",     role: "UI Assistant"},
+      ],
+      libraries: [
+        {lib: "express",    creator: "express",       img: require("../assets/libraries/express.png"),   link: "https://expressjs.com/"},
+        {lib: "mongodb",    creator: "mongodb",       img: require("../assets/libraries/mongodb.png"),   link: "https://www.mongodb.com/"},
+        {lib: "Node.js",    creator: "Node.js",       img: require("../assets/libraries/nodejs.png"),    link: "https://nodejs.org/en/"},
+        {lib: "Vue.js",     creator: "Vue.js",        img: require("../assets/libraries/vue.png"),       link: "https://vuejs.org/"},
+        {lib: "JWT",        creator: "auth0",         img: require("../assets/libraries/jwt.svg"),       link: "https://jwt.io/"},
+        {lib: "Jimp",       creator: "oliver-moran",  img: require("../assets/libraries/jimp.png"),      link: "https://www.npmjs.com/package/jimp"},
+        {lib: "Joi",        creator: "sideway",       img: require("../assets/libraries/joi.png"),       link: "https://www.npmjs.com/package/joi"},
+        {lib: "Nprogress",  creator: "rstacruz",      img: require("../assets/libraries/nprogress.png"), link: "https://ricostacruz.com/nprogress/"},
       ],
       user: {},
       typingSoundUrl: localStorage.typingSoundUrl,
@@ -285,7 +330,6 @@ export default {
         }
       });
       NProgress.done();
-
     },
     async toggleOption(state, option){
       NProgress.start();
@@ -304,6 +348,9 @@ export default {
           this.user.settings.appearance.mention_sfx.enabled = state;
           if (localStorage.mentionSoundUrl) localStorage.setItem('mentionSoundUrl', this.user.settings.appearance.mention_sfx.url);
           localStorage.setItem('mention_sfx', state);
+          break;
+        case "activity":
+          this.user.settings.privacy.show_activity = state
           break;
         case "flare":
           this.user.settings.appearance.flare.enabled = state;
@@ -401,7 +448,12 @@ export default {
   color: #ff006b;
 }
 
-
+.libIcon {
+  width: 32px;
+  height: 32px;
+  margin: 6px 0px;
+  margin-right: 12px;
+}
 
 .appearanceAndSounds {
   overflow: scroll;
@@ -471,6 +523,13 @@ export default {
   height: 32px;
 }
 
+.top {
+  justify-content: space-between;
+}
+.bottom {
+  justify-content: space-between;
+}
+
 .heading p {
   margin-bottom: 64px;
 }
@@ -529,6 +588,10 @@ export default {
   margin-bottom: 8px;
 }
 
+.splitter.darkmode {
+  background: #252739;
+}
+
 .optionBox {
   background: white;
   padding: 12px;
@@ -550,7 +613,6 @@ export default {
 .optionBox div {
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
 .textHeader {

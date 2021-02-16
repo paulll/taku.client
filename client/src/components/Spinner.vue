@@ -26,7 +26,7 @@ export default {
   border-radius: 50%;
   border: 8px solid #000;
   border-color: #ff006b transparent #ff006b transparent;
-  animation: ldio-b073b5dxyqi 0.33003300330033003s linear infinite;
+  animation: ldio-b073b5dxyqi 0.83003300330033003s linear infinite;
 }
 .ldio-b073b5dxyqi > div:nth-child(2) { border-color: transparent }
 .ldio-b073b5dxyqi > div:nth-child(2) div {

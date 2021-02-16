@@ -292,18 +292,22 @@ app.get("/", (req, res) => {
 
 // User Endpoints
 app.get("/user/:username", async (req, res) => {
+  
+  // Get user
   const username = req.params.username;
   const response = await users.find(
     { username: username },
     { collation: { locale: "en", strength: 2 } }
   );
 
+  // Add the osu connections
   if (response[0] && response[0].connections && response[0].connections.osu) {
     response[0].connections = {
       osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].connections.osu.user_id}&k=${osuKey}`)).data[0]
     }
   }
 
+  // Get their status
   if (response[0]) {
     if (onlineUsers.some(user => user.username == username)) {
       response[0].online = true
@@ -312,8 +316,6 @@ app.get("/user/:username", async (req, res) => {
       response[0].online = false
     }
   }
-
-  console.log(response[0]);
 
   res.status(200);
   res.json(response);

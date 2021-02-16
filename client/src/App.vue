@@ -9,6 +9,7 @@ import Header from '@/components/Header.vue'
 import MobileHeader from '@/components/MobileHeader.vue'
 import io from 'socket.io-client';
 import NProgress from 'nprogress';
+import axios from 'axios';
 import 'nprogress/nprogress.css';
 
 NProgress.configure({ showSpinner: false });
@@ -19,6 +20,7 @@ export default {
   data: () => {
     return {
       socket: io('ws://anihuu.moe:8880'),
+      user: {},
     };
   },
   components: {
@@ -26,25 +28,38 @@ export default {
     MobileHeader
   },
   created(){
-
     NProgress.start();
-
-    let heartbeatSpeed = 10000;
-
-    if (localStorage.token) {
-      this.socket.emit('heartbeat', {user: localStorage.token});
-
-      console.log("Emitting Heartbeat");
-      setInterval(() => {
-        this.socket.emit('heartbeat', {user: localStorage.token});
-      }, heartbeatSpeed);
-    }
+    this.getUser();
   },
   mounted(){
+    // Stop loading bar at the top
     NProgress.done();
   },
   unmounted() {
+    // Disconnect socket when the app closes
     this.socket.disconnect();
+  },
+  methods: {
+    async getUser() {
+      const user = await axios.get('http://anihuu.moe:8880/user', {
+        withCredentials: true,
+      });
+      this.user = user.data;
+
+      // Start heartbeatting after the userdata has been received so
+      this.heartBeat(60000);
+    },
+    async heartBeat(speed){
+      if (localStorage.token && this.user.settings?.privacy?.show_activity) {
+
+        // Emit at start so we dont wait for the next interval
+        this.socket.emit('heartbeat', {user: localStorage.token});
+        console.log("emitting heartbeat");
+        setInterval(() => {
+          this.socket.emit('heartbeat', {user: localStorage.token});
+        }, speed);
+      }
+    }
   },
 }
 
@@ -59,7 +74,34 @@ export default {
   padding: 0;
   font-family: 'Work Sans', sans-serif;
   box-sizing: none;
+  scrollbar-width: thin;
+  scrollbar-color: lightgray transparent;
+  scrollbar-color: #363952#08090E ;
+
 }
+
+*.darkmode {
+  scrollbar-color: #363952#08090E ;
+}
+*::-webkit-scrollbar {
+  width: 12px;  
+  position: absolute; 
+
+}
+*::-webkit-scrollbar-track {
+  background-color: transparent; 
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #888888;
+  border: 6px solid #F3F3F3; 
+  border-radius: 16px;
+}
+
+*.darkmode::-webkit-scrollbar-thumb {
+  background-color: #363952;
+  border: 6px solid #08090E; 
+}
+
 
 html {
   width: 100vw;
