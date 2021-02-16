@@ -1,4 +1,4 @@
-hi<template>
+<template>
     <div class="userProfile" :class="{darkmode: darkmode == 'true'}">
         <div class="bannerContainer">
             <div class="gradient">
@@ -64,12 +64,14 @@ hi<template>
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.anime_showcase" :key="id" :id="id">
-                    <img class="anime" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`" alt="Anime">
+                    <img class="anime" width="84" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`">
+                    <Spinner/>
                 </router-link>
             </div>
             <p v-if="profile.connections?.osu" class="tags"><strong>osu!</strong> Profile</p>
             <div v-if="profile.connections?.osu" class="scrollableRegion stats osu" :class="{darkmode: darkmode == 'true'}">
-                <div class="stat">
+                <div class="stat osuprofile">
+                    <Spinner/>
                     <a :href="`https://osu.ppy.sh/users/${profile.connections?.osu.user_id}`" target="_blank"><img class="osuPfp" :src="`http://s.ppy.sh/a/${profile.connections?.osu.user_id}`" alt=""></a>
                 </div>
                 <div class="stat">
@@ -144,11 +146,19 @@ hi<template>
 </template>
 
 <script>
+import Spinner from '@/components/Spinner.vue'
+
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+NProgress.configure({ showSpinner: false });
 
 import axios from 'axios';
 
 export default {
   name: 'user',
+  components: {
+    Spinner,
+  },
   data: () => {
     return {
         darkmode: localStorage.darkmode,
@@ -170,6 +180,11 @@ export default {
         },
     };
   },
+  updated: function () {
+    this.$nextTick(function () {
+        NProgress.done();
+    }) 
+  },
   mounted() {
     this.getProfileData();
     this.getUser();
@@ -182,6 +197,8 @@ export default {
   },
   methods: {
     async getUser() {
+      NProgress.start();
+
       const user = await axios.get('http://anihuu.moe:8880/user', {
         withCredentials: true,
       });
@@ -217,6 +234,7 @@ export default {
       }
 
       this.user = user.data;
+      NProgress.done();
 
     },
     async getProfileData() {
@@ -253,38 +271,42 @@ export default {
         console.log(this.user);
     },
     async updateSettings(){
-      const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
-        withCredentials: true,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-      });
+        const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
     },
     async uploadFile(ref){
-      const file = this.$refs[ref].files[0];
+        NProgress.start();
 
-      let formData = new FormData();
-      formData.append(ref, file);
+        const file = this.$refs[ref].files[0];
 
-      const response = await axios.post('http://anihuu.moe:8880/settings/upload', formData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+        let formData = new FormData();
+        formData.append(ref, file);
+
+        const response = await axios.post('http://anihuu.moe:8880/settings/upload', formData, {
+            withCredentials: true,
+            headers: {
+            'Content-Type': 'multipart/form-data'
+            }
+        });
+
 
         console.log(response.data.status);
 
-      // If form submitted with no error:
-      if(response.data.status == 200) {
-        this.user.settings[ref] = response.data.link;
-        await this.updateSettings();
-        this.emitter.emit('refreshHeader');
-        this.getProfileData();
-      }
-      else {
-        console.log(response.data.error);
-      }
+        // If form submitted with no error:
+        if(response.data.status == 200) {
+            this.user.settings[ref] = response.data.link;
+            await this.updateSettings();
+            this.emitter.emit('refreshHeader');
+            this.getProfileData();
+            NProgress.stop();
+        }
+        else {
+            console.log(response.data.error);
+        }
     },
     numberWithCommas(x) {
         if (x) {
@@ -621,25 +643,29 @@ export default {
     color: white;
 }
 
-.animePosters.darkmode {
+* {
+    scrollbar-width: thin;
+    scrollbar-color: lightgray transparent;
+    scrollbar-color: #363952#08090E ;
+}
+*.darkmode {
   scrollbar-color: #363952#08090E ;
 }
-
-.scrollableRegion::-webkit-scrollbar {
+*::-webkit-scrollbar {
   width: 12px;  
   position: absolute; 
 
 }
-.scrollableRegion::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background-color: transparent; 
 }
-.scrollableRegion::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background-color: #888888;
   border: 6px solid #F3F3F3; 
   border-radius: 16px;
 }
 
-.scrollableRegion.darkmode::-webkit-scrollbar-thumb {
+*.darkmode::-webkit-scrollbar-thumb {
   background-color: #363952;
   border: 6px solid #08090E; 
 }
@@ -664,6 +690,7 @@ export default {
     object-fit: cover;
     cursor: pointer;
     transition: 200ms ease;
+    z-index: 2;
 }
 
 .description {
@@ -697,6 +724,17 @@ export default {
     margin-top: 6px;
 }
 
+.stat.osuprofile a {
+    z-index: 2;
+}
+
+.stat.osuprofile {
+    justify-content: center;
+    align-items: center;
+
+}
+
+
 .osuPfp {
     border-radius: 16px;
     width: 122px;
@@ -717,7 +755,12 @@ export default {
     .banner, .gradient {
         height: 368px;
     }
-
 }
+@media only screen and (max-width: 715px)  {
+    .heading {
+        height: 144px;
+    }
+}
+
 
 </style>

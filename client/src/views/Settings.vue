@@ -107,6 +107,17 @@
         </div>
       </div>
 
+      <!-- Account -->
+      <div v-if="path == 'account'" class="accountSettings">
+        <div class="textHeader" :class="{darkmode: darkmode == 'true'}">
+          <div class="top">
+            <div class="heading">
+              <h1>Account</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- acknowledgements -->
       <div v-if="path == 'acknowledgements'" class="acknowledgements">
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
@@ -114,7 +125,12 @@
             <div class="heading">
               <img src="../assets/dev.png" alt="darkmode">
               <h1>Developers</h1>
-              <p>Geoxor - Lead Programmer  / UI & UX Designer</p>
+            </div>
+          </div>
+          <div class="splitter"></div>
+          <div class="devsBottom">
+            <div class="credits" :class="{darkmode: darkmode == 'true'}" v-for="user in credits" :key="user">
+              <p><router-link :to="`/profile/${user.user}`"><strong>{{user.user}}</strong></router-link> - {{user.role}}</p>
             </div>
           </div>
         </div>
@@ -163,6 +179,8 @@
             </div>
           </div>
         </div>
+
+
       </div>
     </div>
   </div>
@@ -170,10 +188,11 @@
 <script>
 import SettingsBar from '@/components/SettingsBar.vue'
 import MobileHeader from '@/components/MobileHeader.vue'
+
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
-
 NProgress.configure({ showSpinner: false });
+
 
 
 import axios from 'axios';
@@ -189,6 +208,14 @@ export default {
   data: () => {
     return {
       path: "",
+      credits: [
+        {user: "Geoxor", role: "Fuckwit fixed the nloaderbar"},
+        {user: "Bustean", role: "idk he 3d doing something"},
+        {user: "N1kO23", role: "n1ko23 dying laughing every sec"},
+        {user: "bearr", role: "he good on osu settings.vue manager"},
+        {user: "daev", role: "whos this guy"},
+        {user: "SVRGE", role: "shut the fuck up"},
+      ],
       user: {},
       typingSoundUrl: localStorage.typingSoundUrl,
       mentionSoundUrl: localStorage.mentionSoundUrl,
@@ -341,6 +368,41 @@ export default {
   width: 100%;
 }
 
+.devsBottom {
+  display: flex;
+  flex-direction: column;
+}
+
+.credits {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.credits strong {
+  font-weight: 700;
+}
+
+.credits p {
+  line-height: 32px
+}
+
+.credits a {
+  color: black;
+  text-decoration: none;
+  transition: 100ms ease;
+}
+
+.credits.darkmode a {
+  color: white;
+}
+
+.credits a:hover {
+  color: #ff006b;
+}
+
+
+
 .appearanceAndSounds {
   overflow: scroll;
   height: inherit;
@@ -349,6 +411,17 @@ export default {
 }
 
 .appearanceAndSounds.darkmode {
+  scrollbar-color: #363952#08090E ;
+}
+
+.accountSettings {
+  overflow: scroll;
+  height: inherit;
+  scrollbar-color: #888888#F3F3F3 ;
+  scrollbar-width: thin;
+}
+
+.accountSettings.darkmode {
   scrollbar-color: #363952#08090E ;
 }
 
@@ -372,7 +445,7 @@ export default {
 }
 
 .settingsArea {
-  width: calc(100% - 56px);
+  width: calc(100% - 32px);
   background: #F3F3F3;
   height: inherit;
   transform: translateX(56px);
@@ -448,21 +521,19 @@ export default {
 
 .active { background: #FF006B !important;}
 .splitter {
-  width: calc(100% - 32px);
+  width: 100%;
   height: 1px;
   background: #D4D4D4;
   position: relative;
-  margin-top: 16px;
-  left: 16px;
+  margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 .optionBox {
   background: white;
   padding: 12px;
   border-radius: 8px;
-  margin-top: 16px;
-  margin-left: 16px;
-  margin-right: 16px;
+  margin: 16px;
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
 }
 
@@ -595,6 +666,18 @@ export default {
   display: flex;
   flex-direction: column;
 }
+
+.bottom.devs {
+  flex-direction: column;
+  display: flex;
+  font-size: 4px;
+  align-items: left;
+}
+
+
+
+
+
 
 .blockedUser {
   display: flex;

@@ -10,6 +10,7 @@
                     <p v-if="searchResults.users.length > 0" class="tags"><strong>USERS</strong></p>
                     <div class="users" :class="{darkmode: darkmode == 'true'}">
                         <router-link :to="`/profile/${user.username}`" class="user" v-for="user in searchResults?.users" :key="user">
+                            <Spinner/>
                             <img :src="user.settings.pfp" alt="">
                             <p>{{user.username}}</p>
                         </router-link>
@@ -52,6 +53,7 @@
 
 <script>
 import axios from 'axios';
+import Spinner from '@/components/Spinner.vue'
 
 export default {
     data: () => {
@@ -63,6 +65,9 @@ export default {
             searchResults: [],
             darkmode: localStorage.darkmode,
         }
+    },
+    components: {
+        Spinner
     },
     watch: {
         $route(to, from) {
@@ -182,6 +187,8 @@ export default {
     text-decoration: none;
     color: white;
     font-weight: 600;
+
+    position: relative;
 }
 
 .user img {
@@ -190,6 +197,7 @@ export default {
     height: 96px;
     margin-right: 8px;
     transition: 100ms ease;
+    z-index: 2;
 }
 
 .user img:hover {
@@ -367,7 +375,7 @@ export default {
 }
 
 
-
+/* Small */
 @media only screen and (max-width: 715px)  {
     .buttons.small {
         display: none;
@@ -375,6 +383,10 @@ export default {
     .searchResults {
         width: calc(100vw - 36px);
     }
+    .heading {
+        height: 170px;
+    }
 }
+
 
 </style>
