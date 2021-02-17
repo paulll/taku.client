@@ -27,7 +27,10 @@
                 </div>
             </div>
             <div class="ping" v-if="!token || token">
-                <p :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250}">{{ping}}ms</p>
+                <div :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250 && parseInt(ping) <= 1000}">
+                    <p v-if="parseInt(ping) > 1000">+</p>
+                    <p>{{ping}}ms</p>
+                </div>
             </div>
             <div class="buttons" :style="themeColors"  v-if="!token">
                 <router-link to="/login" class="login">LOGIN</router-link>
@@ -360,6 +363,7 @@ export default {
 .ping p {
     transition: 200ms ease;
     white-space: nowrap;
+    display: flex;
 }
 
 .ping .ok { color: #3BE220; }

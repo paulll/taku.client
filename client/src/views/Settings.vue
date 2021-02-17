@@ -7,7 +7,7 @@
     <div class="settingsArea" :class="{darkmode: darkmode == 'true'}">
 
       <!-- Account -->
-      <div v-if="path == 'account'" class="Account">
+      <div v-if="path == 'account'" class="section account">
         <img class="pfp" :src="user.settings.pfp" alt="">
         <OptionBox :optionCategory="path" type="text" :user="user" optionTitle="Username" :darkmode="darkmode" :optionValue="user.username"/>
         <OptionBox :optionCategory="path" type="text" :user="user" optionTitle="Email"    :darkmode="darkmode" :optionValue="user.email"/>
@@ -15,17 +15,16 @@
       </div>
 
       <!-- Appearance & Sounds -->
-      <div v-if="path == 'appearance'" class="appearanceAndSounds" :class="{darkmode: darkmode == 'true'}">
+      <div v-if="path == 'appearance'" class="section appearanceAndSounds" :class="{darkmode: darkmode == 'true'}">
         <OptionBox :user="user"  :darkmode="darkmode" optionTitle="Darkmode" :optionCategory="path"     :toggleButtons="true"   :optionValue="user.settings.appearance.darkmode"/>
         <OptionBox  :toggleButtons="true"  type="file"  :darkmode="darkmode" :fileUrl="typingSoundUrl"  property="typingSoundUrl"  :user="user"            :optionValue="user.settings.appearance.typing_sfx.enabled"  optionTitle="Typing SFX"  :optionCategory="path"     :showValue="true"/>
         <OptionBox  :toggleButtons="true"  type="file"  :darkmode="darkmode" :fileUrl="mentionSoundUrl" property="mentionSoundUrl" :user="user"            :optionValue="user.settings.appearance.mention_sfx.enabled" :optionCategory="path"    optionTitle="Mention SFX"    :showValue="true"/>
         <OptionBox  :toggleButtons="true"  type="text"  :darkmode="darkmode" :user="user"               optionTitle="Flare"        :optionCategory="path"  :optionValue="user.settings.appearance.flare.enabled"       :fields="[{placeholder: 'e.g. Shimakaze', selector: 'content', maxLength: 32 }, {placeholder: 'e.g. #ff0022', selector: 'color', maxLength: 7}, ]"/>
         <OptionBox  :toggleButtons="false" type="text"  :darkmode="darkmode" :user="user"               optionTitle="Theme Color"  :optionCategory="path"  :optionValue="user.settings.appearance.theme_color"         :fields="[{placeholder: 'e.g. #ff0022', maxLength: 7 }]"/>
-
       </div>
 
       <!-- Privacy -->
-      <div v-if="path == 'privacy'" class="privacy">
+      <div v-if="path == 'privacy'" class="section privacy">
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
@@ -59,7 +58,7 @@
       </div>
 
       <!-- Info -->
-      <div v-if="path == 'info'" class="info">
+      <div v-if="path == 'info'" class="section info">
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
@@ -71,7 +70,7 @@
       </div>
 
       <!-- acknowledgements -->
-      <div v-if="path == 'acknowledgements'" class="acknowledgements">
+      <div v-if="path == 'acknowledgements'" class="section acknowledgements">
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
@@ -107,7 +106,7 @@
       </div>
 
       <!-- Guidelines -->
-      <div v-if="path == 'guidelines'" class="guidelines">
+      <div v-if="path == 'guidelines'" class="section guidelines">
         <div class="textHeader" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
@@ -201,7 +200,8 @@ export default {
         {lib: "Joi",        creator: "sideway",       img: require("../assets/libraries/joi.png"),       link: "https://www.npmjs.com/package/joi"},
         {lib: "Nprogress",  creator: "rstacruz",      img: require("../assets/libraries/nprogress.png"), link: "https://ricostacruz.com/nprogress/"},
       ],
-      user: {},
+      user: {
+      },
       typingSoundUrl: localStorage.typingSoundUrl,
       mentionSoundUrl: localStorage.mentionSoundUrl,
       darkmode: localStorage.darkmode,
@@ -343,6 +343,7 @@ export default {
       this.darkmode = localStorage.darkmode;
       this.typingSoundUrl = localStorage.typingSoundUrl;
       this.mentionSoundUrl = localStorage.mentionSoundUrl;
+
     },
   }
 }
@@ -408,8 +409,11 @@ export default {
   margin-right: 12px;
 }
 
+.section {
+  width: calc(100% - 16px);
+}
+
 .appearanceAndSounds {
-  overflow: scroll;
   height: inherit;
   scrollbar-color: #888888#F3F3F3 ;
   scrollbar-width: thin;
@@ -420,7 +424,6 @@ export default {
 }
 
 .accountSettings {
-  overflow: scroll;
   height: inherit;
   scrollbar-color: #888888#F3F3F3 ;
   scrollbar-width: thin;

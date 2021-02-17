@@ -310,9 +310,9 @@ app.get("/user/:username", async (req, res) => {
   );
 
   // Add the osu connections
-  if (response[0] && response[0].connections && response[0].connections.osu) {
-    response[0].connections = {
-      osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].connections.osu.user_id}&k=${osuKey}`)).data[0]
+  if (response[0] && response[0].profile.connections && response[0].profile.connections.osu) {
+    response[0].profile.connections = {
+      osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].profile.connections.osu.user_id}&k=${osuKey}`)).data[0]
     }
   }
 
@@ -632,27 +632,29 @@ app.post("/signup", async (req, res) => {
     result.password = hash;
 
     // Append defaults to user
-    result.total_likes = 0;
-    result.total_comments = 0;
-    result.total_tomodachi = 0;
-    result.total_uploads = 0;
+    result.likes = {};    // What they liked
+    result.comments = {}; // What they've commented
+    result.uploads = {};  // What they've uploaded
+    result.profile = {    // Everything related to their profile
+      pfp: `http://anihuu.moe:8880/pfp/_default.png`,
+      description: "I love anime owo!",
+      stats: {
+        total_likes: 0,
+        total_comments: 0,
+        total_friends: 0,
+        total_uploads: 0,
+      },
+      anime: [],        // List of their favorite animes
+      description: "",  // Their description
+      computer: [],     // Their computer specs
+      socials: [],      // Socials
+      connections: {},  // Stuff like osu etc
+    };
 
-    result.likes = {};
-    result.comments = {};
-    result.tomodachi = {};
-    result.uploads = {};
-    result.socials = {};
-
-    result.anime_showcase = [];
-    result.background_showcase = {};
-    result.description = "I love anime owo!";
-    result.pfp = `http://anihuu.moe:8880/pfp/_default.png`;
-    result.uploaded_backgrounds = {};
-    result.vip = false;
-    result.banner = 0;
-    result.state = true;
-    result.dms = {};
-    result.settings = {
+    result.vip = false; // If the user is a dev
+    result.state = true; // Online or offline state
+    result.dms = {}; // The user's DMs list
+    result.settings = { // Their settings
         appearance: {
             darkmode: false,
             animate_pfps: true,
@@ -692,7 +694,6 @@ app.post("/signup", async (req, res) => {
             blocked_users: [],
         },
     }
-    result.connections = {};
 
     // Add to database
     await users.insert(result);
