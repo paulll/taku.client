@@ -1,95 +1,31 @@
 <template>
   <div class="settings">
-    <SettingsBar/>
+    <div v-if="user.settings">
+      <SettingsBar :themeColor="user.settings.appearance.theme_color"/>
+    </div>
 
     <div class="settingsArea" :class="{darkmode: darkmode == 'true'}">
+
+      <!-- Account -->
+      <div v-if="path == 'account'" class="Account">
+        <img class="pfp" :src="user.settings.pfp" alt="">
+        <OptionBox :optionCategory="path" type="text" :user="user" optionTitle="Username" :darkmode="darkmode" :optionValue="user.username"/>
+        <OptionBox :optionCategory="path" type="text" :user="user" optionTitle="Email"    :darkmode="darkmode" :optionValue="user.email"/>
+        <OptionBox :optionCategory="path" type="text" :user="user" optionTitle="Password" :darkmode="darkmode"  optionValue="**************"/>
+      </div>
+
+      <!-- Appearance & Sounds -->
       <div v-if="path == 'appearance'" class="appearanceAndSounds" :class="{darkmode: darkmode == 'true'}">
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/darkmode.png" alt="darkmode">
-              <h1>Darkmode</h1>
-            </div>
-            <div class="onOff">
-              <button @click="toggleOption(true, 'darkmode')" :class="{active: user.settings.appearance.darkmode == true}">on</button>
-              <button @click="toggleOption(false, 'darkmode')" :class="{active: user.settings.appearance.darkmode == false}">off</button>
-            </div>
-          </div>
-        </div>
-        <!-- <div class="splitter"></div> -->
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/keyboard.png" alt="darkmode">
-              <h1>Typing SFX</h1>
-            </div>
-            <div class="onOff">
-              <button @click="toggleOption(true, 'typing_sfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == true}">on</button>
-              <button @click="toggleOption(false, 'typing_sfx')" :class="{active: user.settings.appearance.typing_sfx.enabled == false}">off</button>
-            </div>
-          </div>
-          <div class="bottom">
-            <a v-if="typingSoundUrl" target="_blank" :href="user.settings.appearance.typing_sfx.url"><p>{{user.settings.appearance.typing_sfx.url.split("/")[user.settings.appearance.typing_sfx.url.split("/").length - 1]}}</p></a>
-            <a href=""><p v-if="!typingSoundUrl">Default</p></a>
-            <img v-if="typingSoundUrl" src="../assets/x.png" alt="" @click="resetSfx('typingSoundUrl')">
-            <img v-if="!typingSoundUrl" src="../assets/upload.png" alt="" @click="$refs.keystrokeInput.click()">
-            <input class="fileInput" type="file" ref="keystrokeInput" accept="audio/*" @change="uploadFile('keystrokeInput', 'typing_sfx')">
-          </div>
-        </div>
+        <OptionBox :user="user"  :darkmode="darkmode" optionTitle="Darkmode" :optionCategory="path"     :toggleButtons="true"   :optionValue="user.settings.appearance.darkmode"/>
+        <OptionBox  :toggleButtons="true"  type="file"  :darkmode="darkmode" :fileUrl="typingSoundUrl"  property="typingSoundUrl"  :user="user"            :optionValue="user.settings.appearance.typing_sfx.enabled"  optionTitle="Typing SFX"  :optionCategory="path"     :showValue="true"/>
+        <OptionBox  :toggleButtons="true"  type="file"  :darkmode="darkmode" :fileUrl="mentionSoundUrl" property="mentionSoundUrl" :user="user"            :optionValue="user.settings.appearance.mention_sfx.enabled" :optionCategory="path"    optionTitle="Mention SFX"    :showValue="true"/>
+        <OptionBox  :toggleButtons="true"  type="text"  :darkmode="darkmode" :user="user"               optionTitle="Flare"        :optionCategory="path"  :optionValue="user.settings.appearance.flare.enabled"       :fields="[{placeholder: 'e.g. Shimakaze', selector: 'content', maxLength: 32 }, {placeholder: 'e.g. #ff0022', selector: 'color', maxLength: 7}, ]"/>
+        <OptionBox  :toggleButtons="false" type="text"  :darkmode="darkmode" :user="user"               optionTitle="Theme Color"  :optionCategory="path"  :optionValue="user.settings.appearance.theme_color"         :fields="[{placeholder: 'e.g. #ff0022', maxLength: 7 }]"/>
 
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/notification.png" alt="darkmode">
-              <h1>Mention SFX</h1>
-            </div>
-            <div class="onOff">
-              <button @click="toggleOption(true, 'mention_sfx')" :class="{active: user.settings.appearance.mention_sfx.enabled == true}">on</button>
-              <button @click="toggleOption(false, 'mention_sfx')" :class="{active: user.settings.appearance.mention_sfx.enabled == false}">off</button>
-            </div>
-          </div>
-          <div class="bottom">
-            <a v-if="mentionSoundUrl" target="_blank" :href="user.settings.appearance.mention_sfx.url"><p>{{user.settings.appearance.mention_sfx.url.split("/")[user.settings.appearance.mention_sfx.url.split("/").length - 1]}}</p></a>
-            <a href=""><p v-if="!mentionSoundUrl">Default</p></a>
-            <img v-if="mentionSoundUrl" src="../assets/x.png" alt="" @click="resetSfx('mentionSoundUrl')">
-            <img v-if="!mentionSoundUrl" src="../assets/upload.png" alt="" @click="$refs.mentionInput.click()">
-            <input class="fileInput" type="file" ref="mentionInput" accept="audio/*" @change="uploadFile('mentionInput', 'mention_sfx')">
-          </div>
-        </div>
-
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/flare.png" alt="darkmode">
-              <h1>Flare</h1>
-            </div>
-            <div class="onOff">
-              <button @click="toggleOption(true, 'flare')" :class="{active: user.settings.appearance.flare.enabled == true}">on</button>
-              <button @click="toggleOption(false, 'flare')" :class="{active: user.settings.appearance.flare.enabled == false}">off</button>
-            </div>
-          </div>
-          <div class="bottomTextFields">
-            <input placeholder="e.g. Shimakaze" class="textField" v-model="user.settings.appearance.flare.content" type="text" maxlength="32" @change="user.settings.appearance.flare.content.trim(); updateSettings()">
-            <input placeholder="e.g. #ff0022" class="textField" v-model="user.settings.appearance.flare.color" type="text" maxlength="32" @change="updateSettings()">
-          </div>
-        </div>
-
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/theme_color.png" alt="darkmode">
-              <h1>Theme Color</h1>
-            </div>
-          </div>
-          <div class="bottomTextFields">
-            <input class="textField" v-model="user.settings.appearance.theme_color" type="text" maxlength="7" @change="updateSettings()">
-          </div>
-        </div>
       </div>
 
       <!-- Privacy -->
       <div v-if="path == 'privacy'" class="privacy">
-
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
@@ -106,7 +42,7 @@
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
-              <img src="../assets/keyboard.png" alt="darkmode">
+              <!-- <img src="../assets/keyboard.png" alt="darkmode"> -->
               <h1>Blocked Users</h1>
             </div>
           </div>
@@ -122,23 +58,12 @@
         </div>
       </div>
 
-      <!-- Account -->
-      <div v-if="path == 'account'" class="accountSettings">
-        <div class="textHeader" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <h1>Account</h1>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- Info -->
       <div v-if="path == 'info'" class="info">
         <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
           <div class="top">
             <div class="heading">
-              <img src="../assets/dev.png" alt="darkmode">
+              <img src="../assets/user.png" alt="darkmode">
               <h1>WHO WE ARE</h1>
             </div>
           </div>
@@ -232,6 +157,8 @@
 import SettingsBar from '@/components/SettingsBar.vue'
 import MobileHeader from '@/components/MobileHeader.vue'
 
+import OptionBox from '@/components/sub components/OptionBox.vue'
+
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
@@ -246,7 +173,8 @@ const emitter = mitt();
 export default {
   name: 'home',
   components: {
-    SettingsBar
+    SettingsBar,
+    OptionBox
   },
   data: () => {
     return {
@@ -284,13 +212,11 @@ export default {
       this.path = to.params.setting;
     }
   },
-  created() {
-    this.getUser();
-  },
   mounted() {
     this.path = this.$route.params.setting;
+    this.getUser();
 
-    this.emitter.on('updateTheme', () => this.updateTheme());
+    this.emitter.on('updateUI', () => this.updateUI());
   },
   methods: {
     async getUser() {
@@ -303,7 +229,6 @@ export default {
       // This is here so old users don't have an issue with loading the settings
       // Once they will update their settings this will go on their database
       // In v1.0 this should be removed
-
 
       if (!user.data.settings.appearance) {
         user.data.settings.appearance = {
@@ -321,6 +246,8 @@ export default {
         }
       }
 
+      // if (user.data.setting.appearance.theme_color == "") user.data.setting.appearance.theme_color = "#ff006b";
+
       if (!user.data.settings.appearance.flare) {
         user.data.settings.appearance.flare = {
           enabled: false,
@@ -329,7 +256,6 @@ export default {
         }
       }
 
-      console.log(user.data.settings.appearance);
       this.user = user.data;
 
     },
@@ -349,7 +275,7 @@ export default {
         case "darkmode":
           this.user.settings.appearance.darkmode = state;
           localStorage.setItem('darkmode', state);
-          this.emitter.emit('updateTheme');
+          this.emitter.emit('updateUI');
           break;
         case "typing_sfx":
           this.user.settings.appearance.typing_sfx.enabled = state;
@@ -413,8 +339,10 @@ export default {
       this.user.settings.appearance[sfx].url = '';
       this.updateSettings();
     },
-    updateTheme(){
+    updateUI(){
       this.darkmode = localStorage.darkmode;
+      this.typingSoundUrl = localStorage.typingSoundUrl;
+      this.mentionSoundUrl = localStorage.mentionSoundUrl;
     },
   }
 }
@@ -425,6 +353,19 @@ export default {
 .settings {
   min-height: 100vh;
   width: 100%;
+}
+
+.pfp {
+  width: 122px;
+  height: 122px;
+  border-radius: 100%;
+}
+
+.usernameBottom {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 32px;
 }
 
 .devsBottom {
@@ -556,33 +497,6 @@ export default {
   margin-left: 12px;
 }
 
-.onOff {
-  height: 24px;
-  border-radius: 64px;
-  background: #141520;
-  width: 112px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: 100ms ease;
-}
-
-.onOff:hover { background: #810036;}
-.onOff button {
-  border: none;
-  cursor: pointer;
-  outline: none;
-  background: transparent;
-  color: white;
-  text-transform: uppercase;
-  font-weight: 700;
-  width: calc(50% + 4px);
-  height: calc(100% + 4px);
-  border-radius: 24px;
-}
-
-
-.active { background: #FF006B !important;}
 .splitter {
   width: 100%;
   height: 1px;
@@ -596,148 +510,6 @@ export default {
   background: #252739;
 }
 
-.optionBox {
-  background: white;
-  padding: 12px;
-  border-radius: 8px;
-  margin: 16px;
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
-}
-
-.optionBox.darkmode { /* darkmode */
-  background: #10121D;
-  color: white;
-} 
-
-.optionBox.darkmode .top .heading img                                       { filter: invert(1); }      /* darkmode */ 
-.optionBox.darkmode .bottom, .optionBox.darkmode .textField                 { background: #171A28; }  /* darkmode */
-.optionBox.darkmode .bottom a:not(:hover), .optionBox.darkmode .textField   { color: white; }         /* darkmode */
-.optionBox.darkmode .bottom img:not(:hover)                                 { filter: invert(1); }      /* darkmode */
-
-.optionBox div {
-  display: flex;
-  align-items: center;
-}
-
-.textHeader {
-  background: rgba(255, 255, 255, 0);
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 16px;
-  margin-left: 16px;
-  margin-right: 16px;
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
-}
-
-.textHeader.darkmode { /* darkmode */
-  background: #10121d00;
-  color: white;
-}
-
-.textHeader.darkmode .top .heading img                                       { filter: invert(1); }      /* darkmode */ 
-.textHeader.darkmode .bottom, .textHeader.darkmode .textField                 { background: #10121d00; }  /* darkmode */
-.textHeader.darkmode .bottom a:not(:hover), .textHeader.darkmode .textField   { color: white; }         /* darkmode */
-.textHeader.darkmode .bottom img:not(:hover)                                 { filter: invert(1); }      /* darkmode */
-.textHeader div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.textParagraph {
-  background: rgba(255, 255, 255, 0);
-  padding: 12px;
-  border-radius: 8px;
-  margin-top: 16px;
-  margin-left: 16px;
-  margin-right: 16px;
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
-}
-
-.textParagraph.darkmode { /* darkmode */
-  background: #10121d00;
-  color: white;
-}
-
-.textParagraph.darkmode .top .heading img                                       { filter: invert(1); }      /* darkmode */ 
-.textParagraph.darkmode .bottom, .textParagraph.darkmode .textField                 { background: #10121d00; }  /* darkmode */
-.textParagraph.darkmode .bottom a:not(:hover), .textParagraph.darkmode .textField   { color: white; }         /* darkmode */
-.textParagraph.darkmode .bottom img:not(:hover)                                 { filter: invert(1); }      /* darkmode */
-
-.textParagraph div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.bottom {
-  margin-top: 16px;
-  background: #F3F3F3;
-  border-radius: 8px;
-  min-height: 38px;
-  overflow: hidden;
-}
-
-.bottomTextFields {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-
-.textField {
-  border: none;
-  background: #F3F3F3;
-  /* border-bottom: 2px solid black; */
-  outline: none;
-  margin-top: 16px;
-  text-indent: 16px;
-  width: 100%;
-  color: black;
-  font-weight: 500;
-  font-size: 14px;
-  min-height: 38px;
-  border-radius: 8px;
-  min-width: 0px;
-}
-
-.textField::placeholder {
-  color: #575b77;
-}
-
-.bottom a {
-  text-decoration: none;
-  color: black;
-  transition: 100ms ease;
-  margin-left: 16px;
-}
-
-.bottom a:hover { color: #FF006B; }
-.bottom a p {
-  font-weight: 500;
-  font-size: 14px;
-}
-
-.bottom img {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-.bottom img:hover { filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%); }
-.bottom .fileInput { display: none; }
-
-.bottom.blockedUsers {
-  display: flex;
-  flex-direction: column;
-}
-
-.bottom.devs {
-  flex-direction: column;
-  display: flex;
-  font-size: 4px;
-  align-items: left;
-}
 
 .blockedUser {
   display: flex;
@@ -746,12 +518,6 @@ export default {
   width: 100%;
   justify-content: space-between;
   align-items: center;
-}
-.blockedUser .pfp {
-  height: 40px;
-  margin: 0px 12px;
-  width: 40px;
-  border-radius: 100%;
 }
 
 </style>

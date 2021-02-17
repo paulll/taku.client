@@ -358,6 +358,7 @@ export default {
 .bannerContainer {
     width: 100%;
     position: relative;
+    overflow: hidden;
 }
 
 .gradient {

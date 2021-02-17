@@ -19,7 +19,7 @@
 - [ ] Add Ping at the top right next to the buttons on the header
 
 - [x] Add the Guidelines in the settings
-- [ ] Fix the header overlaying the chats
+- [x] Fix the header overlaying the chats
 
 
 - [x] Cache user settings on login

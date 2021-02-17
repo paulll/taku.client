@@ -9,10 +9,10 @@ export default {
   },
   mounted(){
     // Update the theme from the event emitter
-    this.emitter.on('updateTheme', () => this.updateTheme());
+    this.emitter.on('updateUI', () => this.updateUI());
   },
   methods: {
-    updateTheme(){
+    updateUI(){
       this.darkmode = localStorage.darkmode;
     },
   }
@@ -21,7 +21,7 @@ export default {
 
 <template>
   <div class="mh-headerContainer">
-    <header class="mh-header" @update-theme="updateTheme" :class="{darkmode: darkmode == 'true'}">
+    <header class="mh-header" @update-theme="updateUI" :class="{darkmode: darkmode == 'true'}">
       <ul class="mh-headerButtons">
         <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
         <li><router-link to="/submit" class="mh-headerButton"><img src="../assets/add.png" alt=""></router-link></li>

@@ -161,6 +161,10 @@ io.on("connection", socket => {
   socket.emit("message", "Connected to anihuu DMs");
   socket.emit("messages", currentMessages);
 
+  socket.on("ping", () => {
+    socket.emit("pong");
+  });
+
   // The reason i use a normal post method here is because
   // apparently theres a 1mb limit to a ws header
   // therefore if people want to send images that are bigger
@@ -343,7 +347,7 @@ app.get("/user", async (req, res) => {
     );
 
     delete response[0].password;
-    delete response[0].email;
+    response[0].email;
 
     res.status(200);
     res.json(response[0]);

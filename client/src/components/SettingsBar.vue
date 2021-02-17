@@ -1,58 +1,66 @@
 <template>
-  <div @update-theme="updateTheme" class="settingsBar back" :class="{small: path, darkmode: darkmode == 'true'}" >
-    <router-link :class="{hidden: !path, darkmode: darkmode == 'true'}" to="/settings" class="setting">
-      <img src="../assets/back.png" alt="back">
-    </router-link>
+  <div @update-theme="updateUI" class="settingsBar back" :class="{small: path, darkmode: darkmode == 'true'}" >
+    
+    <div>
+      <router-link :class="{hidden: !path, darkmode: darkmode == 'true'}" to="/settings" class="setting">
+        <img src="../assets/back.png" alt="back">
+      </router-link>
 
-    <router-link to="/settings/account" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/account.png" alt="account">
-      <h1>Account</h1>
-    </router-link>
+      <router-link to="/settings/account" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/account.png" alt="account">
+        <h1>Account</h1>
+      </router-link> 
 
-    <router-link to="/settings/notification" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/notification.png" alt="notification">
-      <h1>Notifications</h1>
-    </router-link>
+      <!-- <router-link to="/settings/notification" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/notification.png" alt="notification">
+        <h1>Notifications</h1>
+      </router-link> -->
 
-    <router-link to="/settings/appearance" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/appearance.png" alt="appearance">
-      <h1>Appearance & Sounds</h1>
-    </router-link>
+      <router-link to="/settings/appearance" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/appearance.png" alt="appearance">
+        <h1>Appearance & Sounds</h1>
+      </router-link>
 
-    <router-link to="/settings/nsfw" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/nsfw.png" alt="nsfw">
-      <h1>NSFW Content</h1>
-    </router-link>
+      <!-- <router-link to="/settings/nsfw" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/nsfw.png" alt="nsfw">
+        <h1>NSFW Content</h1>
+      </router-link>
 
-    <router-link to="/settings/language" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/language.png" alt="language">
-      <h1>Language</h1>
-    </router-link>
+      <router-link to="/settings/language" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/language.png" alt="language">
+        <h1>Language</h1>
+      </router-link> -->
 
-    <router-link to="/settings/feedback" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/feedback.png" alt="feedback">
-      <h1>Feedback</h1>
-    </router-link>
+      <!-- <router-link to="/settings/feedback" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/feedback.png" alt="feedback">
+        <h1>Feedback</h1>
+      </router-link> -->
 
-    <router-link to="/settings/privacy" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/privacy.png" alt="privacy">
-      <h1>Privacy</h1>
-    </router-link>
+      <router-link to="/settings/privacy" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/privacy.png" alt="privacy">
+        <h1>Privacy</h1>
+      </router-link>
 
-    <router-link to="/settings/guidelines" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/guidelines.png" alt="guidelines">
-      <h1>Guidelines</h1>
-    </router-link>
+      <router-link to="/settings/guidelines" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/guidelines.png" alt="guidelines">
+        <h1>Guidelines</h1>
+      </router-link>
 
-    <router-link to="/settings/acknowledgements" class="setting" :class="{darkmode: darkmode == 'true'}" >
-      <img src="../assets/acknowledgements.png" alt="acknowledgements">
-      <h1>Acknowledgements</h1>
-    </router-link>
+      <router-link to="/settings/acknowledgements" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/acknowledgements.png" alt="acknowledgements">
+        <h1>Acknowledgements</h1>
+      </router-link>
+    </div>
 
-    <router-link to="/settings/info" class="setting" :class="{darkmode: darkmode == 'true'}" >
+    <!-- <router-link to="/settings/info" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/info.png" alt="info">
       <h1>Information</h1>
-    </router-link>
+    </router-link> -->
+
+    <div @click="logout()" class="setting logout" :class="{darkmode: darkmode == 'true'}" >
+      <img src="../assets/logout.png" alt="logout">
+      <h1>Logout</h1>
+    </div>
 
   </div>
 </template>
@@ -62,6 +70,7 @@ import SettingsBar from '@/components/SettingsBar.vue'
 import axios from 'axios';
 
 export default {
+  props: ['themeColor'],
   data: () => {
     return {
       path: {},
@@ -77,10 +86,20 @@ export default {
     this.path = this.$route.params.setting; // get current path from url
 
     // Update the theme from the event emitter
-    this.emitter.on('updateTheme', () => this.updateTheme());
+    this.emitter.on('updateUI', () => this.updateUI());
+  },
+  created(){
+    this.themeColors = {
+        '--themeColor': this.themeColor,
+        '--themeColorHover': `${this.themeColor}66`,
+    }
   },
   methods: {
-    updateTheme(){
+    logout(){
+      localStorage.removeItem('token');
+      window.location.href = "http://anihuu.moe:8080";
+    },
+    updateUI(){
       this.darkmode = localStorage.darkmode;
       console.log("updating settings component");
     },
@@ -98,6 +117,10 @@ export default {
   overflow: hidden;
   position: fixed;
   z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .settingsBar.darkmode { background: #020204; } /* darkmode */
@@ -108,9 +131,14 @@ export default {
   text-decoration: none;
 }
 
+.setting.logout{
+  margin-bottom: 56px;
+  filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%);
+}
+
 .setting.darkmode { filter: invert(1); } /* darkmode */ 
-.setting.router-link-active { background: #ff006b;  }
-.setting.setting.router-link-active.darkmode { background: #00ff94; } /* darkmode */ 
+.setting.router-link-active { background: var(--themeColor); }
+.setting.setting.router-link-active.darkmode { background: var(--themeColor); } /* darkmode */ 
 .setting.router-link-active img { filter: invert(1);   }
 .setting:hover:not(.router-link-active) { filter: invert(13%) sepia(79%) saturate(5683%) hue-rotate(327deg) brightness(104%) contrast(114%); }
 

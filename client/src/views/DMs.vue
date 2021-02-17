@@ -114,13 +114,11 @@ export default {
     });
     this.socket.on('message', message => {
       if (message.content !== undefined) {
-
+        console.log(message);
         // If the last message is by the same user just add the message content itself without
         // Their username etc
         if (lastMessage?.author?.username == message.author.username) message.author.sameAsLast = true;
         message.content = this.renderHtml(message.content);
-
-        console.log(message.attachments);
 
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
         lastMessage = message;
@@ -229,7 +227,6 @@ export default {
       formData.append('message', json);
 
       // Add files on the formdata if theres any
-      console.log(this.attachments);
       if (this.attachments) {
         this.attachments.forEach(attachment => {
           formData.append('file', attachment.file);
@@ -259,8 +256,6 @@ export default {
       });
 
       this.blockedUsers = response.data
-
-      console.log(this.blockedUsers);
     },
     // This is the function that triggers the typing sounds
     // It can be turned off from the settings

@@ -26,28 +26,26 @@
                     <!-- <p class="tags"><strong>ANIME</strong></p> -->
                 </div>
             </div>
-
-            <div class="buttons" v-if="!token">
+            <div class="ping" v-if="!token || token">
+                <p :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250}">{{ping}}ms</p>
+            </div>
+            <div class="buttons" :style="themeColors"  v-if="!token">
                 <router-link to="/login" class="login">LOGIN</router-link>
                 <router-link to="/signup" class="signup">SIGNUP</router-link>
             </div>
-            <div class="ping" v-if="token">
-                <p :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250}">{{ping}}ms</p>
-            </div>
-            <div class="buttons small" v-if="token">
+            <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/home" class="button"><img src="../assets/home.svg" alt=""></router-link>
             </div>
-            <div class="buttons small" v-if="token">
+            <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/anime" class="button"><img src="../assets/anime.svg" alt=""></router-link>
             </div>
-            <div class="buttons small" v-if="token">
+            <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
             </div>
-            <div class="buttons small" v-if="token">
+            <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
             </div>
-            <div class="buttons" v-if="token">
-                <button @click="logout()" class="button">LOGOUT</button>
+            <div class="buttons" :style="themeColors" v-if="token">
                 <router-link :to='`/profile/${user.username}`'><div class="pfp" :style="{'background-image' : `url('${user.pfp}')`}"></div></router-link>
             </div>
         </div>
@@ -57,6 +55,7 @@
 <script>
 import axios from 'axios';
 import Spinner from '@/components/Spinner.vue'
+import io from 'socket.io-client';
 
 export default {
     data: () => {
@@ -64,10 +63,12 @@ export default {
             path: "",
             token: localStorage.token,
             user: "",
+            socket: io('ws://anihuu.moe:8880'),
             ping: null,
             searchString: "",
             searchResults: [],
             darkmode: localStorage.darkmode,
+            themeColors: {}
         }
     },
     components: {
@@ -82,18 +83,24 @@ export default {
         this.path = this.$route.params.setting;
         this.getUser();
 
-        setInterval(async () => {
-            this.ping = await this.getPing();
-        }, 1000);
+        // setInterval(async () => {           
+        //     this.ping = await this.getPing();
+        // }, 1000);
 
+        this.getPing()
+
+        this.socket.on('ping', epoch => this.ping = new Date().getTime() - epoch);
 
         this.emitter.on('refreshHeader', () => this.getUser());
     },
+    created(){
+
+    },
+    unmounted() {
+        // Disconnect socket when the app closes
+        this.socket.disconnect();
+    },
     methods: {
-        logout(){
-            localStorage.removeItem('token');
-            window.location.href = "http://anihuu.moe:8080";
-        },
         async getUser() {
             const response = await axios.get('http://anihuu.moe:8880/user', {
                 withCredentials: true,
@@ -103,6 +110,21 @@ export default {
             console.log(response.data);
 
             this.user = response.data;
+
+            try {
+                this.themeColors = {
+                    '--themeColor': this.user.settings.appearance.theme_color,
+                    '--themeColorHover': `${this.user.settings.appearance.theme_color}66`,
+                }
+            } catch (error) {
+                this.themeColors = {
+                    '--themeColor': '#ff006b',
+                    '--themeColorHover': '#ff006b66',
+                }  
+            }
+
+            console.log(this.themeColors);
+
             localStorage.removeItem("darmode");
             localStorage.setItem('darkmode', response.data.settings.appearance.darkmode);
         },
@@ -121,12 +143,15 @@ export default {
             console.log(this.searchResults);
         },
         async getPing(){
-            const startTime = new Date().getTime();
-            const response  = await axios.get('http://anihuu.moe:8880/ping/')
-            if (response.status == 200) {
-                const ping = new Date().getTime() - startTime;
-                return ping
-            }
+            setInterval(() => {
+                const startTime = new Date().getTime();
+                this.socket.emit('ping');
+
+                // I divided the ms by 2 because theres 2 requests going, one that emits "ping", and then waits for "pong"
+                this.socket.on('pong', () => {
+                    this.ping = ((new Date().getTime() - startTime) / 2).toFixed(0);
+                });
+            }, 1000);
         }
     }
 }
@@ -312,7 +337,7 @@ export default {
 }
 
 .button:hover {
-    background: #FF006B;
+    background: var(--themeColor);
     color: white;
 }
 
@@ -334,6 +359,7 @@ export default {
 
 .ping p {
     transition: 200ms ease;
+    white-space: nowrap;
 }
 
 .ping .ok { color: #3BE220; }
