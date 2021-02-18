@@ -162,8 +162,6 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
 
-
-
 import axios from 'axios';
 import mitt from 'mitt';
 

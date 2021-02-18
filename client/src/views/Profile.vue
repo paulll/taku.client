@@ -5,11 +5,11 @@
                 <input type="file" ref="banner" style="display: none" accept="image/*" @change="uploadFile('banner')">
                 <img @click="$refs.banner.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
             </div>
-            <div class="banner" :style="{'background-image' : `url('${profile.profile?.banner}')`}">
+            <div class="banner" :style="{'background-image' : `url('${profile?.profile?.banner}')`}">
             </div>
             <div class="heading" :class="{darkmode: darkmode == 'true'}">
                 <div class="pfp">
-                    <div v-if="profile.username" class="image" :style="{'background-image': `url('${profile.profile.pfp}')`}">
+                    <div v-if="profile.username" class="image" :style="{'background-image': `url('${profile?.profile?.pfp}')`}">
                         <input type="file" ref="pfp" style="display: none" accept="image/*" @change="uploadFile('pfp')">
                         <img @click="$refs.pfp.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
                     </div>
@@ -22,13 +22,13 @@
                 </div>
                 <div class="row info">
                     <div class="infoField" v-if="token">
-                        <button @click="toggleFriend()" v-if="profile.username != me.username && !user.friends?.includes(profile?.username)" class="button">ADD FRIEND</button>
-                        <button @click="toggleFriend()" v-if="profile.username != me.username && user.friends?.includes(profile?.username)" class="button">REMOVE FRIEND</button>
-                        <button class="button" v-if="profile.username != me.username"><router-link :to="`/messages/${profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
-                        <button @click="block()" v-if="profile.username != me.username && !user.settings?.privacy.blocked_users.includes(profile?.username)" class="button"><img src="../assets/flag.png" alt=""></button>
-                        <button @click="block()" v-if="profile.username != me.username && user.settings?.privacy.blocked_users.includes(profile?.username)" class="button">UNBLOCK</button>
-                        <button v-if="profile.username == me.username && !edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
-                        <button v-if="profile.username == me.username && edit" @click="toggleEdit()" class="button">SAVE</button>
+                        <button :style="themeColors" @click="toggleFriend()" v-if="profile.username != me.username && !user.friends?.includes(profile?.username)" class="button">ADD FRIEND</button>
+                        <button :style="themeColors" @click="toggleFriend()" v-if="profile.username != me.username && user.friends?.includes(profile?.username)" class="button">REMOVE FRIEND</button>
+                        <button :style="themeColors" class="button" v-if="profile.username != me.username"><router-link :to="`/messages/${profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                        <button :style="themeColors" @click="block()" v-if="profile.username != me.username && !user.settings?.privacy.blocked_users.includes(profile?.username)" class="button"><img src="../assets/flag.png" alt=""></button>
+                        <button :style="themeColors" @click="block()" v-if="profile.username != me.username && user.settings?.privacy.blocked_users.includes(profile?.username)" class="button">UNBLOCK</button>
+                        <button :style="themeColors" v-if="profile.username == me.username && !edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
+                        <button :style="themeColors" v-if="profile.username == me.username && edit" @click="toggleEdit()" class="button">SAVE</button>
                     </div>
                     <div class="splitter" v-if="token"></div>
                     <div class="infoField">
@@ -57,7 +57,7 @@
             <!-- COMPUTER SPECS -->
             <div v-if="profile.profile?.computer">
                 <p class="tags" :class="{darkmode: darkmode == 'true'}"><strong>MY</strong> Computer</p>
-                <MyComputer :computer="profile.profile?.computer" :edit="edit"/>
+                <MyComputer :computer="profile.profile?.computer" :edit="edit" :themeColors="themeColors"/>
             </div>
 
             <!-- OSU PROFILE -->
@@ -110,6 +110,7 @@ export default {
                 youtube: "",
             }
         },
+        themeColors: {},
         user: {
             friends: []
         },
@@ -132,44 +133,43 @@ export default {
   },
   methods: {
     async getUser() {
-      NProgress.start();
+        NProgress.start();
 
-      const user = await axios.get('http://anihuu.moe:8880/user', {
-        withCredentials: true,
-      });
+        const user = await axios.get('http://anihuu.moe:8880/user', {
+            withCredentials: true,
+        });
 
-      // Add the new settings structure on the user
-      // This is here so old users don't have an issue with loading the settings
-      // Once they will update their settings this will go on their database
-      // In v1.0 this should be removed
+        // Add the new settings structure on the user
+        // This is here so old users don't have an issue with loading the settings
+        // Once they will update their settings this will go on their database
+        // In v1.0 this should be removed
 
-
-      if (!user.data.settings.appearance) {
-        user.data.settings.appearance = {
-          darkmode: false,
-          anime_pfps: true,
-          typing_sfx: {
-            enabled: true,
-            url: ""
-          },
-          mention_sfx: {
-            enabled: true,
-            url: ""
-          },
-          theme_color: "#ff006b"
+        if (!user.data.settings.appearance) {
+            user.data.settings.appearance = {
+            darkmode: false,
+            anime_pfps: true,
+            typing_sfx: {
+                enabled: true,
+                url: ""
+            },
+            mention_sfx: {
+                enabled: true,
+                url: ""
+            },
+            theme_color: "#ff006b"
+            }
         }
-      }
 
-      if (!user.data.settings.appearance.flare) {
-        user.data.settings.appearance.flare = {
-          enabled: false,
-          content: "",
-          color: "#ffffff"
+        if (!user.data.settings.appearance.flare) {
+            user.data.settings.appearance.flare = {
+            enabled: false,
+            content: "",
+            color: "#ffffff"
+            }
         }
-      }
 
-      this.user = user.data;
-      NProgress.done();
+        this.user = user.data;
+        NProgress.done();
 
     },
     async getProfileData() {
@@ -178,10 +178,24 @@ export default {
         let result = await axios.get(`http://anihuu.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
         console.log("ASASASASASASAS");
+
         console.log(result);
+
+        try {
+            this.themeColors = {
+                '--themeColor': result.settings.appearance.theme_color,
+                '--themeColorHover': `${result.settings.appearance.theme_color}66`,
+            }
+        } catch (error) {
+            console.log(error);
+            this.themeColors = {
+                '--themeColor': '#ff006b',
+                '--themeColorHover': '#ff006b66',
+            }  
+        }
+
         this.profile = result;
 
-        NProgress.stop();
     },
     async toggleFriend(){
         if (!this.user.friends) {
@@ -235,6 +249,7 @@ export default {
         else {
             console.log(response.data.error);
         }
+        NProgress.stop();
     },
   }
 }
@@ -363,7 +378,7 @@ export default {
     height: 38px;
     border-radius: 32px;
     outline: none;
-    background: #FF006B;
+    background: var(--themeColor);
     color: white;
 
     font-size: 14px;
@@ -390,7 +405,7 @@ export default {
 }
 
 .button:hover {
-    background: #d30058;
+    background: var(--themeColorHover);
 }
 .settings:hover {
     cursor:pointer;

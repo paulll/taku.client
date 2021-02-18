@@ -1,13 +1,13 @@
 <template>
     <div>
-        <div class="myComputerTabs" >
+        <div class="myComputerTabs" :style="themeColors">
             <div @click="switchTab(component.category)" :class="{imageBackground: true, active: activeTab == component.category}" v-for="component of computer" :key="component" >
                 <img :class="{active: activeTab == component.category, darkmode: darkmode == 'true'}" :src="require(`../../assets/computer/${component.category}.png`)">
             </div>
         </div>
         <div class="myComputerItem">
             <div v-for="component of computer" :key="component" >
-                <p v-if="!edit"  :class="{active: activeTab == component.category}" >{{component.item}}</p>
+                <p v-if="!edit"  :style="themeColors" :class="{active: activeTab == component.category}" >{{component.item}}</p>
                 <input v-if="edit" :class="{active: activeTab == component.category}" v-model="component.item" type="text" @change="updateSpecs">
             </div>
         </div>
@@ -21,8 +21,9 @@ import axios from 'axios';
 export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
-        computer: { type: Object, required: true }, // Computer object
-        edit: { type: Boolean, required: true }, // Check if edit is enabled or not
+        computer:       { type: Object,  required: true },   // Computer object
+        edit:           { type: Boolean, required: true },   // Check if edit is enabled or not
+        themeColors:    { type: Boolean, required: true },   // Colors for the buttons
     },
     data: () => {
         return {
@@ -73,7 +74,7 @@ export default {
 }
 
 .myComputerTabs .imageBackground.active {
-    background: #ff006b;
+    background: var(--themeColor);
     border-radius: 8px 8px 0px 0px;
 }
 
@@ -101,7 +102,7 @@ export default {
 
 .myComputerItem p {
     display: none;
-    background: #ff006b;
+    background: var(--themeColor);;
     padding: 8px;
     color: white;
     border-radius: 8px 8px 8px 8px ;

@@ -27,13 +27,13 @@ const schema = Joi.object({
   password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9!@#$%^&*()_+$]{3,30}")).required(),
   repeat_password: Joi.ref("password"),
   email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "ru", "gr"] } })
+    .email({ minDomainSegments: 2 })
     .required(),
 });
 
 // Database
 var monk = require("monk");
-const url = "localhost:27017/animebackgrounds";
+const url = "localhost:27017/anihuu";
 const db = monk(url);
 db.then(() => {
   console.log(`Connected to database ${url}`);
@@ -151,11 +151,16 @@ function addToOnlineUsers(username) {
 
 const currentMessages = [];
 
+let totalConnections = 0;
+
 // Websockets
 io.on("connection", socket => {
   socket.emit("message", "Connected to anihuu DMs");
   socket.emit("messages", currentMessages);
-
+  
+  totalConnections++;
+  console.log(`Total Connections: ${totalConnections}`);
+  
   socket.on("ping", () => {
     socket.emit("pong");
   });
@@ -224,7 +229,7 @@ io.on("connection", socket => {
         author: {
           username: author.username,
           flare: author.settings.appearance.flare,
-          pfp: author.settings.pfp,
+          pfp: author.profile.pfp ? author.profile.pfp : author.pfp,
         },
       };
   
@@ -274,7 +279,8 @@ io.on("connection", socket => {
     });
   });
   socket.on("disconnect", () => {
-
+    totalConnections--;
+    console.log(`WS Connections: ${totalConnections}`);
   });
 
 });

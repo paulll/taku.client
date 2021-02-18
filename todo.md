@@ -30,21 +30,31 @@
 - [~] Add previews for other file extentions besides images
 - [~] Make all the colors changes throughout the entire site
 - [~] Add computer flex feature on profiles
+- [~] Update the settings page into newer format
+
+- [ ] Fix friends from persisting on users when the person deletes their account and remakes it
+- [ ] Make the profile page update theme when they log in
+- [ ] Fix the search to trycatch old users cus their databases are outdated or just delete all users
 
 - [ ] Add a display english/romaji setting 
 - [ ] Add Reply feature, double tap on pc, slide on mobile
 - [ ] Add a filesize limit on the frontend
 - [ ] Add a uploading animation for messages
 - [ ] Add randomized pitch on typing sounds with toggle switch
-- [ ] Make osu profiles editable
+- [ ] Make osu profiles editable 
 - [ ] Make sections on profile draggable so users can choose the order of the things in their profile
 - [ ] Add emoji
 - [ ] Add possibility to link your osu profile
 - [ ] Make the input field in DMs a text area instead so people can send \n
 - [ ] Fix inverted colors on the settings bar
 - [ ] Fix images from being downscaled for the banner
+- [ ] Fix search result pfps are desynced with the actual pfps of the users
+- [ ] Make a user not found page for invalid urls
+- [ ] Auto logout people that are in invalid sessions
+- [ ] Fix the logout on desktop in the settings
+- [ ] Apply the theme color in the profile
+- [ ] Add a colorwheel to the theme color 
 
 
 
 
-f
