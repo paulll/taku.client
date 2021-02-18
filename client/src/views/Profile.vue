@@ -5,11 +5,11 @@
                 <input type="file" ref="banner" style="display: none" accept="image/*" @change="uploadFile('banner')">
                 <img @click="$refs.banner.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
             </div>
-            <div class="banner" :style="{'background-image' : `url('${profile.settings?.banner}')`}">
+            <div class="banner" :style="{'background-image' : `url('${profile.profile?.banner}')`}">
             </div>
             <div class="heading" :class="{darkmode: darkmode == 'true'}">
                 <div class="pfp">
-                    <div v-if="profile.username" class="image" :style="{'background-image': `url('${profile.pfp}')`}">
+                    <div v-if="profile.username" class="image" :style="{'background-image': `url('${profile.profile.pfp}')`}">
                         <input type="file" ref="pfp" style="display: none" accept="image/*" @change="uploadFile('pfp')">
                         <img @click="$refs.pfp.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
                     </div>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div v-if="profile.profile?.socials" class="row socials">
-                    <Socials :socials="profile.profile?.socials"/>
+                    <Socials :socials="profile.profile?.socials" :edit="edit"/>
                 </div>
 
                 <!-- <img class="settings" src="../assets/settings.svg" alt="Settings"> -->
@@ -48,7 +48,7 @@
         <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
-                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.anime_showcase" :key="id" :id="id">
+                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.profile?.anime" :key="id" :id="id">
                     <img class="anime" width="84" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`">
                     <Spinner/>
                 </router-link>
@@ -177,12 +177,11 @@ export default {
         // Get user data
         let result = await axios.get(`http://anihuu.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
-
-        if (result.settings.pfp) result.pfp = result.settings.pfp;
-
+        console.log("ASASASASASASAS");
         console.log(result);
-        result.total_anime = result.anime_showcase.length
         this.profile = result;
+
+        NProgress.stop();
     },
     async toggleFriend(){
         if (!this.user.friends) {
@@ -202,8 +201,6 @@ export default {
         if (!this.user.settings.privacy.blocked_users.includes(this.profile.username)) this.user.settings.privacy.blocked_users.push(this.profile.username)
         else this.user.settings.privacy.blocked_users.splice(this.user.settings.privacy.blocked_users.indexOf(this.profile.username), 1);
         this.updateSettings();
-
-        console.log(this.user);
     },
     async updateSettings(){
         const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
@@ -228,16 +225,12 @@ export default {
             }
         });
 
-
-        console.log(response.data.status);
-
         // If form submitted with no error:
         if(response.data.status == 200) {
-            this.user.settings[ref] = response.data.link;
+            this.user.profile[ref] = response.data.link;
             await this.updateSettings();
             this.emitter.emit('refreshHeader');
             this.getProfileData();
-            NProgress.stop();
         }
         else {
             console.log(response.data.error);

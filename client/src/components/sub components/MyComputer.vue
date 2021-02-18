@@ -8,13 +8,16 @@
         <div class="myComputerItem">
             <div v-for="component of computer" :key="component" >
                 <p v-if="!edit"  :class="{active: activeTab == component.category}" >{{component.item}}</p>
-                <input v-if="edit" :class="{active: activeTab == component.category}" v-model="component.item" type="text">
+                <input v-if="edit" :class="{active: activeTab == component.category}" v-model="component.item" type="text" @change="updateSpecs">
             </div>
         </div>
     </div>
 </template>
 
 <script>
+
+import axios from 'axios';
+
 export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
@@ -24,6 +27,7 @@ export default {
     data: () => {
         return {
             darkmode: localStorage.darkmode,
+            token: localStorage.token,
         };
     },
     created(){
@@ -37,6 +41,15 @@ export default {
         switchTab(tab){
             this.activeTab = tab;
             this.$forceUpdate();
+        },
+        async updateSpecs(){
+            const response  = await axios.post('http://anihuu.moe:8880/user/computer', JSON.stringify({ user: this.token, computer: this.computer}), { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log(response);
         }
     }
 }

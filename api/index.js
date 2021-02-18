@@ -24,11 +24,8 @@ const osuKey = '6872281f03363bb78de4e7ee53cb574e05a1cbe6';
 
 const schema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
-
   password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9!@#$%^&*()_+$]{3,30}")).required(),
-
   repeat_password: Joi.ref("password"),
-
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net", "ru", "gr"] } })
     .required(),
@@ -36,8 +33,6 @@ const schema = Joi.object({
 
 // Database
 var monk = require("monk");
-const { format } = require("path");
-const { log } = require("console");
 const url = "localhost:27017/animebackgrounds";
 const db = monk(url);
 db.then(() => {
@@ -310,7 +305,7 @@ app.get("/user/:username", async (req, res) => {
   );
 
   // Add the osu connections
-  if (response[0] && response[0].profile.connections && response[0].profile.connections.osu) {
+  if (response[0] && response[0].profile && response[0].profile.connections && response[0].profile.connections.osu) {
     response[0].profile.connections = {
       osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].profile.connections.osu.user_id}&k=${osuKey}`)).data[0]
     }
@@ -354,7 +349,7 @@ app.get("/user", async (req, res) => {
   });
 });
 
-app.post("/user/anime", async (req, res) => {
+app.post("/user/computer", async (req, res) => {
   // Parse body
   const body = req.body;
 
@@ -367,7 +362,7 @@ app.post("/user/anime", async (req, res) => {
 
     await users.update(
       { username: req.user.username },
-      { $addToSet: { anime_showcase: { $each: [...body.anime] } } }
+      { $set: { 'profile.computer' : req.body.computer } }
     );
 
     res.status(200);
@@ -387,7 +382,7 @@ app.post("/user/anime", async (req, res) => {
 
     await users.update(
       { username: req.user.username },
-      { $pull: { anime_showcase: parseInt(body.anime) } }
+      { $pull: { 'profile.anime' : parseInt(body.anime) } }
     );
 
     res.status(200);
@@ -470,11 +465,11 @@ app.post("/settings", async (req, res) => {
     }
     req.user = user;
 
-    console.log(req.body.settings.pfp);
+    console.log(req.body.profile.pfp);
 
     await users.update(
       { username: user.username },
-      { $set: { settings: req.body.settings, friends: req.body.friends } }
+      { $set: { profile: req.body.profile, settings: req.body.settings, friends: req.body.friends } }
     );
 
     res.status(200);
@@ -636,7 +631,6 @@ app.post("/signup", async (req, res) => {
     result.comments = {}; // What they've commented
     result.uploads = {};  // What they've uploaded
     result.profile = {    // Everything related to their profile
-      pfp: `http://anihuu.moe:8880/pfp/_default.png`,
       description: "I love anime owo!",
       stats: {
         total_likes: 0,
@@ -649,6 +643,8 @@ app.post("/signup", async (req, res) => {
       computer: [],     // Their computer specs
       socials: [],      // Socials
       connections: {},  // Stuff like osu etc
+      pfp: `http://anihuu.moe:8880/pfp/_default.png`,
+      banner: `http://anihuu.moe:8880/banners/_default.png`
     };
 
     result.vip = false; // If the user is a dev

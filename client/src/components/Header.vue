@@ -11,7 +11,7 @@
                     <div class="users" :class="{darkmode: darkmode == 'true'}">
                         <router-link :to="`/profile/${user.username}`" class="user" v-for="user in searchResults?.users" :key="user">
                             <Spinner/>
-                            <img :src="user.settings.pfp" alt="">
+                            <img :src="user.pfp" alt="">
                             <p>{{user.username}}</p>
                         </router-link>
                     </div>
@@ -29,6 +29,7 @@
             <div class="ping" v-if="!token || token">
                 <div :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250 && parseInt(ping) <= 1000}">
                     <p v-if="parseInt(ping) > 1000">+</p>
+                    <!-- <p v-if="serverIsUnreachable">Server Unreachable</p> -->
                     <p>{{ping}}ms</p>
                 </div>
             </div>
@@ -71,7 +72,7 @@ export default {
             searchString: "",
             searchResults: [],
             darkmode: localStorage.darkmode,
-            themeColors: {}
+            themeColors: {},
         }
     },
     components: {
@@ -109,7 +110,7 @@ export default {
                 withCredentials: true,
             });
 
-            if (response.data.settings.pfp) response.data.pfp = response.data.settings.pfp;
+            if (response.data.profile.pfp) response.data.pfp = response.data.profile.pfp;
             console.log(response.data);
 
             this.user = response.data;

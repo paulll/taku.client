@@ -1,6 +1,7 @@
 <template>
     <div class="row socials">
         <div v-if="socials" class="socials" :class="{darkmode: darkmode == 'true'}">
+            <a v-if="edit" :class="edit" target="_blank" ><img :src="require(`../../assets/edit.svg`)" :alt="edit"></a>
             <a v-for="social in socials" :key="social" :class="social.platform.toLowerCase()" target="_blank" :href="social.link"> <img :src="require(`../../assets/socials/${social.platform.toLowerCase()}.svg`)" :alt="social.platform.toLowerCase()"></a>
         </div>
     </div>
@@ -11,6 +12,7 @@ export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
         socials: { type: Object, required: true }, // Socials object
+        edit: { type: Boolean, required: true },   // If editting or not
     },
     data: () => {
         return {
