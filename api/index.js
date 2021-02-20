@@ -258,27 +258,34 @@ function acceptFriendRequest(me, userToAccept){
   return new Promise(async (resolve, reject) => {
     // Add the other users uuid to my pending list
     await users.update(
-      { uuid: me },
+      { uuid: me.uuid },
       { $pull: { 'friend_list.incoming': userToAccept } },
     );
 
     // Add the other user to my friends
     await users.update(
-      { uuid: me },
+      { uuid: me.uuid },
       { $addToSet: { 'friend_list.friends': userToAccept} }
     );
 
     // Add my uuid to the other users pending list
     await users.update(
       { uuid: userToAccept },
-      { $pull: { 'friend_list.outgoing': me} },
+      { $pull: { 'friend_list.outgoing': me.uuid} },
     );
 
-    // Add me to their friends
+    // Add me.uuid to their friends
     await users.update(
       { uuid: userToAccept },
-      { $addToSet: { 'friend_list.friends': me} }
+      { $addToSet: { 'friend_list.friends': me.uuid} }
     );
+
+    console.log(me);
+    // Create the notification
+    let notification = new Notification("Friend Request", me.uuid, `${me.username} has accepted your friend request!`);
+    // Send event to the specific user
+    console.log(notification);
+    io.sockets.in(userToAccept).emit('notification', notification);
 
     resolve();
   });
@@ -346,7 +353,7 @@ io.on("connection", socket => {
     let userToAdd = req.body.uuid
     
     if (me.friend_list.incoming.includes(userToAdd)) {
-      await acceptFriendRequest(me.uuid, userToAdd);
+      await acceptFriendRequest(me, userToAdd);
       res.status(200);
       res.json({"message": "Friend Request Accepted"});
       return
@@ -358,8 +365,7 @@ io.on("connection", socket => {
       { $addToSet: { 'friend_list.outgoing': userToAdd } }
     );
   
-    // Send notification to other user
-  
+    // Create the notification
     let notification = new Notification("Friend Request", me.uuid, `${me.username} has sent you a friend request!`);
   
     // Send event to the specific user
@@ -379,6 +385,8 @@ io.on("connection", socket => {
     res.status(200);
     res.json({"message": "Friend Request Sent"});
   });
+
+
   app.post("/friend/remove", authJWT, async (req, res) => { // Remove a friend
    let me = req.user.uuid;
    let userToRemove = req.body.uuid
@@ -398,51 +406,58 @@ io.on("connection", socket => {
    res.status(200);
    res.json({"message": "Friend Removed"});
   });
+
+
   app.post("/friend/cancel", authJWT, async (req, res) => { // Cancel a friend request
-   let me = req.user.uuid;
-   let userToRemove = req.body.uuid
-   
-   // Add the other users uuid to my pending list
-   await users.update(
-     { uuid: me },
-     { $pull: { 'friend_list.outgoing': userToRemove } }
-   );
-  
-   // Add my uuid to the other users pending list
-   await users.update(
-     { uuid: userToRemove },
-     { $pull: { 'friend_list.incoming': me} }
-   );
-  
-   res.status(200);
-   res.json({"message": "Friend Request Cancelled"});
+    let me = req.user.uuid;
+    let userToRemove = req.body.uuid
+    
+    // Add the other users uuid to my pending list
+    await users.update(
+      { uuid: me },
+      { $pull: { 'friend_list.outgoing': userToRemove } }
+    );
+    
+    // Add my uuid to the other users pending list
+    await users.update(
+      { uuid: userToRemove },
+      { $pull: { 'friend_list.incoming': me} }
+    );
+    
+    res.status(200);
+    res.json({"message": "Friend Request Cancelled"});
   });
+
+
   app.post("/friend/accept", authJWT, async (req, res) => { // Accept a friend
-  let me = req.user.uuid;
-  let userToAccept = req.body.uuid
-  acceptFriendRequest(me, userToAccept);
-  res.status(200);
-  res.json({"message": "Friend Request Accepted"});
+    let me = req.user;
+    let userToAccept = req.body.uuid
+    acceptFriendRequest(me, userToAccept);
+
+    res.status(200);
+    res.json({"message": "Friend Request Accepted"});
   });
+
+  
   app.post("/friend/deny", authJWT, async (req, res) => { // Deny a friend
-  
-  let me = req.user.uuid;
-  let userToRemove = req.body.uuid
-  
-  // Remove other persons uuid from your incoming list
-  await users.update(
-    { uuid: me },
-    { $pull: { 'friend_list.incoming': userToRemove } }
-  );
-  
-  // Remove my uuid from other persons outgoing list
-  await users.update(
-    { uuid: userToRemove },
-    { $pull: { 'friend_list.outgoing': me} }
-  );
-  
-  res.status(200);
-  res.json({"message": "Friend Request Denied"});
+    
+    let me = req.user.uuid;
+    let userToRemove = req.body.uuid
+    
+    // Remove other persons uuid from your incoming list
+    await users.update(
+      { uuid: me },
+      { $pull: { 'friend_list.incoming': userToRemove } }
+    );
+    
+    // Remove my uuid from other persons outgoing list
+    await users.update(
+      { uuid: userToRemove },
+      { $pull: { 'friend_list.outgoing': me} }
+    );
+    
+    res.status(200);
+    res.json({"message": "Friend Request Denied"});
   });
   // The reason i use a normal post method here is because
   // apparently theres a 1mb limit to a ws header

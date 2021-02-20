@@ -25,8 +25,6 @@
 
                     <!-- <p class="tags"><strong>ANIME</strong></p> -->
                 </div>
-
-                <Notifications :notifications="notifications"/>
             </div>
 
             <!-- SHOW SERVER CPU LOAD IN HEADER -->
@@ -67,8 +65,10 @@
                 <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
             </div>
             <div class="buttons small" :style="themeColors" v-if="token">
-                <div class="button"><img src="../assets/notification.png" alt=""></div>
+                <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/notification.png" alt=""></div>
             </div>
+            <Notifications :notifications="notifications" :show="showNotifications"/>
+
             <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
             </div>
@@ -101,6 +101,7 @@ export default {
             darkmode: localStorage.darkmode,
             themeColors: {},
             notifications: [],
+            showNotifications: false,
         }
     },
     components: {
