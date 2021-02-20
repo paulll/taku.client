@@ -61,10 +61,15 @@
             "bdbb91db-2dda-45c6-8707-7a8df9ed174f",
             "9e3b4ca7-1d43-4dec-b486-374eecff1e71",
         ]
-        pending: [                                                                  # Which uuids the user added or added them
+        incoming: [                                                                  # Which uuids the user added or added them
             "273a9a8c-509d-4c53-a634-339959f69f68",
             "b5767692-7e8a-47a8-82e2-a98a0a606623",
             "bdbb91db-2dda-45c6-8707-7a8df9ed174f",
+        ]
+        outgoing: [
+            "273a9a8c-509d-4c53-a634-339959f69f68",
+            "b5767692-7e8a-47a8-82e2-a98a0a6y4523",
+            "bdbb91db-2dda-45c6-8707-7634f9ed174f",
         ]
     },
     settings: {

@@ -22,13 +22,35 @@
                 </div>
                 <div class="row info">
                     <div class="infoField" v-if="token">
-                        <button :style="themeColors" @click="toggleFriend()" v-if="user.username != me.username && !user.friends?.includes(user.username)" class="button">ADD FRIEND</button>
-                        <button :style="themeColors" @click="toggleFriend()" v-if="user.username != me.username && user.friends?.includes(user.username)" class="button">REMOVE FRIEND</button>
-                        <button :style="themeColors" class="button" v-if="user.username != me.username"><router-link :to="`/messages/${user.profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
-                        <button :style="themeColors" @click="block()" v-if="user.username != me.username && !user.settings?.privacy.blocked_users.includes(user.username)" class="button"><img src="../assets/flag.png" alt=""></button>
-                        <button :style="themeColors" @click="block()" v-if="user.username != me.username && user.settings?.privacy.blocked_users.includes(user.username)" class="button">UNBLOCK</button>
-                        <button :style="themeColors" v-if="user.username == me.username && !edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
-                        <button :style="themeColors" v-if="user.username == me.username && edit" @click="toggleEdit()" class="button">SAVE</button>
+
+                        <!-- Other ppl buttons -->
+                        <div class="otherUserButtons" v-if="user.username != me.username">
+                            
+                            <!-- Add friend button -->
+                            <button :style="themeColors" @click="friend(user.uuid, 'add')"      v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))" class="button">ADD</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">CANCEL REQUEST</button>
+                            
+                            <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">ACCEPT</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'deny')"     v-if="me.friend_list.incoming.includes(user.uuid)" class="button">DENY</button>
+                            <!-- Remove friend -->
+                            <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">REMOVE</button>
+                     
+                            <!-- Send DM button -->
+                            <button :style="themeColors" class="button" v-if="user.username != me.username"><router-link :to="`/messages/${user.profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                            
+                            <!-- Block button -->
+                            <button :style="themeColors" @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
+                            <button :style="themeColors" @click="block()" v-if="me.settings?.privacy.blocked_users.includes(user.uuid)" class="button">UNBLOCK</button>
+                            
+                        </div>
+
+                        <!-- My buttons -->
+                        <div class="myButtons" v-if="user.username == me.username">
+                            <!-- Edit button -->
+                            <button :style="themeColors" v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
+                            <button :style="themeColors" v-if="edit" @click="toggleEdit()" class="button">SAVE</button>
+                        </div>
+
                     </div>
                     <div class="splitter" v-if="token"></div>
                     <!-- <div class="infoField">
@@ -65,7 +87,7 @@
                 <Osu :osu="user.profile.connections?.osu" :edit="edit"/>               
             </div>
 
-
+            <!-- DESCRIPTION -->
             <p class="tags"><strong>DESCRIPTION</strong></p>
             <p class="description">{{user.profile.description}}</p>
             <p v-if="user.profile.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
@@ -122,92 +144,108 @@ export default {
   },
   methods: {
     async getMe() {
-        NProgress.start();
+      NProgress.start();
 
-        const me = await axios.get('http://taku.moe:8880/user', {
-            withCredentials: true,
-        });
+      const me = await axios.get('http://taku.moe:8880/user', {
+          withCredentials: true,
+      });
 
-        this.me = me.data;
-        NProgress.done();
+      this.me = me.data;
+      NProgress.done();
     },
     async getUser() {
 
-        // Get user data
-        let user = await axios.get(`http://taku.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
-        user = Object.assign({}, user).data[0];
+      // Get user data
+      let user = await axios.get(`http://taku.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+      user = Object.assign({}, user).data[0];
 
 
-        try {
-            this.themeColors = {
-                '--themeColor': user.settings.appearance.theme_color,
-                '--themeColorHover': `${user.settings.appearance.theme_color}66`,
-            }
-        } catch (error) {
-            console.log(error);
-            this.themeColors = {
-                '--themeColor': '#ff006b',
-                '--themeColorHover': '#ff006b66',
-            }  
+      try {
+          this.themeColors = {
+              '--themeColor': user.settings.appearance.theme_color,
+              '--themeColorHover': `${user.settings.appearance.theme_color}66`,
+          }
+      } catch (error) {
+          console.log(error);
+          this.themeColors = {
+              '--themeColor': '#ff006b',
+              '--themeColorHover': '#ff006b66',
+          }  
+      }
+
+      this.user = user;
+      console.log(this.user);
+
+    },
+    async friend(uuid, option){
+        switch (option) {
+            case "add":
+                // Fake adding the user so the front end reacts instantly
+                if (!this.me.friend_list.outgoing.includes(uuid) && !this.me.friend_list.friends.includes(uuid)) this.me.friend_list.outgoing.push(uuid);
+                break;
+            case "remove":
+                // Fake remove the user so the front end reacts instantly
+                if (this.me.friend_list.outgoing.includes(uuid) || this.me.friend_list.friends.includes(uuid)) {
+                    this.me.friend_list.outgoing.splice(this.me.friend_list.outgoing.indexOf(uuid), 1);
+                    this.me.friend_list.friends.splice(this.me.friend_list.friends.indexOf(uuid), 1);
+                }
+                break;
         }
 
-        this.user = user;
-        console.log(this.user);
-
-    },
-    async toggleFriend(){
-        if (!this.user.friends) {
-            this.user.friends = [];
-        }
-        if (!this.user.friends.includes(this.profile.username)) this.user.friends.push(this.profile.username)
-        else this.user.friends.splice(this.user.friends.indexOf(this.profile.username), 1);
-        this.updateSettings();
-
-    },
-    toggleEdit(){
-        this.edit = !this.edit;
-    },
-    async block(){
-        if (!this.profile.username) return
-
-        if (!this.user.settings.privacy.blocked_users.includes(this.profile.username)) this.user.settings.privacy.blocked_users.push(this.profile.username)
-        else this.user.settings.privacy.blocked_users.splice(this.user.settings.privacy.blocked_users.indexOf(this.profile.username), 1);
-        this.updateSettings();
-    },
-    async updateSettings(){
-        const response = await axios.post('http://taku.moe:8880/settings', this.user, {
+        const response = await axios.post(`http://taku.moe:8880/friend/${option}`, {uuid: uuid}, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
             }
         });
+        this.getUser();
+        this.getMe();
+    },
+
+    toggleEdit(){
+        this.edit = !this.edit;
+    },
+    async block(){
+      if (!this.profile.username) return
+
+      if (!this.user.settings.privacy.blocked_users.includes(this.profile.username)) this.user.settings.privacy.blocked_users.push(this.profile.username)
+      else this.user.settings.privacy.blocked_users.splice(this.user.settings.privacy.blocked_users.indexOf(this.profile.username), 1);
+      this.updateSettings();
+    },
+    async updateSettings(){
+      const response = await axios.post('http://taku.moe:8880/settings', this.me, {
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+      });
     },
     async uploadFile(ref){
-        NProgress.start();
+      NProgress.start();
 
-        const file = this.$refs[ref].files[0];
+      const file = this.$refs[ref].files[0];
 
-        let formData = new FormData();
-        formData.append(ref, file);
+      let formData = new FormData();
+      formData.append(ref, file);
 
-        const response = await axios.post('http://taku.moe:8880/settings/upload', formData, {
-            withCredentials: true,
-            headers: {
-            'Content-Type': 'multipart/form-data'
-            }
-        });
-
-        // If form submitted with no error:
-        if(response.data.status == 200) {
-            this.user.profile[ref] = response.data.link;
-            await this.updateSettings();
-            this.emitter.emit('refreshHeader');
-            this.getProfileData();
+      const response = await axios.post('http://taku.moe:8880/settings/upload', formData, {
+        withCredentials: true,
+        headers: {
+        'Content-Type': 'multipart/form-data'
         }
-        else {
-            console.log(response.data.error);
-        }
-        NProgress.stop();
+      });
+
+      // If form submitted with no error:
+      if(response.data.status == 200) {
+        this.user.profile[ref] = response.data.link;
+        await this.updateSettings();
+        this.emitter.emit('refreshHeader');
+        this.getUser();
+      }
+      else {
+        console.log(response.data.error);
+      }
+      NProgress.stop();
     },
   }
 }
@@ -403,6 +441,10 @@ export default {
 
     height: fit-content;
     user-select: none;
+}
+
+.infoField div {
+    display: flex;
 }
 
 .infoField.socials{

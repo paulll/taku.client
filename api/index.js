@@ -78,7 +78,7 @@ async function createToken(user, res) {
   user = user[0]
 
   const payload = {
-    _id: user.uuid,
+    uuid: user.uuid,
     username: user.username,
   };
 
@@ -88,7 +88,7 @@ async function createToken(user, res) {
     res.json({
       message: "Logged in",
       token: token,
-      username: user.username,
+      uuid: user.uuid,
       user: user
     });
     res.status(200);
@@ -169,7 +169,8 @@ function User(username, email, password) {
   this.following = [];
   this.friend_list = {
     friends: [],
-    pending: [],
+    incoming: [],
+    outgoing: [],
   };
   this.settings = {
     show_nsfw: false,
@@ -262,7 +263,7 @@ io.on("connection", socket => {
       }
       author = (
         await users.find(
-          { username: user.username },
+          { uuid: user.uuid },
           { collation: { locale: "en", strength: 2 } }
         )
       )[0];
@@ -332,7 +333,7 @@ io.on("connection", socket => {
 
       // Create a typing user object
       let typingUser = {
-        username: user.username,
+        uuid: user.uuid,
         pfp: user.profile.pfp
       };
 
@@ -415,7 +416,7 @@ app.get("/user", async (req, res) => {
     req.user = user;
 
     const response = await users.find(
-      { username: user.username },
+      { uuid: user.uuid },
       { collation: { locale: "en", strength: 2 } }
     );
 
@@ -503,7 +504,7 @@ app.get("/blockedUsers", async (req, res) => {
     req.user = user;
 
     const response = await users.find(
-      { username: user.username },
+      { uuid: user.uuid },
       { collation: { locale: "en", strength: 2 } }
     );
 
@@ -524,7 +525,7 @@ app.get("/dms", async (req, res) => {
     req.user = user;
 
     const response = await users.find(
-      { username: user.username },
+      { uuid: user.uuid },
       { collation: { locale: "en", strength: 2 } }
     );
 
@@ -532,6 +533,194 @@ app.get("/dms", async (req, res) => {
     res.json(response[0].dms);
     });
 });
+
+
+// Add a friend
+app.post("/friend/add", async (req, res) => {
+   // Verify Logged In User
+   jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+    if (error) {
+      res.status(401);
+      res.json({
+        message: "You must be logged in",
+      });
+      return;
+    }
+
+    let me = user.uuid;
+    let userToAdd = req.body.uuid
+    
+    console.log(me, userToAdd);
+
+    // Add the other users uuid to my pending list
+    await users.update(
+      { uuid: me },
+      { $addToSet: { 'friend_list.outgoing': userToAdd } }
+    );
+
+    // Add my uuid to the other users pending list
+    await users.update(
+      { uuid: userToAdd },
+      { $addToSet: { 'friend_list.incoming': me} }
+    );
+
+    res.status(200);
+    res.json({"message": "Friend Request Sent"});
+  });
+});
+
+// Remove a friend
+app.post("/friend/remove", async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+   if (error) {
+     res.status(401);
+     res.json({
+       message: "You must be logged in",
+     });
+     return;
+   }
+
+   let me = user.uuid;
+   let userToRemove = req.body.uuid
+   
+   console.log(me, userToRemove);
+   // Add the other users uuid to my pending list
+   await users.update(
+     { uuid: me },
+     { $pull: { 'friend_list.friends': userToRemove } }
+   );
+
+   // Add my uuid to the other users pending list
+   await users.update(
+     { uuid: userToRemove },
+     { $pull: { 'friend_list.friends': me} }
+   );
+
+   res.status(200);
+   res.json({"message": "Friend Removed"});
+ });
+});
+
+// Cancel a friend request
+app.post("/friend/cancel", async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+   if (error) {
+     res.status(401);
+     res.json({
+       message: "You must be logged in",
+     });
+     return;
+   }
+
+   let me = user.uuid;
+   let userToRemove = req.body.uuid
+   
+   console.log(me, userToRemove);
+   // Add the other users uuid to my pending list
+   await users.update(
+     { uuid: me },
+     { $pull: { 'friend_list.outgoing': userToRemove } }
+   );
+
+   // Add my uuid to the other users pending list
+   await users.update(
+     { uuid: userToRemove },
+     { $pull: { 'friend_list.incoming': me} }
+   );
+
+   res.status(200);
+   res.json({"message": "Friend Request Cancelled"});
+ });
+});
+
+// Accept a friend
+app.post("/friend/accept", async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+   if (error) {
+     res.status(401);
+     res.json({
+       message: "You must be logged in",
+     });
+     return;
+   }
+
+    let me = user.uuid;
+    let userToAccept = req.body.uuid
+    
+    console.log(me, userToAccept);
+    
+    // Add the other users uuid to my pending list
+    await users.update(
+      { uuid: me },
+      { $pull: { 'friend_list.incoming': userToAccept } },
+    );
+
+    // Add the other user to my friends
+    await users.update(
+      { uuid: me },
+      { $addToSet: { 'friend_list.friends': userToAccept} }
+    );
+
+    // Add my uuid to the other users pending list
+    await users.update(
+      { uuid: userToAccept },
+      { $pull: { 'friend_list.outgoing': me} },
+    );
+
+    // Add me to their friends
+    await users.update(
+      { uuid: userToAccept },
+      { $addToSet: { 'friend_list.friends': me} }
+    );
+
+
+
+    await users.update(
+      { uuid: userToAccept },
+    );
+
+   res.status(200);
+   res.json({"message": "Friend Request Accepted"});
+ });
+});
+// Deny a friend
+app.post("/friend/deny", async (req, res) => {
+  // Verify Logged In User
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+   if (error) {
+     res.status(401);
+     res.json({
+       message: "You must be logged in",
+     });
+     return;
+   }
+
+   let me = user.uuid;
+   let userToRemove = req.body.uuid
+   
+   console.log(me, userToRemove);
+   // Remove other persons uuid from your incoming list
+   await users.update(
+     { uuid: me },
+     { $pull: { 'friend_list.incoming': userToRemove } }
+   );
+
+   // Remove my uuid from other persons outgoing list
+   await users.update(
+     { uuid: userToRemove },
+     { $pull: { 'friend_list.outgoing': me} }
+   );
+
+   res.status(200);
+   res.json({"message": "Friend Request Denied"});
+ });
+});
+
+
+
 // Setting Routes
 app.post("/settings", async (req, res) => {
   // Verify Logged In User
@@ -543,13 +732,12 @@ app.post("/settings", async (req, res) => {
       });
       return;
     }
+
     req.user = user;
 
-    console.log(req.body.profile.pfp);
-
     await users.update(
-      { username: user.username },
-      { $set: { profile: req.body.profile, settings: req.body.settings, friends: req.body.friends } }
+      { uuid: user.uuid },
+      { $set: { profile: req.body.profile, settings: req.body.settings, friend_list: req.body.friend_list} }
     );
 
     res.status(200);
@@ -716,7 +904,6 @@ app.post("/signup", async (req, res) => {
 app.post("/login", async (req, res) => {
   // Parse body
   const body = req.body;
-  console.log(body);
 
   const user = await users.find(
     { username: body.username },
@@ -732,6 +919,7 @@ app.post("/login", async (req, res) => {
     // If password doesn't match throw error
     else throw "error";
   } catch (error) {
+    console.log(error);
     if (error) {
       res.status(200);
       res.json({ error: "Invalid Credentials ｡･ﾟﾟ*(>д<)*ﾟﾟ･｡" });
