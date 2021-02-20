@@ -24,7 +24,7 @@ export default {
     <header class="mh-header" @update-theme="updateUI" :class="{darkmode: darkmode == 'true'}">
       <ul class="mh-headerButtons">
         <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
-        <li><router-link to="/submit" class="mh-headerButton"><img src="../assets/add.png" alt=""></router-link></li>
+        <!-- <li><router-link to="/submit" class="mh-headerButton"><img src="../assets/add.png" alt=""></router-link></li> -->
         <li><router-link to="/dm" class="mh-headerButton"><img src="../assets/chat.png" alt=""></router-link></li>
         <li><router-link to="/settings" class="mh-headerButton"><img src="../assets/settings.svg" alt=""></router-link></li>
       </ul>

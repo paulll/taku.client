@@ -13,6 +13,8 @@ export default {
     props: {
         socials: { type: Object, required: true }, // Socials object
         edit: { type: Boolean, required: true },   // If editting or not
+        edit: { type: Boolean, required: true },   // If editting or not
+        edit: { type: Boolean, required: true },   // If editting or not
     },
     data: () => {
         return {

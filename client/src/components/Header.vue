@@ -55,12 +55,12 @@
                 <router-link to="/login" class="login">LOGIN</router-link>
                 <router-link to="/signup" class="signup">SIGNUP</router-link>
             </div>
-            <div class="buttons small" :style="themeColors" v-if="token">
+            <!-- <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/home" class="button"><img src="../assets/home.svg" alt=""></router-link>
             </div>
             <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/anime" class="button"><img src="../assets/anime.svg" alt=""></router-link>
-            </div>
+            </div> -->
             <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
             </div>
@@ -136,7 +136,6 @@ export default {
             });
 
             if (response.data.profile.pfp) response.data.pfp = response.data.profile.pfp;
-            console.log(response.data);
 
             this.user = response.data;
 
@@ -151,8 +150,6 @@ export default {
                     '--themeColorHover': '#ff006b66',
                 }  
             }
-
-            console.log(this.themeColors);
 
             localStorage.removeItem("darmode");
             localStorage.setItem('darkmode', response.data.settings.appearance.darkmode);
@@ -169,7 +166,6 @@ export default {
                 }
             });
             this.searchResults = response.data;
-            console.log(this.searchResults);
         },
         async getPing(){
             setInterval(() => {
@@ -180,7 +176,6 @@ export default {
                 // I divided the ms by 2 because theres 2 requests going, one that emits "ping", and then waits for "pong"
                 this.socket.once('pong', stats => {
                     this.ping = ((new Date().getTime() - startTime) / 2).toFixed(0);
-                    console.log(stats);
                     this.cpu = stats.cpu;
                     this.ram = stats.ram;
                 });

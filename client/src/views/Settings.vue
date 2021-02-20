@@ -4,28 +4,32 @@
       <SettingsBar :themeColor="user.settings.appearance.theme_color"/>
     </div>
 
-    <div class="settingsArea" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="user.settings" class="settingsArea" :class="{darkmode: darkmode == 'true'}">
 
       <!-- Account -->
-      <div v-if="path == 'account'" class="section account">
+      <div v-if="user.settings.account && path == 'account'" class="section account">
         <!-- <img class="pfp" :src="user.profile.pfp" alt=""> -->
         <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" optionTitle="Username"  :showValue="true" :optionValue="user.username"/>
         <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" optionTitle="Email"     :showValue="true" :optionValue="user.email"/>
         <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" optionTitle="Password"  :showValue="true"  optionValue="**************"/>
       </div>
 
-      <!-- Appearance & Sounds -->
-      <div v-if="path == 'appearance'" class="section appearanceAndSounds" :class="{darkmode: darkmode == 'true'}">
+      <!-- Appearance -->
+      <div v-if="user.settings.appearance && path == 'appearance'" class="section appearance" :class="{darkmode: darkmode == 'true'}">
         <OptionBox  :user="user"                        :darkmode="darkmode"               optionTitle="Darkmode"     :optionCategory="path"  :toggleButtons="true"                                         :optionValue="user.settings.appearance.darkmode"/>
-        <OptionBox  :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="typingSoundUrl"  :optionValue="user.settings.appearance.typing_sfx.enabled"  optionTitle="Typing SFX"  :optionCategory="path"       :showValue="true"/>
-        <OptionBox  :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="mentionSoundUrl" :optionValue="user.settings.appearance.mention_sfx.enabled" :optionCategory="path"    optionTitle="Mention SFX"    :showValue="true"/>
         <OptionBox  :toggleButtons="true"  type="text"  :darkmode="darkmode" :user="user"  optionTitle="Flare"        :optionCategory="path"  :optionValue="user.settings.appearance.flare.enabled"         :fields="[{placeholder: 'e.g. Shimakaze', selector: 'content', maxLength: 32 }, {placeholder: 'e.g. #ff0022', selector: 'color', maxLength: 7}, ]"/>
         <OptionBox  :toggleButtons="false" type="text"  :darkmode="darkmode" :user="user"  optionTitle="Theme Color"  :optionCategory="path"  :optionValue="user.settings.appearance.theme_color"           :fields="[{placeholder: 'e.g. #ff0022', maxLength: 7 }]"/>
       </div>
+      
+      <!-- Sounds -->
+      <div v-if="user.settings.sounds && path == 'sounds'" class="section sounds" :class="{darkmode: darkmode == 'true'}">
+        <OptionBox  :fileUrl="typingSoundUrl" :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="typingSoundUrl"  :optionValue="user.settings.sounds?.typing.enabled"  optionTitle="Typing"          :optionCategory="path"       :showValue="true"/>
+        <OptionBox  :fileUrl="mentionSoundUrl" :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="mentionSoundUrl" :optionValue="user.settings.sounds?.mention.enabled" :optionCategory="path"            optionTitle="Mention"    :showValue="true"/>
+      </div>
 
       <!-- Privacy -->
-      <div v-if="path == 'privacy'" class="section privacy" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :user="user" :darkmode="darkmode" optionTitle="Show Activity"  :optionCategory="path"   :toggleButtons="true"   :optionValue="user.settings.privacy.show_activity"/>
+      <div v-if="user.settings.privacy && path == 'privacy'" class="section privacy" :class="{darkmode: darkmode == 'true'}">
+        <OptionBox  :user="user" :darkmode="darkmode" optionTitle="Show Status"  :optionCategory="path"   :toggleButtons="true"   :optionValue="user.settings.privacy.show_status"/>
         <OptionBox  :user="user" :darkmode="darkmode" optionTitle="Blocked Users"  :optionCategory="path"   :listContent="user.settings.privacy.blocked_users" :showValue="true" :list="true" />
       </div>
 
@@ -300,13 +304,13 @@ export default {
   width: calc(100% - 16px);
 }
 
-.appearanceAndSounds {
+.appearance {
   height: inherit;
   scrollbar-color: #888888#F3F3F3 ;
   scrollbar-width: thin;
 }
 
-.appearanceAndSounds.darkmode {
+.appearance.darkmode {
   scrollbar-color: #363952#08090E ;
 }
 

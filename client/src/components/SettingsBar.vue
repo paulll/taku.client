@@ -18,7 +18,12 @@
 
       <router-link to="/settings/appearance" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/appearance.png" alt="appearance">
-        <h1>Appearance & Sounds</h1>
+        <h1>Appearance</h1>
+      </router-link>
+
+      <router-link to="/settings/sounds" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/sounds.png" alt="Sounds">
+        <h1>Sounds</h1>
       </router-link>
 
       <!-- <router-link to="/settings/nsfw" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >

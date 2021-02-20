@@ -99,10 +99,10 @@ export default {
             localStorage.username = response.data.username;
 
             try {
-                localStorage.setItem('typing_sfx', response.data.user[0].settings.appearance.typing_sfx.enabled);
-                localStorage.setItem('mention_sfx', response.data.user[0].settings.appearance.mention_sfx.enabled);
-                localStorage.setItem('typingSoundUrl', response.data.user[0].settings.appearance.typing_sfx.url);
-                localStorage.setItem('mentionSoundUrl', response.data.user[0].settings.appearance.mention_sfx.url);
+                localStorage.setItem('typing_sfx', response.data.user[0].settings.sounds.typing.enabled);
+                localStorage.setItem('mention_sfx', response.data.user[0].settings.sounds.mention.enabled);
+                localStorage.setItem('typingSoundUrl', response.data.user[0].settings.sounds.typing.url);
+                localStorage.setItem('mentionSoundUrl', response.data.user[0].settings.sounds.mention.url);
             } catch (error) {
                 
             }

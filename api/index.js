@@ -9,11 +9,12 @@ var upload = multer({ dest: "./db/uploads/" });
 var http = require("http");
 var Jimp = require("jimp");
 const Joi = require("joi");
-const si = require("systeminformation");
+const si = require("systeminformation"); 
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const { v4: uuidv4 } = require("uuid"); 
 const axios = require('axios');
 const colors = require('colors');
 const osuKey = '6872281f03363bb78de4e7ee53cb574e05a1cbe6';
@@ -42,7 +43,6 @@ db.then(() => {
 
 // Database Collections
 let users = db.get("users");
-let backgrounds = db.get("backgrounds");
 let messages = db.get("messages");
 let dms = db.get("dms");
 let anime = db.get("anime");
@@ -75,15 +75,10 @@ let onlineUsers = [];
 
 // Functions
 async function createToken(user, res) {
-  user = user[0];
-
-  const dbUser = await users.find(
-    { username: user.username },
-    { collation: { locale: "en", strength: 2 } }
-  );
+  user = user[0]
 
   const payload = {
-    _id: user._id,
+    _id: user.uuid,
     username: user.username,
   };
 
@@ -94,12 +89,11 @@ async function createToken(user, res) {
       message: "Logged in",
       token: token,
       username: user.username,
-      user: dbUser
+      user: user
     });
     res.status(200);
   });
 }
-
 async function cacheImage(attachment){
   return new Promise((resolve, reject) => { 
 
@@ -149,6 +143,74 @@ function addToOnlineUsers(username) {
   // console.log(`${"Heartbeat:".bgRed.white} ${onlineUsers.length} Users`);
   return onlineUsers;
 }
+
+// Function that creates a new user with default values
+// C O N S T R U C T O R 🐂🐂🐂🐂🐂🐂🐂
+function User(username, email, password) {
+  this.username = username;
+  this.uuid = uuidv4();
+  this.created_at = new Date().getTime();
+  this.profile = {
+    status: {
+      isPlayingGame: false,
+      isWatchingAnime: false,
+      isOnline: true,
+      isDND: false,
+    },
+    isDeveloper: false,
+    isBetaTester: false,
+    pfp: "http://taku.moe:8880/pfp/_default.png",
+    banner: "http://taku.moe:8880/banner/_default.png",
+    description: "Hi I love anime owo!",
+    anime_list: [],
+    socials: [],
+    connections: [],
+  };
+  this.following = [];
+  this.friend_list = {
+    friends: [],
+    pending: [],
+  };
+  this.settings = {
+    show_nsfw: false,
+    language: "english",
+    account: {
+        email: email,
+        password: password,
+    },
+    appearance: {                                                               
+        darkmode: false,
+        animate_pfps: true,
+        theme_color: "#fe7692",
+        flare: {
+            enabled: false,
+            content: "",
+            color: ""
+        }
+    },
+    sounds: {
+        typing: { 
+            enabled: true,
+            url: "" },
+        mention: { 
+            enabled: true,
+            url: "" },
+    },
+    notifications: {
+        disable_all: false,
+        messages: true,
+        posts: true,
+        comments: true,
+        friend_requests: true,
+        follows: true,
+        emails: true
+    },
+    privacy: {
+        show_status: true,
+        blocked_users: []
+    },
+  }
+};
 
 const currentMessages = [];
 
@@ -271,7 +333,7 @@ io.on("connection", socket => {
       // Create a typing user object
       let typingUser = {
         username: user.username,
-        pfp: user.settings.pfp
+        pfp: user.profile.pfp
       };
 
       // Besides the client who is typing
@@ -617,7 +679,7 @@ app.post("/signup", async (req, res) => {
 
     // Validate the form
     try {
-        var result = await schema.validateAsync(body);
+        var form = await schema.validateAsync(body);
     } catch (error) {
         console.log(error);
         res.status(400);
@@ -625,14 +687,14 @@ app.post("/signup", async (req, res) => {
     }
 
     // Check if someone else has the same username
-    if ((await users.find({ username: result.username }, { collation: { locale: "en", strength: 2 } })).length == 1) {
+    if ((await users.find({ username: form.username }, { collation: { locale: "en", strength: 2 } })).length == 1) {
         res.status(200);
         res.json({ error: "Username already taken" });
         return;
     }
 
     // Check if the email is already bound to an account
-    if ((await users.find({ email: result.email })).length == 1) {
+    if ((await users.find({ email: form.email })).length == 1) {
         res.status(200);
         res.json({ error: "Email already exists" });
         return;
@@ -641,107 +703,38 @@ app.post("/signup", async (req, res) => {
     // Encrypt Passwords
     const hash = await bcrypt.hash(body.password, saltRounds);
 
-    // Replace plain password with hashed password for database
-    result.password = hash;
+    const user = new User(form.username, form.email, hash);
+    console.log(user);
 
-    // Append defaults to user
-    result.likes = {};    // What they liked
-    result.comments = {}; // What they've commented
-    result.uploads = {};  // What they've uploaded
-    result.profile = {    // Everything related to their profile
-      description: "I love anime owo!",
-      stats: {
-        total_likes: 0,
-        total_comments: 0,
-        total_friends: 0,
-        total_uploads: 0,
-      },
-      anime: [],        // List of their favorite animes
-      description: "",  // Their description
-      computer: [],     // Their computer specs
-      socials: [],      // Socials
-      connections: {},  // Stuff like osu etc
-      pfp: `http://taku.moe:8880/pfp/_default.png`,
-      banner: `http://taku.moe:8880/banners/_default.png`
-    };
-
-    result.vip = false; // If the user is a dev
-    result.status = true; // Online or offline state
-    result.dms = {}; // The user's DMs list
-    result.settings = { // Their settings
-        appearance: {
-            darkmode: false,
-            animate_pfps: true,
-            typing_sfx: {
-                enabled: true,
-                url: ""
-            },
-            mention_sfx: {
-                enabled: true,
-                url: ""
-            },
-            theme_color: "#ff006b",
-            flare: {
-              enabled: false,
-              color: '#ff006b',
-              content: "",
-            }
-        },
-        nsfw_referrals: true,
-        language: "english",
-        billing: {
-            active: false,
-            active_subscription: [],
-            transaction_history: [],
-            payment_methods: [],
-        },
-        notifications: {
-            pause_all: false,
-            chat: true,
-            posts: true,
-            comments: true,
-            friend_requests: true,
-            emails: true,
-        },
-        privacy: {
-            show_activity: true,
-            blocked_users: [],
-        },
-    }
-
-    // Add to database
-    await users.insert(result);
-
-    // Send email auth token
+    // Make a new user with the values we got from the signup form and add to database
+    await users.insert(user);
 
     // Respond to user
     res.status(200);
-    res.json(result); 
+    res.json(user); 
 });
 app.post("/login", async (req, res) => {
   // Parse body
   const body = req.body;
-  checkUser(body.username, body.password);
+  console.log(body);
 
-  async function checkUser(username, password) {
-    const user = await users.find(
-      { username: username },
-      { collation: { locale: "en", strength: 2 } }
-    );
+  const user = await users.find(
+    { username: body.username },
+    { collation: { locale: "en", strength: 2 } }
+  );
 
-    // Try matching
-    try {
-      const match = await bcrypt.compare(password, user[0].password);
-      if (match) {
-        createToken(user, res);
-      }
-      // If password doesn't match throw error
-      else throw "error";
-    } catch (error) {
-      if (error) {
-        res.status(200);
-        res.json({ error: "Invalid Credentials ｡･ﾟﾟ*(>д<)*ﾟﾟ･｡" });
-      }
+  // Try matching
+  try {
+    const match = await bcrypt.compare(body.password, user[0].settings.account.password);
+    if (match) {
+      createToken(user, res);
+    }
+    // If password doesn't match throw error
+    else throw "error";
+  } catch (error) {
+    if (error) {
+      res.status(200);
+      res.json({ error: "Invalid Credentials ｡･ﾟﾟ*(>д<)*ﾟﾟ･｡" });
     }
   }
 });

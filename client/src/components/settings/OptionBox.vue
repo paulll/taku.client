@@ -99,18 +99,18 @@ export default {
                     localStorage.setItem('darkmode', state);
                     this.emitter.emit('updateUI');
                     break;
-                case "typing_sfx":
-                    this.user.settings.appearance.typing_sfx.enabled = state;
-                    if (localStorage.typingSoundUrl) localStorage.setItem('typingSoundUrl', this.user.settings.appearance.typing_sfx.url);
+                case "typing":
+                    this.user.settings.sounds.typing.enabled = state;
+                    if (localStorage.typingSoundUrl) localStorage.setItem('typingSoundUrl', this.user.settings.sounds.typing.url);
                     localStorage.setItem('typing_sfx', state);
                     break;
-                case "mention_sfx":
-                    this.user.settings.appearance.mention_sfx.enabled = state;
-                    if (localStorage.mentionSoundUrl) localStorage.setItem('mentionSoundUrl', this.user.settings.appearance.mention_sfx.url);
+                case "mention":
+                    this.user.settings.sounds.mention.enabled = state;
+                    if (localStorage.mentionSoundUrl) localStorage.setItem('mentionSoundUrl', this.user.settings.sounds.mention.url);
                     localStorage.setItem('mention_sfx', state);
                     break;
-                case "show_activity":
-                    this.user.settings.privacy.show_activity = state
+                case "show_status":
+                    this.user.settings.privacy.show_status = state
                     break;
                 case "flare":
                     this.user.settings.appearance.flare.enabled = state;
@@ -122,7 +122,7 @@ export default {
         async updateSettings(){
             NProgress.start();
             
-            console.log(this.user.settings.appearance);
+            console.log(this.user.settings.sounds);
             
             const response = await axios.post('http://taku.moe:8880/settings', this.user, {
                 withCredentials: true,
@@ -141,7 +141,7 @@ export default {
 
             console.log(fileUrl);
 
-            this.user.settings.appearance[option].url = '';
+            this.user.settings.sounds[option].url = '';
             this.updateSettings();
         },
         async uploadFile(ref, option){
@@ -163,15 +163,15 @@ export default {
 
             if (response.status == 200) {
                 switch (option) {
-                case "typing_sfx":
+                case "typing":
                     localStorage.setItem('typingSoundUrl', link);
                     this.typingSoundUrl = localStorage.typingSoundUrl;
-                    this.user.settings.appearance.typing_sfx.url = link;
+                    this.user.settings.sounds.typing.url = link;
                     break;
-                case "mention_sfx":
+                case "mention":
                     localStorage.setItem('mentionSoundUrl', link);
                     this.mentionSoundUrl = localStorage.mentionSoundUrl;
-                    this.user.settings.appearance.mention_sfx.url = link;
+                    this.user.settings.sounds.mention.url = link;
                     break;
                 }
                 NProgress.done();

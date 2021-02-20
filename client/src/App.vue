@@ -50,7 +50,7 @@ export default {
       this.heartBeat(60000);
     },
     async heartBeat(speed){
-      if (localStorage.token && this.user.settings?.privacy?.show_activity) {
+      if (localStorage.token && this.user.settings?.privacy?.show_status) {
 
         // Emit at start so we dont wait for the next interval
         this.socket.emit('heartbeat', {user: localStorage.token});

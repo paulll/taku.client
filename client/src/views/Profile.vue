@@ -1,44 +1,43 @@
 <template>
-    <div class="userProfile" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="user" class="userProfile" :class="{darkmode: darkmode == 'true'}">
         <div class="bannerContainer">
             <div class="gradient">
                 <input type="file" ref="banner" style="display: none" accept="image/*" @change="uploadFile('banner')">
                 <img @click="$refs.banner.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
             </div>
-            <div class="banner" :style="{'background-image' : `url('${profile?.profile?.banner}')`}">
+            <div class="banner" :style="{'background-image' : `url('${user.profile.banner}')`}">
             </div>
             <div class="heading" :class="{darkmode: darkmode == 'true'}">
                 <div class="pfp">
-                    <div v-if="profile.username" class="image" :style="{'background-image': `url('${profile?.profile?.pfp}')`}">
+                    <div v-if="user.username" class="image" :style="{'background-image': `url('${user.profile.pfp}')`}">
                         <input type="file" ref="pfp" style="display: none" accept="image/*" @change="uploadFile('pfp')">
                         <img @click="$refs.pfp.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
                     </div>
-                    <svg v-if="profile.vip" class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg v-if="user.profile?.isDeveloper" class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.9644 26C11.1836 26 9.50959 25.6676 7.94247 25.0027C6.37534 24.3142 4.99817 23.3763 3.81096 22.189C2.62374 20.9781 1.68584 19.589 0.99726 18.0219C0.33242 16.4548 0 14.769 0 12.9644C0 11.1361 0.33242 9.43836 0.99726 7.87123C1.68584 6.28037 2.62374 4.9032 3.81096 3.73973C4.99817 2.55251 6.37534 1.63836 7.94247 0.99726C9.50959 0.33242 11.1836 0 12.9644 0C14.7927 0 16.4904 0.344293 18.0575 1.03288C19.6484 1.69772 21.0374 2.63562 22.2247 3.84658C23.4119 5.03379 24.3379 6.41096 25.0027 7.97808C25.6676 9.52146 26 11.1836 26 12.9644C26 14.769 25.6557 16.4548 24.9671 18.0219C24.3023 19.589 23.3763 20.9781 22.189 22.189C21.0018 23.3763 19.6128 24.3142 18.0219 25.0027C16.4548 25.6676 14.769 26 12.9644 26ZM6.91151 19.5383C6.601 20.4617 7.65966 21.2388 8.44753 20.6658L12.3792 17.8064C12.7284 17.5525 13.2012 17.5513 13.5516 17.8036L17.5645 20.6929C18.3531 21.2607 19.4064 20.4837 19.0967 19.5626L17.6237 15.1825C17.4802 14.7559 17.6394 14.286 18.0127 14.0345L21.2199 11.8731C22.0382 11.3216 21.6478 10.0438 20.661 10.0438H16.6038C16.1743 10.0438 15.7928 9.76954 15.6559 9.36239L13.924 4.20888C13.6175 3.29675 12.3257 3.30152 12.0259 4.21589L10.3408 9.35539C10.2061 9.76612 9.8228 10.0438 9.39056 10.0438H5.339C4.35218 10.0438 3.96181 11.3216 4.78015 11.8731L7.98733 14.0345C8.36056 14.286 8.51977 14.7559 8.37632 15.1825L6.91151 19.5383Z" fill="#FF006B"/>
                     </svg>
-                    <h1 class="username">{{profile.username}}
-                        <div class="status" :class="{'online': profile.online && profile.settings?.privacy.show_activity, 'disabled': !profile.settings?.privacy.show_activity}"></div>
+                    <h1 class="username">{{user.username}}
+                        <div class="status" :class="{'online': user.profile.status.isOnline && user.settings.privacy.show_status, 'disabled': !user.settings.privacy.show_status}"></div>
                     </h1>
                 </div>
                 <div class="row info">
                     <div class="infoField" v-if="token">
-                        <button :style="themeColors" @click="toggleFriend()" v-if="profile.username != me.username && !user.friends?.includes(profile?.username)" class="button">ADD FRIEND</button>
-                        <button :style="themeColors" @click="toggleFriend()" v-if="profile.username != me.username && user.friends?.includes(profile?.username)" class="button">REMOVE FRIEND</button>
-                        <button :style="themeColors" class="button" v-if="profile.username != me.username"><router-link :to="`/messages/${profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
-                        <button :style="themeColors" @click="block()" v-if="profile.username != me.username && !user.settings?.privacy.blocked_users.includes(profile?.username)" class="button"><img src="../assets/flag.png" alt=""></button>
-                        <button :style="themeColors" @click="block()" v-if="profile.username != me.username && user.settings?.privacy.blocked_users.includes(profile?.username)" class="button">UNBLOCK</button>
-                        <button :style="themeColors" v-if="profile.username == me.username && !edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
-                        <button :style="themeColors" v-if="profile.username == me.username && edit" @click="toggleEdit()" class="button">SAVE</button>
+                        <button :style="themeColors" @click="toggleFriend()" v-if="user.username != me.username && !user.friends?.includes(user.username)" class="button">ADD FRIEND</button>
+                        <button :style="themeColors" @click="toggleFriend()" v-if="user.username != me.username && user.friends?.includes(user.username)" class="button">REMOVE FRIEND</button>
+                        <button :style="themeColors" class="button" v-if="user.username != me.username"><router-link :to="`/messages/${user.profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                        <button :style="themeColors" @click="block()" v-if="user.username != me.username && !user.settings?.privacy.blocked_users.includes(user.username)" class="button"><img src="../assets/flag.png" alt=""></button>
+                        <button :style="themeColors" @click="block()" v-if="user.username != me.username && user.settings?.privacy.blocked_users.includes(user.username)" class="button">UNBLOCK</button>
+                        <button :style="themeColors" v-if="user.username == me.username && !edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
+                        <button :style="themeColors" v-if="user.username == me.username && edit" @click="toggleEdit()" class="button">SAVE</button>
                     </div>
                     <div class="splitter" v-if="token"></div>
-                    <div class="infoField">
-                        <h1 class="friends">{{profile.total_friends}}</h1>
+                    <!-- <div class="infoField">
                         <p>Friends</p>
-                    </div>
+                    </div> -->
                 </div>
 
-                <div v-if="profile.profile?.socials" class="row socials">
-                    <Socials :socials="profile.profile?.socials" :edit="edit"/>
+                <div v-if="user.profile.socials" class="row socials">
+                    <Socials :socials="user.profile.socials" :edit="edit"/>
                 </div>
 
                 <!-- <img class="settings" src="../assets/settings.svg" alt="Settings"> -->
@@ -48,28 +47,28 @@
         <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
-                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.profile?.anime" :key="id" :id="id">
+                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime" :key="id" :id="id">
                     <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
                     <Spinner/>
                 </router-link>
             </div>
             
             <!-- COMPUTER SPECS -->
-            <div v-if="profile.profile?.computer">
+            <div v-if="user.profile.computer">
                 <p class="tags" :class="{darkmode: darkmode == 'true'}"><strong>MY</strong> Computer</p>
-                <MyComputer :computer="profile.profile?.computer" :edit="edit" :themeColors="themeColors"/>
+                <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
             </div>
 
             <!-- OSU PROFILE -->
-            <div v-if="profile.profile?.connections?.osu">
+            <div v-if="user.profile.connections?.osu">
                 <p class="tags"><strong>osu!</strong> Profile</p>
-                <Osu :osu="profile.profile?.connections?.osu" :edit="edit"/>               
+                <Osu :osu="user.profile.connections?.osu" :edit="edit"/>               
             </div>
 
 
             <p class="tags"><strong>DESCRIPTION</strong></p>
-            <p class="description">{{profile.description}}</p>
-            <p v-if="profile.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
+            <p class="description">{{user.profile.description}}</p>
+            <p v-if="user.profile.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
         </div>
     </div>
 </template>
@@ -96,24 +95,14 @@ export default {
   },
   data: () => {
     return {
-        darkmode: localStorage.darkmode,
-        token: localStorage.token,
-        edit: false,
-        me: {
-            username: localStorage.username,
-        },
-        profile: {
-            socials: {
-                twitter: "",
-                instagram: "",
-                twitch: "",
-                youtube: "",
-            }
-        },
-        themeColors: {},
-        user: {
-            friends: []
-        },
+      darkmode: localStorage.darkmode,
+      token: localStorage.token,
+      edit: false,
+      me: {
+          username: localStorage.username,
+      },
+      user: null,
+      themeColors: {},
     };
   },
   updated: function () {
@@ -122,69 +111,37 @@ export default {
     }) 
   },
   mounted() {
-    this.getProfileData();
     this.getUser();
+    this.getMe();
   },
   watch: {
     $route(to, from) {
+      this.getMe();
       this.getUser();
-      this.getProfileData();
     }
   },
   methods: {
-    async getUser() {
+    async getMe() {
         NProgress.start();
 
-        const user = await axios.get('http://taku.moe:8880/user', {
+        const me = await axios.get('http://taku.moe:8880/user', {
             withCredentials: true,
         });
 
-        // Add the new settings structure on the user
-        // This is here so old users don't have an issue with loading the settings
-        // Once they will update their settings this will go on their database
-        // In v1.0 this should be removed
-
-        if (!user.data.settings.appearance) {
-            user.data.settings.appearance = {
-            darkmode: false,
-            anime_pfps: true,
-            typing_sfx: {
-                enabled: true,
-                url: ""
-            },
-            mention_sfx: {
-                enabled: true,
-                url: ""
-            },
-            theme_color: "#ff006b"
-            }
-        }
-
-        if (!user.data.settings.appearance.flare) {
-            user.data.settings.appearance.flare = {
-            enabled: false,
-            content: "",
-            color: "#ffffff"
-            }
-        }
-
-        this.user = user.data;
+        this.me = me.data;
         NProgress.done();
-
     },
-    async getProfileData() {
+    async getUser() {
 
         // Get user data
-        let result = await axios.get(`http://taku.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
-        result = Object.assign({}, result).data[0];
-        console.log("ASASASASASASAS");
+        let user = await axios.get(`http://taku.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+        user = Object.assign({}, user).data[0];
 
-        console.log(result);
 
         try {
             this.themeColors = {
-                '--themeColor': result.settings.appearance.theme_color,
-                '--themeColorHover': `${result.settings.appearance.theme_color}66`,
+                '--themeColor': user.settings.appearance.theme_color,
+                '--themeColorHover': `${user.settings.appearance.theme_color}66`,
             }
         } catch (error) {
             console.log(error);
@@ -194,7 +151,8 @@ export default {
             }  
         }
 
-        this.profile = result;
+        this.user = user;
+        console.log(this.user);
 
     },
     async toggleFriend(){
