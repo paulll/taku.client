@@ -46,6 +46,7 @@ let users = db.get("users");
 let messages = db.get("messages");
 let dms = db.get("dms");
 let anime = db.get("anime");
+let notifications = db.get("notifications");
 
 // API
 var app = express();
@@ -190,12 +191,18 @@ function User(username, email, password) {
         }
     },
     sounds: {
-        typing: { 
-            enabled: true,
-            url: "" },
-        mention: { 
-            enabled: true,
-            url: "" },
+      typing: { 
+          enabled: true,
+          url: "" 
+        },
+      mention: { 
+        enabled: true,
+        url: "" 
+      },
+      notification: { 
+        enabled: true,
+        url: "" 
+      },
     },
     notifications: {
         disable_all: false,
@@ -213,6 +220,70 @@ function User(username, email, password) {
   }
 };
 
+// Constructor for new notifications
+function Notification(type, from, content, post_uuid, channel_uuid){
+
+  if (!type) return new Error("'type' must be provided for notifications");
+  if (!from) return new Error("'from' must be provided for post notifications");
+
+  switch (type) {
+    case "Friend Request":
+      if (!from) return new Error("'from' must be provided for friend request notifications ");
+    break;
+    case "Comment":
+      if (!post_uuid) return new Error("'post_uuid' must be provided for comment notifications");
+      if (!content) return new Error("Content must provided for comment notifications");
+      break;
+    case "Message":
+      if (!channel_uuid) return new Error("'channel_uuid' must be provided for message notifications");
+      if (!content) return new Error("'content' must provided for message notifications");
+      break;
+    case "Post":
+      if (!post_uuid) return new Error("'post_uuid' must be provided for post notifications");
+      break;
+  }
+
+  this.uuid = uuidv4();
+  this.type = type;
+  this.from = from;
+  this.created_at = new Date().getTime();
+  this.read = false;
+  if (content) this.content = content;
+  if (post_uuid) this.post_uuid = post_uuid;
+  if (channel_uuid) this.channel_uuid = channel_uuid;
+}
+
+// Friend Requests 
+function acceptFriendRequest(me, userToAccept){
+  return new Promise(async (resolve, reject) => {
+    // Add the other users uuid to my pending list
+    await users.update(
+      { uuid: me },
+      { $pull: { 'friend_list.incoming': userToAccept } },
+    );
+
+    // Add the other user to my friends
+    await users.update(
+      { uuid: me },
+      { $addToSet: { 'friend_list.friends': userToAccept} }
+    );
+
+    // Add my uuid to the other users pending list
+    await users.update(
+      { uuid: userToAccept },
+      { $pull: { 'friend_list.outgoing': me} },
+    );
+
+    // Add me to their friends
+    await users.update(
+      { uuid: userToAccept },
+      { $addToSet: { 'friend_list.friends': me} }
+    );
+
+    resolve();
+  });
+}
+
 const currentMessages = [];
 
 let totalConnections = 0;
@@ -224,6 +295,30 @@ setInterval(async () => {
   currentLoad = parseInt((await si.currentLoad()).currentLoad.toFixed(0));
   ramUsage = Math.floor(process.memoryUsage().heapUsed / 1000 );
 }, 1000);
+
+// Middleware
+let authJWT = (req, res, next) => {
+  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
+
+    console.log(user.uuid);
+
+    if (error) {
+      console.log(error);
+      res.status(403);
+      res.json({
+        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
+      });
+      return;
+    }
+
+    // Get user's data from db
+    req.user = (await users.find({uuid: user.uuid }, { collation: { locale: "en", strength: 2 } }))[0];
+    next();
+  });
+};
+
+
+let notificationRoom = '';
 
 // Websockets
 io.on("connection", socket => {
@@ -238,6 +333,117 @@ io.on("connection", socket => {
     socket.emit("pong", {cpu: currentLoad, ram: ramUsage });
   });
 
+  // Connect the user to their own unique room for notifications
+  socket.on("room", room => {
+    console.log("New room".red, room);
+    socket.join(room);
+  });
+
+  // Messages
+
+  app.post("/friend/add", authJWT, async (req, res) => { // Add a friend
+    let me = req.user
+    let userToAdd = req.body.uuid
+    
+    if (me.friend_list.incoming.includes(userToAdd)) {
+      await acceptFriendRequest(me.uuid, userToAdd);
+      res.status(200);
+      res.json({"message": "Friend Request Accepted"});
+      return
+    };
+  
+    // Add the other users uuid to my pending list
+    await users.update(
+      { uuid: me.uuid },
+      { $addToSet: { 'friend_list.outgoing': userToAdd } }
+    );
+  
+    // Send notification to other user
+  
+    let notification = new Notification("Friend Request", me.uuid, `${me.username} has sent you a friend request!`);
+  
+    // Send event to the specific user
+    io.sockets.in(userToAdd).emit('notification', notification);
+  
+    await notifications.update(
+      { owner_uuid: userToAdd },
+      { $push: { 'list': notification} }
+    );
+  
+    // Add my uuid to the other users pending list
+    await users.update(
+      { uuid: userToAdd },
+      { $addToSet: { 'friend_list.incoming': me.uuid} }
+    );
+  
+    res.status(200);
+    res.json({"message": "Friend Request Sent"});
+  });
+  app.post("/friend/remove", authJWT, async (req, res) => { // Remove a friend
+   let me = req.user.uuid;
+   let userToRemove = req.body.uuid
+   
+   // Add the other users uuid to my pending list
+   await users.update(
+     { uuid: me },
+     { $pull: { 'friend_list.friends': userToRemove } }
+   );
+  
+   // Add my uuid to the other users pending list
+   await users.update(
+     { uuid: userToRemove },
+     { $pull: { 'friend_list.friends': me} }
+   );
+  
+   res.status(200);
+   res.json({"message": "Friend Removed"});
+  });
+  app.post("/friend/cancel", authJWT, async (req, res) => { // Cancel a friend request
+   let me = req.user.uuid;
+   let userToRemove = req.body.uuid
+   
+   // Add the other users uuid to my pending list
+   await users.update(
+     { uuid: me },
+     { $pull: { 'friend_list.outgoing': userToRemove } }
+   );
+  
+   // Add my uuid to the other users pending list
+   await users.update(
+     { uuid: userToRemove },
+     { $pull: { 'friend_list.incoming': me} }
+   );
+  
+   res.status(200);
+   res.json({"message": "Friend Request Cancelled"});
+  });
+  app.post("/friend/accept", authJWT, async (req, res) => { // Accept a friend
+  let me = req.user.uuid;
+  let userToAccept = req.body.uuid
+  acceptFriendRequest(me, userToAccept);
+  res.status(200);
+  res.json({"message": "Friend Request Accepted"});
+  });
+  app.post("/friend/deny", authJWT, async (req, res) => { // Deny a friend
+  
+  let me = req.user.uuid;
+  let userToRemove = req.body.uuid
+  
+  // Remove other persons uuid from your incoming list
+  await users.update(
+    { uuid: me },
+    { $pull: { 'friend_list.incoming': userToRemove } }
+  );
+  
+  // Remove my uuid from other persons outgoing list
+  await users.update(
+    { uuid: userToRemove },
+    { $pull: { 'friend_list.outgoing': me} }
+  );
+  
+  res.status(200);
+  res.json({"message": "Friend Request Denied"});
+  });
   // The reason i use a normal post method here is because
   // apparently theres a 1mb limit to a ws header
   // therefore if people want to send images that are bigger
@@ -355,8 +561,14 @@ io.on("connection", socket => {
     totalConnections--;
     console.log(`WS Connections: ${totalConnections}`);
   });
-
 });
+
+// io.on("room", room => {
+//   console.log("ROOM:".red, room);
+//   notificationRoom = room;
+//   socket.join(room);
+// });
+
 
 // Routes
 app.get("/", (req, res) => {
@@ -403,29 +615,10 @@ app.get("/user/:username", async (req, res) => {
   res.status(200);
   res.json(response);
 });
-app.get("/user", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-    if (error) {
-      res.status(401);
-      res.json({
-        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
-      });
-      return;
-    }
-    req.user = user;
 
-    const response = await users.find(
-      { uuid: user.uuid },
-      { collation: { locale: "en", strength: 2 } }
-    );
-
-    delete response[0].password;
-    response[0].email;
-
-    res.status(200);
-    res.json(response[0]);
-  });
+app.get("/user", authJWT, async (req, res) => {
+  res.status(200);
+  res.json(req.user);
 });
 
 app.post("/user/computer", async (req, res) => {
@@ -491,290 +684,46 @@ app.post("/user/socials", async (req, res) => {
   });
 });
 
-app.get("/blockedUsers", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-    if (error) {
-      res.status(401);
-      res.json({
-        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
-      });
-      return;
-    }
-    req.user = user;
-
-    const response = await users.find(
-      { uuid: user.uuid },
-      { collation: { locale: "en", strength: 2 } }
-    );
-
-    res.status(200);
-    res.json(response[0].settings.privacy.blocked_users);
-    });
-});
-app.get("/dms", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-    if (error) {
-      res.status(401);
-      res.json({
-        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
-      });
-      return;
-    }
-    req.user = user;
-
-    const response = await users.find(
-      { uuid: user.uuid },
-      { collation: { locale: "en", strength: 2 } }
-    );
-
-    res.status(200);
-    res.json(response[0].dms);
-    });
+app.get("/blockedUsers", authJWT, async (req, res) => {
+  res.status(200);
+  res.json(req.user.settings.privacy.blocked_users);
 });
 
-
-// Add a friend
-app.post("/friend/add", async (req, res) => {
-   // Verify Logged In User
-   jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-    if (error) {
-      res.status(401);
-      res.json({
-        message: "You must be logged in",
-      });
-      return;
-    }
-
-    let me = user.uuid;
-    let userToAdd = req.body.uuid
-    
-    console.log(me, userToAdd);
-
-    // Add the other users uuid to my pending list
-    await users.update(
-      { uuid: me },
-      { $addToSet: { 'friend_list.outgoing': userToAdd } }
-    );
-
-    // Add my uuid to the other users pending list
-    await users.update(
-      { uuid: userToAdd },
-      { $addToSet: { 'friend_list.incoming': me} }
-    );
-
-    res.status(200);
-    res.json({"message": "Friend Request Sent"});
-  });
+app.get("/dms", authJWT, async (req, res) => {
+  res.status(200);
+  res.json(req.user.dms);
 });
-
-// Remove a friend
-app.post("/friend/remove", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-   if (error) {
-     res.status(401);
-     res.json({
-       message: "You must be logged in",
-     });
-     return;
-   }
-
-   let me = user.uuid;
-   let userToRemove = req.body.uuid
-   
-   console.log(me, userToRemove);
-   // Add the other users uuid to my pending list
-   await users.update(
-     { uuid: me },
-     { $pull: { 'friend_list.friends': userToRemove } }
-   );
-
-   // Add my uuid to the other users pending list
-   await users.update(
-     { uuid: userToRemove },
-     { $pull: { 'friend_list.friends': me} }
-   );
-
-   res.status(200);
-   res.json({"message": "Friend Removed"});
- });
-});
-
-// Cancel a friend request
-app.post("/friend/cancel", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-   if (error) {
-     res.status(401);
-     res.json({
-       message: "You must be logged in",
-     });
-     return;
-   }
-
-   let me = user.uuid;
-   let userToRemove = req.body.uuid
-   
-   console.log(me, userToRemove);
-   // Add the other users uuid to my pending list
-   await users.update(
-     { uuid: me },
-     { $pull: { 'friend_list.outgoing': userToRemove } }
-   );
-
-   // Add my uuid to the other users pending list
-   await users.update(
-     { uuid: userToRemove },
-     { $pull: { 'friend_list.incoming': me} }
-   );
-
-   res.status(200);
-   res.json({"message": "Friend Request Cancelled"});
- });
-});
-
-// Accept a friend
-app.post("/friend/accept", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-   if (error) {
-     res.status(401);
-     res.json({
-       message: "You must be logged in",
-     });
-     return;
-   }
-
-    let me = user.uuid;
-    let userToAccept = req.body.uuid
-    
-    console.log(me, userToAccept);
-    
-    // Add the other users uuid to my pending list
-    await users.update(
-      { uuid: me },
-      { $pull: { 'friend_list.incoming': userToAccept } },
-    );
-
-    // Add the other user to my friends
-    await users.update(
-      { uuid: me },
-      { $addToSet: { 'friend_list.friends': userToAccept} }
-    );
-
-    // Add my uuid to the other users pending list
-    await users.update(
-      { uuid: userToAccept },
-      { $pull: { 'friend_list.outgoing': me} },
-    );
-
-    // Add me to their friends
-    await users.update(
-      { uuid: userToAccept },
-      { $addToSet: { 'friend_list.friends': me} }
-    );
-
-
-
-    await users.update(
-      { uuid: userToAccept },
-    );
-
-   res.status(200);
-   res.json({"message": "Friend Request Accepted"});
- });
-});
-// Deny a friend
-app.post("/friend/deny", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-   if (error) {
-     res.status(401);
-     res.json({
-       message: "You must be logged in",
-     });
-     return;
-   }
-
-   let me = user.uuid;
-   let userToRemove = req.body.uuid
-   
-   console.log(me, userToRemove);
-   // Remove other persons uuid from your incoming list
-   await users.update(
-     { uuid: me },
-     { $pull: { 'friend_list.incoming': userToRemove } }
-   );
-
-   // Remove my uuid from other persons outgoing list
-   await users.update(
-     { uuid: userToRemove },
-     { $pull: { 'friend_list.outgoing': me} }
-   );
-
-   res.status(200);
-   res.json({"message": "Friend Request Denied"});
- });
-});
-
-
 
 // Setting Routes
-app.post("/settings", async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-    if (error) {
-      res.status(401);
-      res.json({
-        message: "You must be logged in to view your user info",
-      });
-      return;
-    }
-
-    req.user = user;
+app.post("/settings", authJWT, async (req, res) => {
 
     await users.update(
-      { uuid: user.uuid },
+      { uuid: req.user.uuid },
       { $set: { profile: req.body.profile, settings: req.body.settings, friend_list: req.body.friend_list} }
     );
 
     res.status(200);
     res.json({"message": "Changes saved successfully"});
-  });
 });
-app.post("/settings/upload", upload.any(), async (req, res) => {
-  // Verify Logged In User
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-    if (error) {
-      res.status(401);
-      res.json({
-        message: "You must be logged in to view your user info",
-      });
-      return;
-    }
-    req.user = user;
+app.post("/settings/upload", authJWT, upload.any(), async (req, res) => {
+  let file = req.files[0];
+  file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
-    let file = req.files[0];
-    file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
+  let link = `http://taku.moe:8880/uploads/${file.originalname}`;
 
-    let link = `http://taku.moe:8880/uploads/${file.originalname}`;
+  if (file.mimetype.startsWith("image/jpeg") || file.mimetype.startsWith("image/png")) {
+    await cacheImage(file);
+    link = `http://taku.moe:8880/uploads/cache/${file.originalname}`;
+  }
 
-    if (file.mimetype.startsWith("image/jpeg") || file.mimetype.startsWith("image/png")) {
-      await cacheImage(file);
-      link = `http://taku.moe:8880/uploads/cache/${file.originalname}`;
-    }
+  // Rename the file back to the original name cus multer is stupid
+  fs.renameSync(`./db/uploads/${file.filename}`, `./db/uploads/${file.originalname}`);
 
-    // Rename the file back to the original name cus multer is stupid
-    fs.renameSync(`./db/uploads/${file.filename}`, `./db/uploads/${file.originalname}`);
-
-    res.status(200);
-    res.json({
-      "status": 200,
-      "message": "File uploaded successfully",
-      "link": link,
-    });
+  res.status(200);
+  res.json({
+    "status": 200,
+    "message": "File uploaded successfully",
+    "link": link,
   });
 });
 
@@ -896,6 +845,7 @@ app.post("/signup", async (req, res) => {
 
     // Make a new user with the values we got from the signup form and add to database
     await users.insert(user);
+    await notifications.insert({owner_uuid: user.uuid, list: []});
 
     // Respond to user
     res.status(200);
@@ -909,6 +859,8 @@ app.post("/login", async (req, res) => {
     { username: body.username },
     { collation: { locale: "en", strength: 2 } }
   );
+
+    console.log(user[0].settings);
 
   // Try matching
   try {
@@ -961,9 +913,8 @@ async function getAnimeList(){
   }
 }
 
+
 // getAnimeList();
-
-
 const port = process.env.PORT || 8880;
 http.listen(port, () => {
   console.log(`listening on *:${port}`);

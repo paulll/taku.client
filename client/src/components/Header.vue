@@ -25,6 +25,8 @@
 
                     <!-- <p class="tags"><strong>ANIME</strong></p> -->
                 </div>
+
+                <Notifications :notifications="notifications"/>
             </div>
 
             <!-- SHOW SERVER CPU LOAD IN HEADER -->
@@ -80,6 +82,7 @@
 <script>
 import axios from 'axios';
 import Spinner from '@/components/Spinner.vue'
+import Notifications from '@/components/header/Notifications.vue'
 import AnimatedNumber from '@/components/AnimatedNumber.vue'
 import io from 'socket.io-client';
 
@@ -97,9 +100,11 @@ export default {
             searchResults: [],
             darkmode: localStorage.darkmode,
             themeColors: {},
+            notifications: [],
         }
     },
     components: {
+        Notifications,
         Spinner,
         AnimatedNumber
     }, 
@@ -112,6 +117,9 @@ export default {
         this.path = this.$route.params.setting;
         this.getUser();
 
+
+        if (!this.notificationSoundUrl) this.notificationSoundUrl = require("../../public/notification.wav");
+        this.notificationSound = new Audio(this.notificationSoundUrl);
         // setInterval(async () => {           
         //     this.ping = await this.getPing();
         // }, 1000);
@@ -119,6 +127,11 @@ export default {
         this.getPing()
 
         this.socket.on('ping', epoch => this.ping = new Date().getTime() - epoch);
+        this.socket.on('notification', notification => {
+            console.log(notification);
+            this.notifications.push(notification);
+            this.notificationSound.play();
+        });
 
         this.emitter.on('refreshHeader', () => this.getUser());
     },
@@ -138,6 +151,10 @@ export default {
             if (response.data.profile.pfp) response.data.pfp = response.data.profile.pfp;
 
             this.user = response.data;
+
+
+            // Connected, let's sign-up for to receive messages for this room
+            this.socket.emit('room', this.user.uuid);
 
             try {
                 this.themeColors = {

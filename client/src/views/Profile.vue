@@ -237,7 +237,7 @@ export default {
 
       // If form submitted with no error:
       if(response.data.status == 200) {
-        this.user.profile[ref] = response.data.link;
+        this.me.profile[ref] = response.data.link;
         await this.updateSettings();
         this.emitter.emit('refreshHeader');
         this.getUser();

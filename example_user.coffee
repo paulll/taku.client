@@ -111,11 +111,11 @@
             blocked_users: ["4ea2f14f-811a-46b5-876b-feae639ce33c"]                 # Array that contains uuids of all the blocked users
         },
     }
-    notifications:  [                                                               # This will be added from the aggregation combining both collections together before sending them
+    notifications:  [    
+        owner_uuid: "789a9a8c-509d-4c53-a634-339959f69f68",                           # The user the notification came from
         { 
             uuid: 1,                                                     # Unique   # Notification uuid to tell them apart
             type: "Friend Request",                                                 # Notification type
-            from: "273a9a8c-509d-4c53-a634-339959f69f68",                           # The user the notification came from
             created_at: 1613655545,                                                 # Epoch date
             read: false,                                                            # If the notification has been read or not
         },

@@ -23,8 +23,9 @@
       
       <!-- Sounds -->
       <div v-if="user.settings.sounds && path == 'sounds'" class="section sounds" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :fileUrl="typingSoundUrl" :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="typingSoundUrl"  :optionValue="user.settings.sounds?.typing.enabled"  optionTitle="Typing"          :optionCategory="path"       :showValue="true"/>
-        <OptionBox  :fileUrl="mentionSoundUrl" :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="mentionSoundUrl" :optionValue="user.settings.sounds?.mention.enabled" :optionCategory="path"            optionTitle="Mention"    :showValue="true"/>
+        <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds?.typing.enabled"        optionTitle="Typing"   :optionCategory="path"     :showValue="true"/>
+        <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds?.mention.enabled"       :optionCategory="path" optionTitle="Mention"      :showValue="true"/>
+        <OptionBox  :fileUrl="notificationSoundUrl" :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds?.notification?.enabled" :optionCategory="path" optionTitle="Notification" :showValue="true"/>
       </div>
 
       <!-- Privacy -->
