@@ -4,7 +4,7 @@
       <div class="userListHeader"></div>
       <div class="userList">
         <div class="dm" v-for="user in dms" :key="user">
-          <img :src="`http://anihuu.moe:8880/user/${user}/pfp`" alt="">
+          <img :src="`http://taku.moe:8880/user/${user}/pfp`" alt="">
           {{user}}
         </div>
       </div>
@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     async getDms(){
-      const response = await axios.get('http://anihuu.moe:8880/dms', {
+      const response = await axios.get('http://taku.moe:8880/dms', {
         withCredentials: true,
       });
 

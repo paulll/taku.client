@@ -49,7 +49,7 @@
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in profile.profile?.anime" :key="id" :id="id">
-                    <img class="anime" width="84" :src="`http://anihuu.moe:8880/anime/posters/${id}.jpg`">
+                    <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
                     <Spinner/>
                 </router-link>
             </div>
@@ -76,9 +76,9 @@
 
 <script>
 import Spinner from '@/components/Spinner.vue'
-import MyComputer from '@/components/sub components/MyComputer.vue'
-import Socials from '@/components/sub components/Socials.vue'
-import Osu from '@/components/sub components/Osu.vue'
+import MyComputer from '@/components/profile/MyComputer.vue'
+import Socials from '@/components/profile/Socials.vue'
+import Osu from '@/components/profile/Osu.vue'
 
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -135,7 +135,7 @@ export default {
     async getUser() {
         NProgress.start();
 
-        const user = await axios.get('http://anihuu.moe:8880/user', {
+        const user = await axios.get('http://taku.moe:8880/user', {
             withCredentials: true,
         });
 
@@ -175,7 +175,7 @@ export default {
     async getProfileData() {
 
         // Get user data
-        let result = await axios.get(`http://anihuu.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+        let result = await axios.get(`http://taku.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
         result = Object.assign({}, result).data[0];
         console.log("ASASASASASASAS");
 
@@ -217,7 +217,7 @@ export default {
         this.updateSettings();
     },
     async updateSettings(){
-        const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
+        const response = await axios.post('http://taku.moe:8880/settings', this.user, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
@@ -232,7 +232,7 @@ export default {
         let formData = new FormData();
         formData.append(ref, file);
 
-        const response = await axios.post('http://anihuu.moe:8880/settings/upload', formData, {
+        const response = await axios.post('http://taku.moe:8880/settings/upload', formData, {
             withCredentials: true,
             headers: {
             'Content-Type': 'multipart/form-data'

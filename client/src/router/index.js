@@ -7,7 +7,7 @@ const routes = [
     name: 'Home',
     component: () => import('../views/Home.vue'),
     meta: {
-      title: '🏠 Anihuu',
+      title: '🏠 taku',
     },
   },
   {
@@ -73,7 +73,7 @@ const router = createRouter({
 // this sets the tab title to the current page dynamically
 router.beforeEach(async (to, from, next) => {
   if (to.meta.title) document.title = to.meta.title;
-  if (to.path.startsWith('/profile/')) document.title = "Anihuu | " + to.params.username; 
+  if (to.path.startsWith('/profile/')) document.title = "taku | " + to.params.username; 
   next();
 });
 export default router

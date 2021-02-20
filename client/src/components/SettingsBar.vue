@@ -97,7 +97,7 @@ export default {
   methods: {
     logout(){
       localStorage.removeItem('token');
-      window.location.href = "http://anihuu.moe:8080";
+      window.location.href = "http://taku.moe:8080";
     },
     updateUI(){
       this.darkmode = localStorage.darkmode;

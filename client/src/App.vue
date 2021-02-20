@@ -19,7 +19,7 @@ export default {
   name: 'Home',
   data: () => {
     return {
-      socket: io('ws://anihuu.moe:8880'),
+      socket: io('ws://taku.moe:8880'),
       user: {},
     };
   },
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     async getUser() {
-      const user = await axios.get('http://anihuu.moe:8880/user', {
+      const user = await axios.get('http://taku.moe:8880/user', {
         withCredentials: true,
       });
       this.user = user.data;
@@ -77,7 +77,6 @@ export default {
   scrollbar-width: thin;
   scrollbar-color: lightgray transparent;
   scrollbar-color: #363952#08090E ;
-
 }
 
 *.darkmode {
@@ -102,7 +101,6 @@ export default {
   border: 6px solid #08090E; 
 }
 
-
 html {
   width: 100vw;
   height: 100vh;
@@ -110,6 +108,15 @@ html {
 
 body {
   background: #fff; /* darkmode */
+}
+
+#nprogress .bar {
+  background: #ff00b6;
+  height: 3px
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #ff00b6, 0 0 5px #ff00b6;
 }
 
 .messageBubble .content img, .messageBubble .content video, .messageBubble .content iframe {

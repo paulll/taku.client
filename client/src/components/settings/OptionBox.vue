@@ -13,14 +13,21 @@
                 </div>
             </div>
         </div>
+        <div v-if="showSplitter" class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
         <div v-if="showValue" class="bottom">
             <a   v-if="type == 'file' && fileUrl" target="_blank" :href="user.settings[optionCategory][optionTitle.toLowerCase().replace(/\s/g, '_')].url"><p>{{user.settings[optionCategory][optionTitle.toLowerCase().replace(/\s/g, '_')].url.split("/")[user.settings[optionCategory][optionTitle.toLowerCase().replace(/\s/g, '_')].url.split("/").length - 1]}}</p></a>
             <a   v-if="type == 'file' && !fileUrl" href=""><p>Default</p></a>
             <img v-if="type == 'file' && fileUrl" src="../../assets/x.png" alt="" @click="resetSfx(property, optionTitle.toLowerCase().replace(/\s/g, '_'))">
             <img v-if="type == 'file' && !fileUrl" src="../../assets/upload.png" alt="" @click="$refs[property].click()">
-            <input class="fileInput" type="file" :ref="property" accept="audio/*" @change="uploadFile(property, optionTitle.toLowerCase().replace(/\s/g, '_'))">
+            <input v-if="type == 'file'" class="fileInput" type="file" :ref="property" accept="audio/*" @change="uploadFile(property, optionTitle.toLowerCase().replace(/\s/g, '_'))">
+        
+            <div v-if="list" class="list" v-for="listItem in listContent" :key="listItem" target="_blank" :href="listItem">
+              <div>
+                <p>{{listItem}}</p>
+              </div>
+            </div>
+        
         </div>
-
         <div v-if="type == 'text'" class="bottomTextFields">
             <div style="width: 100%;" v-for="field in fields" :key="field">
                 <input 
@@ -64,11 +71,14 @@ export default {
         darkmode:          { type: String,     required: false  },                    // Darkmode enabled or not
         optionTitle:       { type: String,     required: true   },                    // Title of the option box
         optionCategory:    { type: String,     required: true   },                    // Option category e.g. "Appearance"
-        optionValue:       { required: false  },                                      // The value of the option
+        optionValue:       { required: false   },                                     // The value of the option e.g. "user.settings.privacy.blocked_users"
         fields:            { type: Object,     required: false, },                    // The ammount of textbox fields
         showValue:         { type: Boolean,    required: false,    default: false  }, // Is the value shown or not
         showIcon:          { type: Boolean,    required: false,    default: true   }, // Is the icon shown or not
+        showSplitter:      { type: Boolean,    required: false,    default: false  }, // Does the OptionBox contain a splitter or not
         toggleButtons:     { type: Boolean,    required: false  },                    // Is the toggle buttons shown or not
+        list:              { type: Boolean,    required: false,    default: false  }, // Does the OptionBox contain a list or not
+        listContent:       { type: Array ,     required: false  },                    // Contains the list as an array
     },
     data: () => {
         return {
@@ -99,7 +109,7 @@ export default {
                     if (localStorage.mentionSoundUrl) localStorage.setItem('mentionSoundUrl', this.user.settings.appearance.mention_sfx.url);
                     localStorage.setItem('mention_sfx', state);
                     break;
-                case "activity":
+                case "show_activity":
                     this.user.settings.privacy.show_activity = state
                     break;
                 case "flare":
@@ -114,7 +124,7 @@ export default {
             
             console.log(this.user.settings.appearance);
             
-            const response = await axios.post('http://anihuu.moe:8880/settings', this.user, {
+            const response = await axios.post('http://taku.moe:8880/settings', this.user, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'
@@ -142,7 +152,7 @@ export default {
             let formData = new FormData();
             formData.append('audio', file);
 
-            const response = await axios.post('http://anihuu.moe:8880/settings/upload', formData, {
+            const response = await axios.post('http://taku.moe:8880/settings/upload', formData, {
                 withCredentials: true,
                 headers: {
                 'Content-Type': 'multipart/form-data'
@@ -312,9 +322,6 @@ export default {
   align-items: left;
 }
 
-
-
-
 .bottomTextFields {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -341,5 +348,26 @@ export default {
   color: #575b77;
 }
 
+.splitter {
+  width: 100%;
+  height: 1px;
+  background: #D4D4D4;
+  position: relative;
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.splitter.darkmode {
+  background: #252739;
+}
+
+.listItem {
+  display: flex;
+  margin-left: 0px !important;
+  padding: 8px 8px;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
 
 </style>

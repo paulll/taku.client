@@ -1,8 +1,8 @@
 <template>
     <div class="anime">
         <div class="bannerContainer">
-            <div v-if="anime.id" class="banner" :style="{'background-image' : `linear-gradient(0deg, rgba(255, 0, 107, 0.65), rgba(255, 0, 107, 0.75)), linear-gradient(0deg, #000000, #000000), url(http://anihuu.moe:8880/anime/banners/${anime.id}.jpg)`}">
-                <img class="poster" :src="`http://anihuu.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
+            <div v-if="anime.id" class="banner" :style="{'background-image' : `linear-gradient(0deg, rgba(255, 0, 107, 0.65), rgba(255, 0, 107, 0.75)), linear-gradient(0deg, #000000, #000000), url(http://taku.moe:8880/anime/banners/${anime.id}.jpg)`}">
+                <img class="poster" :src="`http://taku.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
                 <div class="info">
                     <div class="title">
                         <h1>{{anime.title.english}} 
@@ -18,7 +18,7 @@
                 </div>
             </div>
         </div>
-        <p class="tags" ><strong>SUBMITED BY: </strong><router-link :to="`/profile/${anime.submitted_by}`">{{anime.submitted_by}}</router-link></p>
+        <p class="tags" ><strong>SUBMITED BY: </strong><router-link :to="`/profile/${anime.submitted_by}`">{{anime.submitted_by}}</router-link></p> 
         <p class="tags" ><strong>TAGS: </strong>{{anime.tags}}</p>
         <p class="tags" ><strong>BACKGROUNDS: </strong>(1337)</p>
     </div>
@@ -53,8 +53,8 @@ export default {
             this.saved = true;  
 
             // Reset animation
-            const json = JSON.stringify({anime: [id], user: localStorage.token});
-            const response = await axios.post('http://anihuu.moe:8880/user/anime', json, {
+            const json = JSON.stringify({anime: id, user: localStorage.token});
+            const response = await axios.post('http://taku.moe:8880/user/anime', json, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -76,8 +76,8 @@ export default {
             this.saved = false;  
 
             // Reset animation
-            const json = JSON.stringify({anime: [id], user: localStorage.token});
-            const response = await axios.post('http://anihuu.moe:8880/user/anime', json, {
+            const json = JSON.stringify({anime: id, user: localStorage.token});
+            const response = await axios.post('http://taku.moe:8880/user/anime', json, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -97,17 +97,17 @@ export default {
         async getData() {
 
             // Get user data
-            const response = await axios.get('http://anihuu.moe:8880/user', {withCredentials: true});
+            const response = await axios.get('http://taku.moe:8880/user', {withCredentials: true});
             let user = response.data
             this.user = user;
 
             // Get anime data
-            let anime = await axios.get(`http://anihuu.moe:8880/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+            let anime = await axios.get(`http://taku.moe:8880/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
             anime = Object.assign({}, anime).data.anime[0];
             anime.tags = anime.tags.join(", ");
             this.anime = anime;
 
-            if (user.anime_showcase.includes(anime.id)) this.saved = true;
+            if (user.profile.anime.includes(anime.id)) this.saved = true;
         }
     }
 }

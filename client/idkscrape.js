@@ -1,5 +1,5 @@
 
-
+//add your db thing then go to line 155
 const puppeteer = require('puppeteer');
 
 const https = require('https');
@@ -194,6 +194,7 @@ while (stateOfLoop) {
     } else stateOfLoop = false;
     
 }
-await browser.close
+await page.close;
+await browser.close;
 }
 skurape("https://www12.9anime.to/az-list");

@@ -1,4 +1,4 @@
-# anihuu
+# taku
 
 ## Project setup
 ```

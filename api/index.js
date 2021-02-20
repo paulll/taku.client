@@ -9,6 +9,7 @@ var upload = multer({ dest: "./db/uploads/" });
 var http = require("http");
 var Jimp = require("jimp");
 const Joi = require("joi");
+const si = require("systeminformation");
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
 const jwt = require("jsonwebtoken");
@@ -56,7 +57,7 @@ var io = require("socket.io")(http, {
 
 app.use(
   cors({
-    origin: "http://anihuu.moe:8080",
+    origin: "http://taku.moe:8080",
     credentials: true,
   })
 );
@@ -153,16 +154,25 @@ const currentMessages = [];
 
 let totalConnections = 0;
 
+let currentLoad = 0;
+let ramUsage = 0;
+
+setInterval(async () => {
+  currentLoad = parseInt((await si.currentLoad()).currentLoad.toFixed(0));
+  ramUsage = Math.floor(process.memoryUsage().heapUsed / 1000 );
+}, 1000);
+
 // Websockets
 io.on("connection", socket => {
-  socket.emit("message", "Connected to anihuu DMs");
+  socket.emit("message", "Connected to taku DMs");
   socket.emit("messages", currentMessages);
   
   totalConnections++;
+
   console.log(`Total Connections: ${totalConnections}`);
   
   socket.on("ping", () => {
-    socket.emit("pong");
+    socket.emit("pong", {cpu: currentLoad, ram: ramUsage });
   });
 
   // The reason i use a normal post method here is because
@@ -204,12 +214,12 @@ io.on("connection", socket => {
       for (attachment of req.files){
         attachment.originalname = `${new Date().getTime().toString()}-${attachment.originalname.replace(/\s/g, "_")}`; // Remove spaces with underscores
   
-        attachment.html = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
-        attachment.originalurl = `http://anihuu.moe:8880/uploads/${attachment.originalname}`;
+        attachment.html = `http://taku.moe:8880/uploads/${attachment.originalname}`;
+        attachment.originalurl = `http://taku.moe:8880/uploads/${attachment.originalname}`;
 
         if (attachment.mimetype.startsWith("image/jpeg") || attachment.mimetype.startsWith("image/png")) {
           await cacheImage(attachment);
-          attachment.html = `http://anihuu.moe:8880/uploads/cache/${attachment.originalname}`;
+          attachment.html = `http://taku.moe:8880/uploads/cache/${attachment.originalname}`;
         }
 
         // Rename the file back to the original name cus multer is stupid
@@ -386,10 +396,12 @@ app.post("/user/anime", async (req, res) => {
     }
     req.user = user;
 
-    await users.update(
+    let test = await users.update(
       { username: req.user.username },
-      { $pull: { 'profile.anime' : parseInt(body.anime) } }
+      { $pull: { "profile.anime" : parseInt(body.anime) } }
     );
+    
+    console.log(test);
 
     res.status(200);
     res.json({ message: "done" });
@@ -408,7 +420,7 @@ app.post("/user/socials", async (req, res) => {
 
     await users.update(
       { username: req.user.username },
-      { $set: { socials: body.socials } }
+      { $set: { "profile.socials": body.socials } }
     );
 
     res.status(200);
@@ -497,11 +509,11 @@ app.post("/settings/upload", upload.any(), async (req, res) => {
     let file = req.files[0];
     file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
-    let link = `http://anihuu.moe:8880/uploads/${file.originalname}`;
+    let link = `http://taku.moe:8880/uploads/${file.originalname}`;
 
     if (file.mimetype.startsWith("image/jpeg") || file.mimetype.startsWith("image/png")) {
       await cacheImage(file);
-      link = `http://anihuu.moe:8880/uploads/cache/${file.originalname}`;
+      link = `http://taku.moe:8880/uploads/cache/${file.originalname}`;
     }
 
     // Rename the file back to the original name cus multer is stupid
@@ -649,12 +661,12 @@ app.post("/signup", async (req, res) => {
       computer: [],     // Their computer specs
       socials: [],      // Socials
       connections: {},  // Stuff like osu etc
-      pfp: `http://anihuu.moe:8880/pfp/_default.png`,
-      banner: `http://anihuu.moe:8880/banners/_default.png`
+      pfp: `http://taku.moe:8880/pfp/_default.png`,
+      banner: `http://taku.moe:8880/banners/_default.png`
     };
 
     result.vip = false; // If the user is a dev
-    result.state = true; // Online or offline state
+    result.status = true; // Online or offline state
     result.dms = {}; // The user's DMs list
     result.settings = { // Their settings
         appearance: {

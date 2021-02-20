@@ -1,6 +1,6 @@
 <template>
   <div class="signup">
-      <div class="bigtext">ANIHUU</div>
+      <div class="bigtext">taku</div>
       <div class="container">
 
         <div class="formContainer">
@@ -82,7 +82,7 @@ export default {
         });
 
         // Send JSON to backend
-        const response = await axios.post('http://anihuu.moe:8880/login', json, {
+        const response = await axios.post('http://taku.moe:8880/login', json, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'

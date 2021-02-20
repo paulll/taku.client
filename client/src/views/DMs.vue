@@ -56,7 +56,7 @@ export default {
     return {
       message: "",
       messages: [],
-      socket: io('ws://anihuu.moe:8880'),
+      socket: io('ws://taku.moe:8880'),
       me: localStorage.username,
       blockedUsers: [],
       typingUsers: [],
@@ -234,7 +234,7 @@ export default {
       }
 
       // Send
-      axios.post('http://anihuu.moe:8880/message', formData, {
+      axios.post('http://taku.moe:8880/message', formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -251,7 +251,7 @@ export default {
     },
     // This gets the blocked users of the current user
     async getBlockedUsers(){
-      const response = await axios.get('http://anihuu.moe:8880/blockedUsers', {
+      const response = await axios.get('http://taku.moe:8880/blockedUsers', {
         withCredentials: true,
       });
 

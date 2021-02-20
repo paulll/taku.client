@@ -36,6 +36,7 @@
 - [ ] Make the profile page update theme when they log in
 - [ ] Fix the search to trycatch old users cus their databases are outdated or just delete all users
 
+- [ ] Add outline on the osu flags because white flags mix in with the lightmode
 - [ ] Add a display english/romaji setting 
 - [ ] Add Reply feature, double tap on pc, slide on mobile
 - [ ] Add a filesize limit on the frontend

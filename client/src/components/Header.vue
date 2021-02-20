@@ -4,7 +4,7 @@
         <div class="container">
             <div class="searchBox">
                 <img class="glass" src="../assets/search.svg" alt="">
-                <input class="search" placeholder="SEARCH" v-model="searchString" @keyup="getDataSearch()">
+                <input class="search" spellcheck="false" placeholder="SEARCH" v-model="searchString" @keyup="getDataSearch()">
                 
                 <div class="searchResults" v-if="searchString.length > 0" :class="{darkmode: darkmode == 'true'}">
                     <p v-if="searchResults.users.length > 0" class="tags"><strong>USERS</strong></p>
@@ -19,18 +19,36 @@
                     <div class="animeList" :class="{darkmode: darkmode == 'true'}">
                         <router-link :to="`/anime/${anime.id}`" class="animeWrap" v-for="anime in searchResults?.anime" :key="anime">
                             <!-- <img :src="anime.settings.pfp" alt=""> -->
-                            <img class="animePoster" :src="`http://anihuu.moe:8880/anime/posters/${anime.id}.jpg`" alt="Anime">
+                            <img class="animePoster" :src="`http://taku.moe:8880/anime/posters/${anime.id}.jpg`" alt="Anime">
                         </router-link>
                     </div>
 
                     <!-- <p class="tags"><strong>ANIME</strong></p> -->
                 </div>
             </div>
+
+            <!-- SHOW SERVER CPU LOAD IN HEADER -->
+            <div class="cpuLoad" v-if="!token || token">
+                <div :class="{'ok': parseInt(cpu) <= 50, 'ohshit': parseInt(cpu) > 50 && parseInt(cpu) <= 80, 'serverOnFire': parseInt(cpu) > 80}">
+                    <!-- <p v-if="serverIsUnreachable">Server Unreachable</p> -->
+                    <p><AnimatedNumber :number="cpu"/>%</p>
+                </div>
+            </div>
+
+            <!-- SHOW SERVER CPU LOAD IN HEADER -->
+            <div class="cpuLoad" v-if="!token || token">
+                <div :class="{'ok': parseInt(cpu) <= 50, 'ohshit': parseInt(cpu) > 50 && parseInt(cpu) <= 80, 'serverOnFire': parseInt(cpu) > 80}">
+                    <!-- <p v-if="serverIsUnreachable">Server Unreachable</p> -->
+                    <p><AnimatedNumber :number="ram"/>KB</p>
+                </div>
+            </div>
+
+            <!-- SHOW PING IN THE HEADER -->
             <div class="ping" v-if="!token || token">
-                <div :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250 && parseInt(ping) <= 1000}">
+                <div :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250}">
                     <p v-if="parseInt(ping) > 1000">+</p>
                     <!-- <p v-if="serverIsUnreachable">Server Unreachable</p> -->
-                    <p>{{ping}}ms</p>
+                    <p><AnimatedNumber :number="ping"/>ms</p>
                 </div>
             </div>
             <div class="buttons" :style="themeColors"  v-if="!token">
@@ -47,6 +65,9 @@
                 <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
             </div>
             <div class="buttons small" :style="themeColors" v-if="token">
+                <div class="button"><img src="../assets/notification.png" alt=""></div>
+            </div>
+            <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
             </div>
             <div class="buttons" :style="themeColors" v-if="token">
@@ -59,6 +80,7 @@
 <script>
 import axios from 'axios';
 import Spinner from '@/components/Spinner.vue'
+import AnimatedNumber from '@/components/AnimatedNumber.vue'
 import io from 'socket.io-client';
 
 export default {
@@ -67,8 +89,10 @@ export default {
             path: "",
             token: localStorage.token,
             user: "",
-            socket: io('ws://anihuu.moe:8880'),
+            socket: io('ws://taku.moe:8880'),
             ping: null,
+            cpu: null,
+            ram: null,
             searchString: "",
             searchResults: [],
             darkmode: localStorage.darkmode,
@@ -76,8 +100,9 @@ export default {
         }
     },
     components: {
-        Spinner
-    },
+        Spinner,
+        AnimatedNumber
+    }, 
     watch: {
         $route(to, from) {
             this.path = to.params.setting;
@@ -106,7 +131,7 @@ export default {
     },
     methods: {
         async getUser() {
-            const response = await axios.get('http://anihuu.moe:8880/user', {
+            const response = await axios.get('http://taku.moe:8880/user', {
                 withCredentials: true,
             });
 
@@ -137,7 +162,7 @@ export default {
                 this.searchResults = [];
                 return
             }
-            const response  = await axios.post('http://anihuu.moe:8880/search/', JSON.stringify({ searchString: this.searchString}), { 
+            const response  = await axios.post('http://taku.moe:8880/search/', JSON.stringify({ searchString: this.searchString}), { 
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'
@@ -149,11 +174,15 @@ export default {
         async getPing(){
             setInterval(() => {
                 const startTime = new Date().getTime();
+
                 this.socket.emit('ping');
 
                 // I divided the ms by 2 because theres 2 requests going, one that emits "ping", and then waits for "pong"
-                this.socket.on('pong', () => {
+                this.socket.once('pong', stats => {
                     this.ping = ((new Date().getTime() - startTime) / 2).toFixed(0);
+                    console.log(stats);
+                    this.cpu = stats.cpu;
+                    this.ram = stats.ram;
                 });
             }, 1000);
         }
@@ -218,7 +247,6 @@ export default {
     display: flex;
     overflow-x: scroll;
     width: 100%;
-
 }
 
 .users a {
@@ -370,6 +398,23 @@ export default {
 .ping .ok { color: #3BE220; }
 .ping .ohshit { color: rgb(255, 208, 0); }
 .ping .dragan { color: #FF006B; }
+
+.cpuLoad {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+}
+
+.cpuLoad p {
+    transition: 200ms ease;
+    white-space: nowrap;
+    display: flex;
+}
+
+.cpuLoad .ok { color: #3BE220; }
+.cpuLoad .ohshit { color: rgb(255, 208, 0); }
+.cpuLoad .serve { color: #FF006B; }
 
 .login {
     margin-right: 14px;
