@@ -151,6 +151,7 @@ export default {
       });
 
       this.me = me.data;
+      console.log(this.me);
       NProgress.done();
     },
     async getUser() {

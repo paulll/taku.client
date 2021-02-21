@@ -95,7 +95,7 @@ async function createToken(user, res) {
     res.status(200);
   });
 }
-async function cacheImage(attachment){
+async function cacheImage(attachment, uuid){
   return new Promise((resolve, reject) => { 
 
     console.log('Processing Image'.cyan);
@@ -105,7 +105,7 @@ async function cacheImage(attachment){
         image.resize(Jimp.AUTO, 368) // resize
       }
 
-      await image.writeAsync(`./db/uploads/cache/${attachment.originalname}`); // save
+      await image.writeAsync(`./db/${attachment.fieldname}/cache/${uuid}`); // save
 
       resolve();
     });
@@ -245,7 +245,10 @@ function Notification(type, from, content, post_uuid, channel_uuid){
 
   this.uuid = uuidv4();
   this.type = type;
-  this.from = from;
+  this.from = {
+    uuid: from.uuid,
+    username: from.username,
+  };
   this.created_at = new Date().getTime();
   this.read = false;
   if (content) this.content = content;
@@ -282,7 +285,7 @@ function acceptFriendRequest(me, userToAccept){
 
     console.log(me);
     // Create the notification
-    let notification = new Notification("Friend Request", me.uuid, `${me.username} has accepted your friend request!`);
+    let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Accepted your friend request!`);
     // Send event to the specific user
     console.log(notification);
     io.sockets.in(userToAccept).emit('notification', notification);
@@ -319,7 +322,20 @@ let authJWT = (req, res, next) => {
     }
 
     // Get user's data from db
-    req.user = (await users.find({uuid: user.uuid }, { collation: { locale: "en", strength: 2 } }))[0];
+    req.user = (await users.aggregate([
+      {
+        '$match': {
+          'uuid': `${user.uuid}`
+        }
+      }, {
+        '$lookup': {
+          'from': 'notifications', 
+          'localField': 'uuid', 
+          'foreignField': 'owner_uuid', 
+          'as': 'notifications'
+        }
+      }
+    ]))[0];
     next();
   });
 };
@@ -366,8 +382,10 @@ io.on("connection", socket => {
     );
   
     // Create the notification
-    let notification = new Notification("Friend Request", me.uuid, `${me.username} has sent you a friend request!`);
+    let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Sent you a friend request!`);
   
+    console.log(notification);
+
     // Send event to the specific user
     io.sockets.in(userToAdd).emit('notification', notification);
   
@@ -724,15 +742,20 @@ app.post("/settings/upload", authJWT, upload.any(), async (req, res) => {
   let file = req.files[0];
   file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
-  let link = `http://taku.moe:8880/uploads/${file.originalname}`;
+  let link = `http://taku.moe:8880/${file.fieldname}/${req.user.uuid}`;
 
-  if (file.mimetype.startsWith("image/jpeg") || file.mimetype.startsWith("image/png")) {
-    await cacheImage(file);
-    link = `http://taku.moe:8880/uploads/cache/${file.originalname}`;
+  if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
+    await cacheImage(file, req.user.uuid);
+    link = `http://taku.moe:8880/${file.fieldname}/cache/${req.user.uuid}`;
+
+    // Rename the file back to the original name cus multer is stupid
+    fs.renameSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
+  } else {
+    // Add the original image in the cache folder if its not a png/jpeg
+    fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/cache/${req.user.uuid}`);
+    fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
   }
 
-  // Rename the file back to the original name cus multer is stupid
-  fs.renameSync(`./db/uploads/${file.filename}`, `./db/uploads/${file.originalname}`);
 
   res.status(200);
   res.json({

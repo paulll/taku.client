@@ -153,6 +153,8 @@ export default {
 
             this.user = response.data;
 
+            console.log(this.user.notifications[0].list);
+            this.notifications = [...this.user.notifications[0].list.reverse()];
 
             // Connected, let's sign-up for to receive messages for this room
             this.socket.emit('room', this.user.uuid);
