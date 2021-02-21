@@ -17,10 +17,10 @@
                     <p>{{notification.content}}</p>
                 </div>
             </div>
-            <div>
+            <!-- <div>
                 <button @click="friend(notification.uuid, 'add')"><img src="../../assets/checkmark.svg"></button>
                 <button @click="friend(notification.uuid, 'deny')"><img src="../../assets/deny.svg"></button>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>
@@ -53,6 +53,28 @@ export default {
                 withCredentials: true
             }); 
             this.emitter.emit('refreshHeader');
+        },
+        async friend(uuid, option){
+            switch (option) {
+                case "add":
+                    // Fake adding the user so the front end reacts instantly
+                    if (!this.me.friend_list.outgoing.includes(uuid) && !this.me.friend_list.friends.includes(uuid)) this.me.friend_list.outgoing.push(uuid);
+                    break;
+                case "remove":
+                    // Fake remove the user so the front end reacts instantly
+                    if (this.me.friend_list.outgoing.includes(uuid) || this.me.friend_list.friends.includes(uuid)) {
+                        this.me.friend_list.outgoing.splice(this.me.friend_list.outgoing.indexOf(uuid), 1);
+                        this.me.friend_list.friends.splice(this.me.friend_list.friends.indexOf(uuid), 1);
+                    }
+                    break;
+            }
+
+            const response = await axios.post(`http://taku.moe:8880/friend/${option}`, {uuid: uuid}, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
         },
         convert(epoch) {
             const dt = new Date(epoch);
@@ -108,6 +130,15 @@ export default {
 .heading {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    outline: none;
+    white-space: nowrap;
+    border: none;
+    background: transparent;
+    font-weight: 500;
+    color: #0094FF;
+    font-size: 14px;
+    text-transform: uppercase;
 }
 
 .clearNotifs {

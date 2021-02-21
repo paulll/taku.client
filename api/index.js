@@ -191,18 +191,26 @@ function User(username, email, password) {
         }
     },
     sounds: {
-      typing: { 
-          enabled: true,
-          url: "" 
+        typing: { 
+            enabled: true,
+            url: "" 
         },
-      mention: { 
-        enabled: true,
-        url: "" 
-      },
-      notification: { 
-        enabled: true,
-        url: "" 
-      },
+        mention: { 
+            enabled: true,
+            url: "" 
+        },
+        notification: { 
+            enabled: true,
+            url: "" 
+        },
+        hover: { 
+            enabled: true,
+            url: "" 
+        },
+        click: { 
+            enabled: true,
+            url: "" 
+        },
     },
     notifications: {
         disable_all: false,

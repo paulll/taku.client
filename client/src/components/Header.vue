@@ -1,6 +1,6 @@
 <template>
     <!-- HTML here -->
-    <div class="header" v-if="user" :class="{pushRight: path}">
+    <div class="header" :class="{pushRight: path}">
         <div class="container">
             <div class="searchBox">
                 <img class="glass" src="../assets/search.svg" alt="">
@@ -43,6 +43,14 @@
                 </div>
             </div>
 
+            <!-- SHOW SERVER CPU LOAD IN HEADER -->
+            <div class="cpuLoad" v-if="!token || token">
+                <div :class="{'ok': parseInt(fps) >= 56, 'ohshit': parseInt(fps) < 56 && parseInt(fps) >= 30, 'serverOnFire': parseInt(fps) < 30}">
+                    <!-- <p v-if="serverIsUnreachable">Server Unreachable</p> -->
+                    <p><AnimatedNumber :number="fps"/>FPS</p>
+                </div>
+            </div>
+
             <!-- SHOW PING IN THE HEADER -->
             <div class="ping" v-if="!token || token">
                 <div :class="{'ok': parseInt(ping) <= 100, 'ohshit': parseInt(ping) > 100 && parseInt(ping) <= 250, 'dragan': parseInt(ping) > 250}">
@@ -68,13 +76,13 @@
                 <div v-if="notifications.length > 0" class="numberOfNotifs">{{notifications.length}}</div>
                 <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/notification.png" alt=""></div>
             </div>
-            <Notifications :notifications="notifications" :show="showNotifications"/>
+            <Notifications :notifications="notifications" :show="showNotifications"/> 
 
             <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
             </div>
             <div class="buttons" :style="themeColors" v-if="token">
-                <router-link :to='`/profile/${user.username}`'><div class="pfp" :style="{'background-image' : `url('${user.pfp}')`}"></div></router-link>
+                <router-link :to='`/profile/${user?.username}`'><div class="pfp" :style="{'background-image' : `url('${user?.pfp}')`}"></div></router-link>
             </div>
         </div>
     </div>
@@ -97,6 +105,7 @@ export default {
             ping: null,
             cpu: null,
             ram: null,
+            fps: null,
             searchString: "",
             searchResults: [],
             darkmode: localStorage.darkmode,
@@ -119,6 +128,9 @@ export default {
         this.path = this.$route.params.setting;
         this.getUser();
 
+        let lastLoop = new Date();
+
+
 
         if (!this.notificationSoundUrl) this.notificationSoundUrl = require("../../public/notification.wav");
         this.notificationSound = new Audio(this.notificationSoundUrl);
@@ -138,13 +150,30 @@ export default {
         this.emitter.on('refreshHeader', () => this.getUser());
     },
     created(){
-
+        this.test();
     },
     unmounted() {
         // Disconnect socket when the app closes
         this.socket.disconnect();
     },
     methods: {
+        test() { 
+            let lastLoop = new Date().getTime();
+            let collectedFps = null;
+
+            function step(timestamp) {
+                let thisLoop = new Date().getTime(); 
+                let fps = Math.floor(1000 / (thisLoop - lastLoop));
+                lastLoop = thisLoop;
+                collectedFps = fps;
+                window.requestAnimationFrame(step);
+            }
+            window.requestAnimationFrame(step);
+
+            setInterval(() => {
+                this.fps = collectedFps;
+            }, 1000);
+        },
         async getUser() {
             const response = await axios.get('http://taku.moe:8880/user', {
                 withCredentials: true,
@@ -189,6 +218,9 @@ export default {
             this.searchResults = response.data;
         },
         async getPing(){
+
+
+
             setInterval(() => {
                 const startTime = new Date().getTime();
 

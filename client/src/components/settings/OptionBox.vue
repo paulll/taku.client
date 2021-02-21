@@ -8,8 +8,8 @@
 
                 </div>
                 <div v-if="toggleButtons" class="onOff" :style="themeColors">
-                    <button @click="toggleOption(true, optionTitle.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == true}">on</button>
-                    <button @click="toggleOption(false, optionTitle.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == false}">off</button>
+                    <button @mouseover="playHover()" @click="toggleOption(true, optionTitle.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == true}">on</button>
+                    <button @mouseover="playHover()" @click="toggleOption(false, optionTitle.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == false}">off</button>
                 </div>
             </div>
         </div>
@@ -92,6 +92,9 @@ export default {
     },
     methods: {
         async toggleOption(state, option){
+            if (!this.clickSoundUrl) this.clickSoundUrl = require("../../../public/click.wav");
+            this.clickSound = new Audio(this.clickSoundUrl);
+            this.clickSound.play();
             NProgress.start();
             switch (option) {
                 case "darkmode":
@@ -109,6 +112,21 @@ export default {
                     if (localStorage.mentionSoundUrl) localStorage.setItem('mentionSoundUrl', this.user.settings.sounds.mention.url);
                     localStorage.setItem('mention_sfx', state);
                     break;
+                case "notification":
+                    this.user.settings.sounds.notification.enabled = state;
+                    if (localStorage.notificationSoundUrl) localStorage.setItem('notificationSoundUrl', this.user.settings.sounds.notification.url);
+                    localStorage.setItem('notification_sfx', state);
+                    break;
+                case "hover":
+                    this.user.settings.sounds.hover.enabled = state;
+                    if (localStorage.hoverSoundUrl) localStorage.setItem('hoverSoundUrl', this.user.settings.sounds.hover.url);
+                    localStorage.setItem('hover_sfx', state);
+                    break;
+                case "click":
+                    this.user.settings.sounds.click.enabled = state;
+                    if (localStorage.clickSoundUrl) localStorage.setItem('clickSoundUrl', this.user.settings.sounds.click.url);
+                    localStorage.setItem('click_sfx', state);
+                    break;
                 case "show_status":
                     this.user.settings.privacy.show_status = state
                     break;
@@ -118,6 +136,11 @@ export default {
             }
             NProgress.done();
             this.updateSettings();
+        },
+        playHover(){
+          if (!this.hoverSoundUrl) this.hoverSoundUrl = require("../../../public/hover.wav");
+          this.hoverSound = new Audio(this.hoverSoundUrl);
+          this.hoverSound.play();
         },
         async updateSettings(){
             NProgress.start();
