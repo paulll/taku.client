@@ -1,17 +1,33 @@
 <template >
     <div v-if="show" class="notificationBox" :class="{darkmode: darkmode == 'true'}">
-        <p v-if="Object.keys(notifications).length == 0">You don't have any notifications! (｡•́︿•̀｡)</p>
+        <div class="heading">
+            <div class="left">
+                <p>Notifications ({{Object.keys(notifications).length}})</p>
+            </div>
+            <button class="clearNotifs" @click="clearNotifications()"><img src="../../assets/trash.svg"></button>
+        </div>
+
+
+        <p v-if="Object.keys(notifications).length == 0" class="noNotifications">You don't have any notifications! <strong>(｡•́︿•̀｡)</strong></p>
         <div class="notification" :class="{darkmode: darkmode == 'true'}" v-for="notification in notifications" :key="notification">
-            <router-link :to="`/profile/${notification.from.username}`"><img :src="`http://taku.moe:8880/pfp/cache/${notification.from.uuid}`"></router-link>
-            <div class="text">
-                <router-link :to="`/profile/${notification.from.username}`"><p><strong>{{notification.from.username}}</strong> {{convert(notification.created_at)}}</p></router-link>
-                <p>{{notification.content}}</p>
+            <div class="left">
+                <router-link :to="`/profile/${notification.from.username}`"><img :src="`http://taku.moe:8880/pfp/cache/${notification.from.uuid}`"></router-link>
+                <div class="text">
+                    <router-link :to="`/profile/${notification.from.username}`"><p><strong>{{notification.from.username}}</strong> {{convert(notification.created_at)}}</p></router-link>
+                    <p>{{notification.content}}</p>
+                </div>
+            </div>
+            <div>
+                <button @click="friend(notification.uuid, 'add')"><img src="../../assets/checkmark.svg"></button>
+                <button @click="friend(notification.uuid, 'deny')"><img src="../../assets/deny.svg"></button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
@@ -31,6 +47,12 @@ export default {
             this.darkmode = localStorage.darkmode;
             this.typingSoundUrl = localStorage.typingSoundUrl;
             this.mentionSoundUrl = localStorage.mentionSoundUrl;
+        },
+        async clearNotifications(){
+            await axios.delete('http://taku.moe:8880/notifications', {
+                withCredentials: true
+            }); 
+            this.emitter.emit('refreshHeader');
         },
         convert(epoch) {
             const dt = new Date(epoch);
@@ -83,10 +105,35 @@ export default {
     color: white;
 }
 
+.heading {
+    display: flex;
+    justify-content: space-between;
+}
+
+.clearNotifs {
+    outline: none;
+    border: none;
+    margin-left: 8px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    cursor: pointer;
+}
+
+.clearNotifs img {
+    width: 24px;
+    height: 24px;
+}
+
 .notification {
     display: flex;
     align-items: center;
     margin: 8px 0px;
+    justify-content: space-between;
+}   
+
+.left {
+    display: flex;
 }
 
 .notification a {
@@ -110,11 +157,42 @@ export default {
 }
 
 .notification img {
+    border-radius: 100%;
     width: 32px;
     height: 32px;
-    border-radius: 100%
 }
 
+.notification button img {
+    width: 24px;
+    height: 24px;
+}
+
+.notification button {
+    outline: none;
+    border: none;
+    margin-left: 8px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    cursor: pointer;
+}
+
+
+.noNotifications {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    opacity: 40%;
+}
+
+.noNotifications strong {
+    font-size: 48px;
+    margin-top: 24px;
+    color: #aaa;
+}
 
 
 

@@ -1,6 +1,6 @@
 <template>
     <!-- HTML here -->
-    <div class="header" :class="{pushRight: path}">
+    <div class="header" v-if="user" :class="{pushRight: path}">
         <div class="container">
             <div class="searchBox">
                 <img class="glass" src="../assets/search.svg" alt="">
@@ -65,6 +65,7 @@
                 <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
             </div>
             <div class="buttons small" :style="themeColors" v-if="token">
+                <div v-if="notifications.length > 0" class="numberOfNotifs">{{notifications.length}}</div>
                 <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/notification.png" alt=""></div>
             </div>
             <Notifications :notifications="notifications" :show="showNotifications"/>
@@ -91,7 +92,7 @@ export default {
         return {
             path: "",
             token: localStorage.token,
-            user: "",
+            user: undefined,
             socket: io('ws://taku.moe:8880'),
             ping: null,
             cpu: null,
@@ -375,6 +376,22 @@ export default {
 
 .buttons {
     display: flex;
+    position: relative;
+}
+
+.numberOfNotifs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color: white;
+    font-size: 12px;
+    position: absolute;
+    right: 8px;
+    background: var(--themeColor);
+    border-radius: 100%;
+    height: 16px;
+    width: 16px;
 }
 
 .button {
@@ -386,6 +403,7 @@ export default {
 .button:hover {
     background: var(--themeColor);
     color: white;
+    filter: drop-shadow(0px 0px 8px var(--themeColor));
 }
 
 .button:hover img {

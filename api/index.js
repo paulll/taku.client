@@ -654,6 +654,17 @@ app.get("/user", authJWT, async (req, res) => {
   res.json(req.user);
 });
 
+app.delete("/notifications", authJWT, async (req, res) => {
+  // Remove other persons uuid from your incoming list
+  await notifications.update(
+    { owner_uuid: req.user.uuid },
+    { $set: { list: []}}
+  );
+
+  res.status(200);
+  res.json(req.user);
+});
+
 app.post("/user/computer", async (req, res) => {
   // Parse body
   const body = req.body;
