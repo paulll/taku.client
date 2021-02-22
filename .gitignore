@@ -1,6 +1,7 @@
 /api/node_modules/*
 /client/node_modules/*
 /api/db
+/scraper/
 
 # local env files
 .env.local

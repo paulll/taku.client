@@ -200,8 +200,9 @@ export default {
         this.error = "";
         if (this.selectedAnime.size < 3) return this.error = "Please select at least 3 of your favorite anime (个_个)";
 
-        const json = JSON.stringify({anime: [...this.selectedAnime], user: localStorage.token});
+        const json = JSON.stringify({anime: [...this.selectedAnime], isSignup: true});
         const response = await axios.post('http://taku.moe:8880/user/anime', json, {
+            withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
             }

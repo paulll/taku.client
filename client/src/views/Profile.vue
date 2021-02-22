@@ -69,7 +69,7 @@
         <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
             <p class="tags"><strong>FAVORITE</strong> Anime</p>
             <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
-                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime" :key="id" :id="id">
+                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
                     <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
                     <Spinner/>
                 </router-link>
@@ -158,8 +158,7 @@ export default {
 
       // Get user data
       let user = await axios.get(`http://taku.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
-      user = Object.assign({}, user).data[0];
-
+      user = Object.assign({}, user).data;
 
       try {
           this.themeColors = {

@@ -70,10 +70,6 @@ app.use(express.static("db"));
 app.use(express.static("uploads"));
 app.use(cookieParser());
 
-// Online users
-
-let onlineUsers = [];
-
 // Functions
 async function createToken(user, res) {
   user = user[0]
@@ -112,36 +108,43 @@ async function cacheImage(attachment, uuid){
   });
 }
 
-function addToOnlineUsers(username) {
+// Online users
+let onlineUsers = [];
+
+// This only runs when some user sends a heartbeat, it updates everyone as long as there is at least 1 user online
+async function addToOnlineUsers(uuid) {
+
+  // Update user last seen in their db
+  let newLastSeen = new Date().getTime();
+  await users.update({'uuid': uuid}, { "$set": {'profile.status.lastSeen': newLastSeen}});
 
   // Check if the user is already in there
-  const found = onlineUsers.some(el => el.username == username);
+  const found = onlineUsers.some(user => user.uuid == uuid);
 
   // If they aren't, add them
-  if (!found) onlineUsers.push({ username, lastSeen: new Date().getTime() });
+  if (!found) onlineUsers.push({ uuid: uuid, lastSeen: newLastSeen})
 
   // Otherwise if they are found, update their lastSeen
   else {
-    onlineUsers = onlineUsers.map(el => {
+    onlineUsers = onlineUsers.map(user => {
 
       // Remove old users that havent been seen for more than 60 sec
-      if (el.lastSeen + 120000 < new Date().getTime()) {
-        // console.log(`${"Heartbeat:".bgRed.white} Timeout clearing: ${el.username}`);
+      if (user.lastSeen + 120000 < newLastSeen) {
+        // console.log(`${"Heartbeat:".bgRed.white} Timeout clearing: ${user.uuid}`);
         return undefined;
       }
 
       // Find where the user that heartbeated is in the array and update their last seen
-      if (el.username == username) {
-        // console.log(`${"Heartbeat:".bgRed.white} Updating: ${el.username}`);
-        return ({username: el.username, lastSeen: new Date().getTime() });
+      if (user.uuid == uuid) {
+        // console.log(`${"Heartbeat:".bgRed.white} Updating: ${user.uuid}`);
+        return ({uuid: user.uuid, lastSeen: newLastSeen });
       }
 
       // And return the rest untouched
-      return el
+      return user
     }).filter(user => user !== undefined);
   }
 
-  // console.log(`${"Heartbeat:".bgRed.white} ${onlineUsers.length} Users`);
   return onlineUsers;
 }
 
@@ -153,10 +156,7 @@ function User(username, email, password) {
   this.created_at = new Date().getTime();
   this.profile = {
     status: {
-      isPlayingGame: false,
-      isWatchingAnime: false,
-      isOnline: true,
-      isDND: false,
+      lastSeen: new Date().getTime(),
     },
     isDeveloper: false,
     isBetaTester: false,
@@ -318,8 +318,6 @@ setInterval(async () => {
 let authJWT = (req, res, next) => {
   jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
 
-    console.log(user.uuid);
-
     if (error) {
       console.log(error);
       res.status(403);
@@ -328,6 +326,8 @@ let authJWT = (req, res, next) => {
       });
       return;
     }
+
+    console.log(user.uuid);
 
     // Get user's data from db
     req.user = (await users.aggregate([
@@ -366,7 +366,7 @@ io.on("connection", socket => {
 
   // Connect the user to their own unique room for notifications
   socket.on("room", room => {
-    console.log("New room".red, room);
+    console.log("New room".red, room.red);
     socket.join(room);
   });
 
@@ -593,7 +593,7 @@ io.on("connection", socket => {
       if (!user || user === undefined) return
 
       // Add user to onlineUsers list
-      addToOnlineUsers(user.username);
+      addToOnlineUsers(user.uuid);
       // console.log(onlineUsers);
       // console.log(onlineUsers.length.toString().green + " users online");
     });
@@ -630,31 +630,30 @@ app.get("/ping", async (req, res) => {
 app.get("/user/:username", async (req, res) => {
   
   // Get user
-  const username = req.params.username;
-  const response = await users.find(
-    { username: username },
+  const user = (await users.find(
+    { username: req.params.username },
     { collation: { locale: "en", strength: 2 } }
-  );
+  ))[0];
 
   // Add the osu connections
-  if (response[0] && response[0].profile && response[0].profile.connections && response[0].profile.connections.osu) {
-    response[0].profile.connections = {
-      osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${response[0].profile.connections.osu.user_id}&k=${osuKey}`)).data[0]
+  if (user && user.profile && user.profile.connections && user.profile.connections.osu) {
+    user.profile.connections = {
+      osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${user.profile.connections.osu.user_id}&k=${osuKey}`)).data[0]
     }
   }
 
-  // Get their status
-  if (response[0]) {
-    if (onlineUsers.some(user => user.username == username)) {
-      response[0].online = true
+  // Add their statuses
+  if (user) {
+    if (onlineUsers.some(onlineUser => onlineUser.uuid == user.uuid)) {
+      user.profile.status.isOnline = true
     }
     else {
-      response[0].online = false
+      user.profile.status.isOnline = false
     }
   }
 
   res.status(200);
-  res.json(response);
+  res.json(user);
 });
 
 app.get("/user", authJWT, async (req, res) => {
@@ -693,27 +692,34 @@ app.post("/user/computer", async (req, res) => {
     res.json({ message: "done" });
   });
 });
-app.post("/user/anime", async (req, res) => {
-  // Parse body
-  const body = req.body;
+app.post("/user/anime", authJWT, async (req, res) => {
 
-  // Verify Logged In User
-  jwt.verify(body.user, "h4x0r", async (error, user) => {
-    if (error) {
-      console.log(error);
-    }
-    req.user = user;
+  const anime_id = req.body.anime;
+  
+  console.log(anime_id);
 
-    let test = await users.update(
-      { username: req.user.username },
-      { $pull: { "profile.anime" : parseInt(body.anime) } }
+  if (req.body.action == true) {
+    await users.update(
+      { uuid: req.user.uuid },
+      { $addToSet: { "profile.anime_list" : anime_id } }
     );
-    
-    console.log(test);
+  }
+  else if (req.body.action == false){
+    await users.update(
+      { uuid: req.user.uuid },
+      { $pull: { "profile.anime_list" : anime_id } }
+    );
+  }
 
-    res.status(200);
-    res.json({ message: "done" });
-  });
+  if (req.body.isSignup == true) {
+    await users.update(
+      { uuid: req.user.uuid },
+      { $set: { "profile.anime_list" : anime_id } }
+    );
+  }
+
+  res.status(200);
+  res.json({ message: `Anime ${anime_id} added to your favorites!` });
 });
 app.post("/user/socials", async (req, res) => {
   // Parse body
@@ -930,42 +936,6 @@ app.post("/login", async (req, res) => {
   }
 });
 
-async function getAnimeList(){
-  let animeList = await axios.get('https://notify.moe/api/animelist/4J6qpK1ve');
-  animeList = animeList.data.items
-
-  for (i in animeList) {
-    let animeItem = await axios.get(`https://notify.moe/api/anime/${animeList[i].animeId}`);
-    animeItem = animeItem.data;
-    
-    
-    // animeItem = {
-    //   title: {
-    //     english: animeItem.title.english,
-    //     romaji: animeItem.title.romaji
-    //   },
-    //   description: animeItem.summary,
-    //   year: parseInt(animeItem.startDate.split("-")[0]),
-    //   tags: animeItem.genres,
-    //   nsfw: false,
-    //   submitted_by: "Geoxor",
-    //   id: parseInt(i) + 11,
-    // }
-
-    const httpForImage = require('https'); // or 'https' for https:// URLs
-    const file = fs.createWriteStream(`./db/anime/posters/${parseInt(i) + 11}.jpg`);
-
-    console.log(`Fetching anime https://media.notify.moe/images/anime/original/${animeItem.id}${animeItem.image.extension}`);
-    httpForImage.get(`https://media.notify.moe/images/anime/original/${animeItem.id}${animeItem.image.extension}`, function(response) {
-      response.pipe(file);
-    });
-    
-    console.log(animeItem.image);
-  }
-}
-
-
-// getAnimeList();
 const port = process.env.PORT || 8880;
 http.listen(port, () => {
   console.log(`listening on *:${port}`);

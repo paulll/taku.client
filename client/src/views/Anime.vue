@@ -6,8 +6,8 @@
                 <div class="info">
                     <div class="title">
                         <h1>{{anime.title.english}} 
-                            <img v-if="!saved && token" @click="saveAnime(anime.id)" src="../assets/bookmark.svg" alt="">
-                            <img v-if="saved && token" @click="removeAnime(anime.id)" src="../assets/bookmark-filled.svg" alt="">
+                            <img v-if="!saved && token" @click="toggleAnime(anime.id, true)" src="../assets/bookmark.svg" alt="">
+                            <img v-if="saved && token" @click="toggleAnime(anime.id, false)" src="../assets/bookmark-filled.svg" alt="">
                         </h1>
                         <h2>{{anime.year}}</h2>
                     </div>
@@ -48,36 +48,13 @@ export default {
         }
     },
     methods: {
-        async saveAnime(id) {
-
-            this.saved = true;  
-
-            // Reset animation
-            const json = JSON.stringify({anime: id, user: localStorage.token});
-            const response = await axios.post('http://taku.moe:8880/user/anime', json, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            // Display backend error
-            if (response.data.error) {
-                this.error = response.data.error;
-                this.saved = false;
-                setTimeout(() => {
-                    this.error = "";
-                }, 300);
-            }
-
-            this.saved = true;
-
-        },
-        async removeAnime(id) {
-            this.saved = false;  
+        async toggleAnime(id, state) {
+            this.saved = state;
 
             // Reset animation
-            const json = JSON.stringify({anime: id, user: localStorage.token});
+            const json = JSON.stringify({anime: id, action: state});
             const response = await axios.post('http://taku.moe:8880/user/anime', json, {
+                withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -92,7 +69,7 @@ export default {
                 }, 300);
             }
 
-            this.saved = false;
+            this.saved = state;
         },
         async getData() {
 
@@ -107,7 +84,7 @@ export default {
             anime.tags = anime.tags.join(", ");
             this.anime = anime;
 
-            if (user.profile.anime.includes(anime.id)) this.saved = true;
+            if (user.profile.anime_list.includes(anime.id)) this.saved = true;
         }
     }
 }
