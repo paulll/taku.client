@@ -8,73 +8,73 @@
 
       <router-link to="/settings/account" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/account.png" alt="account">
-        <h1>Account</h1>
+        <h1>{{translation('Account')}}</h1>
       </router-link> 
 
       <router-link to="/settings/language" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/language.png" alt="language">
-        <h1>Language</h1>
+        <h1>{{translation('Language')}}</h1>
       </router-link> 
 
       <!-- <router-link to="/settings/notification" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/notification.png" alt="notification">
-        <h1>Notifications</h1>
+        <h1>{{translation('Notifications')}}</h1>
       </router-link> -->
 
       <router-link to="/settings/appearance" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/appearance.png" alt="appearance">
-        <h1>Appearance</h1>
+        <h1>{{translation('Appearance')}}</h1>
       </router-link>
 
       <router-link to="/settings/sounds" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/sounds.png" alt="Sounds">
-        <h1>Sounds</h1>
+        <h1>{{translation('Sounds')}}</h1>
       </router-link>
 
       <router-link to="/settings/connections" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/connections.png" alt="connections">
-        <h1>Connections</h1>
+        <h1>{{translation('Connections')}}</h1>
       </router-link> 
 
       <!-- <router-link to="/settings/nsfw" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/nsfw.png" alt="nsfw">
-        <h1>NSFW Content</h1>
+        <h1>{{translation('NSFW')}} Content</h1>
       </router-link>
 
       <router-link to="/settings/language" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/language.png" alt="language">
-        <h1>Language</h1>
+        <h1>{{translation('Language')}}</h1>
       </router-link> -->
 
       <!-- <router-link to="/settings/feedback" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/feedback.png" alt="feedback">
-        <h1>Feedback</h1>
+        <h1>{{translation('Feedback')}}</h1>
       </router-link> -->
 
       <router-link to="/settings/privacy" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/privacy.png" alt="privacy">
-        <h1>Privacy</h1>
+        <h1>{{translation('Privacy')}}</h1>
       </router-link>
 
       <router-link to="/settings/guidelines" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/guidelines.png" alt="guidelines">
-        <h1>Guidelines</h1>
+        <h1>{{translation('Guidelines')}}</h1>
       </router-link>
 
       <router-link to="/settings/acknowledgements" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/acknowledgements.png" alt="acknowledgements">
-        <h1>Acknowledgements</h1>
+        <h1>{{translation('Acknowledgements')}}</h1>
       </router-link>
     </div>
 
     <!-- <router-link to="/settings/info" @mouseover="playHover()" @click="playClick()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/info.png" alt="info">
-      <h1>Information</h1>
+      <h1>{{translation('Information')}}</h1>
     </router-link> -->
 
     <div @click="logout(), playClick()" @mouseover="playHover()" class="setting logout" :class="{darkmode: darkmode == 'true'}" >
       <img src="../assets/logout.png" alt="logout">
-      <h1>Logout</h1>
+      <h1>{{translation('Logout')}}</h1>
     </div>
 
   </div>
@@ -110,6 +110,13 @@ export default {
     }
   },
   methods: {
+    // Fetches right translation of the site
+    translation(sentence){
+        this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+        let translatedSentence = this.languageTable[sentence];
+        if (!translatedSentence) return sentence;
+        return translatedSentence;
+    },
     logout(){
       localStorage.removeItem('token');
       window.location.href = "http://taku.moe:8080";

@@ -18,27 +18,27 @@
             </div>
             <div class="stat big">
                 <h1>#{{numberWithCommas(profile.statistics.pp_rank)}}</h1>
-                <p>Global Ranking</p>
+                <p>{{translation('Global Ranking')}}</p>
             </div>
             <div class="stat big">
                 <h1>{{parseInt(profile.statistics.level.current)}}</h1>
-                <p>Level</p>
+                <p>{{translation('Level')}}</p>
             </div>
             <div class="stat big">
                 <h1>{{Math.ceil(parseInt(profile.statistics.pp))}}</h1>
-                <p>pp</p>
+                <p>{{translation('pp')}}</p>
             </div>
             <div class="stat big">
                 <h1>{{numberWithCommas(profile.statistics.play_count)}}</h1>
-                <p>Maps Played</p>
+                <p>{{translation('Maps Played')}}</p>
             </div>
             <div class="stat big">
                 <h1>{{Math.floor(profile.statistics.hit_accuracy)}}%</h1>
-                <p>Accuracy</p>
+                <p>{{translation('Accuracy')}}</p>
             </div>
             <div class="stat big">
                 <h1>{{secondsToHours(profile.statistics.play_time)}}</h1>
-                <p>Time Wasted</p>
+                <p>{{translation('Time Wasted')}}</p>
             </div>
         </div>
     </div>
@@ -63,6 +63,13 @@ export default {
         Spinner
     },
     methods: {
+        // Fetches right translation of the site
+        translation(sentence){
+            this.languageTable = require(`../../../public/languages/${localStorage.language}.json`);
+            let translatedSentence = this.languageTable[sentence];
+            if (!translatedSentence) return sentence;
+            return translatedSentence;
+        },
         numberWithCommas(x) {
             if (x) {
                 return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");

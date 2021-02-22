@@ -4,7 +4,7 @@
         <div class="container">
             <div class="searchBox">
                 <img class="glass" src="../assets/search.svg" alt="">
-                <input class="search" spellcheck="false" placeholder="SEARCH" v-model="searchString" @keyup="getDataSearch()">
+                <input class="search" spellcheck="false" :placeholder="translation('Search')" v-model="searchString" @keyup="getDataSearch()">
                 
                 <SearchResults v-if="searchString.length > 0" :searchResults="searchResults"/>
             </div>
@@ -141,6 +141,13 @@ export default {
         this.socket.disconnect();
     },
     methods: {
+        // Fetches right translation of the site
+        translation(sentence){
+            this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+            let translatedSentence = this.languageTable[sentence];
+            if (!translatedSentence) return sentence;
+            return translatedSentence;
+        },
         async getDataSearch() {
             if (this.searchString.length == 0) {
                 this.searchResults = [];

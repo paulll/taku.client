@@ -2,19 +2,19 @@
     <div v-if="show" class="notificationBox" :class="{darkmode: darkmode == 'true'}">
         <div class="heading">
             <div class="left">
-                <p>Notifications ({{Object.keys(notifications).length}})</p>
+                <p>{{translation('NOTIFICATIONS')}} ({{Object.keys(notifications).length}})</p>
             </div>
             <button class="clearNotifs" @click="clearNotifications()"><img src="../../assets/trash.svg"></button>
         </div>
 
 
-        <p v-if="Object.keys(notifications).length == 0" class="noNotifications">You don't have any notifications! <strong>(｡•́︿•̀｡)</strong></p>
+        <p v-if="Object.keys(notifications).length == 0" class="noNotifications">{{translation("You don't have any notifications!")}} <strong>(｡•́︿•̀｡)</strong></p>
         <div class="notification" :class="{darkmode: darkmode == 'true'}" v-for="notification in notifications" :key="notification">
             <div class="left">
                 <router-link :to="`/profile/${notification.from.username}`"><img :src="`http://taku.moe:8880/pfp/cache/${notification.from.uuid}`"></router-link>
                 <div class="text">
                     <router-link :to="`/profile/${notification.from.username}`"><p><strong>{{notification.from.username}}</strong> {{convert(notification.created_at)}}</p></router-link>
-                    <p>{{notification.content}}</p>
+                    <p>{{translation(notification.content)}}</p>
                 </div>
             </div>
             <!-- <div>
@@ -43,6 +43,13 @@ export default {
         this.emitter.on('updateUI', () => this.updateUI());
     },
     methods: {
+        // Fetches right translation of the site
+        translation(sentence){
+            this.languageTable = require(`../../../public/languages/${localStorage.language}.json`);
+            let translatedSentence = this.languageTable[sentence];
+            if (!translatedSentence) return sentence;
+            return translatedSentence;
+        },
         updateUI(){
             this.darkmode = localStorage.darkmode;
             this.typingSoundUrl = localStorage.typingSoundUrl;

@@ -28,19 +28,19 @@
                             
                             <!-- Add friend button -->
                             <button :style="themeColors" @click="friend(user.uuid, 'add')"      v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))" class="button">ADD</button>
-                            <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">CANCEL REQUEST</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">{{translation('Cancel Request')}}</button>
                             
-                            <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">ACCEPT</button>
-                            <button :style="themeColors" @click="friend(user.uuid, 'deny')"     v-if="me.friend_list.incoming.includes(user.uuid)" class="button">DENY</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Accept')}}</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'deny')"     v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Deny')}}</button>
                             <!-- Remove friend -->
-                            <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">REMOVE</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">{{translation('Remove')}}</button>
                      
                             <!-- Send DM button -->
                             <button :style="themeColors" class="button" v-if="user.username != me.username"><router-link :to="`/messages/${user.profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
                             
                             <!-- Block button -->
                             <button :style="themeColors" @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
-                            <button :style="themeColors" @click="block()" v-if="me.settings?.privacy.blocked_users.includes(user.uuid)" class="button">UNBLOCK</button>
+                            <button :style="themeColors" @click="block()" v-if="me.settings?.privacy.blocked_users.includes(user.uuid)" class="button">{{translation('Unblock')}}</button>
                             
                         </div>
 
@@ -297,6 +297,10 @@ export default {
     background-repeat: no-repeat;
     height: 256px;
     width: 100%;
+}
+
+.myButtons button {
+    text-transform: uppercase;
 }
 
 .heading {
