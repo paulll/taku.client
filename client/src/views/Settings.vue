@@ -25,9 +25,9 @@
       <div v-if="user.settings.sounds && path == 'sounds'" class="section sounds" :class="{darkmode: darkmode == 'true'}">
         <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds?.typing.enabled"        optionTitle="Typing"   :optionCategory="path"     :showValue="true"/>
         <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds?.mention.enabled"       :optionCategory="path" optionTitle="Mention"      :showValue="true"/>
-        <OptionBox  :fileUrl="notificationSoundUrl" :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds?.notification?.enabled" :optionCategory="path" optionTitle="Notification" :showValue="true"/>
-        <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds?.hover?.enabled" :optionCategory="path" optionTitle="Hover" :showValue="true"/>
-        <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds?.click?.enabled" :optionCategory="path" optionTitle="Click" :showValue="true"/>
+        <OptionBox  :fileUrl="notificationSoundUrl" :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds?.notification.enabled" :optionCategory="path" optionTitle="Notification" :showValue="true"/>
+        <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds?.hover.enabled" :optionCategory="path" optionTitle="Hover" :showValue="true"/>
+        <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds?.click.enabled" :optionCategory="path" optionTitle="Click" :showValue="true"/>
       </div>
 
       <!-- Privacy -->

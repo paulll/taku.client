@@ -1,6 +1,6 @@
 /api/node_modules/*
 /client/node_modules/*
-/api/db/uploads
+/api/db
 
 # local env files
 .env.local

@@ -859,12 +859,6 @@ app.get("/anime/id/:id", async (req, res) => {
     res.status(200);
     res.json({ anime: result });
 });
-// app.get("/banner/:id", async (req, res) => {
-//   const id = req.params.id;
-//   const response = await backgrounds.find({ id: parseInt(id) });
-//   res.status(200);
-//   res.json(response[0].url);
-// });
 
 // Auth
 app.post("/signup", async (req, res) => {

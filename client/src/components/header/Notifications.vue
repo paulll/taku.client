@@ -156,6 +156,10 @@ export default {
     height: 24px;
 }
 
+.notificationBox.darkmode .clearNotifs img {
+    filter: invert(1);
+}
+
 .notification {
     display: flex;
     align-items: center;
