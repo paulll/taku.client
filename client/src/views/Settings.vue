@@ -175,7 +175,8 @@ export default {
   methods: {
     // Fetches right translation of the site
     translation(sentence){
-      this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+      if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
+      else this.languageTable = require(`@/languages/${localStorage.language}.json`);
       let translatedSentence = this.languageTable[sentence];
       if (!translatedSentence) return sentence;
       return translatedSentence;
@@ -268,6 +269,9 @@ export default {
   padding-top: 60px;
   transition: 100ms ease;
   overflow-y: scroll;
+
+  display: flex;
+  justify-content: center;
 }
 
 .settingsArea.darkmode { background: #08090E; } /* darkmode */ 
@@ -331,7 +335,12 @@ export default {
 /* ^^^ TO BE REMOVED */
 
 .section {
-  width: calc(100% - 16px);
+  margin-right: 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 512px;
 }
 
 .appearance {

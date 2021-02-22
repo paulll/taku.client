@@ -39,11 +39,6 @@
       <!-- <router-link to="/settings/nsfw" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/nsfw.png" alt="nsfw">
         <h1>{{translation('NSFW')}} Content</h1>
-      </router-link>
-
-      <router-link to="/settings/language" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
-        <img src="../assets/language.png" alt="language">
-        <h1>{{translation('Language')}}</h1>
       </router-link> -->
 
       <!-- <router-link to="/settings/feedback" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
@@ -112,7 +107,8 @@ export default {
   methods: {
     // Fetches right translation of the site
     translation(sentence){
-        this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+        if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
+        else this.languageTable = require(`@/languages/${localStorage.language}.json`);
         let translatedSentence = this.languageTable[sentence];
         if (!translatedSentence) return sentence;
         return translatedSentence;

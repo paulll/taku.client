@@ -143,7 +143,8 @@ export default {
     methods: {
         // Fetches right translation of the site
         translation(sentence){
-            this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+            if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
+            else this.languageTable = require(`@/languages/${localStorage.language}.json`);
             let translatedSentence = this.languageTable[sentence];
             if (!translatedSentence) return sentence;
             return translatedSentence;
@@ -356,7 +357,7 @@ export default {
 
 .cpuLoad .ok { color: #3BE220; }
 .cpuLoad .ohshit { color: rgb(255, 208, 0); }
-.cpuLoad .serve { color: #FF006B; }
+.cpuLoad .serverOnFire { color: #FF006B; }
 
 .login {
     margin-right: 14px;

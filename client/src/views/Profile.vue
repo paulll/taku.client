@@ -27,7 +27,7 @@
                         <div class="otherUserButtons" v-if="user.username != me.username">
                             
                             <!-- Add friend button -->
-                            <button :style="themeColors" @click="friend(user.uuid, 'add')"      v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))" class="button">ADD</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'add')"      v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))" class="button">{{translation("Add")}}</button>
                             <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">{{translation('Cancel Request')}}</button>
                             
                             <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Accept')}}</button>
@@ -89,8 +89,8 @@
 
             <!-- DESCRIPTION -->
             <p class="tags">{{translation('DESCRIPTION')}}</p>
-            <p class="description">{{user.profile.description}}</p>
-            <p v-if="user.profile.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
+            <p v-if="!edit" class="description">{{user.profile.description}}</p>
+            <input v-if="edit" class="description" v-model="user.profile.description" type="text" @change="updateDesc">
         </div>
     </div>
 </template>
@@ -145,7 +145,8 @@ export default {
   methods: {
     // Fetches right translation of the site
     translation(sentence){
-      this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+      if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
+      else this.languageTable = require(`@/languages/${localStorage.language}.json`);
       let translatedSentence = this.languageTable[sentence];
       if (!translatedSentence) return sentence;
       return translatedSentence;
@@ -476,6 +477,10 @@ export default {
     color: #7C7C7C;
     font-size: 14px;
     margin-top: 8px;
+}
+
+.otherUserButtons button {
+    text-transform: uppercase;
 }
 
 .splitter { 

@@ -97,7 +97,7 @@ async function createToken(user, res) {
     res.status(200);
   });
 }
-async function cacheImage(attachment, uuid){
+async function cacheImage(attachment, uuid, isMessage){
   return new Promise((resolve, reject) => { 
 
     console.log('Processing Image'.cyan);
@@ -107,8 +107,9 @@ async function cacheImage(attachment, uuid){
         image.resize(Jimp.AUTO, 368) // resize
       }
 
-      await image.writeAsync(`./db/${attachment.fieldname}/cache/${uuid}`); // save
-
+      if (!isMessage) await image.writeAsync(`./db/${attachment.fieldname}/cache/${uuid}`); // save
+      else await image.writeAsync(`./db/uploads/cache/${attachment.originalname}`); // save
+      
       resolve();
     });
   });
@@ -536,7 +537,7 @@ io.on("connection", socket => {
         attachment.originalurl = `http://taku.moe:8880/uploads/${attachment.originalname}`;
 
         if (attachment.mimetype.startsWith("image/jpeg") || attachment.mimetype.startsWith("image/png")) {
-          await cacheImage(attachment);
+          await cacheImage(attachment, author.uuid, true);
           attachment.html = `http://taku.moe:8880/uploads/cache/${attachment.originalname}`;
         }
 
@@ -771,7 +772,7 @@ app.post("/settings/upload", authJWT, upload.any(), async (req, res) => {
   let link = `http://taku.moe:8880/${file.fieldname}/${req.user.uuid}`;
 
   if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
-    await cacheImage(file, req.user.uuid);
+    await cacheImage(file, req.user.uuid, false);
     link = `http://taku.moe:8880/${file.fieldname}/cache/${req.user.uuid}`;
 
     // Rename the file back to the original name cus multer is stupid

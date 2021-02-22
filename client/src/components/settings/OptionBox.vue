@@ -94,7 +94,8 @@ export default {
     methods: {
       // Fetches right translation of the site
       translation(sentence){
-        this.languageTable = require(`../../../public/languages/${localStorage.language}.json`);
+        if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
+        else this.languageTable = require(`@/languages/${localStorage.language}.json`);
         let translatedSentence = this.languageTable[sentence];
         if (!translatedSentence) return sentence;
         return translatedSentence;
@@ -228,6 +229,7 @@ export default {
   border-radius: 8px;
   margin: 16px;
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
+  width: calc(100% - 48px);
 }
 
 .optionBox.darkmode { /* darkmode */
