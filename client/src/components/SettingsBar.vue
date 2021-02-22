@@ -109,11 +109,13 @@ export default {
       console.log("updating settings component");
     },
     playHover(){
+      if (localStorage.hover_sfx == 'false') return
       if (!this.hoverSoundUrl) this.hoverSoundUrl = require("../../public/hover.wav");
       this.hoverSound = new Audio(this.hoverSoundUrl);
       this.hoverSound.play();
     },
     playClick(){
+      if (localStorage.click_sfx == 'false') return
       if (!this.clickSoundUrl) this.clickSoundUrl = require("../../public/click.wav");
       this.clickSound = new Audio(this.clickSoundUrl);
       this.clickSound.play();

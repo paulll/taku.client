@@ -91,10 +91,14 @@ export default {
         }
     },
     methods: {
+        playClick(){
+          if (localStorage.click_sfx == 'false') return
+          if (!this.clickSoundUrl) this.clickSoundUrl = require("../../../public/click.wav");
+          this.clickSound = new Audio(this.clickSoundUrl);
+          this.clickSound.play();
+        },
         async toggleOption(state, option){
-            if (!this.clickSoundUrl) this.clickSoundUrl = require("../../../public/click.wav");
-            this.clickSound = new Audio(this.clickSoundUrl);
-            this.clickSound.play();
+            this.playClick();
             NProgress.start();
             switch (option) {
                 case "darkmode":
@@ -138,6 +142,7 @@ export default {
             this.updateSettings();
         },
         playHover(){
+          if (localStorage.hover_sfx == 'false') return
           if (!this.hoverSoundUrl) this.hoverSoundUrl = require("../../../public/hover.wav");
           this.hoverSound = new Audio(this.hoverSoundUrl);
           this.hoverSound.play();
