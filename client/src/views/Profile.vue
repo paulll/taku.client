@@ -48,7 +48,7 @@
                         <div class="myButtons" v-if="user.username == me.username">
                             <!-- Edit button -->
                             <button :style="themeColors" v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">{{translation('Edit')}}</button>
-                            <button :style="themeColors" v-if="edit" @click="toggleEdit()" class="button">{{translation('Save')}}</button>
+                            <button :style="themeColors" v-if="edit" @click="toggleEdit(); updateSettings();" class="button">{{translation('Save')}}</button>
                         </div>
 
                     </div>
@@ -90,7 +90,7 @@
             <!-- DESCRIPTION -->
             <p class="tags">{{translation('DESCRIPTION')}}</p>
             <p v-if="!edit" class="description">{{user.profile.description}}</p>
-            <input v-if="edit" class="description" v-model="user.profile.description" type="text" @change="updateDesc">
+            <input v-if="edit" class="description" v-model="me.profile.description" type="text" >
         </div>
     </div>
 </template>
@@ -221,12 +221,13 @@ export default {
       this.updateSettings();
     },
     async updateSettings(){
-      const response = await axios.post('http://taku.moe:8880/settings', this.me, {
-        withCredentials: true,
-        headers: {
-            'Content-Type': 'application/json'
-        }
-      });
+        const response = await axios.post('http://taku.moe:8880/settings', this.me, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        this.getUser();
     },
     async uploadFile(ref){
       NProgress.start();
@@ -559,6 +560,22 @@ export default {
 .description {
     padding: 8px 24px 0px;
     font-size: 14px;
+}
+
+.description {
+    display: flex;
+    margin: 0px;
+    border: 4px white;
+    color: black;
+    border-radius: 8px 8px 8px 8px ;
+    outline: none;
+    font-size: 16px;
+    letter-spacing: 0px;
+}
+
+
+.description.active {
+    display: block;
 }
 
 @media only screen and (min-width: 715px)  {
