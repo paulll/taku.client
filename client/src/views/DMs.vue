@@ -85,7 +85,7 @@ export default {
     this.typingSound = new Audio(this.typingSoundUrl);
     this.typingSound.volume = 0.2;
 
-    if (!this.mentionSoundUrl) this.mentionSoundUrl = require("../../public/notification.wav");
+    if (!this.mentionSoundUrl) this.mentionSoundUrl = require("../../public/mention.wav");
     this.mentionSound = new Audio(this.mentionSoundUrl);
 
     setTimeout(() => {

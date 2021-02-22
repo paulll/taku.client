@@ -6,25 +6,7 @@
                 <img class="glass" src="../assets/search.svg" alt="">
                 <input class="search" spellcheck="false" placeholder="SEARCH" v-model="searchString" @keyup="getDataSearch()">
                 
-                <div class="searchResults" v-if="searchString.length > 0" :class="{darkmode: darkmode == 'true'}">
-                    <p v-if="searchResults.users.length > 0" class="tags"><strong>USERS</strong></p>
-                    <div class="users" :class="{darkmode: darkmode == 'true'}">
-                        <router-link :to="`/profile/${user.username}`" class="user" v-for="user in searchResults?.users" :key="user">
-                            <Spinner/>
-                            <img :src="user.pfp" alt="">
-                            <p>{{user.username}}</p>
-                        </router-link>
-                    </div>
-                    <p v-if="searchResults.anime.length > 0" class="tags"><strong>ANIME</strong></p>
-                    <div class="animeList" :class="{darkmode: darkmode == 'true'}">
-                        <router-link :to="`/anime/${anime.id}`" class="animeWrap" v-for="anime in searchResults?.anime" :key="anime">
-                            <!-- <img :src="anime.settings.pfp" alt=""> -->
-                            <img class="animePoster" :src="`http://taku.moe:8880/anime/posters/${anime.id}.jpg`" alt="Anime">
-                        </router-link>
-                    </div>
-
-                    <!-- <p class="tags"><strong>ANIME</strong></p> -->
-                </div>
+                <SearchResults v-if="searchString.length > 0" :searchResults="searchResults"/>
             </div>
 
             <!-- SHOW SERVER CPU LOAD IN HEADER -->
@@ -93,6 +75,7 @@ import axios from 'axios';
 import Spinner from '@/components/Spinner.vue'
 import Notifications from '@/components/header/Notifications.vue'
 import AnimatedNumber from '@/components/AnimatedNumber.vue'
+import SearchResults from '@/components/header/SearchResults.vue'
 import io from 'socket.io-client';
 
 export default {
@@ -106,9 +89,9 @@ export default {
             cpu: null,
             ram: null,
             fps: null,
-            searchString: "",
-            searchResults: [],
             darkmode: localStorage.darkmode,
+            searchString: '',
+            searchResults: [],
             themeColors: {},
             notifications: [],
             showNotifications: false,
@@ -117,7 +100,8 @@ export default {
     components: {
         Notifications,
         Spinner,
-        AnimatedNumber
+        AnimatedNumber,
+        SearchResults
     }, 
     watch: {
         $route(to, from) {
@@ -157,6 +141,19 @@ export default {
         this.socket.disconnect();
     },
     methods: {
+        async getDataSearch() {
+            if (this.searchString.length == 0) {
+                this.searchResults = [];
+                return
+            }
+            const response  = await axios.post('http://taku.moe:8880/search/', JSON.stringify({ searchString: this.searchString}), { 
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            this.searchResults = response.data;
+        },
         test() { 
             let lastLoop = new Date().getTime();
             let collectedFps = null;
@@ -204,35 +201,20 @@ export default {
             localStorage.removeItem("darmode");
             localStorage.setItem('darkmode', response.data.settings.appearance.darkmode);
         },
-        async getDataSearch() {
-            if (this.searchString.length == 0) {
-                this.searchResults = [];
-                return
-            }
-            const response  = await axios.post('http://taku.moe:8880/search/', JSON.stringify({ searchString: this.searchString}), { 
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            this.searchResults = response.data;
-        },
         async getPing(){
-
-
-
+            this.socket.emit('ping');
+            let startTime = new Date().getTime();
             setInterval(() => {
-                const startTime = new Date().getTime();
-
-                this.socket.emit('ping');
-
+                startTime = new Date().getTime();
                 // I divided the ms by 2 because theres 2 requests going, one that emits "ping", and then waits for "pong"
-                this.socket.once('pong', stats => {
-                    this.ping = ((new Date().getTime() - startTime) / 2).toFixed(0);
-                    this.cpu = stats.cpu;
-                    this.ram = stats.ram;
-                });
+                this.socket.emit('ping');
             }, 1000);
+
+            this.socket.on('pong', stats => {
+                this.ping = ((new Date().getTime() - startTime) / 2).toFixed(0);
+                this.cpu = stats.cpu;
+                this.ram = stats.ram;
+            });
         }
     }
 }
@@ -240,118 +222,6 @@ export default {
 
 <style scoped>
 /* CSS here */
-
-.searchResults.darkmode {
-    scrollbar-color: #363952#08090E ;
-    background: #08090E !important;
-    color: white !important;
-}
-
-.users::-webkit-scrollbar, .animeList::-webkit-scrollbar {
-  width: 12px;  
-  position: absolute; 
-}
-.users::-webkit-scrollbar-track, .animeList::-webkit-scrollbar-track {
-  background-color: transparent; 
-}
-.users::-webkit-scrollbar-thumb, .animeList::-webkit-scrollbar-thumb {
-  background-color: #888888;
-  border: 6px solid #F3F3F3; 
-  border-radius: 16px;
-}
-
-.users.darkmode::-webkit-scrollbar-thumb, .animeList.darkmode::-webkit-scrollbar-thumb {
-  background-color: #363952;
-  border: 6px solid #08090E; 
-}
-
-.searchResults {
-    display: none;
-    position: absolute;
-    width: 624px;
-    max-width: 624px;
-    height: fit-content;
-    background: white;
-    margin-top: 48px;
-    border-radius: 16px;
-    z-index: 5;
-    padding: 8px 0px 8px 12px;
-    flex-direction: column;
-    filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
-}
-.search:focus ~ .searchResults, .searchResults:hover {
-    display: flex;
-};
-
-.users {
-    margin-bottom: 16px;
-    flex-direction: column;
-    overflow-x: scroll;
-    width: 100%;
-    background: white;
-}
-
-.users.darkmode {
-    display: flex;
-    overflow-x: scroll;
-    width: 100%;
-}
-
-.users a {
-    width: fit-content;
-}
-
-.user {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    text-decoration: none;
-    color: white;
-    font-weight: 600;
-
-    position: relative;
-}
-
-.user img {
-    border-radius: 100%;
-    width: 96px;
-    height: 96px;
-    margin-right: 8px;
-    transition: 100ms ease;
-    z-index: 2;
-}
-
-.user img:hover {
-    transform: scale(1.04);
-}
-
-
-.animeList {
-    display: flex;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    width: 100%;
-    background: transparent;
-}
-
-.animePoster {
-    height: 124px;
-    border-radius: 8px;
-    object-fit: cover;
-    cursor: pointer;
-    transition: 200ms ease;
-    margin-right: 8px;
-}
-
-.animeWrap {
-    transition: 100ms ease;
-}
-
-.animeWrap:hover {
-    transform: scale(1.04);
-}
-
 
 .header {
     /* Auto Layout */
@@ -552,13 +422,8 @@ export default {
     .buttons.small {
         display: none;
     }
-    .searchResults {
-        width: calc(100vw - 36px);
-    }
     .heading {
         height: 170px;
     }
 }
-
-
 </style>
