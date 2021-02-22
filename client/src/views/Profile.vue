@@ -82,9 +82,9 @@
             </div>
 
             <!-- OSU PROFILE -->
-            <div v-if="user.profile.connections?.osu">
+            <div v-if="user.settings.connections?.osu">
                 <p class="tags"><strong>osu!</strong> Profile</p>
-                <Osu :osu="user.profile.connections?.osu" :edit="edit"/>               
+                <Osu :profile="user.profile.connections.osu" :edit="edit"/>               
             </div>
 
             <!-- DESCRIPTION -->

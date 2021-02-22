@@ -17,7 +17,10 @@ const cookieParser = require("cookie-parser");
 const { v4: uuidv4 } = require("uuid"); 
 const axios = require('axios');
 const colors = require('colors');
-const osuKey = '6872281f03363bb78de4e7ee53cb574e05a1cbe6';
+
+// Oauth keys, etc
+const osuKey = '4fhm7Z3QT1itZjWqfVSoISHUJHwhOTkwhKu3FTJ6';
+const osuClientId = '5478';
 
 // const options = {
 //     key: fs.readFileSync("./key.pem"),
@@ -164,8 +167,8 @@ function User(username, email, password) {
     banner: "http://taku.moe:8880/banner/_default.png",
     description: "Hi I love anime owo!",
     anime_list: [],
-    socials: [],
-    connections: [],
+    socials: {},
+    connections: {},
   };
   this.following = [];
   this.friend_list = {
@@ -204,14 +207,15 @@ function User(username, email, password) {
             url: "" 
         },
         hover: { 
-            enabled: true,
+            enabled: false,
             url: "" 
         },
         click: { 
-            enabled: true,
+            enabled: false,
             url: "" 
         },
     },
+    connections: {},
     notifications: {
         disable_all: false,
         messages: true,
@@ -231,6 +235,7 @@ function User(username, email, password) {
 // Constructor for new notifications
 function Notification(type, from, content, post_uuid, channel_uuid){
 
+  // Throw errors if trying to add dumb notifications with missing parameters
   if (!type) return new Error("'type' must be provided for notifications");
   if (!from) return new Error("'from' must be provided for post notifications");
 
@@ -635,13 +640,6 @@ app.get("/user/:username", async (req, res) => {
     { collation: { locale: "en", strength: 2 } }
   ))[0];
 
-  // Add the osu connections
-  if (user && user.profile && user.profile.connections && user.profile.connections.osu) {
-    user.profile.connections = {
-      osu: (await axios.get(`https://osu.ppy.sh/api/get_user?u=${user.profile.connections.osu.user_id}&k=${osuKey}`)).data[0]
-    }
-  }
-
   // Add their statuses
   if (user) {
     if (onlineUsers.some(onlineUser => onlineUser.uuid == user.uuid)) {
@@ -936,7 +934,58 @@ app.post("/login", async (req, res) => {
   }
 });
 
+
+
+app.post("/user/authenticate", authJWT, async (req, res) => {
+  const oauthToken = req.body.code;
+
+  const form = {
+    grant_type: "authorization_code",
+    client_id: osuClientId,
+    client_secret: osuKey,
+    redirect_uri: "http://taku.moe:8080/settings/connections",
+    code: oauthToken
+  };
+
+  try {
+    const verifyToken = await axios.post("https://osu.ppy.sh/oauth/token", JSON.stringify(form), {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }}
+    );
+
+    if (verifyToken.status == 200) {
+      // Security 🤵🏻🕵️🕵️🕵️
+      // Not your token, it's OUR token :stalinApproves:
+      await users.update({'uuid': req.user.uuid}, { '$set': {'settings.connections.osu.token': verifyToken.data }});
+
+      const user = await axios.get("https://osu.ppy.sh/api/v2/me", {
+        headers: {
+          Authorization: `Bearer ${verifyToken.data.access_token}`
+        }}
+      );
+
+      await users.update({'uuid': req.user.uuid}, { '$set': {'profile.connections.osu': user.data }});
+    }
+
+  } catch (error) {
+    console.log(error);
+  }
+
+
+
+});
+
+
+
+
 const port = process.env.PORT || 8880;
 http.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
+
+
+
+
+// `https://osu.ppy.sh/oauth/authorize?client_id=${osuClientId}?redirect_uri="http://taku.moe:8080/profile"`

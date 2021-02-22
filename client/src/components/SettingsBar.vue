@@ -26,6 +26,11 @@
         <h1>Sounds</h1>
       </router-link>
 
+      <router-link to="/settings/connections" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/connections.png" alt="connections">
+        <h1>Connections</h1>
+      </router-link> 
+
       <!-- <router-link to="/settings/nsfw" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/nsfw.png" alt="nsfw">
         <h1>NSFW Content</h1>

@@ -3,41 +3,41 @@
         <div class="scrollableRegion stats osu" :class="{darkmode: darkmode == 'true'}">
             <div class="stat osuprofile">
                 <Spinner/>
-                <a :href="`https://osu.ppy.sh/users/${osu.user_id}`" target="_blank"><img class="osuPfp" :src="`http://s.ppy.sh/a/${osu.user_id}`" alt=""></a>
+                <a :href="`https://osu.ppy.sh/users/${profile.id}`" target="_blank"><img class="osuPfp" :src="profile.avatar_url" alt=""></a>
             </div>
             <div class="stat">
-                <h1 class="osuUsername">{{osu.username}}</h1>
-                <a :href="`https://osu.ppy.sh/rankings/osu/performance?country=${osu.country}`" target="_blank"><img class="osuFlag" :src="`https://osu.ppy.sh/images/flags/${osu.country}.png`" alt=""></a> 
+                <h1 class="osuUsername">{{profile.username}}</h1>
+                <a :href="`https://osu.ppy.sh/rankings/osu/performance?country=${profile.country}`" target="_blank"><img class="osuFlag" :src="`https://osu.ppy.sh/images/flags/${profile.country_code}.png`" alt=""></a> 
                 <div class="ranks">
-                    <div>{{osu.count_rank_ssh}}<img class="rank" src="../../assets/osu/ssh.svg" alt=""></div>
-                    <div>{{osu.count_rank_ss}}<img class="rank" src="../../assets/osu/ss.svg" alt=""></div>
-                    <div>{{osu.count_rank_sh}}<img class="rank" src="../../assets/osu/sh.svg" alt=""></div>
-                    <div>{{osu.count_rank_s}}<img class="rank" src="../../assets/osu/s.svg" alt=""></div>
-                    <div>{{osu.count_rank_a}}<img class="rank" src="../../assets/osu/a.svg" alt=""></div>
+                    <div>{{profile.statistics.grade_counts.ssh}}<img class="rank" src="../../assets/osu/ssh.svg" alt=""></div>
+                    <div>{{profile.statistics.grade_counts.ss}}<img class="rank" src="../../assets/osu/ss.svg" alt=""></div>
+                    <div>{{profile.statistics.grade_counts.sh}}<img class="rank" src="../../assets/osu/sh.svg" alt=""></div>
+                    <div>{{profile.statistics.grade_counts.s}}<img class="rank" src="../../assets/osu/s.svg" alt=""></div>
+                    <div>{{profile.statistics.grade_counts.a}}<img class="rank" src="../../assets/osu/a.svg" alt=""></div>
                 </div>           
             </div>
             <div class="stat big">
-                <h1>#{{numberWithCommas(osu.pp_rank)}}</h1>
+                <h1>#{{numberWithCommas(profile.statistics.pp_rank)}}</h1>
                 <p>Global Ranking</p>
             </div>
             <div class="stat big">
-                <h1>{{parseInt(osu.level).toFixed(0)}}</h1>
+                <h1>{{parseInt(profile.statistics.level.current)}}</h1>
                 <p>Level</p>
             </div>
             <div class="stat big">
-                <h1>{{Math.ceil(parseInt(osu.pp_raw))}}</h1>
+                <h1>{{Math.ceil(parseInt(profile.statistics.pp))}}</h1>
                 <p>pp</p>
             </div>
             <div class="stat big">
-                <h1>{{numberWithCommas(osu.playcount)}}</h1>
+                <h1>{{numberWithCommas(profile.statistics.play_count)}}</h1>
                 <p>Maps Played</p>
             </div>
             <div class="stat big">
-                <h1>{{Math.floor(osu.accuracy)}}%</h1>
+                <h1>{{Math.floor(profile.statistics.hit_accuracy)}}%</h1>
                 <p>Accuracy</p>
             </div>
             <div class="stat big">
-                <h1>{{secondsToHours(osu.total_seconds_played)}}</h1>
+                <h1>{{secondsToHours(profile.statistics.play_time)}}</h1>
                 <p>Time Wasted</p>
             </div>
         </div>
@@ -48,7 +48,7 @@
 export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
-        osu: { type: Object, required: true }, // Osu object
+        profile: { type: Object, required: true }, // Osu object
         edit: { type: Boolean, required: true }, // Check if edit is enabled or not
     },
     data: () => {
