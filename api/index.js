@@ -46,6 +46,9 @@ db.then(() => {
 
 // Database Collections
 let users = db.get("users");
+
+// users.update({}, { "$set": { 'settings.language': 'en'}},{multi:true});
+
 let messages = db.get("messages");
 let dms = db.get("dms");
 let anime = db.get("anime");
@@ -116,7 +119,7 @@ let onlineUsers = [];
 
 // This only runs when some user sends a heartbeat, it updates everyone as long as there is at least 1 user online
 async function addToOnlineUsers(uuid) {
-
+  
   // Update user last seen in their db
   let newLastSeen = new Date().getTime();
   await users.update({'uuid': uuid}, { "$set": {'profile.status.lastSeen': newLastSeen}});
@@ -178,11 +181,11 @@ function User(username, email, password) {
   };
   this.settings = {
     show_nsfw: false,
-    language: "english",
     account: {
         email: email,
         password: password,
     },
+    language: "en",
     appearance: {                                                               
         darkmode: false,
         animate_pfps: true,
@@ -191,7 +194,7 @@ function User(username, email, password) {
             enabled: false,
             content: "",
             color: ""
-        }
+        }       
     },
     sounds: {
         typing: { 

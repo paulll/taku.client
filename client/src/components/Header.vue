@@ -255,7 +255,7 @@ export default {
     align-items: center;
     padding: 0px 18px;
     
-    font-family: Work Sans;
+    font-family: Work Sans, system-ui;
     font-style: normal;
     font-weight: 800;
     font-size: 13px;

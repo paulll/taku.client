@@ -45,6 +45,9 @@
 </template>
 
 <script>
+import Spinner from '@/components/Spinner.vue'
+
+
 export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
@@ -56,13 +59,8 @@ export default {
             darkmode: localStorage.darkmode,
         };
     },
-    created(){
-
-        // this.activeTab = this.osu[0]?.category;
-        // this.themeColors = {
-        //     '--themeColor': this.user.settings.appearance.theme_color,
-        //     '--themeColorHover': `${this.user.settings.appearance.theme_color}66`,
-        // }
+    components: {
+        Spinner
     },
     methods: {
         numberWithCommas(x) {

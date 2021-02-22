@@ -117,7 +117,7 @@ export default {
     justify-content: space-between;
     color: white;
     flex-direction: column;
-    font-family: Work Sans;
+    font-family: Work Sans, system-ui;;
 }
 .info h1 {
     position: relative;

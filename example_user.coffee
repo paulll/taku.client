@@ -4,10 +4,7 @@
     created_at: 1613655545,                                                         # Epoch timestamp when their account gets created                                                                                
     profile: {   
         status: {
-            isPlayingGame: false,                                                   # Is the user currently playing any games
-            isWatchingAnime: false,                                                 # Is the user currently watching anime
-            isOnline: true,                                                         # Is the user online
-            isDND: true,                                                            # Is the user on do not disturb
+            lastSeen: 1613655545                                                    # Last time user has been online
         },    
         isDeveloper: true,                                                          # Is the user developer or not
         isBetaTester: true,                                                         # Is/was the user beta tester or not
@@ -74,11 +71,11 @@
     },
     settings: {
         show_nsfw: true,                                                            # If we show NSFW marked content or not
-        language: "english",                                                        # Language setting the user ha
         account: {                                                                  # Contains private account information         
             email: "geoxor123@outlook.com",                                         # Contains user's email, also editable
             password: "$2b$12$.wpYoDQEdJY3VidOm.2yNORtLtkdZVYrZwwYDJcX5XXK7T6gRV",  # Hashed SHA-256 password
         },
+        language: "en",                                                             # Language setting the user has set
         appearance: {                                                               # Contains the personalisation settings
             darkmode: true,                                                         # Darkmode enabled or not
             animate_pfps: true,                                                     
@@ -87,15 +84,15 @@
                 enabled: true,                                                      # If they have their 
                 content: "Ganyu",                                                   # Flare text
                 color: "#fce3c5"                                                    # Flare color
-            }
+            },            
         },
         sounds: {
             typing: { 
                 enabled: true,                                                      # If its enabled
-                url: "http://taku.moe:8880/uploads/VR_drum_hat_trappy.wav" },     # Sound URL
+                url: "http://taku.moe:8880/uploads/VR_drum_hat_trappy.wav" },       # Sound URL
             mention: { 
                 enabled: true,                                                      # If its enabled
-                url: "http://taku.moe:8880/uploads/id.mp3" },                     # Sound URL
+                url: "http://taku.moe:8880/uploads/id.mp3" },                       # Sound URL
         },
         notifications: {
             disable_all: false,                                                     # Are all their notifications enabled or not

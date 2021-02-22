@@ -11,6 +11,11 @@
         <h1>Account</h1>
       </router-link> 
 
+      <router-link to="/settings/language" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
+        <img src="../assets/language.png" alt="language">
+        <h1>Language</h1>
+      </router-link> 
+
       <!-- <router-link to="/settings/notification" @mouseover="playHover()" class="setting" :style="themeColors" :class="{darkmode: darkmode == 'true'}" >
         <img src="../assets/notification.png" alt="notification">
         <h1>Notifications</h1>
@@ -171,7 +176,7 @@ export default {
 }
 
 .setting h1 {
-  font-family: Work Sans;
+  font-family: Work Sans, system-ui;;
   font-style: normal;
   white-space: nowrap;
   font-weight: 500;

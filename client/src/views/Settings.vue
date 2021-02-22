@@ -9,36 +9,41 @@
       <!-- Account -->
       <div v-if="user.settings.account && path == 'account'" class="section account">
         <!-- <img class="pfp" :src="user.profile.pfp" alt=""> -->
-        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" optionTitle="Username"  :showValue="true" :optionValue="user.username"  :showSplitter="true"/>
-        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" optionTitle="Email"     :showValue="true" :optionValue="user.email"     :showSplitter="true"/>
-        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" optionTitle="Password"  :showValue="true"  optionValue="**************" :showSplitter="true"/>
+        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Username"  :optionTitle="translation('Username')"  :showValue="true" :optionValue="user.username"  :showSplitter="true"/>
+        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Email"     :optionTitle="translation('Email')"     :showValue="true" :optionValue="user.email"     :showSplitter="true"/>
+        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Password"  :optionTitle="translation('Password')"  :showValue="true"  optionValue="**************" :showSplitter="true"/>
+      </div>
+
+      <!-- Language -->
+      <div v-if="user.settings.language && path == 'language'" class="section language" :class="{darkmode: darkmode == 'true'}">
+        OTTODO: DRopropdown for language 
       </div>
 
       <!-- Appearance -->
       <div v-if="user.settings.appearance && path == 'appearance'" class="section appearance" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :user="user"                        :darkmode="darkmode"               optionTitle="Darkmode"     :optionCategory="path"  :toggleButtons="true"      :optionValue="user.settings.appearance.darkmode"/>
-        <OptionBox  :toggleButtons="true"  type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"        optionTitle="Flare"        :optionCategory="path"  :optionValue="user.settings.appearance.flare.enabled"         :fields="[{placeholder: 'e.g. Shimakaze', selector: 'content', maxLength: 32 }, {placeholder: 'e.g. #ff0022', selector: 'color', maxLength: 7}, ]"/>
-        <OptionBox  :toggleButtons="false" type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"        optionTitle="Theme Color"  :optionCategory="path"  :optionValue="user.settings.appearance.theme_color"           :fields="[{placeholder: 'e.g. #ff0022', maxLength: 7 }]"/>
+        <OptionBox  :user="user"                        :darkmode="darkmode"                                     option="Darkmode"    :optionTitle="translation('Darkmode')"     :optionCategory="path"  :toggleButtons="true"      :optionValue="user.settings.appearance.darkmode"/>
+        <OptionBox  :toggleButtons="true"  type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"  option="Flare"       :optionTitle="translation('Flare')"        :optionCategory="path"  :optionValue="user.settings.appearance.flare.enabled"         :fields="[{placeholder: 'e.g. Shimakaze', selector: 'content', maxLength: 32 }, {placeholder: 'e.g. #ff0022', selector: 'color', maxLength: 7}, ]"/>
+        <OptionBox  :toggleButtons="false" type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"  option="Theme Color" :optionTitle="translation('Theme Color')"  :optionCategory="path"  :optionValue="user.settings.appearance.theme_color"           :fields="[{placeholder: 'e.g. #ff0022', maxLength: 7 }]"/>
       </div>
       
       <!-- Sounds -->
       <div v-if="user.settings.sounds && path == 'sounds'" class="section sounds" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds?.typing.enabled"        optionTitle="Typing"   :optionCategory="path"     :showValue="true"/>
-        <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds?.mention.enabled"       :optionCategory="path" optionTitle="Mention"      :showValue="true"/>
-        <OptionBox  :fileUrl="notificationSoundUrl" :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds?.notification.enabled" :optionCategory="path" optionTitle="Notification" :showValue="true"/>
-        <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds?.hover.enabled" :optionCategory="path" optionTitle="Hover" :showValue="true"/>
-        <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds?.click.enabled" :optionCategory="path" optionTitle="Click" :showValue="true"/>
+        <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds?.typing.enabled"        option="Typing"    :optionTitle="translation('Typing')"   :optionCategory="path"     :showValue="true"/>
+        <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds?.mention.enabled"       :optionCategory="path" option="Mention" :optionTitle="translation('Mention')"      :showValue="true"/>
+        <OptionBox  :fileUrl="notificationSoundUrl" :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds?.notification.enabled" :optionCategory="path" option="Notification" :optionTitle="translation('Notification')" :showValue="true"/>
+        <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds?.hover.enabled" :optionCategory="path" option="Hover" :optionTitle="translation('Hover')" :showValue="true"/>
+        <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds?.click.enabled" :optionCategory="path" option="Click" :optionTitle="translation('Click')" :showValue="true"/>
       </div>
 
       <!-- Connections user.settings.connectios && -->
       <div v-if="path == 'connections'" class="section connections" :class="{darkmode: darkmode == 'true'}">
-        <ConnectionBox :user="user" :darkmode="darkmode" connectionPlatform="osu!"    :showSplitter="true" :connectionPlatformDetails="user.settings.connections.osu"/>
+        <ConnectionBox :user="user" :darkmode="darkmode" connectionPlatform="osu!" :showSplitter="true" :connectionPlatformDetails="user.settings.connections.osu"/>
       </div>
 
       <!-- Privacy -->
       <div v-if="user.settings.privacy && path == 'privacy'" class="section privacy" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :user="user" :darkmode="darkmode" optionTitle="Show Status"    :optionCategory="path"   :toggleButtons="true"   :optionValue="user.settings.privacy.show_status"/>
-        <OptionBox  :user="user" :darkmode="darkmode" optionTitle="Blocked Users"  :optionCategory="path"   :listContent="user.settings.privacy.blocked_users" :showValue="true" :list="true" />
+        <OptionBox  :user="user" :darkmode="darkmode" option="Show Status" :optionTitle="translation('Show Status')"    :optionCategory="path"   :toggleButtons="true"   :optionValue="user.settings.privacy.show_status"/>
+        <OptionBox  :user="user" :darkmode="darkmode" option="Blocked Users" :optionTitle="translation('Blocked Users')"  :optionCategory="path"   :listContent="user.settings.privacy.blocked_users" :showValue="true" :list="true" />
       </div>
 
       <!-- Info -->
@@ -165,8 +170,16 @@ export default {
     if (this.$route.query.code) this.sendOauthToken(this.$route.query.code);
 
     this.emitter.on('updateUI', () => this.updateUI());
+
   },
   methods: {
+    // Fetches right translation of the site
+    translation(sentence){
+      this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+      let translatedSentence = this.languageTable[sentence];
+      if (!translatedSentence) return sentence;
+      return translatedSentence;
+    },
     async sendOauthToken(code){
       await axios.post('http://taku.moe:8880/user/authenticate', {code: code}, {
         withCredentials: true,
@@ -207,7 +220,6 @@ export default {
           color: "#ffffff"
         }
       }
-
       this.user = user.data;
     },
     updateUI(){

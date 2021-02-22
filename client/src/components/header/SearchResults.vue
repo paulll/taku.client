@@ -69,7 +69,7 @@ export default {
 }
 
 .searchResults {
-    display: flex;
+    display: none;
     position: absolute;
     width: 624px;
     max-width: 624px;

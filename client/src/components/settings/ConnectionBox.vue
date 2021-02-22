@@ -116,7 +116,7 @@ export default {
 }
 
 .heading h1 {
-  font-family: Work Sans;
+  font-family: Work Sans, system-ui;;
   font-style: normal;
   white-space: nowrap;
   font-weight: 500;

@@ -47,8 +47,8 @@
                         <!-- My buttons -->
                         <div class="myButtons" v-if="user.username == me.username">
                             <!-- Edit button -->
-                            <button :style="themeColors" v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">EDIT</button>
-                            <button :style="themeColors" v-if="edit" @click="toggleEdit()" class="button">SAVE</button>
+                            <button :style="themeColors" v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">{{translation('Edit')}}</button>
+                            <button :style="themeColors" v-if="edit" @click="toggleEdit()" class="button">{{translation('Save')}}</button>
                         </div>
 
                     </div>
@@ -67,7 +67,7 @@
         </div>
 
         <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
-            <p class="tags"><strong>FAVORITE</strong> Anime</p>
+            <p class="tags">{{translation('FAVORITE Anime')}}</p>
             <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
                     <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
@@ -77,18 +77,18 @@
             
             <!-- COMPUTER SPECS -->
             <div v-if="user.profile.computer">
-                <p class="tags" :class="{darkmode: darkmode == 'true'}"><strong>MY</strong> Computer</p>
+                <p class="tags" :class="{darkmode: darkmode == 'true'}">{{translation('MY Computer')}}</p>
                 <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
             </div>
 
             <!-- OSU PROFILE -->
-            <div v-if="user.settings.connections?.osu">
-                <p class="tags"><strong>osu!</strong> Profile</p>
-                <Osu :profile="user.profile.connections.osu" :edit="edit"/>               
+            <div v-if="user.profile.connections?.osu">
+                <p class="tags">{{translation('osu! Profile')}}</p>
+                <Osu :profile="user.profile.connections?.osu" :edit="edit"/>               
             </div>
 
             <!-- DESCRIPTION -->
-            <p class="tags"><strong>DESCRIPTION</strong></p>
+            <p class="tags">{{translation('DESCRIPTION')}}</p>
             <p class="description">{{user.profile.description}}</p>
             <p v-if="user.profile.achivements" class="tags"><strong>ACHIVEMENTS</strong></p>
         </div>
@@ -143,6 +143,13 @@ export default {
     }
   },
   methods: {
+    // Fetches right translation of the site
+    translation(sentence){
+      this.languageTable = require(`../../public/languages/${localStorage.language}.json`);
+      let translatedSentence = this.languageTable[sentence];
+      if (!translatedSentence) return sentence;
+      return translatedSentence;
+    },
     async getMe() {
       NProgress.start();
 

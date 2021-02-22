@@ -99,12 +99,23 @@ export default {
             localStorage.username = response.data.username;
 
             try {
-                localStorage.setItem('typing_sfx', response.data.user[0].settings.sounds.typing.enabled);
-                localStorage.setItem('mention_sfx', response.data.user[0].settings.sounds.mention.enabled);
-                localStorage.setItem('typingSoundUrl', response.data.user[0].settings.sounds.typing.url);
-                localStorage.setItem('mentionSoundUrl', response.data.user[0].settings.sounds.mention.url);
+
+                localStorage.setItem('language', response.data.user.settings.language);
+
+
+                localStorage.setItem('typing', response.data.user.settings.sounds.typing.enabled);
+                localStorage.setItem('mention', response.data.user.settings.sounds.mention.enabled);
+                localStorage.setItem('notification', response.data.user.settings.sounds.notification.enabled);
+                localStorage.setItem('hover', response.data.user.settings.sounds.hover.enabled);
+                localStorage.setItem('click', response.data.user.settings.sounds.click.enabled);
+
+                localStorage.setItem('typingSoundUrl', response.data.user.settings.sounds.typing.url);
+                localStorage.setItem('mentionSoundUrl', response.data.user.settings.sounds.mention.url);
+                localStorage.setItem('notificationSoundUrl', response.data.user.settings.sounds.notification.url);
+                localStorage.setItem('hoverSoundUrl', response.data.user.settings.sounds.hover.url);
+                localStorage.setItem('clickSoundUrl', response.data.user.settings.sounds.click.url);
             } catch (error) {
-                
+                console.log(error);
             }
             
             window.location.href = `/profile/${this.username.toLowerCase()}`;
@@ -194,7 +205,7 @@ export default {
   background: #FF006B;
   border-radius: 24px;
 
-  font-family: Work Sans;
+  font-family: Work Sans, system-ui;;
   font-style: normal;
   font-weight: 800;
   font-size: 16px;
@@ -240,7 +251,7 @@ export default {
     align-items: center;
     justify-content: center;
 
-    font-family: Work Sans;
+    font-family: Work Sans, system-ui;;
     font-size: 13px;
     font-style: normal;
     font-weight: 800;

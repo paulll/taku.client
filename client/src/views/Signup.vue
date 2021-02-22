@@ -376,7 +376,7 @@ export default {
     background: #FF006B;
     border-radius: 24px;
 
-    font-family: Work Sans;
+    font-family: Work Sans, system-ui;;
     font-style: normal;
     font-weight: 800;
     font-size: 16px;
@@ -422,7 +422,7 @@ export default {
     align-items: center;
     justify-content: center;
 
-    font-family: Work Sans;
+    font-family: Work Sans, system-ui;;
     font-size: 13px;
     font-style: normal;
     font-weight: 800;
