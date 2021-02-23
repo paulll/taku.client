@@ -94,6 +94,7 @@ export default {
 
         // Redirect to home
         if (response.status == 200) {
+            console.log(response.data);
 
             localStorage.token = response.data.token;
             localStorage.username = response.data.username;

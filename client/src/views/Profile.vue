@@ -374,14 +374,6 @@ export default {
     border: solid 4px #3BE220;
 }
 
-.settings {
-    width: 32px;
-    height: auto;
-    position: absolute;
-    right: 206px;
-    margin-top: calc((116px - 32px) / 2);
-}
-
 .button {
     border: none;
     height: 38px;

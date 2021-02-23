@@ -72,16 +72,15 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Spinner from '@/components/Spinner.vue'
-import Notifications from '@/components/header/Notifications.vue'
+import Spinner        from '@/components/Spinner.vue'
+import Notifications  from '@/components/header/Notifications.vue'
 import AnimatedNumber from '@/components/AnimatedNumber.vue'
-import SearchResults from '@/components/header/SearchResults.vue'
+import SearchResults  from '@/components/header/SearchResults.vue'
+
+import axios from 'axios';
 import io from 'socket.io-client';
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 export default {
     data: () => {

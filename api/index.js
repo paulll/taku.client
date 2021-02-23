@@ -1,13 +1,13 @@
 const express = require("express");
 const morgan = require("morgan");
 const fs = require("fs");
-var cors = require("cors");
+const cors = require("cors");
 const { date } = require("joi");
-var bodyParser = require("body-parser");
-var multer = require("multer");
-var upload = multer({ dest: "./db/uploads/" });
+const bodyParser = require("body-parser");
+const multer = require("multer");
+const upload = multer({ dest: "./db/uploads/" });
 var http = require("http");
-var Jimp = require("jimp");
+const Jimp = require("jimp");
 const Joi = require("joi");
 const si = require("systeminformation"); 
 const bcrypt = require("bcrypt");
@@ -17,8 +17,9 @@ const cookieParser = require("cookie-parser");
 const { v4: uuidv4 } = require("uuid"); 
 const axios = require('axios');
 const colors = require('colors');
+const child_process = require('child_process');
 
-// Oauth keys, etc
+// OAuth keys, etc
 const osuKey = '4fhm7Z3QT1itZjWqfVSoISHUJHwhOTkwhKu3FTJ6';
 const osuClientId = '5478';
 
@@ -26,6 +27,7 @@ const osuClientId = '5478';
 //     key: fs.readFileSync("./key.pem"),
 //     cert: fs.readFileSync("./cert.pem")
 // };
+
 
 const schema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
@@ -107,13 +109,36 @@ async function cacheImage(attachment, uuid, isMessage){
         image.resize(Jimp.AUTO, 368) // resize
       }
 
-      if (!isMessage) await image.writeAsync(`./db/${attachment.fieldname}/cache/${uuid}`); // save
-      else await image.writeAsync(`./db/uploads/cache/${attachment.originalname}`); // save
+      if(!isMessage) image.write(`./db/${attachment.fieldname}/cache/${uuid}`); // save
+      else image.write(`./db/uploads/cache/${attachment.originalname}`); // save
       
-      resolve();
+      resolve("Image url" + `./db/uploads/cache/${attachment.originalname}`);
     });
   });
 }
+
+
+async function cacheImages(attachments){
+  return new Promise(resolve => {
+    // var numchild = require('os').cpus().length;
+    var done = 0;
+    let cachedAttachments = [];
+
+    for (var i = 0; i < attachments.length; i++){
+      var imageProcessor = child_process.fork('./clusters/imageProcessor');
+      imageProcessor.send(attachments[i]);
+      imageProcessor.on('message', cachedAttachment => {
+        console.log('[PARENT]: Received message from child:', cachedAttachment.result);
+        cachedAttachments.push(cachedAttachment.result);
+        done++;
+        if (done === attachments.length) {
+          console.log('[PARENT]: Received all results!');
+          resolve(cachedAttachments);
+        }
+      });
+    };
+  });
+};
 
 // Online users
 let onlineUsers = [];
@@ -368,7 +393,7 @@ io.on("connection", socket => {
   
   totalConnections++;
 
-  console.log(`Total Connections: ${totalConnections}`);
+  // console.log(`Total Connections: ${totalConnections}`);
   
   socket.on("ping", () => {
     socket.emit("pong", {cpu: currentLoad, ram: ramUsage });
@@ -527,30 +552,8 @@ io.on("connection", socket => {
   
       if (!author) return
 
-      // Empty array where ill add the links for the attachments for below
-      let attachments = [];
-  
-      // Save attachment blobs locally and create a link for them to see
-      for (attachment of req.files){
-        attachment.originalname = `${new Date().getTime().toString()}-${attachment.originalname.replace(/\s/g, "_")}`; // Remove spaces with underscores
-  
-        attachment.html = `http://taku.moe:8880/uploads/${attachment.originalname}`;
-        attachment.originalurl = `http://taku.moe:8880/uploads/${attachment.originalname}`;
+      let attachments = await cacheImages(req.files);
 
-        if (attachment.mimetype.startsWith("image/jpeg") || attachment.mimetype.startsWith("image/png")) {
-          await cacheImage(attachment, author.uuid, true);
-          attachment.html = `http://taku.moe:8880/uploads/cache/${attachment.originalname}`;
-        }
-
-        // Rename the file back to the original name cus multer is stupid
-        fs.renameSync(`./db/uploads/${attachment.filename}`, `./db/uploads/${attachment.originalname}`);
-        
-        attachments.push(attachment);
-      };
-
-      // let attachments = cacheImages(req.files);
-
-  
       // Construct message object
       const message = {
         content: messageEvent.content,
@@ -563,6 +566,8 @@ io.on("connection", socket => {
         },
       };
   
+      console.log(message);
+
       message["content"] = message.content;
   
       currentMessages.push(message);
@@ -610,7 +615,7 @@ io.on("connection", socket => {
   });
   socket.on("disconnect", () => {
     totalConnections--;
-    console.log(`WS Connections: ${totalConnections}`);
+    // console.log(`WS Connections: ${totalConnections}`);
   });
 });
 
