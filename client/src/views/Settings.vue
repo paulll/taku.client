@@ -37,7 +37,10 @@
 
       <!-- Connections user.settings.connectios && -->
       <div v-if="path == 'connections'" class="section connections" :class="{darkmode: darkmode == 'true'}">
-        <ConnectionBox :user="user" :darkmode="darkmode" connectionPlatform="osu!" :showSplitter="true" :connectionPlatformDetails="user.settings.connections.osu"/>
+        <Connections   :user="user" :darkmode="darkmode"/>
+        <div class="connectionsList">
+          <ConnectionBox v-if="user.settings.connections.osu" :user="user" :darkmode="darkmode" connectionPlatform="osu" :showSplitter="true" :connectionPlatformDetails="user.profile.connections.osu"/>
+        </div>
       </div>
 
       <!-- Privacy -->
@@ -107,6 +110,7 @@ import MobileHeader from '@/components/MobileHeader.vue'
 
 import OptionBox from '@/components/settings/OptionBox.vue'
 import ConnectionBox from '@/components/settings/ConnectionBox.vue'
+import Connections from '@/components/settings/Connections.vue'
 import Guidelines from '@/components/settings/Guidelines.vue'
 
 import NProgress from 'nprogress';
@@ -122,6 +126,7 @@ export default {
   name: 'home',
   components: {
     SettingsBar,
+    Connections,
     ConnectionBox,
     OptionBox,
     Guidelines
@@ -167,7 +172,7 @@ export default {
     this.path = this.$route.params.setting;
     this.getUser();
 
-    if (this.$route.query.code) this.sendOauthToken(this.$route.query.code);
+    if (this.$route.query.code) this.sendOauthToken(this.$route.query.platform, this.$route.query.code);
 
     this.emitter.on('updateUI', () => this.updateUI());
 
@@ -181,8 +186,8 @@ export default {
       if (!translatedSentence) return sentence;
       return translatedSentence;
     },
-    async sendOauthToken(code){
-      await axios.post('http://taku.moe:8880/user/authenticate', {code: code}, {
+    async sendOauthToken(platform, code){
+      await axios.post(`http://taku.moe:8880/user/connection/${platform}`, {code: code}, {
         withCredentials: true,
       });
       return
@@ -276,6 +281,13 @@ export default {
 
 .settingsArea.darkmode { background: #08090E; } /* darkmode */ 
 
+.connectionsList {
+  margin-top: 24px;
+  width: calc(100% - 24px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* vvv TO BE REMOVED */
 

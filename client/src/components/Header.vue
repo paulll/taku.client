@@ -58,7 +58,7 @@
                 <div v-if="notifications.length > 0" class="numberOfNotifs">{{notifications.length}}</div>
                 <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/notification.png" alt=""></div>
             </div>
-            <Notifications :notifications="notifications" :show="showNotifications"/> 
+            <Notifications :notifications="notifications.reverse()" :show="showNotifications"/> 
 
             <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>

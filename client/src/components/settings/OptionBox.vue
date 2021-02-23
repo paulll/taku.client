@@ -227,7 +227,7 @@ export default {
   background: white;
   padding: 12px;
   border-radius: 8px;
-  margin: 16px;
+  margin: 8px;
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
   width: calc(100% - 48px);
 }

@@ -1,19 +1,16 @@
 <template>
-    <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+    <div class="connectionBox" :class="{darkmode: darkmode == 'true'}">
         <div class="top">
             <div class="heading">
                 <div>
+                    <img :src="require(`@/assets/platforms/${connectionPlatform}.png`)">
                     <h1>{{connectionPlatform}}</h1>
-
                 </div>
-                <div v-if="!connectionPlatformDetails" class="onOff" :style="themeColors">
-                    <a target="_blank" href="https://osu.ppy.sh/oauth/authorize?client_id=5478&redirect_uri=http://taku.moe:8080/settings/connections&response_type=code" @mouseover="playHover()" :style="themeColors" :class="{'active': optionValue == true}">LINK</a>
-                </div>
+                <button @mouseover="playHover()" @click="unlink(connectionPlatform)" :style="themeColors">{{translation("Unlink")}}</button>
             </div>
         </div>
-        <div v-if="showSplitter" class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
         <div class="bottom">
-            <p>{{listItem}}</p>
+            <p>{{connectionPlatformDetails.username}} - {{connectionPlatformDetails.id}}</p>
         </div>
     </div>
 </template>
@@ -31,7 +28,7 @@ export default {
     props: {
         user:                       { type: Object,     required: true    },                    // User object
         darkmode:                   { type: String,     required: false   },                    // Darkmode enabled or not
-        showSplitter:               { type: Boolean,    required: false,    default: false  }, // Does the OptionBox contain a splitter or not
+        showSplitter:               { type: Boolean,    required: false,    default: false  },  // Does the connectionBox contain a splitter or not
         connectionPlatform:         { type: String,     required: true    },                    // Title of the option box
         connectionPlatformDetails:  { type: Object,     required: false   },                    // Title of the option box
     },
@@ -46,6 +43,14 @@ export default {
         }
     },
     methods: {
+        // Fetches right translation of the site
+        translation(sentence){
+            if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
+            else this.languageTable = require(`@/languages/${localStorage.language}.json`);
+            let translatedSentence = this.languageTable[sentence];
+            if (!translatedSentence) return sentence;
+            return translatedSentence;
+        },
         playClick(){
           if (localStorage.click_sfx == 'false') return
           if (!this.clickSoundUrl) this.clickSoundUrl = require("../../../public/click.wav");
@@ -57,6 +62,16 @@ export default {
           if (!this.hoverSoundUrl) this.hoverSoundUrl = require("../../../public/hover.wav");
           this.hoverSound = new Audio(this.hoverSoundUrl);
           this.hoverSound.play();
+        },
+        async unlink(platform){
+          const response = await axios.delete(`http://taku.moe:8880/user/connection/${platform}`, {
+            withCredentials: true,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+          });      
+
+          console.log(response);
         },
         async updateSettings(){
             NProgress.start();
@@ -77,25 +92,25 @@ export default {
 <style scoped>
 
 
-.optionBox {
+.connectionBox {
   background: white;
   padding: 12px;
   border-radius: 8px;
-  margin: 16px;
+  margin: 8px ​0px;
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
+  width: calc(100% - 48px);
 }
 
-.optionBox.darkmode { /* darkmode */
+.connectionBox.darkmode { /* darkmode */
   background: #10121D;
   color: white;
 } 
 
-.optionBox.darkmode .top .heading img                                       { filter: invert(1); }      /* darkmode */ 
-.optionBox.darkmode .bottom, .optionBox.darkmode .textField                 { background: #171A28; }  /* darkmode */
-.optionBox.darkmode .bottom a:not(:hover), .optionBox.darkmode .textField   { color: white; }         /* darkmode */
-.optionBox.darkmode .bottom img:not(:hover)                                 { filter: invert(1); }      /* darkmode */
+.connectionBox.darkmode .bottom, .connectionBox.darkmode .textField                 { background: #171A28; }  /* darkmode */
+.connectionBox.darkmode .bottom a:not(:hover), .connectionBox.darkmode .textField   { color: white; }         /* darkmode */
+.connectionBox.darkmode .bottom img:not(:hover)                                 { filter: invert(1); }      /* darkmode */
 
-.optionBox div {
+.connectionBox div {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -107,8 +122,8 @@ export default {
     width: 100%;
 }
 .heading img {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
 }
 
 .heading p {
@@ -130,35 +145,21 @@ export default {
   margin-left: 12px;
 }
 
-.onOff {
-  height: 24px;
-  border-radius: 64px;
-  background: #141520;
-  width: 112px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: 100ms ease;
-}
-
-.onOff:hover { 
-    background: var(--themeColorHover) !important;
-}
-
-.onOff button {
-    background: transparent;
+.heading button {
     border: none;
     cursor: pointer;
     outline: none;
     color: white;
     text-transform: uppercase;
     font-weight: 700;
-    width: calc(50% + 4px);
-    height: calc(100% + 4px);
+    background: #141520;
+    height: 28px;
+    padding: 0px 12px;
     border-radius: 24px;
+    transition: 100ms ease;
 }
 
-.active { 
+.heading button:hover {
     background: var(--themeColor) !important;
 }
 

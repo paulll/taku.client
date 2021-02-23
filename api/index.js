@@ -938,9 +938,33 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.delete("/user/connection/:platform", authJWT, async (req, res) => {
+  const plaform = req.params.platform;
 
+  await users.update({'uuid': req.user.uuid}, { '$unset': {'profile.connections.osu': undefined , 'settings.connections.osu': undefined }});
+  
+  try {
+    const deleteToken = await axios.delete("https://osu.ppy.sh/api/v2/oauth/tokens/current", {
+      headers: {
+        Authorization: `Bearer ${req.user.settings.connections.osu.token.access_token}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }}
+    );
 
-app.post("/user/authenticate", authJWT, async (req, res) => {
+    res.status(200);
+    res.json({"message": `Unlinked ${plaform} successfully`});
+  } catch (error) {
+    if (error) {
+      res.status(500);
+      res.json({"message": error.response.statusText});
+    }
+  }
+});
+
+app.post("/user/connection/:platform", authJWT, async (req, res) => {
+  const plaform = req.params.platform;
+
   const oauthToken = req.body.code;
 
   const form = {
@@ -976,12 +1000,7 @@ app.post("/user/authenticate", authJWT, async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-
-
-
 });
-
-
 
 
 const port = process.env.PORT || 8880;

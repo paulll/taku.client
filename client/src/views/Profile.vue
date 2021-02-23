@@ -89,8 +89,8 @@
 
             <!-- DESCRIPTION -->
             <p class="tags">{{translation('DESCRIPTION')}}</p>
-            <p v-if="!edit" class="description">{{user.profile.description}}</p>
-            <input v-if="edit" class="description" v-model="me.profile.description" type="text" >
+            <textarea v-if="!edit" class="description" :class="{darkmode: darkmode == 'true'}" readonly='true'>{{user.profile.description}}</textarea>
+            <textarea rows="10" cols="100" v-if="edit" class="description" :class="{darkmode: darkmode == 'true'}" v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
         </div>
     </div>
 </template>
@@ -499,7 +499,6 @@ export default {
 }
 
 
-
 .pageContent {
     color: #414141;
     background: #F3F3F3;
@@ -516,6 +515,7 @@ export default {
 .tags {
     padding: 24px 24px 0px;
     font-size: 16px;
+    font-weight: 700;
 }
 
 .animePosters {
@@ -533,7 +533,6 @@ export default {
     background:  #08090E;
     color: white;
 }
-
 
 .posterContainer {
     margin-right: 8px;
@@ -558,21 +557,24 @@ export default {
 }
 
 .description {
-    padding: 8px 24px 0px;
-    font-size: 14px;
-}
-
-.description {
     display: flex;
     margin: 0px;
     border: 4px white;
+    padding: 8px 24px 0px;
     color: black;
+    width: 100%;
+    min-height: 512px;
+    height: fit-content;
+    background: transparent;
     border-radius: 8px 8px 8px 8px ;
     outline: none;
-    font-size: 16px;
+    font-size: 14px;
     letter-spacing: 0px;
 }
 
+.description.darkmode {
+    color: white;
+}
 
 .description.active {
     display: block;
