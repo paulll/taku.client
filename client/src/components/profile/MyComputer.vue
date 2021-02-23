@@ -33,10 +33,10 @@ export default {
     },
     created(){
         this.activeTab = this.computer[0]?.category;
-        // this.themeColors = {
-        //     '--themeColor': this.user.settings.appearance.theme_color,
-        //     '--themeColorHover': `${this.user.settings.appearance.theme_color}66`,
-        // }
+        this.themeColors = {
+            '--themeColor': this.user.settings.appearance.theme_color,
+            '--themeColorHover': `${this.user.settings.appearance.theme_color}66`,
+        }
     },
     methods:{
         switchTab(tab){

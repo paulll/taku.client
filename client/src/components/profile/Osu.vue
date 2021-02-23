@@ -94,7 +94,6 @@ export default {
 .stats {
     display: flex;
     justify-content: left;
-    padding: 8px 24px 0px;
 } 
 .stats.osu {
     grid-template-columns: repeat(6, 1fr);

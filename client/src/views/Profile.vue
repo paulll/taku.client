@@ -17,7 +17,9 @@
                         <path d="M12.9644 26C11.1836 26 9.50959 25.6676 7.94247 25.0027C6.37534 24.3142 4.99817 23.3763 3.81096 22.189C2.62374 20.9781 1.68584 19.589 0.99726 18.0219C0.33242 16.4548 0 14.769 0 12.9644C0 11.1361 0.33242 9.43836 0.99726 7.87123C1.68584 6.28037 2.62374 4.9032 3.81096 3.73973C4.99817 2.55251 6.37534 1.63836 7.94247 0.99726C9.50959 0.33242 11.1836 0 12.9644 0C14.7927 0 16.4904 0.344293 18.0575 1.03288C19.6484 1.69772 21.0374 2.63562 22.2247 3.84658C23.4119 5.03379 24.3379 6.41096 25.0027 7.97808C25.6676 9.52146 26 11.1836 26 12.9644C26 14.769 25.6557 16.4548 24.9671 18.0219C24.3023 19.589 23.3763 20.9781 22.189 22.189C21.0018 23.3763 19.6128 24.3142 18.0219 25.0027C16.4548 25.6676 14.769 26 12.9644 26ZM6.91151 19.5383C6.601 20.4617 7.65966 21.2388 8.44753 20.6658L12.3792 17.8064C12.7284 17.5525 13.2012 17.5513 13.5516 17.8036L17.5645 20.6929C18.3531 21.2607 19.4064 20.4837 19.0967 19.5626L17.6237 15.1825C17.4802 14.7559 17.6394 14.286 18.0127 14.0345L21.2199 11.8731C22.0382 11.3216 21.6478 10.0438 20.661 10.0438H16.6038C16.1743 10.0438 15.7928 9.76954 15.6559 9.36239L13.924 4.20888C13.6175 3.29675 12.3257 3.30152 12.0259 4.21589L10.3408 9.35539C10.2061 9.76612 9.8228 10.0438 9.39056 10.0438H5.339C4.35218 10.0438 3.96181 11.3216 4.78015 11.8731L7.98733 14.0345C8.36056 14.286 8.51977 14.7559 8.37632 15.1825L6.91151 19.5383Z" fill="#FF006B"/>
                     </svg>
                     <h1 class="username">{{user.username}}
-                        <div class="status" :class="{'online': user.profile.status.isOnline && user.settings.privacy.show_status, 'disabled': !user.settings.privacy.show_status}"></div>
+                        <div @mouseover="onlineTooltip(true)" @mouseleave="onlineTooltip(false)" class="status" :class="{'online': user.profile.status.isOnline && user.settings.privacy.show_status, 'disabled': !user.settings.privacy.show_status}">
+                            <ToolTip v-if="hoveringOverStatus" :themeColors="themeColors" :message='checkStatus(user)'/>
+                        </div>
                     </h1>
                 </div>
                 <div class="row info">
@@ -27,7 +29,7 @@
                         <div class="otherUserButtons" v-if="user.username != me.username">
                             
                             <!-- Add friend button -->
-                            <button :style="themeColors" @click="friend(user.uuid, 'add')"      v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))" class="button">{{translation("Add")}}</button>
+                            <button :style="themeColors" @click="friend(user.uuid, 'add')"     v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))"  class="button">{{translation("Add")}}</button>
                             <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">{{translation('Cancel Request')}}</button>
                             
                             <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Accept')}}</button>
@@ -65,32 +67,40 @@
                 <!-- <img class="settings" src="../assets/settings.svg" alt="Settings"> -->
             </div>
         </div>
+        <div class="pageContentWrapper">
+            <div class="pageBackground" :style="{'background-image' : `url('${user.profile.banner}')`}"></div>
+            <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
+                
+                <div class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <p class="tags">{{translation('FAVORITE Anime')}}</p>
+                    <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
+                        <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
+                            <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
+                            <Spinner/>
+                        </router-link>
+                    </div>
+                </div>
+                
+                <!-- COMPUTER SPECS -->
+                <div v-if="user.profile.computer" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <p class="tags" :class="{darkmode: darkmode == 'true'}">{{translation('MY Computer')}}</p>
+                    <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
+                </div>
 
-        <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
-            <p class="tags">{{translation('FAVORITE Anime')}}</p>
-            <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
-                <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
-                    <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
-                    <Spinner/>
-                </router-link>
-            </div>
-            
-            <!-- COMPUTER SPECS -->
-            <div v-if="user.profile.computer">
-                <p class="tags" :class="{darkmode: darkmode == 'true'}">{{translation('MY Computer')}}</p>
-                <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
-            </div>
+                <!-- OSU PROFILE -->
+                <div v-if="user.profile.connections?.osu" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <p class="tags">{{translation('osu! Profile')}}</p>
+                    <Osu :profile="user.profile.connections?.osu" :edit="edit"/>               
+                </div>
+                
 
-            <!-- OSU PROFILE -->
-            <div v-if="user.profile.connections?.osu">
-                <p class="tags">{{translation('osu! Profile')}}</p>
-                <Osu :profile="user.profile.connections?.osu" :edit="edit"/>               
+                <!-- DESCRIPTION -->
+                <div class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <p class="tags">{{translation('DESCRIPTION')}}</p>
+                    <textarea v-if="!edit" class="description" :class="{darkmode: darkmode == 'true'}" readonly='true'>{{user.profile.description}}</textarea>
+                    <textarea rows="10" cols="100" v-if="edit" class="description" :class="{darkmode: darkmode == 'true'}" v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
+                </div>
             </div>
-
-            <!-- DESCRIPTION -->
-            <p class="tags">{{translation('DESCRIPTION')}}</p>
-            <textarea v-if="!edit" class="description" :class="{darkmode: darkmode == 'true'}" readonly='true'>{{user.profile.description}}</textarea>
-            <textarea rows="10" cols="100" v-if="edit" class="description" :class="{darkmode: darkmode == 'true'}" v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
         </div>
     </div>
 </template>
@@ -100,6 +110,8 @@ import Spinner from '@/components/Spinner.vue'
 import MyComputer from '@/components/profile/MyComputer.vue'
 import Socials from '@/components/profile/Socials.vue'
 import Osu from '@/components/profile/Osu.vue'
+import ToolTip from '@/components/ToolTip.vue'
+
 
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -107,13 +119,15 @@ NProgress.configure({ showSpinner: false });
 
 import axios from 'axios';
 
+
 export default {
   name: 'user',
   components: {
     Spinner,
     MyComputer,
     Socials,
-    Osu
+    Osu,
+    ToolTip
   },
   data: () => {
     return {
@@ -123,6 +137,7 @@ export default {
       me: {
           username: localStorage.username,
       },
+      hoveringOverStatus: false,
       user: null,
       themeColors: {},
     };
@@ -256,6 +271,16 @@ export default {
       }
       NProgress.stop();
     },
+    onlineTooltip(showing) {
+        this.hoveringOverStatus = showing;
+    },
+    checkStatus(user) {
+        if (this.user.profile.status.isOnline && this.user.settings.privacy.show_status) {
+            return `Online`;
+        }else{
+            return `Offline`;
+        }
+    },
   }
 }
 
@@ -361,6 +386,7 @@ export default {
 
 .status {
     width: 24px;
+    cursor: pointer;
     height: 8px;
     margin-left: 12px;
     margin-top: 4px;
@@ -424,6 +450,7 @@ export default {
 .userProfile {
     height: 100%;
     overflow-y: scroll;
+    position: relative;
 }
 
 .row {
@@ -472,6 +499,10 @@ export default {
     margin-top: 8px;
 }
 
+.scrollableRegion::-webkit-scrollbar {
+    display: none;
+}
+
 .otherUserButtons button {
     text-transform: uppercase;
 }
@@ -490,12 +521,17 @@ export default {
     color: #FF006B;
 }
 
+.pageContentWrapper {
+    height: 100vh;
+    max-width: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
 
 .pageContent {
     color: #414141;
     background: #F3F3F3;
-    height: 100vh;
-    width: 100%;
 }
 
 .pageContent.darkmode {
@@ -503,26 +539,43 @@ export default {
     color: white;
 }
 
+.pageBackground {
+    position: absolute;
+    max-width: inherit;
+    width: inherit;
+    height: inherit;
+
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-blend-mode: saturation, normal;
+
+    filter: blur(16px);
+    transform: scale(1.45);
+}
+
+.pageBackground.blend {
+    background: #10121D;
+    filter: blur(0px);
+}
 
 .tags {
-    padding: 24px 24px 0px;
     font-size: 16px;
     font-weight: 700;
 }
 
+
 .animePosters {
-    padding: 8px 24px 0px;
+    padding: 0px;
     display: flex;
     position: relative;
     scrollbar-width: thin;
     scrollbar-color: lightgray transparent;
     overflow-y: hidden;
     overflow-x: scroll;
-    background: #F3F3F3;
+    background: transparent;
 }
 
 .animePosters.darkmode {
-    background:  #08090E;
     color: white;
 }
 
@@ -549,13 +602,14 @@ export default {
 }
 
 .description {
-    display: flex;
+    display: relative;
+    resize: none;
     margin: 0px;
     border: 4px white;
-    padding: 8px 24px 0px;
     color: black;
     width: 100%;
-    min-height: 512px;
+    min-height: 32px;
+    max-height: 512px;
     height: fit-content;
     background: transparent;
     border-radius: 8px 8px 8px 8px ;
@@ -572,11 +626,64 @@ export default {
     display: block;
 }
 
+.capsule {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  margin: 8px;
+  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.2));
+  width: calc(100% - 48px);
+}
+
+.capsule.darkmode { /* darkmode */
+  background: #10121D;
+  color: white;
+}
+
+/* if width is more than 715px */
 @media only screen and (min-width: 715px)  {
     .banner, .gradient {
         height: 368px;
     }
+    .pageContent {
+        padding: 0px 32px;
+    }
+    .heading {
+        padding: 0px calc(32px + 12px)
+    }
 }
+
+/* if width is more than 915px */
+@media only screen and (min-width: 915px)  {
+    .pageContent {
+        padding: 0px 64px;
+    }
+    .heading {
+        padding: 0px calc(64px + 12px)
+    }
+}
+
+/* if width is more than 1215px */
+@media only screen and (min-width: 1215px)  {
+    .pageContent {
+        padding: 0px 168px;
+    }
+    .heading {
+        padding: 0px calc(168px + 12px)
+    }
+}
+
+/* if width is more than 1215px */
+@media only screen and (min-width: 1600px)  {
+    .pageContent {
+        padding: 0px 368px;
+    }
+    .heading {
+        padding: 0px calc(368px + 12px)
+    }
+}
+
+/* if width is less than 715px */
 @media only screen and (max-width: 715px)  {
     .heading {
         height: 144px;

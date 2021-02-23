@@ -2,15 +2,34 @@ const Jimp = require("jimp");
 const fs = require("fs");
 
 process.on('message', attachment => {
-    console.log('[CHILD]: Received image from server:', attachment);
 
     // Add a unique string at the start of the file so files don't overwrite each other
     attachment.originalname = `${new Date().getTime().toString()}-${attachment.originalname.replace(/\s/g, "_")}`; // Remove spaces with underscores
     
-    // Send both original and cached files
+    // Send original
     attachment.originalurl = `http://taku.moe:8880/uploads/${attachment.originalname}`;
-    attachment.html = `http://taku.moe:8880/uploads/cache/${attachment.originalname}`;
-    
+
+    // Check if image is readable by Jimp
+    if(!attachment.mimetype.startsWith("image/")){
+        
+        // Rename the original extentionless file to the original name
+        fs.renameSync(`./db/uploads/${attachment.filename}`, `./db/uploads/${attachment.originalname}`);
+        
+        // Send original file
+        attachment.html = attachment.originalurl;
+
+        // Send results
+        process.send({
+            child: process.pid,
+            result: attachment
+        });
+
+        // Kill itself
+        process.disconnect();
+        return
+    }
+
+
     Jimp.read(`./db/uploads/${attachment.filename}`, async (err, image) => {
         if (err) throw err;
 
@@ -24,6 +43,9 @@ process.on('message', attachment => {
 
         // Rename the original extentionless file to the original name
         fs.renameSync(`./db/uploads/${attachment.filename}`, `./db/uploads/${attachment.originalname}`);
+
+        // Send new cached file
+        attachment.html = `http://taku.moe:8880/uploads/cache/${attachment.originalname}`;
 
         // Send results
         process.send({

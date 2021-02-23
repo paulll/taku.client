@@ -99,23 +99,6 @@ async function createToken(user, res) {
     res.status(200);
   });
 }
-async function cacheImage(attachment, uuid, isMessage){
-  return new Promise((resolve, reject) => { 
-
-    console.log('Processing Image'.cyan);
-    Jimp.read(`./db/uploads/${attachment.filename}`, async (err, image) => {
-      if (err) throw err;
-      if (image.bitmap.width > 368) {
-        image.resize(Jimp.AUTO, 368) // resize
-      }
-
-      if(!isMessage) image.write(`./db/${attachment.fieldname}/cache/${uuid}`); // save
-      else image.write(`./db/uploads/cache/${attachment.originalname}`); // save
-      
-      resolve("Image url" + `./db/uploads/cache/${attachment.originalname}`);
-    });
-  });
-}
 
 
 async function cacheImages(attachments){
@@ -125,14 +108,20 @@ async function cacheImages(attachments){
     let cachedAttachments = [];
 
     for (var i = 0; i < attachments.length; i++){
-      var imageProcessor = child_process.fork('./clusters/imageProcessor');
-      imageProcessor.send(attachments[i]);
-      imageProcessor.on('message', cachedAttachment => {
-        console.log('[PARENT]: Received message from child:', cachedAttachment.result);
+      console.log(`[SUBTASK]`.bgYellow.black + ` Started ` + `[${i + 1}/${attachments.length}]`.yellow + ` attachmentProcessor.js`);
+      
+      // Launch subtask      
+      var attachmentProcessor = child_process.fork('./clusters/attachmentProcessor');
+      
+      // Send image to process to subtask      
+      attachmentProcessor.send(attachments[i]);
+
+      // Wait for results
+      attachmentProcessor.on('message', cachedAttachment => {
         cachedAttachments.push(cachedAttachment.result);
         done++;
         if (done === attachments.length) {
-          console.log('[PARENT]: Received all results!');
+          console.log(`[SUBTASK]`.bgYellow.black + ` [${i}/${attachments.length}]`.yellow + ` Subtasks finished successfully`);
           resolve(cachedAttachments);
         }
       });
@@ -262,8 +251,15 @@ function User(username, email, password) {
 };
 
 // Constructor for new notifications
-function Notification(type, from, content, post_uuid, channel_uuid){
+function Message(author, content){
+  this.uuid = uuidv4();
+  this.created_at = new Date().getTime();
+  this.content = content;
+  this.author = author;
+};
 
+// Constructor for new notifications
+function Notification(type, from, content, post_uuid, channel_uuid){
   // Throw errors if trying to add dumb notifications with missing parameters
   if (!type) return new Error("'type' must be provided for notifications");
   if (!from) return new Error("'from' must be provided for post notifications");
@@ -326,11 +322,10 @@ function acceptFriendRequest(me, userToAccept){
       { $addToSet: { 'friend_list.friends': me.uuid} }
     );
 
-    console.log(me);
     // Create the notification
     let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Accepted your friend request!`);
+    
     // Send event to the specific user
-    console.log(notification);
     io.sockets.in(userToAccept).emit('notification', notification);
 
     resolve();
@@ -427,8 +422,6 @@ io.on("connection", socket => {
     // Create the notification
     let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Sent you a friend request!`);
   
-    console.log(notification);
-
     // Send event to the specific user
     io.sockets.in(userToAdd).emit('notification', notification);
   
@@ -552,7 +545,10 @@ io.on("connection", socket => {
   
       if (!author) return
 
-      let attachments = await cacheImages(req.files);
+      let attachments = [];
+      if (req.files.length !== 0) {
+        attachments = await cacheImages(req.files);
+      }
 
       // Construct message object
       const message = {
@@ -566,8 +562,6 @@ io.on("connection", socket => {
         },
       };
   
-      console.log(message);
-
       message["content"] = message.content;
   
       currentMessages.push(message);
@@ -776,19 +770,12 @@ app.post("/settings/upload", authJWT, upload.any(), async (req, res) => {
   file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
   let link = `http://taku.moe:8880/${file.fieldname}/${req.user.uuid}`;
+  
 
-  if (file.mimetype == "image/jpeg" || file.mimetype == "image/png") {
-    await cacheImage(file, req.user.uuid, false);
-    link = `http://taku.moe:8880/${file.fieldname}/cache/${req.user.uuid}`;
-
-    // Rename the file back to the original name cus multer is stupid
-    fs.renameSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
-  } else {
-    // Add the original image in the cache folder if its not a png/jpeg
-    fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/cache/${req.user.uuid}`);
-    fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
-  }
-
+  // Add the original image in the cache folder if its not a png/jpeg
+  fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/cache/${req.user.uuid}`);
+  fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
+  
 
   res.status(200);
   res.json({

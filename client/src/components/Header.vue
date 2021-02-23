@@ -149,7 +149,7 @@ export default {
         async clearNotifications(){
             for (let i = 0; i < this.notifications.length; i++) {
                 this.notifications[i].show = false;
-                await sleep(50);
+                await sleep(30);
             }
 
             await axios.delete('http://taku.moe:8880/notifications', {
@@ -441,6 +441,34 @@ export default {
     filter: saturate(2);
 }
 
+/* if width is more than 715px */
+@media only screen and (min-width: 715px)  {
+    .header .container {
+        padding: 0px 32px;
+    }
+}
+
+/* if width is more than 915px */
+@media only screen and (min-width: 915px)  {
+    .header .container {
+        padding: 0px 64px;
+    }
+}
+
+/* if width is more than 1215px */
+@media only screen and (min-width: 1215px)  {
+    .header .container {
+        padding: 0px 168px;
+    }
+}
+
+
+/* if width is more than 1215px */
+@media only screen and (min-width: 1600px)  {
+    .header .container {
+        padding: 0px calc(368px + 12px)
+    }
+}
 
 /* Small */
 @media only screen and (max-width: 715px)  {
@@ -451,4 +479,7 @@ export default {
         height: 170px;
     }
 }
+
+
+
 </style>

@@ -16,7 +16,7 @@
         <div v-if="showSplitter" class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
         <div v-if="showValue" class="bottom">
             <a   v-if="type == 'file' && fileUrl" target="_blank" :href="user.settings[optionCategory][option.toLowerCase().replace(/\s/g, '_')].url"><p>{{user.settings[optionCategory][option.toLowerCase().replace(/\s/g, '_')].url.split("/")[user.settings[optionCategory][option.toLowerCase().replace(/\s/g, '_')].url.split("/").length - 1]}}</p></a>
-        <!--  -->    <a   v-if="type == 'file' && !fileUrl" href=""><p>Default</p></a>
+        <!--  -->    <a   v-if="type == 'file' && !fileUrl" href=""><p>{{translation("Default")}}</p></a>
             <img v-if="type == 'file' && fileUrl" src="../../assets/x.png" alt="" @click="resetSfx(property, option.toLowerCase().replace(/\s/g, '_'))">
             <img v-if="type == 'file' && !fileUrl" src="../../assets/upload.png" alt="" @click="$refs[property].click()">
             <input v-if="type == 'file'" class="fileInput" type="file" :ref="property" accept="audio/*" @change="uploadFile(property, option.toLowerCase().replace(/\s/g, '_'))">

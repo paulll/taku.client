@@ -108,14 +108,12 @@ export default {
 /* what happens when the animation is currently active */
 .slide-fade-enter-active {
   transform: translateX(256px);
-  height: 0px;
 }
 
 /* where it will end up when the entering animation is done */
 .slide-fade-enter-to {
   transform: translateX(0px);
   transition: all .1s ease;
-  height: 32px;
 }
 
 /* apply the transition to the exit animation only when its active so it doesn't snap */
@@ -128,8 +126,6 @@ export default {
   transform: translateX(256px);
   opacity: 0;
 }
-
-
 
 .notificationBox {
     display: flex;
