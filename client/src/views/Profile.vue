@@ -67,11 +67,13 @@
                 <!-- <img class="settings" src="../assets/settings.svg" alt="Settings"> -->
             </div>
         </div>
-        <div class="pageContentWrapper">
+        <div class="pageContentWrapper" @dragover="startDrag($event, currentlyDraggingElement)">
             <div class="pageBackground" :style="{'background-image' : `url('${user.profile.banner}')`}"></div>
             <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
                 
-                <div class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <!-- FAVORITE ANIME -->
+                <div id="favoriteAnime" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <img draggable v-if="edit" @dragstart="startDrag($event, 'favoriteAnime')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('FAVORITE Anime')}}</p>
                     <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
                         <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
@@ -80,22 +82,25 @@
                         </router-link>
                     </div>
                 </div>
-                
+
                 <!-- COMPUTER SPECS -->
-                <div v-if="user.profile.computer" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div id="computerSpecs" v-if="user.profile.computer" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <img draggable v-if="edit" @dragstart="startDrag($event, 'computerSpecs')" class="move" src="@/assets/move.png">
                     <p class="tags" :class="{darkmode: darkmode == 'true'}">{{translation('MY Computer')}}</p>
                     <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
                 </div>
 
                 <!-- OSU PROFILE -->
-                <div v-if="user.profile.connections?.osu" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div id="osuProfile" v-if="user.profile.connections?.osu" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <img draggable v-if="edit" @dragstart="startDrag($event, 'osuProfile')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('osu! Profile')}}</p>
                     <Osu :profile="user.profile.connections?.osu" :edit="edit"/>               
                 </div>
                 
 
                 <!-- DESCRIPTION -->
-                <div class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div id="description" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <img draggable v-if="edit" @dragstart="startDrag($event, 'description')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('DESCRIPTION')}}</p>
                     <textarea v-if="!edit" class="description" :class="{darkmode: darkmode == 'true'}" readonly='true'>{{user.profile.description}}</textarea>
                     <textarea rows="10" cols="100" v-if="edit" class="description" :class="{darkmode: darkmode == 'true'}" v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
@@ -112,11 +117,10 @@ import Socials from '@/components/profile/Socials.vue'
 import Osu from '@/components/profile/Osu.vue'
 import ToolTip from '@/components/ToolTip.vue'
 
-
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
-
+ 
 import axios from 'axios';
 
 
@@ -127,19 +131,21 @@ export default {
     MyComputer,
     Socials,
     Osu,
-    ToolTip
+    ToolTip,
   },
   data: () => {
     return {
-      darkmode: localStorage.darkmode,
-      token: localStorage.token,
-      edit: false,
-      me: {
-          username: localStorage.username,
-      },
-      hoveringOverStatus: false,
-      user: null,
-      themeColors: {},
+        profileOrder: ['my profile'],
+        darkmode: localStorage.darkmode,
+        token: localStorage.token,
+        edit: false,
+        me: {
+            username: localStorage.username,
+        },
+        hoveringOverStatus: false,
+        user: null,
+        currentlyDraggingElement: null,
+        themeColors: {},
     };
   },
   updated: function () {
@@ -165,6 +171,22 @@ export default {
       let translatedSentence = this.languageTable[sentence];
       if (!translatedSentence) return sentence;
       return translatedSentence;
+    },
+    startDrag(event, id){
+        // event.dataTransfer.dropEffect = 'move'
+        // event.dataTransfer.effectAllowed = 'move'
+
+        let element = document.getElementById(id);
+        this.currentlyDraggingElement = id;
+
+        element.style.width = `${element.offsetWidth - 48}px`;
+        element.style.height = `${element.offsetHeight - 48}px`;
+
+        element.style.position = 'fixed';
+        element.style.zIndex = `1000`;
+        element.style.left = `${event.pageX - 48}px`;
+        element.style.top = `${event.pageY - 48}px`;
+        // event.dataTransfer.setData('itemID', item.id)
     },
     async getMe() {
       NProgress.start();
@@ -293,6 +315,13 @@ export default {
   width: 12px;  
   position: absolute; 
   display: none;
+}
+
+.move {
+    cursor: move;
+    filter: invert(1);
+    width: 32px;
+    height: 32px;
 }
 
 .bannerContainer {
@@ -561,6 +590,7 @@ export default {
 .tags {
     font-size: 16px;
     font-weight: 700;
+    margin-bottom: 8px;
 }
 
 
@@ -608,8 +638,7 @@ export default {
     border: 4px white;
     color: black;
     width: 100%;
-    min-height: 32px;
-    max-height: 512px;
+    min-height: 128px;
     height: fit-content;
     background: transparent;
     border-radius: 8px 8px 8px 8px ;
@@ -630,7 +659,7 @@ export default {
   background: white;
   padding: 24px;
   border-radius: 8px;
-  margin: 8px;
+  margin: 8px 0px;
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.2));
   width: calc(100% - 48px);
 }
