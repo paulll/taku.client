@@ -4,23 +4,20 @@
             <div class="left">
                 <p>{{translation('NOTIFICATIONS')}} ({{Object.keys(notifications).length}})</p>
             </div>
-            <button class="clearNotifs" @click="clearNotifications()"><img src="../../assets/trash.svg"></button>
+            <button class="clearNotifs" @click="emitter.emit('clearNotifications')"><img src="../../assets/trash.svg"></button>
         </div>
-
 
         <p v-if="Object.keys(notifications).length == 0" class="noNotifications">{{translation("You don't have any notifications!")}} <strong>(｡•́︿•̀｡)</strong></p>
         <div class="notification" :class="{darkmode: darkmode == 'true'}" v-for="notification in notifications" :key="notification">
-            <div class="left">
-                <router-link :to="`/profile/${notification.from.username}`"><img :src="`http://taku.moe:8880/pfp/cache/${notification.from.uuid}`"></router-link>
-                <div class="text">
-                    <router-link :to="`/profile/${notification.from.username}`"><p><strong>{{notification.from.username}}</strong> {{convert(notification.created_at)}}</p></router-link>
-                    <p>{{translation(notification.content)}}</p>
+            <transition name="slide-fade" :id="notification.uuid" >
+                <div class="left" v-show='notification.show'>
+                    <router-link :to="`/profile/${notification.from.username}`"><img :src="`http://taku.moe:8880/pfp/cache/${notification.from.uuid}`"></router-link>
+                    <div class="text">
+                        <router-link :to="`/profile/${notification.from.username}`"><p><strong>{{notification.from.username}}</strong> {{convert(notification.created_at)}}</p></router-link>
+                        <p>{{translation(notification.content)}}</p>
+                    </div>
                 </div>
-            </div>
-            <!-- <div>
-                <button @click="friend(notification.uuid, 'add')"><img src="../../assets/checkmark.svg"></button>
-                <button @click="friend(notification.uuid, 'deny')"><img src="../../assets/deny.svg"></button>
-            </div> -->
+            </transition>
         </div>
     </div>
 </template>
@@ -37,12 +34,14 @@ export default {
     data: () => {
         return {
             darkmode: localStorage.darkmode,
+            showNotif: false,
         };
     },
     mounted(){
         this.emitter.on('updateUI', () => this.updateUI());
     },
     methods: {
+        
         // Fetches right translation of the site
         translation(sentence){
             if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
@@ -55,12 +54,6 @@ export default {
             this.darkmode = localStorage.darkmode;
             this.typingSoundUrl = localStorage.typingSoundUrl;
             this.mentionSoundUrl = localStorage.mentionSoundUrl;
-        },
-        async clearNotifications(){
-            await axios.delete('http://taku.moe:8880/notifications', {
-                withCredentials: true
-            }); 
-            this.emitter.emit('refreshHeader');
         },
         async friend(uuid, option){
             switch (option) {
@@ -112,6 +105,29 @@ export default {
 </script>
 
 <style scoped>
+/* what happens when the animation is currently active */
+.slide-fade-enter-active {
+  transform: translateX(256px);
+}
+
+/* where it will end up when the entering animation is done */
+.slide-fade-enter-to {
+  transform: translateX(0px);
+  transition: all .1s ease;
+}
+
+/* apply the transition to the exit animation only when its active so it doesn't snap */
+.slide-fade-leave-active {
+  transition: all .3s cubic-bezier(.61,.04,.83,.67);
+}
+
+/* where the leaving animation finishes off */
+.slide-fade-leave-to {
+  transform: translateX(256px);
+  opacity: 0;
+}
+
+
 
 .notificationBox {
     display: flex;
@@ -121,6 +137,7 @@ export default {
     height: 500px;
     background: white;
     overflow-y: scroll;
+    overflow-x: hidden;
     margin-top: 48px;
     right: 12px;
     border-radius: 16px;
@@ -173,6 +190,7 @@ export default {
     align-items: center;
     margin: 8px 0px;
     justify-content: space-between;
+    height: 32px;
 }   
 
 .left {

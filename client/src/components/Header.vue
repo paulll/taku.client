@@ -42,8 +42,8 @@
                 </div>
             </div>
             <div class="buttons" :style="themeColors"  v-if="!token">
-                <router-link to="/login" class="login">LOGIN</router-link>
-                <router-link to="/signup" class="signup">SIGNUP</router-link>
+                <router-link to="/login" class="login">{{translation("Login")}}</router-link>
+                <router-link to="/signup" class="signup">{{translation("Signup")}}</router-link>
             </div>
             <!-- <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/home" class="button"><img src="../assets/home.svg" alt=""></router-link>
@@ -58,7 +58,8 @@
                 <div v-if="notifications.length > 0" class="numberOfNotifs">{{notifications.length}}</div>
                 <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/notification.png" alt=""></div>
             </div>
-            <Notifications :notifications="notifications.reverse()" :show="showNotifications"/> 
+
+            <Notifications :notifications="notifications" :show="showNotifications"/> 
 
             <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
@@ -77,6 +78,10 @@ import Notifications from '@/components/header/Notifications.vue'
 import AnimatedNumber from '@/components/AnimatedNumber.vue'
 import SearchResults from '@/components/header/SearchResults.vue'
 import io from 'socket.io-client';
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 export default {
     data: () => {
@@ -114,8 +119,6 @@ export default {
 
         let lastLoop = new Date();
 
-
-
         if (!this.notificationSoundUrl) this.notificationSoundUrl = require("../../public/notification.wav");
         this.notificationSound = new Audio(this.notificationSoundUrl);
         // setInterval(async () => {           
@@ -125,13 +128,16 @@ export default {
         this.getPing()
 
         this.socket.on('ping', epoch => this.ping = new Date().getTime() - epoch);
-        this.socket.on('notification', notification => {
-            console.log(notification);
-            this.notifications.push(notification);
-            this.notificationSound.play();
+        this.socket.on('notification', async notification => {
+            notification.show = false;                  // Set new notification to hidden when coming in
+            this.notifications.unshift(notification);   // Add it to the array of notifications
+            await sleep(10);
+            this.notifications[0].show = true;          // After 10 ms make that notification visible
+            this.notificationSound.play();              // Play the sound
         });
 
         this.emitter.on('refreshHeader', () => this.getUser());
+        this.emitter.on('clearNotifications', () => this.clearNotifications());
     },
     created(){
         this.test();
@@ -141,6 +147,18 @@ export default {
         this.socket.disconnect();
     },
     methods: {
+        async clearNotifications(){
+            for (let i = 0; i < this.notifications.length; i++) {
+                this.notifications[i].show = false;
+                await sleep(50);
+            }
+
+            await axios.delete('http://taku.moe:8880/notifications', {
+                withCredentials: true
+            }); 
+
+            this.emitter.emit('refreshHeader');
+        },
         // Fetches right translation of the site
         translation(sentence){
             if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);

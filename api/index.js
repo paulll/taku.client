@@ -268,6 +268,7 @@ function Notification(type, from, content, post_uuid, channel_uuid){
   };
   this.created_at = new Date().getTime();
   this.read = false;
+  this.show = true;
   if (content) this.content = content;
   if (post_uuid) this.post_uuid = post_uuid;
   if (channel_uuid) this.channel_uuid = channel_uuid;

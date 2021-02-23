@@ -1,7 +1,8 @@
 { 
     "Search": "Hae",
     "ms": "ms",
-
+    "Login": "KIRJAUDU",
+    "Signup": "REKISTERÖIDY",
     "NOTIFICATIONS": "ILMOITUKSET",
     "You don't have any notifications!": "Sinulla ei ole ilmoituksia!",
     "Accepted your friend request!": "Hyväksyi kaveripyyntösi!",

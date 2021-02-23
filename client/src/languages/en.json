@@ -1,6 +1,8 @@
 { 
     "Search": "Search",
     "ms": "ms",
+    "Login": "LOGIN",
+    "Signup": "SIGNUP",
     "NOTIFICATIONS": "NOTIFICATIONS",
     "You don't have any notifications!": "You don't have any notifications!",
     "Accepted your friend request!": "Accepted your friend request!",
