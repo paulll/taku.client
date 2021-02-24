@@ -399,177 +399,169 @@ let authJWT = (req, res, next) => {
 let notificationRoom = '';
 
 // Websockets
-io.on("connection", socket => {
-  socket.emit("message", "Connected to taku DMs");
-  socket.emit("messages", currentMessages);
+// io.on("connection", socket => {
+//   totalConnections++;
+
+//   // console.log(`Total Connections: ${totalConnections}`);
   
-  totalConnections++;
+//   socket.on("ping", () => {
+//     socket.emit("pong", {cpu: currentLoad, ram: ramUsage });
+//   });
 
-  // console.log(`Total Connections: ${totalConnections}`);
-  
-  socket.on("ping", () => {
-    socket.emit("pong", {cpu: currentLoad, ram: ramUsage });
-  });
+//   // Connect the user to their own unique room for notifications
+//   socket.on("room", uuid => {
+//     console.log("[Notification WS] Joined".red, uuid.red);
+//     socket.join(uuid);
+//   });
 
-  // Connect the user to their own unique room for notifications
-  socket.on("room", uuid => {
-    console.log("New ws room".red, uuid.red);
-    socket.join(uuid);
-  });
+//   // Messages
 
-  // Messages
-
-  app.post("/friend/add", authJWT, async (req, res) => { // Add a friend
-    let me = req.user
-    let userToAdd = req.body.uuid
+//   app.post("/friend/add", authJWT, async (req, res) => { // Add a friend
+//     let me = req.user
+//     let userToAdd = req.body.uuid
     
-    if (me.friend_list.incoming.includes(userToAdd)) {
-      await acceptFriendRequest(me, userToAdd);
-      res.status(200);
-      res.json({"message": "Friend Request Accepted"});
-      return
-    };
+//     if (me.friend_list.incoming.includes(userToAdd)) {
+//       await acceptFriendRequest(me, userToAdd);
+//       res.status(200);
+//       res.json({"message": "Friend Request Accepted"});
+//       return
+//     };
   
-    // Add the other users uuid to my pending list
-    await users.update(
-      { uuid: me.uuid },
-      { $addToSet: { 'friend_list.outgoing': userToAdd } }
-    );
+//     // Add the other users uuid to my pending list
+//     await users.update(
+//       { uuid: me.uuid },
+//       { $addToSet: { 'friend_list.outgoing': userToAdd } }
+//     );
   
-    // Create the notification
-    let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Sent you a friend request!`);
+//     // Create the notification
+//     let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Sent you a friend request!`);
   
-    // Send event to the specific user
-    io.sockets.in(userToAdd).emit('notification', notification);
+//     // Send event to the specific user
+//     console.log("[Notification WS] Emitting New".red, uuid.red);
+//     io.sockets.in(userToAdd).emit('notification', notification);
   
-    await notifications.update(
-      { owner_uuid: userToAdd },
-      { $push: { 'list': notification} }
-    );
+//     await notifications.update(
+//       { owner_uuid: userToAdd },
+//       { $push: { 'list': notification} }
+//     );
   
-    // Add my uuid to the other users pending list
-    await users.update(
-      { uuid: userToAdd },
-      { $addToSet: { 'friend_list.incoming': me.uuid} }
-    );
+//     // Add my uuid to the other users pending list
+//     await users.update(
+//       { uuid: userToAdd },
+//       { $addToSet: { 'friend_list.incoming': me.uuid} }
+//     );
   
-    res.status(200);
-    res.json({"message": "Friend Request Sent"});
-  });
+//     res.status(200);
+//     res.json({"message": "Friend Request Sent"});
+//   });
 
 
-  app.post("/friend/remove", authJWT, async (req, res) => { // Remove a friend
-   let me = req.user.uuid;
-   let userToRemove = req.body.uuid
+//   app.post("/friend/remove", authJWT, async (req, res) => { // Remove a friend
+//    let me = req.user.uuid;
+//    let userToRemove = req.body.uuid
    
-   // Add the other users uuid to my pending list
-   await users.update(
-     { uuid: me },
-     { $pull: { 'friend_list.friends': userToRemove } }
-   );
+//    // Add the other users uuid to my pending list
+//    await users.update(
+//      { uuid: me },
+//      { $pull: { 'friend_list.friends': userToRemove } }
+//    );
   
-   // Add my uuid to the other users pending list
-   await users.update(
-     { uuid: userToRemove },
-     { $pull: { 'friend_list.friends': me} }
-   );
+//    // Add my uuid to the other users pending list
+//    await users.update(
+//      { uuid: userToRemove },
+//      { $pull: { 'friend_list.friends': me} }
+//    );
   
-   res.status(200);
-   res.json({"message": "Friend Removed"});
-  });
+//    res.status(200);
+//    res.json({"message": "Friend Removed"});
+//   });
 
 
-  app.post("/friend/cancel", authJWT, async (req, res) => { // Cancel a friend request
-    let me = req.user.uuid;
-    let userToRemove = req.body.uuid
+//   app.post("/friend/cancel", authJWT, async (req, res) => { // Cancel a friend request
+//     let me = req.user.uuid;
+//     let userToRemove = req.body.uuid
     
-    // Add the other users uuid to my pending list
-    await users.update(
-      { uuid: me },
-      { $pull: { 'friend_list.outgoing': userToRemove } }
-    );
+//     // Add the other users uuid to my pending list
+//     await users.update(
+//       { uuid: me },
+//       { $pull: { 'friend_list.outgoing': userToRemove } }
+//     );
     
-    // Add my uuid to the other users pending list
-    await users.update(
-      { uuid: userToRemove },
-      { $pull: { 'friend_list.incoming': me} }
-    );
+//     // Add my uuid to the other users pending list
+//     await users.update(
+//       { uuid: userToRemove },
+//       { $pull: { 'friend_list.incoming': me} }
+//     );
     
-    res.status(200);
-    res.json({"message": "Friend Request Cancelled"});
-  });
+//     res.status(200);
+//     res.json({"message": "Friend Request Cancelled"});
+//   });
 
 
-  app.post("/friend/accept", authJWT, async (req, res) => { // Accept a friend
-    let me = req.user;
-    let userToAccept = req.body.uuid
-    acceptFriendRequest(me, userToAccept);
+//   app.post("/friend/accept", authJWT, async (req, res) => { // Accept a friend
+//     let me = req.user;
+//     let userToAccept = req.body.uuid
+//     acceptFriendRequest(me, userToAccept);
 
-    res.status(200);
-    res.json({"message": "Friend Request Accepted"});
-  });
+//     res.status(200);
+//     res.json({"message": "Friend Request Accepted"});
+//   });
 
   
-  app.post("/friend/deny", authJWT, async (req, res) => { // Deny a friend
+//   app.post("/friend/deny", authJWT, async (req, res) => { // Deny a friend
     
-    let me = req.user.uuid;
-    let userToRemove = req.body.uuid
+//     let me = req.user.uuid;
+//     let userToRemove = req.body.uuid
     
-    // Remove other persons uuid from your incoming list
-    await users.update(
-      { uuid: me },
-      { $pull: { 'friend_list.incoming': userToRemove } }
-    );
+//     // Remove other persons uuid from your incoming list
+//     await users.update(
+//       { uuid: me },
+//       { $pull: { 'friend_list.incoming': userToRemove } }
+//     );
     
-    // Remove my uuid from other persons outgoing list
-    await users.update(
-      { uuid: userToRemove },
-      { $pull: { 'friend_list.outgoing': me} }
-    );
+//     // Remove my uuid from other persons outgoing list
+//     await users.update(
+//       { uuid: userToRemove },
+//       { $pull: { 'friend_list.outgoing': me} }
+//     );
     
-    res.status(200);
-    res.json({"message": "Friend Request Denied"});
-  });
+//     res.status(200);
+//     res.json({"message": "Friend Request Denied"});
+//   });
 
-  // socket.on("typing", typingEvent => {
-  //   // Verify JWT
-  //   jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
+//   // socket.on("typing", typingEvent => {
+//   //   // Verify JWT
+//   //   jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
 
-  //     if (error) return
+//   //     if (error) return
 
-  //     // Get user's data from db
-  //     user = (await users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
+//   //     // Get user's data from db
+//   //     user = (await users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
 
-  //     // Create a typing user object
-  //     let typingUser = {
-  //       uuid: user.uuid,
-  //       pfp: user.profile.pfp
-  //     };
+//   //     // Create a typing user object
+//   //     let typingUser = {
+//   //       uuid: user.uuid,
+//   //       pfp: user.profile.pfp
+//   //     };
 
-  //     // Besides the client who is typing
-  //     socket.broadcast.emit("typingUser", typingUser);
-  //   });
-  // });
-  socket.on("heartbeat", heartbeat => {
-    jwt.verify(heartbeat.user, "h4x0r", async (error, user) => {
-      if (!user || user === undefined) return
+//   //     // Besides the client who is typing
+//   //     socket.broadcast.emit("typingUser", typingUser);
+//   //   });
+//   // });
+//   socket.on("heartbeat", heartbeat => {
+//     jwt.verify(heartbeat.user, "h4x0r", async (error, user) => {
+//       if (!user || user === undefined) return
 
-      // Add user to onlineUsers list
-      addToOnlineUsers(user.uuid);
-      // console.log(onlineUsers);
-      // console.log(onlineUsers.length.toString().green + " users online");
-    });
-  });
-  socket.on("disconnect", () => {
-    totalConnections--;
-    // console.log(`WS Connections: ${totalConnections}`);
-  });
-});
-
-// io.on("room", room => {
-//   console.log("ROOM:".red, room);
-//   notificationRoom = room;
-//   socket.join(room);
+//       // Add user to onlineUsers list
+//       addToOnlineUsers(user.uuid);
+//       // console.log(onlineUsers);
+//       // console.log(onlineUsers.length.toString().green + " users online");
+//     });
+//   });
+//   socket.on("disconnect", () => {
+//     totalConnections--;
+//     // console.log(`WS Connections: ${totalConnections}`);
+//   });
 // });
 
 
@@ -953,21 +945,6 @@ app.post("/user/connection/:platform", authJWT, async (req, res) => {
 // http://taku.moe:8080/messages/66598e6e-f60d-4fdf-95cb-1849c3c40bb8
 // -------------------------------------------------------------------------------
 
-let channels = db.get("channels");
-
-app.get("/channels", authJWT, async (req, res) => {
-  let result = await channels.find({memberList: req.user.uuid });
-  result = result.map(channel => channel.uuid);
-  res.status(200);
-  res.json({"channels": result});
-});
-
-app.get("/dm/:channel_uuid", authJWT, async (req, res) => {
-  const messages = await channels.find({uuid: req.params.channel_uuid });
-  console.log(messages);
-  res.status(200);
-  res.json({"messages": messages});
-});
 
 // app.get("/group/:group_uuid/:channel_uuid", authJWT, async (req, res) => {
 //   const channel = await channels.find({uuid: req.params.channel_uuid });
@@ -976,32 +953,99 @@ app.get("/dm/:channel_uuid", authJWT, async (req, res) => {
 
 
 io.on("connection", socket => {
-  socket.emit("message", "Connected to taku DMs");
 
-  // Connect the user to their own unique room for notifications
-  socket.on("room", uuid => {
-    console.log("New ws room".red, uuid.red);
-    socket.join(uuid);
+  let channels = db.get("channels");
+
+  app.get("/channels", authJWT, async (req, res) => {
+    let result = await channels.find({memberList: req.user.uuid });
+    result = result.map(channel => channel.uuid);
+    res.status(200);
+    res.json({"channels": result});
+  });
+  
+  app.get("/dm/:channel_uuid", authJWT, async (req, res) => {
+    const dm = (await channels.find({uuid: req.params.channel_uuid }))[0];
+    if (!dm.memberList.includes(req.user.uuid)) {
+      res.status(403);
+      res.json({"message": 'Forbidden'});
+  
+      return;
+    }
+    
+    res.status(200);
+    res.json({"dm": dm});
+  });
+
+  app.get("/messages/:channel_uuid/:offset", authJWT, async (req, res) => {
+    let response = (await messages.aggregate([
+      {'$match': {'channel_uuid': req.params.channel_uuid}}, 
+      {'$sort': {'created_at': -1}}, 
+      {'$skip': parseInt(req.params.offset) }, 
+      {'$limit': 20 },
+      {'$sort': {'created_at': 1}}, 
+      {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'author', 
+          'foreignField': 'uuid', 
+          'as': 'author'
+        }}, 
+        {
+        '$unwind': {
+          'path': '$author', 
+          'preserveNullAndEmptyArrays': true
+        }}, 
+        {
+        '$project': {
+          '_id': 0,
+          'author.settings': 0, 
+          'author.profile': 0, 
+          'author.created_at': 0, 
+          'author.friend_list': 0, 
+          'author.following': 0, 
+          'author._id': 0
+        }}
+    ]));
+
+    console.log(response);
+    res.status(200);
+    res.json(response);
+  });
+
+  socket.on('channel_room', channel_uuid => {
+    console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
+    socket.join(channel_uuid);
   });
 
   app.post("/message", authJWT, upload.any(), async (req, res) => {
     const messageEvent = JSON.parse(req.body.message);
-    const channel = req.body.channel;
 
+    // Load the channel from the database
+    let channel = (await channels.find({'uuid': req.body.channel}))[0];
+
+    // Check if the user is a member of that channel
+    if (!channel.memberList.includes(req.user.uuid)) {
+      res.status(403);
+      res.json({"message": "Forbidden"});
+      return;
+    }
+
+    // If the user is a member of that channel
     res.status(200);
-    res.json({"message": "got message"});
+    res.json({"message": "Approved message"});
 
+    // Process attachments if any
     let attachments = [];
     if (req.files.length !== 0) {
       attachments = await cacheImages(req.files);
     }
 
     // Create new message
-    let message = new Message(req.user.uuid, messageEvent.content, channel, attachments); 
+    let message = new Message(req.user.uuid, messageEvent.content, channel.uuid, attachments); 
     
     await messages.insert(message); // Add to message database
     // Add to message to the channel it belongs to
-    await channels.update({'uuid': channel}, { "$push": {'messages': message.uuid }});   
+    await channels.update({'uuid': channel.uuid}, { "$push": {'messages': message.uuid }});   
 
     // 🍘 This should be optimized
     message = (await messages.aggregate([
@@ -1033,8 +1077,11 @@ io.on("connection", socket => {
         }}
     ]))[0];
 
-    socket.broadcast.emit("message", message);  // Send to all other users
-    socket.emit("message", message);            // Send to current user
+    // socket.broadcast.emit("message", message);  // Send to all other users
+    // socket.emit("message", message);            // Send to current user
+
+    // Send event to the specific user
+    io.sockets.in(channel.uuid).emit('message', message);
   });
 });
 

@@ -64,20 +64,12 @@ export default {
       mentionSound: '',
     };
   },
-  computed: {
-    messages: function () {
-      return this.messages.filter(message => !this.blockedUsers.includes(message.author.username));
-    },
-  },
   mounted() {
 
     this.getBlockedUsers();
-    this.getMessages();
+    this.getChannel();
 
-
-
-
-    // Load Sounds
+        // Load Sounds
     if (!this.typingSoundUrl) this.typingSoundUrl = require("../../public/keystroke.wav");
     this.typingSound = new Audio(this.typingSoundUrl);
     this.typingSound.volume = 0.2;
@@ -96,22 +88,9 @@ export default {
       }
     };
 
-    this.socket.on('messages', messages => {
-      lastMessage = messages[0];
-
-      messages.forEach(message => {
-        // Parse all the messages when loading the site 
-        // So we group the messages by the same users together like below
-        if (lastMessage.author.uuid == message.author.uuid) message.author.same_as_last = true;
-        lastMessage = message;
-        message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
-        message.content = this.renderHtml(message.content);
-        this.messages.push(message);
-      });
-    });
     this.socket.on('message', message => {
+      console.log(message);
       if (message.content !== undefined) {
-        console.log(message);
         // If the last message is by the same user just add the message content itself without
         // Their username etc
         if (lastMessage?.author == message.author) message.sameAsLast = true;
@@ -146,16 +125,17 @@ export default {
       }
 
     });
-    this.socket.on('typingUser', typingUser => {
-      if (this.typingUsers.includes(typingUser.pfp)) return
 
-      this.typingUsers.push(typingUser.pfp);
+    // this.socket.on('typingUser', typingUser => {
+    //   if (this.typingUsers.includes(typingUser.pfp)) return
 
-      setTimeout(() => {
-        this.typingUsers.shift();
-      }, 3000);
+    //   this.typingUsers.push(typingUser.pfp);
 
-    });
+    //   setTimeout(() => {
+    //     this.typingUsers.shift();
+    //   }, 3000);
+
+    // });
 
     this.emitter.on("sendMessage", message => this.sendMessage(message));
 
@@ -164,13 +144,32 @@ export default {
     this.socket.disconnect();
   },
   methods: {
-    async getMessages(){
-      const response = await axios.get(`http://taku.moe:8880/dm/${this.$route.params.channel_uuid}`, {
+    async getChannel(){
+
+      try {
+        await axios.get(`http://taku.moe:8880/dm/${this.$route.params.channel_uuid}`, {
+          withCredentials: true,
+        });
+      } catch (error) {
+        console.log(error);        
+        return
+      }
+      
+
+
+      // Connect to that dm's socket only if we are allowed to
+      this.socket.emit('channel_room', this.$route.params.channel_uuid);
+      this.getMessages(20);
+      // this.messages.push(response.data.dm.messages)
+
+    },
+    async getMessages(offset){
+      let response = await axios.get(`http://taku.moe:8880/messages/${this.$route.params.channel_uuid}/:${offset}`, {
         withCredentials: true,
       });
 
-      // this.messages = response.data.messages;
-      console.log(response.data.messages);
+      console.log(response.data);
+      this.messages = response.data;
     },
     // This is to convert epoch to the user's time
     // Gotta fix this, apparently its some weird ass timezone in europe
@@ -188,8 +187,6 @@ export default {
       let formData = new FormData();
       formData.append('message', JSON.stringify(message));
       formData.append('channel', this.$route.params.channel_uuid);
-
-      console.log(message);
 
       // Add files on the formdata if theres any
       if (message.attachments) {

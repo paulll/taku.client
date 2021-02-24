@@ -210,7 +210,7 @@ export default {
     height: 100vh;
     top: 0px;
     left: 0px;
-    pointer-events:none;
+
 }
 
 @media only screen and (min-width: 715px)  {
