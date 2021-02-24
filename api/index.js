@@ -49,7 +49,7 @@ db.then(() => {
 // Database Collections
 let users = db.get("users");
 
-// users.update({}, { "$set": { 'settings.language': 'en'}},{multi:true});
+// users.update({}, { "$set": { 'profile.order': ['favorite_anime', 'osu_profile', 'computer_specs', 'description']}},{multi:true});
 
 let messages = db.get("messages");
 let dms = db.get("dms");
@@ -179,6 +179,7 @@ function User(username, email, password) {
     status: {
       lastSeen: new Date().getTime(),
     },
+    order: ['favorite_anime', 'osu_profile', 'computer_specs', 'description'],
     isDeveloper: false,
     isBetaTester: false,
     pfp: "http://taku.moe:8880/pfp/_default.png",

@@ -52,5 +52,6 @@
     "Maps Played": "Maps Played",
     "Accuracy": "Accuracy",
     "Time Wasted": "Time Wasted",
-    "Hours": "Hours"
+    "Hours": "hours",
+    "Hour": "hour"
 }

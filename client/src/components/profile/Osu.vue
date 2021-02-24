@@ -81,7 +81,7 @@ export default {
             d = Number(d);
             var h = Math.floor(d / 3600);
 
-            var hDisplay = h > 0 ? h + (h == 1 ? " hour" : " hours") : "";
+            var hDisplay = h > 0 ? h + (h == 1 ? ` ${this.translation('Hour')}` : ` ${this.translation('Hours')}`) : "";
             return hDisplay; 
         }
     }

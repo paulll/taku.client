@@ -76,10 +76,9 @@
         <div class="pageContentWrapper" @dragover="startDrag($event, currentlyDraggingElement)">
             <div class="pageBackground" :style="{'background-image' : `url('${user.profile.banner}')`}"></div>
             <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
-                
                 <!-- FAVORITE ANIME -->
-                <div id="favoriteAnime" class="capsule" :class="{darkmode: darkmode == 'true'}">
-                    <img draggable v-if="edit" @dragstart="startDrag($event, 'favoriteAnime')" class="move" src="@/assets/move.png">
+                <div :style="{'order': user.profile.order.indexOf('favorite_anime')}" id="favorite_anime" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <img draggable v-if="edit" @dragstart="startDrag($event, 'favorite_anime')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('FAVORITE Anime')}}</p>
                     <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
                         <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
@@ -88,24 +87,21 @@
                         </router-link>
                     </div>
                 </div>
-
                 <!-- COMPUTER SPECS -->
-                <div id="computerSpecs" v-if="user.profile.computer" class="capsule" :class="{darkmode: darkmode == 'true'}">
-                    <img draggable v-if="edit" @dragstart="startDrag($event, 'computerSpecs')" class="move" src="@/assets/move.png">
+                <div :style="{'order': user.profile.order.indexOf('computer_specs')}" id="computer_specs" v-if="user.profile.computer" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <img draggable v-if="edit" @dragstart="startDrag($event, 'computer_specs')" class="move" src="@/assets/move.png">
                     <p class="tags" :class="{darkmode: darkmode == 'true'}">{{translation('MY Computer')}}</p>
                     <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
                 </div>
-
                 <!-- OSU PROFILE -->
-                <div id="osuProfile" v-if="user.profile.connections?.osu" class="capsule" :class="{darkmode: darkmode == 'true'}">
-                    <img draggable v-if="edit" @dragstart="startDrag($event, 'osuProfile')" class="move" src="@/assets/move.png">
+                <div :style="{'order': user.profile.order.indexOf('osu_profile')}" id="osu_profile" v-if="user.profile.connections?.osu" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                    <img draggable v-if="edit" @dragstart="startDrag($event, 'osu_profile')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('osu! Profile')}}</p>
                     <Osu :profile="user.profile.connections?.osu" :edit="edit"/>               
                 </div>
                 
-
                 <!-- DESCRIPTION -->
-                <div id="description" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div :style="{'order': user.profile.order.indexOf('description')}" id="description" class="capsule" :class="{darkmode: darkmode == 'true'}">
                     <img draggable v-if="edit" @dragstart="startDrag($event, 'description')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('DESCRIPTION')}}</p>
                     <textarea v-if="!edit" class="description" :class="{darkmode: darkmode == 'true'}" readonly='true'>{{user.profile.description}}</textarea>
@@ -117,11 +113,11 @@
 </template>
 
 <script>
+import Socials from '@/components/profile/Socials.vue'
 import Spinner from '@/components/Spinner.vue'
 import MyComputer from '@/components/profile/MyComputer.vue'
-import Socials from '@/components/profile/Socials.vue'
-import Osu from '@/components/profile/Osu.vue'
 import ToolTip from '@/components/ToolTip.vue'
+import Osu from '@/components/profile/Osu.vue'
 
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -133,15 +129,15 @@ import axios from 'axios';
 export default {
   name: 'user',
   components: {
+    Socials,
+    ToolTip,
     Spinner,
     MyComputer,
     Socials,
     Osu,
-    ToolTip,
   },
   data: () => {
     return {
-        profileOrder: ['my profile'],
         darkmode: localStorage.darkmode,
         token: localStorage.token,
         edit: false,
@@ -185,6 +181,8 @@ export default {
         let element = document.getElementById(id);
         this.currentlyDraggingElement = id;
 
+        event.dataTransfer.setData('itemID', id);
+
         element.style.width = `${element.offsetWidth - 48}px`;
         element.style.height = `${element.offsetHeight - 48}px`;
 
@@ -192,6 +190,11 @@ export default {
         element.style.zIndex = `1000`;
         element.style.left = `${event.pageX - 48}px`;
         element.style.top = `${event.pageY - 48}px`;
+    },
+    onDrop (evt, list) {
+        const itemID = evt.dataTransfer.getData('itemID')
+        const item = this.items.find(item => item == itemID)
+        item.list = list
     },
     async getMe() {
       NProgress.start();
@@ -225,7 +228,6 @@ export default {
 
       this.user = user;
       console.log(this.user);
-
     },
     async friend(uuid, option){
         switch (option) {
@@ -564,6 +566,8 @@ export default {
 }
 
 .pageContent {
+    display: flex;
+    flex-direction: column;
     color: #414141;
     background: #F3F3F3;
 }
@@ -590,6 +594,58 @@ export default {
 .pageBackground.blend {
     background: #10121D;
     filter: blur(0px);
+}
+
+
+
+/* if width is more than 715px */
+@media only screen and (min-width: 715px)  {
+    .banner, .gradient {
+        height: 368px;
+    }
+    .pageContent {
+        padding: 0px 32px;
+    }
+    .heading {
+        padding: 0px calc(32px)
+    }
+}
+
+/* if width is more than 915px */
+@media only screen and (min-width: 915px)  {
+    .pageContent {
+        padding: 0px 64px;
+    }
+    .heading {
+        padding: 0px calc(64px)
+    }
+}
+
+/* if width is more than 1215px */
+@media only screen and (min-width: 1215px)  {
+    .pageContent {
+        padding: 0px 168px;
+    }
+    .heading {
+        padding: 0px calc(168px)
+    }
+}
+
+/* if width is more than 1215px */
+@media only screen and (min-width: 1600px)  {
+    .pageContent {
+        padding: 0px 368px;
+    }
+    .heading {
+        padding: 0px calc(368px)
+    }
+}
+
+/* if width is less than 715px */
+@media only screen and (max-width: 715px)  {
+    .heading {
+        height: 144px;
+    }
 }
 
 .tags {
@@ -674,54 +730,6 @@ export default {
   color: white;
 }
 
-/* if width is more than 715px */
-@media only screen and (min-width: 715px)  {
-    .banner, .gradient {
-        height: 368px;
-    }
-    .pageContent {
-        padding: 0px 32px;
-    }
-    .heading {
-        padding: 0px calc(32px)
-    }
-}
 
-/* if width is more than 915px */
-@media only screen and (min-width: 915px)  {
-    .pageContent {
-        padding: 0px 64px;
-    }
-    .heading {
-        padding: 0px calc(64px)
-    }
-}
-
-/* if width is more than 1215px */
-@media only screen and (min-width: 1215px)  {
-    .pageContent {
-        padding: 0px 168px;
-    }
-    .heading {
-        padding: 0px calc(168px)
-    }
-}
-
-/* if width is more than 1215px */
-@media only screen and (min-width: 1600px)  {
-    .pageContent {
-        padding: 0px 368px;
-    }
-    .heading {
-        padding: 0px calc(368px)
-    }
-}
-
-/* if width is less than 715px */
-@media only screen and (max-width: 715px)  {
-    .heading {
-        height: 144px;
-    }
-}
 
 </style>

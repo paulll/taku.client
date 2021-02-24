@@ -53,5 +53,6 @@
     "Maps Played": "Karttoja pelattu",
     "Accuracy": "Tarkkuus",
     "Time Wasted": "Aikaa tuhlattu",
-    "Hours": "Tunnit"
+    "Hours": "tuntia",
+    "Hour": "tunti"
 }

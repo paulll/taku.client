@@ -6,7 +6,7 @@
                     <img :src="require(`@/assets/platforms/${connectionPlatform}.png`)">
                     <h1>{{connectionPlatform}}</h1>
                 </div>
-                <button @mouseover="playHover()" @click="unlink(connectionPlatform)" :style="themeColors">{{translation("Unlink")}}</button>
+                <button @mouseover="playHover()" @click="unlink(connectionPlatform)" :style="themeColors">{{translation("unlink")}}</button>
             </div>
         </div>
         <div class="bottom">
