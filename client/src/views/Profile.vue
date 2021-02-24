@@ -7,65 +7,71 @@
             </div>
             <div class="banner" :style="{'background-image' : `url('${user.profile.banner}')`}">
             </div>
-            <div class="heading" :class="{darkmode: darkmode == 'true'}">
-                <div class="pfp">
-                    <div v-if="user.username" class="image" :style="{'background-image': `url('${user.profile.pfp}')`}">
-                        <input type="file" ref="pfp" style="display: none" accept="image/*" @change="uploadFile('pfp')">
-                        <img @click="$refs.pfp.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
+            <div class="headingWrapper">
+                <div class="heading" :class="{darkmode: darkmode == 'true'}">
+                    <div class="pfp">
+                        <div v-if="user.username" class="image" :style="{'background-image': `url('${user.profile.pfp}')`}">
+                            <input type="file" ref="pfp" style="display: none" accept="image/*" @change="uploadFile('pfp')">
+                            <img @click="$refs.pfp.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
+                        </div>
+                        <div v-if="user.profile?.isDeveloper" id="developerBadge" @mouseover="showTooltip(true, 'developerBadge')" @mouseleave="showTooltip(false, 'developerBadge')" >
+                            <svg class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12.9644 26C11.1836 26 9.50959 25.6676 7.94247 25.0027C6.37534 24.3142 4.99817 23.3763 3.81096 22.189C2.62374 20.9781 1.68584 19.589 0.99726 18.0219C0.33242 16.4548 0 14.769 0 12.9644C0 11.1361 0.33242 9.43836 0.99726 7.87123C1.68584 6.28037 2.62374 4.9032 3.81096 3.73973C4.99817 2.55251 6.37534 1.63836 7.94247 0.99726C9.50959 0.33242 11.1836 0 12.9644 0C14.7927 0 16.4904 0.344293 18.0575 1.03288C19.6484 1.69772 21.0374 2.63562 22.2247 3.84658C23.4119 5.03379 24.3379 6.41096 25.0027 7.97808C25.6676 9.52146 26 11.1836 26 12.9644C26 14.769 25.6557 16.4548 24.9671 18.0219C24.3023 19.589 23.3763 20.9781 22.189 22.189C21.0018 23.3763 19.6128 24.3142 18.0219 25.0027C16.4548 25.6676 14.769 26 12.9644 26ZM6.91151 19.5383C6.601 20.4617 7.65966 21.2388 8.44753 20.6658L12.3792 17.8064C12.7284 17.5525 13.2012 17.5513 13.5516 17.8036L17.5645 20.6929C18.3531 21.2607 19.4064 20.4837 19.0967 19.5626L17.6237 15.1825C17.4802 14.7559 17.6394 14.286 18.0127 14.0345L21.2199 11.8731C22.0382 11.3216 21.6478 10.0438 20.661 10.0438H16.6038C16.1743 10.0438 15.7928 9.76954 15.6559 9.36239L13.924 4.20888C13.6175 3.29675 12.3257 3.30152 12.0259 4.21589L10.3408 9.35539C10.2061 9.76612 9.8228 10.0438 9.39056 10.0438H5.339C4.35218 10.0438 3.96181 11.3216 4.78015 11.8731L7.98733 14.0345C8.36056 14.286 8.51977 14.7559 8.37632 15.1825L6.91151 19.5383Z" fill="#FF006B"/>
+                            </svg>
+                            <ToolTip v-if="hoveringOver['developerBadge']" :themeColors="themeColors" message='Developer'/>
+                        </div>
+                        <h1 class="username">{{user.username}}
+                            <div id="status" @mouseover="showTooltip(true, 'status')" @mouseleave="showTooltip(false, 'status')" class="status" :class="{'online': user.profile.status.isOnline && user.settings.privacy.show_status, 'disabled': !user.settings.privacy.show_status}">
+                                <ToolTip v-if="hoveringOver['status']" :themeColors="themeColors" :message='checkStatus(user)'/>
+                            </div>
+                        </h1>
                     </div>
-                    <svg v-if="user.profile?.isDeveloper" class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12.9644 26C11.1836 26 9.50959 25.6676 7.94247 25.0027C6.37534 24.3142 4.99817 23.3763 3.81096 22.189C2.62374 20.9781 1.68584 19.589 0.99726 18.0219C0.33242 16.4548 0 14.769 0 12.9644C0 11.1361 0.33242 9.43836 0.99726 7.87123C1.68584 6.28037 2.62374 4.9032 3.81096 3.73973C4.99817 2.55251 6.37534 1.63836 7.94247 0.99726C9.50959 0.33242 11.1836 0 12.9644 0C14.7927 0 16.4904 0.344293 18.0575 1.03288C19.6484 1.69772 21.0374 2.63562 22.2247 3.84658C23.4119 5.03379 24.3379 6.41096 25.0027 7.97808C25.6676 9.52146 26 11.1836 26 12.9644C26 14.769 25.6557 16.4548 24.9671 18.0219C24.3023 19.589 23.3763 20.9781 22.189 22.189C21.0018 23.3763 19.6128 24.3142 18.0219 25.0027C16.4548 25.6676 14.769 26 12.9644 26ZM6.91151 19.5383C6.601 20.4617 7.65966 21.2388 8.44753 20.6658L12.3792 17.8064C12.7284 17.5525 13.2012 17.5513 13.5516 17.8036L17.5645 20.6929C18.3531 21.2607 19.4064 20.4837 19.0967 19.5626L17.6237 15.1825C17.4802 14.7559 17.6394 14.286 18.0127 14.0345L21.2199 11.8731C22.0382 11.3216 21.6478 10.0438 20.661 10.0438H16.6038C16.1743 10.0438 15.7928 9.76954 15.6559 9.36239L13.924 4.20888C13.6175 3.29675 12.3257 3.30152 12.0259 4.21589L10.3408 9.35539C10.2061 9.76612 9.8228 10.0438 9.39056 10.0438H5.339C4.35218 10.0438 3.96181 11.3216 4.78015 11.8731L7.98733 14.0345C8.36056 14.286 8.51977 14.7559 8.37632 15.1825L6.91151 19.5383Z" fill="#FF006B"/>
-                    </svg>
-                    <h1 class="username">{{user.username}}
-                        <div @mouseover="onlineTooltip(true)" @mouseleave="onlineTooltip(false)" class="status" :class="{'online': user.profile.status.isOnline && user.settings.privacy.show_status, 'disabled': !user.settings.privacy.show_status}">
-                            <ToolTip v-if="hoveringOverStatus" :themeColors="themeColors" :message='checkStatus(user)'/>
-                        </div>
-                    </h1>
-                </div>
-                <div class="row info">
-                    <div class="infoField" v-if="token">
+                    <div class="row info">
+                        <div class="infoField" v-if="token">
 
-                        <!-- Other ppl buttons -->
-                        <div class="otherUserButtons" v-if="user.username != me.username">
-                            
-                            <!-- Add friend button -->
-                            <button :style="themeColors" @click="friend(user.uuid, 'add')"     v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))"  class="button">{{translation("Add")}}</button>
-                            <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">{{translation('Cancel Request')}}</button>
-                            
-                            <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Accept')}}</button>
-                            <button :style="themeColors" @click="friend(user.uuid, 'deny')"     v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Deny')}}</button>
-                            <!-- Remove friend -->
-                            <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">{{translation('Remove')}}</button>
-                     
-                            <!-- Send DM button -->
-                            <button :style="themeColors" class="button" v-if="user.username != me.username"><router-link :to="`/messages/${user.profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
-                            
-                            <!-- Block button -->
-                            <button :style="themeColors" @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
-                            <button :style="themeColors" @click="block()" v-if="me.settings?.privacy.blocked_users.includes(user.uuid)" class="button">{{translation('Unblock')}}</button>
-                            
-                        </div>
+                            <!-- Other ppl buttons -->
+                            <div class="otherUserButtons" v-if="user.username != me.username">
+                                
+                                <!-- Add friend button -->
+                                <button :style="themeColors" @click="friend(user.uuid, 'add')"     v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))"  class="button">{{translation("Add")}}</button>
+                                <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">{{translation('Cancel Request')}}</button>
+                                
+                                <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Accept')}}</button>
+                                <button :style="themeColors" @click="friend(user.uuid, 'deny')"     v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Deny')}}</button>
+                                <!-- Remove friend -->
+                                <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">{{translation('Remove')}}</button>
+                        
+                                <!-- Send DM button -->
+                                <button :style="themeColors" class="button" v-if="user.username != me.username"><router-link :to="`/messages/${user.profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                                
+                                <!-- Block button -->
+                                <button :style="themeColors" @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
+                                <button :style="themeColors" @click="block()" v-if="me.settings?.privacy.blocked_users.includes(user.uuid)" class="button">{{translation('Unblock')}}</button>
+                                
+                            </div>
 
-                        <!-- My buttons -->
-                        <div class="myButtons" v-if="user.username == me.username">
-                            <!-- Edit button -->
-                            <button :style="themeColors" v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">{{translation('Edit')}}</button>
-                            <button :style="themeColors" v-if="edit" @click="toggleEdit(); updateSettings();" class="button">{{translation('Save')}}</button>
-                        </div>
+                            <!-- My buttons -->
+                            <div class="myButtons" v-if="user.username == me.username">
+                                <!-- Edit button -->
+                                <button :style="themeColors" v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">{{translation('Edit')}}</button>
+                                <button :style="themeColors" v-if="edit" @click="toggleEdit(); updateSettings();" class="button">{{translation('Save')}}</button>
+                            </div>
 
+                        </div>
+                        <div class="splitter" v-if="token"></div>
+                        <!-- <div class="infoField">
+                            <p>Friends</p>
+                        </div> -->
                     </div>
-                    <div class="splitter" v-if="token"></div>
-                    <!-- <div class="infoField">
-                        <p>Friends</p>
-                    </div> -->
-                </div>
 
-                <div v-if="user.profile.socials" class="row socials">
-                    <Socials :socials="user.profile.socials" :edit="edit"/>
-                </div>
+                    <div v-if="user.profile.socials" class="row socials">
+                        <Socials :socials="user.profile.socials" :edit="edit"/>
+                    </div>
 
-                <!-- <img class="settings" src="../assets/settings.svg" alt="Settings"> -->
+                    <!-- <img class="settings" src="../assets/settings.svg" alt="Settings"> -->
+                </div>
             </div>
+
         </div>
         <div class="pageContentWrapper" @dragover="startDrag($event, currentlyDraggingElement)">
             <div class="pageBackground" :style="{'background-image' : `url('${user.profile.banner}')`}"></div>
@@ -142,7 +148,10 @@ export default {
         me: {
             username: localStorage.username,
         },
-        hoveringOverStatus: false,
+        hoveringOver: {
+            "developerBadge": false,
+            "status": false,
+        },
         user: null,
         currentlyDraggingElement: null,
         themeColors: {},
@@ -173,9 +182,6 @@ export default {
       return translatedSentence;
     },
     startDrag(event, id){
-        // event.dataTransfer.dropEffect = 'move'
-        // event.dataTransfer.effectAllowed = 'move'
-
         let element = document.getElementById(id);
         this.currentlyDraggingElement = id;
 
@@ -186,7 +192,6 @@ export default {
         element.style.zIndex = `1000`;
         element.style.left = `${event.pageX - 48}px`;
         element.style.top = `${event.pageY - 48}px`;
-        // event.dataTransfer.setData('itemID', item.id)
     },
     async getMe() {
       NProgress.start();
@@ -293,8 +298,8 @@ export default {
       }
       NProgress.stop();
     },
-    onlineTooltip(showing) {
-        this.hoveringOverStatus = showing;
+    showTooltip(showing, id) {
+        this.hoveringOver[id] = showing;
     },
     checkStatus(user) {
         if (this.user.profile.status.isOnline && this.user.settings.privacy.show_status) {
@@ -359,9 +364,13 @@ export default {
     text-transform: uppercase;
 }
 
+.headingWrapper {
+    max-width: 100%;
+}
+
+
 .heading {
     height: 116px;
-    max-width: 100%;
     padding: 0px 12px;
     display: flex;
     justify-content: left;
@@ -528,10 +537,6 @@ export default {
     margin-top: 8px;
 }
 
-.scrollableRegion::-webkit-scrollbar {
-    display: none;
-}
-
 .otherUserButtons button {
     text-transform: uppercase;
 }
@@ -575,7 +580,7 @@ export default {
     height: inherit;
 
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: cover;
     background-blend-mode: saturation, normal;
 
     filter: blur(16px);
@@ -657,7 +662,7 @@ export default {
 
 .capsule {
   background: white;
-  padding: 24px;
+  padding: 24px 24px 8px 24px;
   border-radius: 8px;
   margin: 8px 0px;
   filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.2));
@@ -678,7 +683,7 @@ export default {
         padding: 0px 32px;
     }
     .heading {
-        padding: 0px calc(32px + 12px)
+        padding: 0px calc(32px)
     }
 }
 
@@ -688,7 +693,7 @@ export default {
         padding: 0px 64px;
     }
     .heading {
-        padding: 0px calc(64px + 12px)
+        padding: 0px calc(64px)
     }
 }
 
@@ -698,7 +703,7 @@ export default {
         padding: 0px 168px;
     }
     .heading {
-        padding: 0px calc(168px + 12px)
+        padding: 0px calc(168px)
     }
 }
 
@@ -708,7 +713,7 @@ export default {
         padding: 0px 368px;
     }
     .heading {
-        padding: 0px calc(368px + 12px)
+        padding: 0px calc(368px)
     }
 }
 

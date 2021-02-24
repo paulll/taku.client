@@ -9,8 +9,8 @@
 export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
-        message: { type: String, required: true },
-        themeColors:    { type: Boolean, required: false },   // Colors for the buttons
+        message:        { type: String, required: true },
+        themeColors:    { type: Object, required: false },   // Colors for the buttons
     },
     data: () => {
         return {

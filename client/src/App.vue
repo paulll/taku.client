@@ -83,7 +83,6 @@ export default {
   scrollbar-color: #363952#08090E ;
 }
 *::-webkit-scrollbar {
-  width: 12px;  
   position: absolute; 
 
 }
@@ -98,7 +97,7 @@ export default {
 
 *.darkmode::-webkit-scrollbar-thumb {
   background-color: #363952;
-  border: 6px solid #08090E; 
+  border: 6px solid #10121D; 
 }
 
 html {

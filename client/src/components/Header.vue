@@ -271,7 +271,7 @@ export default {
 .container {
     display: flex;
     justify-content: space-between;
-    margin: 9px 12px;
+    margin: 8px 0px;
     width: 100%;
 }
 
@@ -466,7 +466,7 @@ export default {
 /* if width is more than 1215px */
 @media only screen and (min-width: 1600px)  {
     .header .container {
-        padding: 0px calc(368px + 12px)
+        padding: 0px calc(368px)
     }
 }
 
