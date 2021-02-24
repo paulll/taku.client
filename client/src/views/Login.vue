@@ -96,13 +96,14 @@ export default {
         if (response.status == 200) {
             console.log(response.data);
 
-            localStorage.token = response.data.token;
-            localStorage.username = response.data.username;
+            localStorage.token = response.data.user.token;
+            localStorage.username = response.data.user.username;
 
             try {
 
                 localStorage.setItem('language', response.data.user.settings.language);
 
+                localStorage.setItem('me', JSON.stringify({username: response.data.user.username, uuid: response.data.user.uuid}));
 
                 localStorage.setItem('typing', response.data.user.settings.sounds.typing.enabled);
                 localStorage.setItem('mention', response.data.user.settings.sounds.mention.enabled);

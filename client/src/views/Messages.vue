@@ -1,6 +1,55 @@
 <template>
-  <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
-    <div class="userListContainer">
+  <div class="channels">
+    <div v-for="channel in channels" :key="channel">
+      <router-link v-if="!channel.king" :to="`/dm/${channel}`"><h1>{{channel}}</h1></router-link>
+      <router-link v-if="channel.king" :to="`/group/${channel}`"><h1>{{channel}}</h1></router-link>
+    </div>
+  </div>
+</template>
+ 
+<script>
+import axios from 'axios';
+import io from 'socket.io-client';
+import linkifyHtml from 'linkifyjs/html';
+
+export default {
+  name: 'home',
+  data: () => {
+    return {
+      me: JSON.parse(localStorage.me),
+      dms: [],
+      channels: [],
+    };
+  },
+  mounted() {
+    this.getChannels();
+  },
+  methods: {
+    // Return list of channels this user is in
+    async getChannels(){
+      const response = await axios.get(`http://taku.moe:8880/channels`, {
+        withCredentials: true,
+      });
+
+      this.channels = response.data.channels;
+      console.log(response.data.channels);
+    }
+  }
+}
+
+</script>
+
+<style>
+
+.channels {
+  height: 100vh;
+  margin-top: 200px;
+}
+
+</style>
+
+
+ <!-- <div class="userListContainer">
       <div class="userListHeader"></div>
       <div class="userList">
         <div class="dm" v-for="user in dms" :key="user">
@@ -8,7 +57,7 @@
           {{user}}
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- <div class="tag-grid">
 
       <div class="messages" :class="{darkmode: darkmode == 'true'}">
@@ -49,52 +98,3 @@
         </form> 
       </div> 
     </div> -->
-  </div>
-</template>
- 
-<script>
-import axios from 'axios';
-import io from 'socket.io-client';
-import linkifyHtml from 'linkifyjs/html';
-
-const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
-
-export default {
-  name: 'home',
-  data: () => {
-    return {
-      me: localStorage.username,
-      dms: [],
-    };
-  },
-  mounted() {
-    this.getDms();
-  },
-  methods: {
-    async getDms(){
-      const response = await axios.get('http://taku.moe:8880/dms', {
-        withCredentials: true,
-      });
-
-      this.dms = response.data
-      console.log(response.data);
-    }
-  }
-}
-
-</script>
-
-<style>
-
-
-.userListContainer {
-  width: 100vw;
-  height: 100vh;
-}
-
-.userListHeader {
-  background: #06070D;
-  height: 96px;
-  width: 100%;
-}
-</style>

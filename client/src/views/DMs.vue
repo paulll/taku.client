@@ -1,17 +1,17 @@
 <template>
   <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
     <div class="tag-grid">
-
+      
       <div class="messages" :class="{darkmode: darkmode == 'true'}">
-        <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me == message.author.username, same: message.author.sameAsLast}">
-          <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('${message.author.pfp}')`}"></div></router-link>
+        <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
+          <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('http://taku.moe:8880/pfp/${message.author.uuid}')`}"></div></router-link>
           <div class="messageBubble">
             <h4 class="date">
               <router-link :to='`/profile/${message.author.username}`'>
                 <strong>{{message.author.username}}</strong>
               </router-link> 
               <div class="flare" v-if="message.author.flare && message.author.flare.enabled" :style="{'background': message.author.flare.color}">{{message.author.flare.content}}</div>
-              {{convert(message.date)}}
+              {{convert(message.created_at)}}
             </h4>
             <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && (message.content.toLowerCase().includes(me.toLowerCase()) || message.content.toLowerCase().includes('everyone')), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
             <div class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
@@ -25,20 +25,8 @@
         <div class="dummy"></div>
       </div>
 
-      <div class="sendMessageContainer">
-        <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
-          <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
-          <div class="images" :class="{darkmode: darkmode == 'true'}">
-            <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
-          </div>
-          <div class="inputFields">
-            <img class="plusButton" src="../assets/plus.svg" alt="" @click="$refs.files.click()">
-            <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
-            <div v-if="previews.length > 0" type="file" class="quickButton removeAll" @click.prevent="deselectAll()">REMOVE ALL</div>
-            <button v-if="message || previews.length > 0" type="file" class="quickButton submit" form="sendMessage">SEND</button>
-          </div>
-        </form> 
-      </div> 
+      <TextInput/>
+
     </div>
   </div>
 </template>
@@ -48,16 +36,21 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import linkifyHtml from 'linkifyjs/html';
 
+import TextInput from '@/components/messages/TextInput.vue';
+
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
 export default {
   name: 'home',
+  components: {
+    TextInput
+  },
   data: () => {
     return {
       message: "",
       messages: [],
       socket: io('ws://taku.moe:8880'),
-      me: localStorage.username,
+      me: JSON.parse(localStorage.me),
       blockedUsers: [],
       typingUsers: [],
       previews: [],
@@ -79,6 +72,10 @@ export default {
   mounted() {
 
     this.getBlockedUsers();
+    this.getMessages();
+
+
+
 
     // Load Sounds
     if (!this.typingSoundUrl) this.typingSoundUrl = require("../../public/keystroke.wav");
@@ -105,7 +102,7 @@ export default {
       messages.forEach(message => {
         // Parse all the messages when loading the site 
         // So we group the messages by the same users together like below
-        if (lastMessage?.author?.username == message.author.username) message.author.sameAsLast = true;
+        if (lastMessage.author.uuid == message.author.uuid) message.author.same_as_last = true;
         lastMessage = message;
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
         message.content = this.renderHtml(message.content);
@@ -117,7 +114,7 @@ export default {
         console.log(message);
         // If the last message is by the same user just add the message content itself without
         // Their username etc
-        if (lastMessage?.author?.username == message.author.username) message.author.sameAsLast = true;
+        if (lastMessage?.author == message.author) message.sameAsLast = true;
         message.content = this.renderHtml(message.content);
 
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
@@ -159,11 +156,22 @@ export default {
       }, 3000);
 
     });
+
+    this.emitter.on("sendMessage", message => this.sendMessage(message));
+
   },
   unmounted() {
     this.socket.disconnect();
   },
   methods: {
+    async getMessages(){
+      const response = await axios.get(`http://taku.moe:8880/dm/${this.$route.params.channel_uuid}`, {
+        withCredentials: true,
+      });
+
+      // this.messages = response.data.messages;
+      console.log(response.data.messages);
+    },
     // This is to convert epoch to the user's time
     // Gotta fix this, apparently its some weird ass timezone in europe
     convert(epoch) {
@@ -173,62 +181,19 @@ export default {
       
       return hr + ':' + m.substr(-2)
     },
-    // This function deselects a file so users can cancel
-    deselect(i){
-      this.attachments.splice(i, 1);
-      this.previews.splice(i, 1);
-    },
-    deselectAll(){
-      this.attachments = [];
-      this.previews = [];
-    },
-    // This function parses files when dragging and dropping on the DM
-    handleFilePaste(event) {
-      let files = event.clipboardData.items;
-      if(!files) return;
-      files.forEach(file => {
-        var blob = file.getAsFile();
-        this.attachments.push({file: blob});
-        this.previews.push(URL.createObjectURL(blob));
-      });
-    },
-    // This function parses files when dragging and dropping on the DM
-    handleFileDrop(event) {
-      let files = event.dataTransfer.files;
-      if(!files) return;
-      files.forEach(file => {
-        this.attachments.push({file: file, name: file.name});
-        this.previews.push(URL.createObjectURL(file));
-      });
-    },
-    // This function parses files when adding them through the input box
-    handleFileInput() {
-      let files = this.$refs.files.files;
-      if(!files) return;
-      files.forEach(file => {
-        this.attachments.push({file: file, name: file.name});
-        this.previews.push(URL.createObjectURL(file));
-      });
-    },
     // This function handles sending messages
     async sendMessage(message) {
-
-      let attachments = this.attachments;
-
-      // Make a JSON out of the thing
-      let json = JSON.stringify({
-        content: this.message.trim(), 
-        attachments: attachments,
-        user: localStorage.token
-      });
-
+   
       // Init a formdata and add the message json
       let formData = new FormData();
-      formData.append('message', json);
+      formData.append('message', JSON.stringify(message));
+      formData.append('channel', this.$route.params.channel_uuid);
+
+      console.log(message);
 
       // Add files on the formdata if theres any
-      if (this.attachments) {
-        this.attachments.forEach(attachment => {
+      if (message.attachments) {
+        message.attachments.forEach(attachment => {
           formData.append('file', attachment.file);
         });
       }
@@ -240,14 +205,6 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       }); 
-
-      // Reset
-      this.message = "";
-      this.previews = [];
-      this.attachments = [];
-
-      // Maintain focus on keyboard for mobile
-      this.$refs.message.focus();
     },
     // This gets the blocked users of the current user
     async getBlockedUsers(){
@@ -256,19 +213,6 @@ export default {
       });
 
       this.blockedUsers = response.data
-    },
-    // This is the function that triggers the typing sounds
-    // It can be turned off from the settings
-    typing(){
-
-      if (this.typingSfx == 'false') return 
-
-      // Send new message
-      this.socket.emit('typing', {user: localStorage.token});
-      this.typingSound = new Audio(this.typingSoundUrl);
-      this.typingSound.volume = 0.2;
-      this.typingSound.play();
-      this.typingSound.currentTime = 0;
     },
     // takes URLS and makes them embedded HTMLs
     renderHtml(url, originalurl, filesize){
@@ -334,7 +278,7 @@ export default {
 }
 
 .messages.darkmode {
-  scrollbar-color: #363952#08090E ;
+  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
 }
 
 *::-webkit-scrollbar {
@@ -352,8 +296,8 @@ export default {
 }
 
 *.darkmode::-webkit-scrollbar-thumb {
-  background-color: #363952;
-  border: 5px solid #08090E; 
+  background-color: var(--darkmodeLight);
+  border: 5px solid var(--darkmodeDark); 
 }
 
 
@@ -379,7 +323,7 @@ export default {
   transform: translateY(-56px);
 }
 
-.DMs.darkmode { background: #08090E; /* darkmode */ }
+.DMs.darkmode { background: var(--darkmodeDark); /* darkmode */ }
 
 .file {
   color: black;
@@ -466,7 +410,7 @@ export default {
   margin-left: 8px;
 }
 
-.sendMessage.darkmode { background: #020204; }
+.sendMessage.darkmode { background: var(--darkmodeDark); }
 
 .sendMessage .inputFields .quickButton {
   outline: none;
@@ -498,7 +442,7 @@ export default {
 
 .sendMessage input[type=text].darkmode {
   color: white;  /* darkmode */
-  background: #020204;
+  background: var(--darkmodeDark);
 }
 
 .sendMessage input[type=text]::placeholder { color: #888888; }
@@ -616,7 +560,7 @@ export default {
 
 .flare {
   border-radius: 32px;
-  color: #08090E;
+  color: var(--darkmodeDark);
   font-weight: 700;
   display: flex;
   align-items: center;

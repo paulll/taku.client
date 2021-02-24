@@ -42,7 +42,7 @@
                                 <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">{{translation('Remove')}}</button>
                         
                                 <!-- Send DM button -->
-                                <button :style="themeColors" class="button" v-if="user.username != me.username"><router-link :to="`/messages/${user.profile.username}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                                <button :style="themeColors" class="button" v-if="user.uuid != me.uuid"><router-link :to="`/dm/${user.uuid}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
                                 
                                 <!-- Block button -->
                                 <button :style="themeColors" @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
@@ -141,9 +141,7 @@ export default {
         darkmode: localStorage.darkmode,
         token: localStorage.token,
         edit: false,
-        me: {
-            username: localStorage.username,
-        },
+        me: JSON.parse(localStorage.me),
         hoveringOver: {
             "developerBadge": false,
             "status": false,
@@ -160,7 +158,9 @@ export default {
   },
   mounted() {
     this.getUser();
-    this.getMe();
+    if (localStorage.token) {
+      this.getMe();
+    }
   },
   watch: {
     $route(to, from) {
@@ -199,9 +199,17 @@ export default {
     async getMe() {
       NProgress.start();
 
-      const me = await axios.get('http://taku.moe:8880/user', {
+      try {
+        var me = await axios.get('http://taku.moe:8880/user', {
           withCredentials: true,
-      });
+        });  
+      } catch (error) {
+        if (error.status = 403) {
+          localStorage.clear();
+          window.location.href = "http://taku.moe:8080/login";
+          return
+        }
+      }
 
       this.me = me.data;
       console.log(this.me);
@@ -364,6 +372,10 @@ export default {
 
 .myButtons button {
     text-transform: uppercase;
+}
+
+.button img { 
+    margin-right: 4px;
 }
 
 .headingWrapper {
@@ -573,7 +585,7 @@ export default {
 }
 
 .pageContent.darkmode {
-    background:  #08090E;
+    background:  var(--darkmodeDark);
     color: white;
 }
 
@@ -607,7 +619,7 @@ export default {
         padding: 0px 32px;
     }
     .heading {
-        padding: 0px calc(32px)
+        padding: 0px 32px;
     }
 }
 
@@ -617,7 +629,7 @@ export default {
         padding: 0px 64px;
     }
     .heading {
-        padding: 0px calc(64px)
+        padding: 0px 64px;
     }
 }
 
@@ -627,7 +639,7 @@ export default {
         padding: 0px 168px;
     }
     .heading {
-        padding: 0px calc(168px)
+        padding: 0px 168px;
     }
 }
 
@@ -637,7 +649,7 @@ export default {
         padding: 0px 368px;
     }
     .heading {
-        padding: 0px calc(368px)
+        padding: 0px 368px;
     }
 }
 

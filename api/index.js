@@ -169,9 +169,8 @@ async function addToOnlineUsers(uuid) {
   return onlineUsers;
 }
 
-// Function that creates a new user with default values
-// C O N S T R U C T O R 🐂🐂🐂🐂🐂🐂🐂
-function User(username, email, password) {
+// C O N S T R U C T O R for new USERS 🐂🐂🐂🐂🐂🐂🐂
+function User(username, email, password){
   this.username = username;
   this.uuid = uuidv4();
   this.created_at = new Date().getTime();
@@ -251,16 +250,37 @@ function User(username, email, password) {
   }
 };
 
-// Constructor for new notifications
-function Message(author, content){
-  this.uuid = uuidv4();
-  this.created_at = new Date().getTime();
-  this.content = content;
-  this.author = author;
+// C O N S T R U C T O R for new MESSAGES 💭💬
+function Message(author, content, channel_uuid, attachments = []) {
+
+  if (!author) return new Error("'author' must be provided for a message");
+  if (!channel_uuid) return new Error("'channel_uuid' must be provided for a message");
+
+  this.uuid = uuidv4();                       // UUID of the message
+  this.created_at = new Date().getTime();     // Message send date
+  this.content = content;                     // The content of the message
+  this.attachments = attachments;             // The files of the message
+  this.seen = [author];                       // Array of user UUIDs who saw it
+  this.channel_uuid = channel_uuid;           // The channel where that message should be in
+  this.author = author;                       // The UUID of the user who made the message
 };
 
-// Constructor for new notifications
-function Notification(type, from, content, post_uuid, channel_uuid){
+// C O N S T R U C T O R for new CHANNELS 💭💬
+function Channel(author, participants, king) {
+
+  if (!author) return new Error("'author' must be provided to create a channel");
+  if (participants.length < 1) return new Error("there must be at least 1 other participant than the author to create a channel");
+
+  this.uuid = uuidv4();                         // UUID of the channel
+  this.created_at = new Date().getTime();       // Channel creation date
+  this.author = author;                         // The UUID of the user who made the channel
+  this.memberList = [author, ...participants];  // The UUIDs of you and the person you're messaging to
+  this.messages = [];                           // The UUIDs of all the messages sent in this channel
+  if (king) this.king = king;                   // The UUID of who currently owns the group // These apply only, if channel is a group
+};
+
+// C O N S T R U C T O R for new NOTIFICATIONS
+function Notification(type, from, content, post_uuid, channel_uuid) {
   // Throw errors if trying to add dumb notifications with missing parameters
   if (!type) return new Error("'type' must be provided for notifications");
   if (!from) return new Error("'from' must be provided for post notifications");
@@ -294,10 +314,10 @@ function Notification(type, from, content, post_uuid, channel_uuid){
   if (content) this.content = content;
   if (post_uuid) this.post_uuid = post_uuid;
   if (channel_uuid) this.channel_uuid = channel_uuid;
-}
+};
 
 // Friend Requests 
-function acceptFriendRequest(me, userToAccept){
+const acceptFriendRequest = (me, userToAccept) => {
   return new Promise(async (resolve, reject) => {
     // Add the other users uuid to my pending list
     await users.update(
@@ -348,17 +368,13 @@ setInterval(async () => {
 // Middleware
 let authJWT = (req, res, next) => {
   jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-
     if (error) {
-      console.log(error);
       res.status(403);
       res.json({
         message: "You must be logged in to view your user info idiot 🖕🖕🖕",
       });
       return;
     }
-
-    console.log(user.uuid);
 
     // Get user's data from db
     req.user = (await users.aggregate([
@@ -396,9 +412,9 @@ io.on("connection", socket => {
   });
 
   // Connect the user to their own unique room for notifications
-  socket.on("room", room => {
-    console.log("New room".red, room.red);
-    socket.join(room);
+  socket.on("room", uuid => {
+    console.log("New ws room".red, uuid.red);
+    socket.join(uuid);
   });
 
   // Messages
@@ -514,90 +530,26 @@ io.on("connection", socket => {
     res.status(200);
     res.json({"message": "Friend Request Denied"});
   });
-  // The reason i use a normal post method here is because
-  // apparently theres a 1mb limit to a ws header
-  // therefore if people want to send images that are bigger
-  // than 1mb we have to use a traditional post method
-  // it still can emit the socket for whenever we get a message
-  app.post("/message", upload.any(), async (req, res) => {
 
-    let messageEvent = JSON.parse(req.body.message);
-    messageEvent.attachments = req.files;
-  
-    res.json({"message": "got message"});
-  
-    if (!messageEvent.user) return;
-    if (!messageEvent.attachments) return;
-    if (messageEvent.attachments.length == 0 && messageEvent.content.length == 0) return;
-    
-    let author = {};
-  
-    // Verify Logged In User
-    jwt.verify(messageEvent.user, "h4x0r", async (error, user) => {
-      if (error) {
-        console.log(error);
-      }
-      author = (
-        await users.find(
-          { uuid: user.uuid },
-          { collation: { locale: "en", strength: 2 } }
-        )
-      )[0];
-  
-      if (!author) return
+  // socket.on("typing", typingEvent => {
+  //   // Verify JWT
+  //   jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
 
-      let attachments = [];
-      if (req.files.length !== 0) {
-        attachments = await cacheImages(req.files);
-      }
+  //     if (error) return
 
-      // Construct message object
-      const message = {
-        content: messageEvent.content,
-        attachments: attachments,
-        date: new Date().getTime(),
-        author: {
-          username: author.username,
-          flare: author.settings.appearance.flare,
-          pfp: author.profile.pfp ? author.profile.pfp : author.pfp,
-        },
-      };
-  
-      message["content"] = message.content;
-  
-      currentMessages.push(message);
-      if (currentMessages.length > 20) currentMessages.shift();
-  
-      // Add to database
-      messages.insert(message);
+  //     // Get user's data from db
+  //     user = (await users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
 
-      // Send to all other users
-      socket.broadcast.emit("message", message);
-  
-      // Send to current user
-      socket.emit("message", message);
-    });
-  });
+  //     // Create a typing user object
+  //     let typingUser = {
+  //       uuid: user.uuid,
+  //       pfp: user.profile.pfp
+  //     };
 
-  socket.on("typing", typingEvent => {
-    // Verify JWT
-    jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
-
-      if (error) return
-
-      // Get user's data from db
-      user = (await users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
-
-      // Create a typing user object
-      let typingUser = {
-        uuid: user.uuid,
-        pfp: user.profile.pfp
-      };
-
-      // Besides the client who is typing
-      socket.broadcast.emit("typingUser", typingUser);
-    });
-  });
+  //     // Besides the client who is typing
+  //     socket.broadcast.emit("typingUser", typingUser);
+  //   });
+  // });
   socket.on("heartbeat", heartbeat => {
     jwt.verify(heartbeat.user, "h4x0r", async (error, user) => {
       if (!user || user === undefined) return
@@ -913,8 +865,6 @@ app.post("/login", async (req, res) => {
     { collation: { locale: "en", strength: 2 } }
   );
 
-    console.log(user[0].settings);
-
   // Try matching
   try {
     const match = await bcrypt.compare(body.password, user[0].settings.account.password);
@@ -994,6 +944,98 @@ app.post("/user/connection/:platform", authJWT, async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+// -------------------------------------------------------------------------------
+// NEW MESSAGING SYSTEM POG 👀👀👀👀👀
+// https://discord.com/channels/guild_uuid/channel_uuid
+// https://discord.com/channels/user_uuid/channel_uuid
+// http://taku.moe:8080/messages/66598e6e-f60d-4fdf-95cb-1849c3c40bb8
+// -------------------------------------------------------------------------------
+
+let channels = db.get("channels");
+
+app.get("/channels", authJWT, async (req, res) => {
+  let result = await channels.find({memberList: req.user.uuid });
+  result = result.map(channel => channel.uuid);
+  res.status(200);
+  res.json({"channels": result});
+});
+
+app.get("/dm/:channel_uuid", authJWT, async (req, res) => {
+  const messages = await channels.find({uuid: req.params.channel_uuid });
+  console.log(messages);
+  res.status(200);
+  res.json({"messages": messages});
+});
+
+// app.get("/group/:group_uuid/:channel_uuid", authJWT, async (req, res) => {
+//   const channel = await channels.find({uuid: req.params.channel_uuid });
+//   console.log(channel);
+// });
+
+
+io.on("connection", socket => {
+  socket.emit("message", "Connected to taku DMs");
+
+  // Connect the user to their own unique room for notifications
+  socket.on("room", uuid => {
+    console.log("New ws room".red, uuid.red);
+    socket.join(uuid);
+  });
+
+  app.post("/message", authJWT, upload.any(), async (req, res) => {
+    const messageEvent = JSON.parse(req.body.message);
+    const channel = req.body.channel;
+
+    res.status(200);
+    res.json({"message": "got message"});
+
+    let attachments = [];
+    if (req.files.length !== 0) {
+      attachments = await cacheImages(req.files);
+    }
+
+    // Create new message
+    let message = new Message(req.user.uuid, messageEvent.content, channel, attachments); 
+    
+    await messages.insert(message); // Add to message database
+    // Add to message to the channel it belongs to
+    await channels.update({'uuid': channel}, { "$push": {'messages': message.uuid }});   
+
+    // 🍘 This should be optimized
+    message = (await messages.aggregate([
+        {
+        '$match': {
+            "uuid": message.uuid
+        }},
+        {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'author', 
+          'foreignField': 'uuid', 
+          'as': 'author'
+        }}, 
+        {
+        '$unwind': {
+          'path': '$author', 
+          'preserveNullAndEmptyArrays': true
+        }}, 
+        {
+        '$project': {
+          '_id': 0,
+          'author.settings': 0, 
+          'author.profile': 0, 
+          'author.created_at': 0, 
+          'author.friend_list': 0, 
+          'author.following': 0, 
+          'author._id': 0
+        }}
+    ]))[0];
+
+    socket.broadcast.emit("message", message);  // Send to all other users
+    socket.emit("message", message);            // Send to current user
+  });
 });
 
 

@@ -255,8 +255,8 @@ export default {
 }
 
 *.darkmode::-webkit-scrollbar-thumb {
-  background-color: #363952;
-  border: 5px solid #08090E; 
+  background-color: var(--darkmodeLight);
+  border: 5px solid var(--darkmodeDark); 
 }
 
 .settings {
@@ -279,7 +279,7 @@ export default {
   justify-content: center;
 }
 
-.settingsArea.darkmode { background: #08090E; } /* darkmode */ 
+.settingsArea.darkmode { background: var(--darkmodeDarker); } /* darkmode */ 
 
 .connectionsList {
   margin-top: 24px;
@@ -362,7 +362,7 @@ export default {
 }
 
 .appearance.darkmode {
-  scrollbar-color: #363952#08090E ;
+  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
 }
 
 .accountSettings {
@@ -372,7 +372,7 @@ export default {
 }
 
 .accountSettings.darkmode {
-  scrollbar-color: #363952#08090E ;
+  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
 }
 
 </style>

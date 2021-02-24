@@ -260,7 +260,7 @@ export default {
     right: 0px;
     width: 100%;
     transition: 100ms ease;
-    z-index: 1000;
+    z-index: 10;
     filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
 }
 
@@ -271,7 +271,7 @@ export default {
 .container {
     display: flex;
     justify-content: space-between;
-    margin: 8px 0px;
+    margin: 8px 12px;
     width: 100%;
 }
 

@@ -1,6 +1,8 @@
 { 
     "Search": "Поиск",
     "ms": "мс",
+    "Login": "Войти в аккаунт",
+    "Signup": "Зарегистрироваться",
     "NOTIFICATIONS": "УВЕДОМЛЕНИЯ",
     "You don't have any notifications!": "У вас нет каких-либо уведомлений!",
     "Accepted your friend request!": "Принял ваш запрос дружбы!",
@@ -14,6 +16,8 @@
     "Guidelines": "Руководство",
     "Acknowledgements": "Благодарности",
     "Logout": "Выйти",
+    "SEND": "ОТПРАВИТЬ",
+    "REMOVE ALL": "УДАЛИТЬ ВСЁ",
     "on": "Вкл",
     "off": "Выкл",
     "link": "Связать",
@@ -36,12 +40,12 @@
     "Save": "Сохранить",
     "Accept": "Принять",
     "Deny": "Отклонить",
-    "Add": "Добавить",
+    "Add": "Добавить",  
     "Remove": "Удалить",
     "Unblock": "Разблокировать",
     "Cancel Request": "Отклонить запрос",
     "FAVORITE Anime": "ЛЮБИМОЕ Аниме",
-    "DESCRIPTION": "ОПИСАНИЕ",
+    "DESCRIPTION": "Пользовательский статус",
     "osu! Profile": "Профиль в osu!",
     "MY Computer": "МОЙ Компьютер",
     "Global Ranking": "Рейтинг в мире",
@@ -50,5 +54,6 @@
     "Maps Played": "Карт Сыграно",
     "Accuracy": "Точность",
     "Time Wasted": "Время в игре",
-    "Hours": "Часов"
+    "Hours": "ч.",
+    "Hour": "ч."
 }
