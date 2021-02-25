@@ -205,12 +205,12 @@ export default {
 .previewFile:hover { opacity: 50%; }
 
 .dropArea {
+    display: none;
     position: fixed;
     width: 100vw;
     height: 100vh;
     top: 0px;
     left: 0px;
-
 }
 
 @media only screen and (min-width: 715px)  {

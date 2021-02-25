@@ -128,6 +128,8 @@ export default {
 
         this.socket.on('ping', epoch => this.ping = new Date().getTime() - epoch);
         this.socket.on('notification', async notification => {
+            console.log(notification);
+            
             notification.show = false;                  // Set new notification to hidden when coming in
             this.notifications.unshift(notification);   // Add it to the array of notifications
             await sleep(10);

@@ -89,14 +89,14 @@ export default {
     };
 
     this.socket.on('message', message => {
-      console.log(message);
       if (message.content !== undefined) {
         // If the last message is by the same user just add the message content itself without
         // Their username etc
         if (lastMessage?.author == message.author) message.sameAsLast = true;
+      
         message.content = this.renderHtml(message.content);
-
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
+        
         lastMessage = message;
         this.messages.push(message);
 
@@ -155,20 +155,26 @@ export default {
         return
       }
       
-
-
       // Connect to that dm's socket only if we are allowed to
       this.socket.emit('channel_room', this.$route.params.channel_uuid);
-      this.getMessages(20);
+      this.getMessages(0);
       // this.messages.push(response.data.dm.messages)
 
     },
     async getMessages(offset){
-      let response = await axios.get(`http://taku.moe:8880/messages/${this.$route.params.channel_uuid}/:${offset}`, {
+      var response = await axios.get(`http://taku.moe:8880/messages/${this.$route.params.channel_uuid}/${offset}`, {
         withCredentials: true,
       });
 
-      console.log(response.data);
+      // This has one of the most weird bugs where it fixes the original variable
+      // Before even running it
+      // Without this the variables don't get parsed, even though this does nothing to them in theory
+      // CURSED AS FUCK FUNCTION 👺
+      response.data.forEach(message => {
+        message.content = this.renderHtml(message.content);
+        message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
+      });
+
       this.messages = response.data;
     },
     // This is to convert epoch to the user's time
