@@ -40,7 +40,7 @@ const routes = [
     },
   },
   {
-    path: '/messages/:type?/:channel_uuid?', // the ? makes the param optional so the default route works
+    path: '/messages',
     name: 'Messages',
     component: () => import('../views/Messages.vue'),
     meta: {

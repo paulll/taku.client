@@ -14,7 +14,8 @@
                     <router-link :to="`/profile/${notification.from.username}`"><img :src="`http://taku.moe:8880/pfp/cache/${notification.from.uuid}`"></router-link>
                     <div class="text">
                         <router-link :to="`/profile/${notification.from.username}`"><p><strong>{{notification.from.username}}</strong> {{convert(notification.created_at)}}</p></router-link>
-                        <p>{{translation(notification.content)}}</p>
+                        <router-link v-if="notification.in" :to="notification.in"><p>{{translation(notification.content)}}</p></router-link>
+                        <router-link v-if="notification.at" :to="notification.at"><p>{{translation(notification.content)}}</p></router-link>
                     </div>
                 </div>
             </transition>

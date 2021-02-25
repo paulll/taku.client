@@ -1,7 +1,6 @@
 <template>
   <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
     <div class="tag-grid">
-      
       <div class="messages" :class="{darkmode: darkmode == 'true'}">
         <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
           <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('http://taku.moe:8880/pfp/${message.author.uuid}')`}"></div></router-link>
@@ -22,12 +21,11 @@
           <div v-for="pfp of typingUsers" :key="pfp" class="typing" :style="{ 'background-image': `url(${pfp})`}"></div>
         </div>
         
-        <div class="dummy"></div>
+
       </div>
-
-      <TextInput/>
-
+      <div class="dummy"></div>  
     </div>
+    <TextInput/>
   </div>
 </template>
  
@@ -77,10 +75,10 @@ export default {
     if (!this.mentionSoundUrl) this.mentionSoundUrl = require("../../public/mention.wav");
     this.mentionSound = new Audio(this.mentionSoundUrl);
 
-    setTimeout(() => {
-      let dummy = document.querySelector(".dummy");
-      dummy.scrollIntoView({behavior: "smooth"});
-    }, 500);
+    // setTimeout(() => {
+    //   let dummy = document.querySelector(".dummy");
+    //   dummy.scrollIntoView({behavior: "smooth"});
+    // }, 500);
 
     let lastMessage = {
       author: {
@@ -98,7 +96,7 @@ export default {
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
         
         lastMessage = message;
-        this.messages.push(message);
+        this.messages.unshift(message);
 
         // Play notification sound if they got mentioned
         if (
@@ -117,11 +115,11 @@ export default {
         // Remove this later but for now its here to only show the last 20 messages so the UI doesn't lag
         if (this.messages.length > 100) this.messages.shift();
 
-        // Scroll to the bottom everytime someone sends a new message
-        setTimeout(() => {
-          let dummy = document.querySelector(".dummy");
-          dummy.scrollIntoView({behavior: "auto"});
-        }, 1);
+        // // Scroll to the bottom everytime someone sends a new message
+        // setTimeout(() => {
+        //   let dummy = document.querySelector(".dummy");
+        //   dummy.scrollIntoView({behavior: "auto"});
+        // }, 1);
       }
 
     });
@@ -141,6 +139,7 @@ export default {
 
   },
   unmounted() {
+    console.log("attempting to disconnect");
     this.socket.disconnect();
   },
   methods: {
@@ -162,6 +161,7 @@ export default {
 
     },
     async getMessages(offset){
+      console.time();
       var response = await axios.get(`http://taku.moe:8880/messages/${this.$route.params.channel_uuid}/${offset}`, {
         withCredentials: true,
       });
@@ -176,6 +176,9 @@ export default {
       });
 
       this.messages = response.data;
+
+      console.log(`%c Fetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
+      console.dir(this.messages);
     },
     // This is to convert epoch to the user's time
     // Gotta fix this, apparently its some weird ass timezone in europe
@@ -188,11 +191,12 @@ export default {
     },
     // This function handles sending messages
     async sendMessage(message) {
-   
+
       // Init a formdata and add the message json
       let formData = new FormData();
+
       formData.append('message', JSON.stringify(message));
-      formData.append('channel', this.$route.params.channel_uuid);
+      formData.append('channel', JSON.stringify({type: this.$route.path.split('/')[1], uuid: this.$route.params.channel_uuid}));
 
       // Add files on the formdata if theres any
       if (message.attachments) {
@@ -278,6 +282,8 @@ export default {
 .messages {
   scrollbar-color: #888888#F3F3F3 ;
   scrollbar-width: thin;
+  flex-direction: column-reverse;
+  display: flex;
 }
 
 .messages.darkmode {

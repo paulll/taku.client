@@ -52,7 +52,7 @@
                 <router-link to="/anime" class="button"><img src="../assets/anime.svg" alt=""></router-link>
             </div> -->
             <div class="buttons small" :style="themeColors" v-if="token">
-                <router-link to="/dm" class="button"><img src="../assets/chat.png" alt=""></router-link>
+                <router-link to="/messages" class="button"><img src="../assets/chat.png" alt=""></router-link>
             </div>
             <div class="buttons small" :style="themeColors" v-if="token">
                 <div v-if="notifications.length > 0" class="numberOfNotifs">{{notifications.length}}</div>
@@ -64,8 +64,8 @@
             <div class="buttons small" :style="themeColors" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
             </div>
-            <div class="buttons" :style="themeColors" v-if="token">
-                <router-link :to='`/profile/${user?.username}`'><div class="pfp" :style="{'background-image' : `url('${user?.pfp}')`}"></div></router-link>
+            <div class="buttons" :style="themeColors" v-if="token && user">
+                <router-link :to='`/profile/${user.username}`'><div class="pfp" :style="{'background-image' : `url('${user.pfp}')`}"></div></router-link>
             </div>
         </div>
     </div>

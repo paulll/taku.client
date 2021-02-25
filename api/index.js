@@ -258,7 +258,8 @@ function Message(author, content, channel_uuid, attachments = []) {
 
   this.uuid = uuidv4();                       // UUID of the message
   this.created_at = new Date().getTime();     // Message send date
-  this.content = content;                     // The content of the message
+  // The content of the message
+  this.content = content;                     // Message send date
   this.attachments = attachments;             // The files of the message
   this.seen = [author];                       // Array of user UUIDs who saw it
   this.channel_uuid = channel_uuid;           // The channel where that message should be in
@@ -280,7 +281,7 @@ function Channel(author, participants, king) {
 };
 
 // C O N S T R U C T O R for new NOTIFICATIONS
-function Notification(type, from, content, post_uuid, channel_uuid) {
+function Notification(type, from, content, post, channel, n_attachments = 0) {
   // Throw errors if trying to add dumb notifications with missing parameters
   if (!type) return new Error("'type' must be provided for notifications");
   if (!from) return new Error("'from' must be provided for post notifications");
@@ -290,15 +291,13 @@ function Notification(type, from, content, post_uuid, channel_uuid) {
       if (!from) return new Error("'from' must be provided for friend request notifications ");
     break;
     case "Comment":
-      if (!post_uuid) return new Error("'post_uuid' must be provided for comment notifications");
-      if (!content) return new Error("Content must provided for comment notifications");
+      if (!post) return new Error("'post_uuid' must be provided for comment notifications");
       break;
     case "Message":
-      if (!channel_uuid) return new Error("'channel_uuid' must be provided for message notifications");
-      if (!content) return new Error("'content' must provided for message notifications");
+      if (!channel) return new Error("'channel_uuid' must be provided for message notifications");
       break;
     case "Post":
-      if (!post_uuid) return new Error("'post_uuid' must be provided for post notifications");
+      if (!post) return new Error("'post_uuid' must be provided for post notifications");
       break;
   }
 
@@ -308,12 +307,30 @@ function Notification(type, from, content, post_uuid, channel_uuid) {
     uuid: from.uuid,
     username: from.username,
   };
+  if (channel) this.in = `/${channel.type}/${channel.uuid}`; // The channel the notification is coming from
+  if (post)    this.at = `/${post.type}/${post.uuid}`;       // The post the notification is coming from
   this.created_at = new Date().getTime();
   this.read = false;
   this.show = true;
-  if (content) this.content = content;
-  if (post_uuid) this.post_uuid = post_uuid;
-  if (channel_uuid) this.channel_uuid = channel_uuid;
+
+  const maxLength = 32;
+
+  // Badass notification splitter/attachment detector thingy
+  // If theres only attachments
+  if (n_attachments != 0 && !content ) this.content = `${n_attachments} attachments`;  
+
+  // If theres attachments and text
+  else if (n_attachments != 0 && content) {
+    const supposedMessage = `${n_attachments} attachments, ${content}`;
+    if (supposedMessage.length > maxLength) this.content = supposedMessage.split('').slice(0, maxLength).join('') + " . . .";
+    else this.content = `${n_attachments} attachments, ${content}`;
+  }
+
+  // If theres only text
+  else {
+    if (content.length > maxLength) this.content = content.split('').slice(0, maxLength).join('') + " . . .";
+    else this.content = content;
+  }
 };
 
 // Friend Requests 
@@ -345,7 +362,7 @@ const acceptFriendRequest = (me, userToAccept) => {
 
     // Create the notification
     let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Accepted your friend request!`);
-    
+
     // Send event to the specific user
     io.sockets.in(userToAccept).emit('notification', notification);
 
@@ -983,7 +1000,6 @@ io.on("connection", socket => {
       {'$sort': {'created_at': -1}}, 
       {'$skip': parseInt(req.params.offset) }, 
       {'$limit': 20 },
-      {'$sort': {'created_at': 1}}, 
       {'$lookup': { 'from': 'users',  'localField': 'author',  'foreignField': 'uuid',  'as': 'author'}}, 
       {'$unwind': { 'path': '$author',  'preserveNullAndEmptyArrays': true }}, 
       {'$project': { '_id': 0, 'author.settings': 0,  'author.profile': 0,  'author.created_at': 0,  'author.friend_list': 0,  'author.following': 0,  'author._id': 0 }},
@@ -997,12 +1013,13 @@ io.on("connection", socket => {
     console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
     socket.join(channel_uuid);
   });
-
   app.post("/message", authJWT, upload.any(), async (req, res) => {
     const messageEvent = JSON.parse(req.body.message);
-
+    const channelEvent = JSON.parse(req.body.channel);
     // Load the channel from the database
-    let channel = (await channels.find({'uuid': req.body.channel}))[0];
+    let channel = (await channels.find({'uuid': channelEvent.uuid}))[0];
+    console.log(channelEvent);
+    channel.type = channelEvent.type;
 
     // Check if the user is a member of that channel
     if (!channel.memberList.includes(req.user.uuid)) {
@@ -1014,20 +1031,17 @@ io.on("connection", socket => {
     // If the user is a member of that channel
     res.status(200);
     res.json({"message": "Approved message"});
-
     // Process attachments if any
     let attachments = [];
     if (req.files.length !== 0) {
       attachments = await cacheImages(req.files);
     }
-
     // Create new message
     let message = new Message(req.user.uuid, messageEvent.content, channel.uuid, attachments); 
     
     await messages.insert(message); // Add to message database
     // Add to message to the channel it belongs to
     // await channels.update({'uuid': channel.uuid}, { "$push": {'messages': message.uuid }});   
-
     // 🍘 This should be optimized
     message = (await messages.aggregate([
         {
@@ -1063,7 +1077,8 @@ io.on("connection", socket => {
 
     // Create the notification
     
-    let notification = new Notification("Message", {uuid: req.user.uuid, username: req.user.username}, message.content, undefined, channel.uuid);
+    let notification = new Notification("Message", {uuid: req.user.uuid, username: req.user.username}, message.content, undefined, channel, message.attachments.length);
+    console.log(notification);
 
     for (member of channel.memberList) {
       if (member != req.user.uuid) {
