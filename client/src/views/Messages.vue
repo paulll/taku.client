@@ -1,8 +1,15 @@
 <template>
   <div class="channels">
-    <div v-for="channel in channels" :key="channel">
-      <router-link v-if="!channel.king" :to="`/dm/${channel}`"><h1>{{channel}}</h1></router-link>
-      <router-link v-if="channel.king" :to="`/group/${channel}`"><h1>{{channel}}</h1></router-link>
+    <div class="channel" v-for="channel in channels" :key="channel">
+      <img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt="">
+      <div class="info">
+        <div v-if="!channel.king">
+          <router-link :to="`/dm/${channel.uuid}`"><h1>{{channel.memberList[0].username}}</h1></router-link>
+        </div>
+        <div v-if="channel.king">
+          <router-link :to="`/group/${channel.uuid}`"><h1>{{channel.uuid}}</h1></router-link>
+        </div>  
+      </div>
     </div>
   </div>
 </template>
@@ -31,8 +38,21 @@ export default {
         withCredentials: true,
       });
 
+      let channels = [];
+      for (let channel of response.data.channels){
+        let memberList = [];
+
+        for (let member of channel.memberList){
+          if (member.uuid != this.me.uuid) memberList.push(member);
+        }
+        
+        channel.memberList = memberList;
+        channels.push(channel);
+      }
+
+      response.data.channels = channels;
+
       this.channels = response.data.channels;
-      console.log(response.data.channels);
     }
   }
 }
@@ -42,8 +62,26 @@ export default {
 <style>
 
 .channels {
-  height: 100vh;
   margin-top: 200px;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+.channel {
+  width: 100%;
+  display: flex;
+}
+
+.pfp {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  margin-right: 16px;
+}
+
+.info {
+
 }
 
 </style>

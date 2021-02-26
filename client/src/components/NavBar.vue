@@ -1,7 +1,7 @@
 <script>
 
 export default {
-  name: 'MobileHeader',
+  name: 'NavBar',
   data: () => {
     return {
       darkmode: localStorage.darkmode,
@@ -24,7 +24,7 @@ export default {
     <header class="mh-header" @update-theme="updateUI" :class="{darkmode: darkmode == 'true'}">
       <ul class="mh-headerButtons">
         <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
-        <!-- <li><router-link to="/submit" class="mh-headerButton"><img src="../assets/add.png" alt=""></router-link></li> -->
+        <li><router-link to="/anime" class="mh-headerButton"><img src="../assets/anime.svg" alt=""></router-link></li>
         <li><router-link to="/messages" class="mh-headerButton"><img src="../assets/chat.png" alt=""></router-link></li>
         <li><router-link to="/settings" class="mh-headerButton"><img src="../assets/settings.svg" alt=""></router-link></li>
       </ul>
@@ -35,8 +35,11 @@ export default {
 <style scoped>
 
 .router-link-active:not(.unreads) {
-  border-bottom: 2px solid #FF006B;
   filter: invert(26%) sepia(92%) saturate(7218%) hue-rotate(327deg) brightness(99%) contrast(109%);
+}
+
+a:not(.router-link-active) {
+  filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
 }
 
 
@@ -45,7 +48,7 @@ export default {
   justify-content: center;
   align-items: center;
   position: fixed;
-  bottom: 8px;
+  bottom: 0px;
   width: 100%;
   z-index: 2; 
 }
@@ -53,14 +56,12 @@ export default {
 .mh-header {
   display: flex;
   background: white;
-  height: 48px;
-  width: calc(100% - 32px);
-  border-radius: 12px;
+  width: 100%;
+  border-radius: 32px 32px 0px 0px;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   transition: 100ms ease;
-  box-shadow: 0 0px 12px rgba(0, 0, 0, 0.164);
 }
 
 .mh-header.darkmode { background: var(--darkmodeDark); } /* darkmode */
@@ -74,11 +75,20 @@ export default {
     transform: translateY(2px);
     flex-direction: row;
     justify-content: space-between;
-    padding: 0px 48px;
+    padding: 0px 24px;
     align-items: center;
     list-style: none; 
   }   
-  .mh-headerButton img { width: 32px; }
+  .mh-headerButtons a {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    outline: none;
+  }
+  .mh-headerButton img { padding: 20px; width: 28px; }
 }
 
 .unreads {

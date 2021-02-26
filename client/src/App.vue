@@ -1,13 +1,13 @@
 <template>
-  <LoadingAnimation/>
+  <!-- <LoadingAnimation/> -->
   <Header/>
   <router-view/>
-  <MobileHeader/>
+  <NavBar/>
 </template>
 
 <script>
 import Header from '@/components/Header.vue'
-import MobileHeader from '@/components/MobileHeader.vue'
+import NavBar from '@/components/NavBar.vue'
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
 
 import io from 'socket.io-client';
@@ -27,7 +27,7 @@ export default {
   },
   components: {
     Header,
-    MobileHeader,
+    NavBar,
     LoadingAnimation,
   },
   created(){

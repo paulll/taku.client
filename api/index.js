@@ -981,8 +981,12 @@ io.on("connection", socket => {
 
 
   app.get("/channels", authJWT, async (req, res) => {
-    let result = await channels.find({memberList: req.user.uuid });
-    result = result.map(channel => channel.uuid);
+    // let's not talk about this aggregate function
+    let result = await channels.aggregate([
+        {'$match': { 'memberList': { '$in': [ req.user.uuid ] }}}, 
+        {'$lookup': { 'from': 'users',  'localField': 'memberList',  'foreignField': 'uuid',  'as': 'memberList' }}, 
+        {'$project': {'_id': 0, 'memberList._id': 0, 'memberList.settings': 0, 'memberList.following': 0, 'memberList.friend_list': 0, 'memberList.created_at': 0, 'memberList.profile.isDeveloper': 0, 'memberList.profile.isBetaTester': 0, 'memberList.profile.pfp': 0, 'memberList.profile.banner': 0, 'memberList.profile.anime_list': 0, 'memberList.profile.socials': 0, 'memberList.profile.description': 0, 'memberList.profile.connections': 0, 'memberList.profile.order': 0 } }
+    ]);
     res.status(200);
     res.json({"channels": result});
   });
