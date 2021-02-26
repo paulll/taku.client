@@ -1,4 +1,5 @@
 <template>
+  <LoadingAnimation/>
   <Header/>
   <router-view/>
   <MobileHeader/>
@@ -7,6 +8,8 @@
 <script>
 import Header from '@/components/Header.vue'
 import MobileHeader from '@/components/MobileHeader.vue'
+import LoadingAnimation from '@/components/LoadingAnimation.vue'
+
 import io from 'socket.io-client';
 import NProgress from 'nprogress';
 import axios from 'axios';
@@ -24,7 +27,8 @@ export default {
   },
   components: {
     Header,
-    MobileHeader
+    MobileHeader,
+    LoadingAnimation,
   },
   created(){
     NProgress.start();

@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import axios from 'axios'
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
+NProgress.configure({ showSpinner: false });
 
 const routes = [
   {
@@ -76,4 +79,19 @@ router.beforeEach(async (to, from, next) => {
   if (to.path.startsWith('/profile/')) document.title = "taku | " + to.params.username; 
   next();
 });
+
+router.beforeResolve((to, from, next) => {
+  // If this isn't an initial page load.
+  if (to.name) {
+    // Start the route progress bar.
+    NProgress.start()
+  }
+  next()
+})
+
+router.afterEach((to, from) => {
+  // Complete the animation of the route progress bar.
+  NProgress.done()
+})
+
 export default router

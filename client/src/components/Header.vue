@@ -128,7 +128,6 @@ export default {
 
         this.socket.on('ping', epoch => this.ping = new Date().getTime() - epoch);
         this.socket.on('notification', async notification => {
-            console.log(notification);
             
             notification.show = false;                  // Set new notification to hidden when coming in
             this.notifications.unshift(notification);   // Add it to the array of notifications
@@ -262,7 +261,7 @@ export default {
     right: 0px;
     width: 100%;
     transition: 100ms ease;
-    z-index: 10;
+    z-index: 6;
     filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.11));
 }
 
@@ -309,18 +308,22 @@ export default {
 }
 
 .numberOfNotifs {
+    border: solid #10121D;
     display: flex;
     justify-content: center;
     align-items: center;
     font-weight: 600;
     color: white;
-    font-size: 12px;
+    font-size: 10px;
     position: absolute;
-    right: 8px;
+    right: 4px;
     background: var(--themeColor);
-    border-radius: 100%;
+    border-radius: 32px;
     height: 16px;
-    width: 16px;
+    width: fit-content;
+    padding: 0px 5px;
+    top: 0px;
+    z-index: 4;
 }
 
 .button {
@@ -332,7 +335,7 @@ export default {
 .button:hover {
     background: var(--themeColor);
     color: white;
-    filter: drop-shadow(0px 0px 8px var(--themeColor));
+    /* filter: drop-shadow(0px 0px 8px var(--themeColor)); */
 }
 
 .button:hover img {

@@ -48,13 +48,12 @@ db.then(() => {
 
 // Database Collections
 let users = db.get("users");
-
 // users.update({}, { "$set": { 'profile.order': ['favorite_anime', 'osu_profile', 'computer_specs', 'description']}},{multi:true});
 
 let messages = db.get("messages");
-let dms = db.get("dms");
 let anime = db.get("anime");
 let notifications = db.get("notifications");
+let channels = db.get("channels");
 
 // API
 var app = express();
@@ -276,7 +275,6 @@ function Channel(author, participants, king) {
   this.created_at = new Date().getTime();       // Channel creation date
   this.author = author;                         // The UUID of the user who made the channel
   this.memberList = [author, ...participants];  // The UUIDs of you and the person you're messaging to
-  this.messages = [];                           // The UUIDs of all the messages sent in this channel
   if (king) this.king = king;                   // The UUID of who currently owns the group // These apply only, if channel is a group
 };
 
@@ -359,6 +357,16 @@ const acceptFriendRequest = (me, userToAccept) => {
       { uuid: userToAccept },
       { $addToSet: { 'friend_list.friends': me.uuid} }
     );
+
+    // Create a new DM for those users
+    // Check if database contains a channel, which memberList contains these uuids
+    const checkedChannel = (await channels.aggregate([
+      {'$match': {'memberList': {'$in': [me.uuid]}}}, {'$match': {'memberList': {'$in': [userToAccept]}}}]))[0];
+
+    // If there isn't a channel for those 2 users already, make a new one
+    if (!checkedChannel){
+      await channels.insert(new Channel(me.uuid, [userToAccept]));
+    };
 
     // Create the notification
     let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Accepted your friend request!`);
@@ -971,7 +979,6 @@ app.post("/user/connection/:platform", authJWT, async (req, res) => {
 
 io.on("connection", socket => {
 
-  let channels = db.get("channels");
 
   app.get("/channels", authJWT, async (req, res) => {
     let result = await channels.find({memberList: req.user.uuid });
@@ -1078,7 +1085,6 @@ io.on("connection", socket => {
     // Create the notification
     
     let notification = new Notification("Message", {uuid: req.user.uuid, username: req.user.username}, message.content, undefined, channel, message.attachments.length);
-    console.log(notification);
 
     for (member of channel.memberList) {
       if (member != req.user.uuid) {

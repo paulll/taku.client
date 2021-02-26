@@ -142,6 +142,10 @@ export default {
     console.log("attempting to disconnect");
     this.socket.disconnect();
   },
+  destroyed() {
+    console.log("attempting to disconnect");
+    this.socket.disconnect();
+  },
   methods: {
     async getChannel(){
 

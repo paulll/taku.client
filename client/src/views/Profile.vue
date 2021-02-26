@@ -14,7 +14,7 @@
                             <input type="file" ref="pfp" style="display: none" accept="image/*" @change="uploadFile('pfp')">
                             <img @click="$refs.pfp.click()" v-if="edit" src="../assets/edit.svg" alt="Edit">
                         </div>
-                        <div v-if="user.profile?.isDeveloper" id="developerBadge" @mouseover="showTooltip(true, 'developerBadge')" @mouseleave="showTooltip(false, 'developerBadge')" >
+                        <div v-if="user.profile.isDeveloper" id="developerBadge" @mouseover="showTooltip(true, 'developerBadge')" @mouseleave="showTooltip(false, 'developerBadge')" >
                             <svg class="badge" width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12.9644 26C11.1836 26 9.50959 25.6676 7.94247 25.0027C6.37534 24.3142 4.99817 23.3763 3.81096 22.189C2.62374 20.9781 1.68584 19.589 0.99726 18.0219C0.33242 16.4548 0 14.769 0 12.9644C0 11.1361 0.33242 9.43836 0.99726 7.87123C1.68584 6.28037 2.62374 4.9032 3.81096 3.73973C4.99817 2.55251 6.37534 1.63836 7.94247 0.99726C9.50959 0.33242 11.1836 0 12.9644 0C14.7927 0 16.4904 0.344293 18.0575 1.03288C19.6484 1.69772 21.0374 2.63562 22.2247 3.84658C23.4119 5.03379 24.3379 6.41096 25.0027 7.97808C25.6676 9.52146 26 11.1836 26 12.9644C26 14.769 25.6557 16.4548 24.9671 18.0219C24.3023 19.589 23.3763 20.9781 22.189 22.189C21.0018 23.3763 19.6128 24.3142 18.0219 25.0027C16.4548 25.6676 14.769 26 12.9644 26ZM6.91151 19.5383C6.601 20.4617 7.65966 21.2388 8.44753 20.6658L12.3792 17.8064C12.7284 17.5525 13.2012 17.5513 13.5516 17.8036L17.5645 20.6929C18.3531 21.2607 19.4064 20.4837 19.0967 19.5626L17.6237 15.1825C17.4802 14.7559 17.6394 14.286 18.0127 14.0345L21.2199 11.8731C22.0382 11.3216 21.6478 10.0438 20.661 10.0438H16.6038C16.1743 10.0438 15.7928 9.76954 15.6559 9.36239L13.924 4.20888C13.6175 3.29675 12.3257 3.30152 12.0259 4.21589L10.3408 9.35539C10.2061 9.76612 9.8228 10.0438 9.39056 10.0438H5.339C4.35218 10.0438 3.96181 11.3216 4.78015 11.8731L7.98733 14.0345C8.36056 14.286 8.51977 14.7559 8.37632 15.1825L6.91151 19.5383Z" fill="#FF006B"/>
                             </svg>
@@ -42,7 +42,7 @@
                                 <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">{{translation('Remove')}}</button>
                         
                                 <!-- Send DM button -->
-                                <button :style="themeColors" class="button" v-if="user.uuid != me.uuid"><router-link :to="`/dm/${user.uuid}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                                <button :style="themeColors" class="button" v-if="user.uuid != me.uuid && user.isFriend"><router-link :to="`/dm/${user.uuid}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
                                 
                                 <!-- Block button -->
                                 <button :style="themeColors" @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
@@ -233,6 +233,8 @@ export default {
               '--themeColorHover': '#ff006b66',
           }  
       }
+
+      user.isFriend = (user.friend_list.friends.includes(this.me.uuid));     
 
       this.user = user;
       console.log(this.user);
