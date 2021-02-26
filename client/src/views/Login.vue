@@ -96,7 +96,7 @@ export default {
         if (response.status == 200) {
             console.log(response.data);
 
-            localStorage.token = response.data.user.token;
+            localStorage.token = response.data.token;
             localStorage.username = response.data.user.username;
 
             try {

@@ -165,6 +165,7 @@ async function addToOnlineUsers(uuid) {
     }).filter(user => user !== undefined);
   }
 
+  console.log(onlineUsers);
   return onlineUsers;
 }
 
@@ -275,6 +276,7 @@ function Channel(author, participants, king) {
   this.created_at = new Date().getTime();       // Channel creation date
   this.author = author;                         // The UUID of the user who made the channel
   this.memberList = [author, ...participants];  // The UUIDs of you and the person you're messaging to
+  this.lastMessage = lastMessage;               // The UUID of the latest message sent in that channel if any
   if (king) this.king = king;                   // The UUID of who currently owns the group // These apply only, if channel is a group
 };
 
@@ -574,8 +576,9 @@ io.on("connection", socket => {
   //   });
   // });
   socket.on("heartbeat", heartbeat => {
+    console.log(heartbeat);
     jwt.verify(heartbeat.user, "h4x0r", async (error, user) => {
-      if (!user || user === undefined) return
+      if (!user || user === undefined) return;
 
       // Add user to onlineUsers list
       addToOnlineUsers(user.uuid);
@@ -983,10 +986,13 @@ io.on("connection", socket => {
   app.get("/channels", authJWT, async (req, res) => {
     // let's not talk about this aggregate function
     let result = await channels.aggregate([
-        {'$match': { 'memberList': { '$in': [ req.user.uuid ] }}}, 
-        {'$lookup': { 'from': 'users',  'localField': 'memberList',  'foreignField': 'uuid',  'as': 'memberList' }}, 
-        {'$project': {'_id': 0, 'memberList._id': 0, 'memberList.settings': 0, 'memberList.following': 0, 'memberList.friend_list': 0, 'memberList.created_at': 0, 'memberList.profile.isDeveloper': 0, 'memberList.profile.isBetaTester': 0, 'memberList.profile.pfp': 0, 'memberList.profile.banner': 0, 'memberList.profile.anime_list': 0, 'memberList.profile.socials': 0, 'memberList.profile.description': 0, 'memberList.profile.connections': 0, 'memberList.profile.order': 0 } }
+      {'$match': { 'memberList': { '$in': [ req.user.uuid ] }}}, 
+      {'$lookup': { 'from': 'users',  'localField': 'memberList',  'foreignField': 'uuid',  'as': 'memberList' }}, 
+      {'$project': {'_id': 0, 'memberList._id': 0, 'memberList.settings': 0, 'memberList.following': 0, 'memberList.friend_list': 0, 'memberList.created_at': 0, 'memberList.profile.isDeveloper': 0, 'memberList.profile.isBetaTester': 0, 'memberList.profile.pfp': 0, 'memberList.profile.banner': 0, 'memberList.profile.anime_list': 0, 'memberList.profile.socials': 0, 'memberList.profile.description': 0, 'memberList.profile.connections': 0, 'memberList.profile.order': 0 }},
+      {'$lookup': {'from': 'messages', 'localField': 'lastMessage', 'foreignField': 'uuid', 'as': 'lastMessage'}}, 
+      {'$unwind': {'path': '$lastMessage', 'preserveNullAndEmptyArrays': true}},
     ]);
+
     res.status(200);
     res.json({"channels": result});
   });
@@ -1052,7 +1058,7 @@ io.on("connection", socket => {
     
     await messages.insert(message); // Add to message database
     // Add to message to the channel it belongs to
-    // await channels.update({'uuid': channel.uuid}, { "$push": {'messages': message.uuid }});   
+    await channels.update({'uuid': channel.uuid}, { "$set": {'lastMessage': message.uuid }});   
     // 🍘 This should be optimized
     message = (await messages.aggregate([
         {

@@ -128,7 +128,7 @@ html {
 }
 
 body {
-  background: #fff; /* darkmode */
+  background: #FF84AD; /* darkmode */
 }
 
 #nprogress .bar {
