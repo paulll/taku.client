@@ -54,6 +54,7 @@ export default {
       mentionSfx: localStorage.mention_sfx,
       mentionSoundUrl: localStorage.mentionSoundUrl,
       mentionSound: '',
+      currentChannel: '',
     };
   },
   mounted() {
@@ -79,6 +80,10 @@ export default {
         username: "a72bd87a2nh3hjd"
       }
     };
+
+    this.socket.on('disconnect', function() {
+      console.log("WS DISCONNECTED!")
+    });
 
     this.socket.on('message', message => {
       if (message.content !== undefined) {
@@ -128,20 +133,20 @@ export default {
     //   }, 3000);
 
     // });
-
     this.emitter.on("sendMessage", message => this.sendMessage(message));
-
   },
   unmounted() {
     console.log("attempting to disconnect");
+    this.emitter.all.delete("sendMessage");
+    this.socket.emit('leave_channel', this.currentChannel);
     this.socket.disconnect();
   },
   destroyed() {
-    console.log("attempting to disconnect");
-    this.socket.disconnect();
+    //console.log("attempting to disconnect");
+    //this.socket.disconnect();
   },
   methods: {
-    async getChannel(){
+    async getChannel(){ 
 
       try {
         await axios.get(`http://taku.moe:8880/dm/${this.$route.params.channel_uuid}`, {
@@ -153,13 +158,13 @@ export default {
       }
       
       // Connect to that dm's socket only if we are allowed to
-      this.socket.emit('channel_room', this.$route.params.channel_uuid);
+      this.socket.emit('join_channel', this.$route.params.channel_uuid);
+      this.currentChannel = this.$route.params.channel_uuid;
       this.getMessages(0);
       // this.messages.push(response.data.dm.messages)
 
     },
     async getMessages(offset){
-      console.time();
       var response = await axios.get(`http://taku.moe:8880/messages/${this.$route.params.channel_uuid}/${offset}`, {
         withCredentials: true,
       });
@@ -430,7 +435,7 @@ export default {
   color: #2C394A;
   margin-bottom: 1px;
   /* max-width: 600px; */
-  font-weight: 500;
+  font-weight: 400;
   width: fit-content;
   border-radius: 12px;
 }
@@ -438,6 +443,7 @@ export default {
 .messageBubble .content img { 
   cursor: pointer; 
   max-width: 512px;
+  max-height: 168px;
 }
 
 .messageBubble .content.darkmode {
@@ -522,3 +528,4 @@ export default {
 
 
 </style>
+a

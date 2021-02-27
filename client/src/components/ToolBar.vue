@@ -102,7 +102,8 @@ a:not(.router-link-active) {
     user-select: none;
     outline: none;
   }
-  .mh-headerButtons li { width: 100%; dD+D  .mh-headerButton img { padding: 20px; width: 28px; } }
+  .mh-headerButton img { padding: 20px; width: 28px; } 
+  .mh-headerButtons li { display: flex; justify-content: center; width: 100%; }
 }
 
 .unreads {

@@ -40,7 +40,7 @@ export default {
             attachments: attachments,
           };
 
-
+          console.log("tesointoisentoisentoisnetoisenti");
           this.emitter.emit("sendMessage", message);
 
           // Reset
@@ -127,7 +127,7 @@ export default {
 
 .sendMessage { 
   margin: 0px 16px;
-  border-radius: 32px;
+  border-radius: 24px;
   background: #F1F2F4;
   margin: 16px 0px;
   width: 100%;

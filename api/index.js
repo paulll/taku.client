@@ -165,7 +165,6 @@ async function addToOnlineUsers(uuid) {
     }).filter(user => user !== undefined);
   }
 
-  console.log(onlineUsers);
   return onlineUsers;
 }
 
@@ -437,7 +436,7 @@ io.on("connection", socket => {
 
   // Connect the user to their own unique room for notifications
   socket.on("room", uuid => {
-    console.log("[Notification WS] Joined".red, uuid.red);
+    // console.log("[Notification WS] Joined".red, uuid.red);
     socket.join(uuid);
   });
 
@@ -464,7 +463,7 @@ io.on("connection", socket => {
     let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Sent you a friend request!`);
   
     // Send event to the specific user
-    console.log("[Notification WS] Emitting New".red, me.uuid.red);
+    // console.log("[Notification WS] Emitting New".red, me.uuid.red);
     io.sockets.in(userToAdd).emit('notification', notification);
     
     await notifications.update(
@@ -1010,6 +1009,16 @@ io.on("connection", socket => {
     res.json({"dm": dm});
   });
 
+  socket.on('join_channel', async channel_uuid => {
+    console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
+    socket.join(channel_uuid);
+  });
+
+  socket.on('disconnect', async function(){
+    console.log("[Channel WS]".bgRed.black, "Disconnected");
+    console.log((await io.allSockets()).size);
+  });
+
   // Clean af optimized piece of database query
   app.get("/messages/:channel_uuid/:offset", authJWT, async (req, res) => {
     let response = (await messages.aggregate([
@@ -1026,10 +1035,6 @@ io.on("connection", socket => {
     res.json(response);
   });
 
-  socket.on('channel_room', channel_uuid => {
-    console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
-    socket.join(channel_uuid);
-  });
   app.post("/message", authJWT, upload.any(), async (req, res) => {
     const messageEvent = JSON.parse(req.body.message);
     const channelEvent = JSON.parse(req.body.channel);
