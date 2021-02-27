@@ -106,7 +106,7 @@
 </template>
 <script>
 import SettingsBar from '@/components/SettingsBar.vue'
-import NavBar from '@/components/NavBar.vue'
+import ToolBar from '@/components/ToolBar.vue'
 
 import OptionBox from '@/components/settings/OptionBox.vue'
 import ConnectionBox from '@/components/settings/ConnectionBox.vue'

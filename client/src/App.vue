@@ -2,12 +2,12 @@
   <!-- <LoadingAnimation/> -->
   <Header/>
   <router-view/>
-  <NavBar/>
+  <ToolBar/>
 </template>
 
 <script>
 import Header from '@/components/Header.vue'
-import NavBar from '@/components/NavBar.vue'
+import ToolBar from '@/components/ToolBar.vue'
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
 
 import io from 'socket.io-client';
@@ -27,7 +27,7 @@ export default {
   },
   components: {
     Header,
-    NavBar,
+    ToolBar,
     LoadingAnimation,
   },
   created(){
@@ -128,7 +128,7 @@ html {
 }
 
 body {
-  background: #FF84AD; /* darkmode */
+  background: #141A22; /* darkmode */
 }
 
 #nprogress .bar {

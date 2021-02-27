@@ -1,11 +1,22 @@
 <script>
-
+import TextInput from '@/components/messages/TextInput.vue';
+    
 export default {
-  name: 'NavBar',
+  name: 'ToolBar',
+  components: {
+    TextInput
+  },
   data: () => {
     return {
       darkmode: localStorage.darkmode,
+      mode: "nav",
     };
+  },
+  watch: {
+    $route(to, from) {
+      if (to.path.startsWith("/dm") || to.path.startsWith("/group")) this.mode = 'msg';
+      else this.mode = 'nav'
+    }
   },
   mounted(){
     // Update the theme from the event emitter
@@ -22,11 +33,14 @@ export default {
 <template>
   <div class="mh-headerContainer">
     <header class="mh-header" @update-theme="updateUI" :class="{darkmode: darkmode == 'true'}">
-      <ul class="mh-headerButtons">
+      <ul v-if="mode == 'nav'" class="mh-headerButtons">
         <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
         <li><router-link to="/anime" class="mh-headerButton"><img src="../assets/anime.svg" alt=""></router-link></li>
         <li><router-link to="/messages" class="mh-headerButton"><img src="../assets/chat.png" alt=""></router-link></li>
         <li><router-link to="/settings" class="mh-headerButton"><img src="../assets/settings.svg" alt=""></router-link></li>
+      </ul>
+      <ul v-if="mode == 'msg'" class="mh-headerButtons">
+        <li><TextInput/></li>
       </ul>
     </header>
   </div>
@@ -67,7 +81,7 @@ a:not(.router-link-active) {
 .mh-header.darkmode { background: var(--darkmodeDark); } /* darkmode */
 .mh-header.darkmode img { filter: invert(1); }
 
-@media only screen and (max-width: 715px)  {
+@media only screen and (max-width: 715px){
   .mh-headerContainer { display: flex; }
   .mh-headerButtons {
     width: inherit;
@@ -75,7 +89,7 @@ a:not(.router-link-active) {
     transform: translateY(2px);
     flex-direction: row;
     justify-content: space-between;
-    padding: 0px 24px;
+    padding: 0px 16px;
     align-items: center;
     list-style: none; 
   }   
@@ -88,7 +102,7 @@ a:not(.router-link-active) {
     user-select: none;
     outline: none;
   }
-  .mh-headerButton img { padding: 20px; width: 28px; }
+  .mh-headerButtons li { width: 100%; dD+D  .mh-headerButton img { padding: 20px; width: 28px; } }
 }
 
 .unreads {

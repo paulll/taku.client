@@ -2,7 +2,7 @@
   <div class="card">
     <div class="channels">
       <div class="channel" v-for="channel in channels" :key="channel">
-        <img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt="">
+        <router-link :to="`/profile/${channel.memberList[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt=""></router-link>
         <div class="info">
           <div v-if="!channel.king">
             <router-link :to="`/dm/${channel.uuid}`"><h1>{{channel.memberList[0].username}}</h1></router-link>
@@ -100,6 +100,10 @@ export default {
   justify-content: space-between;
 }
 
+.info a {
+  width: fit-content;
+}
+
 .info a, h1{
   font-style: normal;
   font-weight: 600;
@@ -119,7 +123,6 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
   height: 100%;
 }
 

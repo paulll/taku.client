@@ -25,7 +25,6 @@
       </div>
       <div class="dummy"></div>  
     </div>
-    <TextInput/>
   </div>
 </template>
  
@@ -34,15 +33,10 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import linkifyHtml from 'linkifyjs/html';
 
-import TextInput from '@/components/messages/TextInput.vue';
-
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
 export default {
   name: 'home',
-  components: {
-    TextInput
-  },
   data: () => {
     return {
       message: "",
@@ -90,7 +84,7 @@ export default {
       if (message.content !== undefined) {
         // If the last message is by the same user just add the message content itself without
         // Their username etc
-        if (lastMessage?.author == message.author) message.sameAsLast = true;
+        if (lastMessage.author.uuid == message.author.uuid) message.author.same_as_last = true;
       
         message.content = this.renderHtml(message.content);
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
@@ -174,9 +168,14 @@ export default {
       // Before even running it
       // Without this the variables don't get parsed, even though this does nothing to them in theory
       // CURSED AS FUCK FUNCTION 👺
-      response.data.forEach(message => {
+      response.data.forEach((message, index, arr) => {
+        if (index >= 1) {
+          if (arr[index - 1].author.uuid == message.author.uuid) message.author.same_as_last = true;
+        }
         message.content = this.renderHtml(message.content);
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
+        
+        if (index == arr.length) this.lastMessage = message;
       });
 
       this.messages = response.data;
@@ -284,11 +283,13 @@ export default {
 }
 
 .messages {
-  scrollbar-color: #888888#F3F3F3 ;
+  scrollbar-color: #888888#F3F3F3;
   scrollbar-width: thin;
   flex-direction: column-reverse;
   display: flex;
 }
+
+
 
 .messages.darkmode {
   scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
@@ -331,7 +332,7 @@ export default {
 }
 
 .DMs {
-  background: #F3F3F3;
+  background: #fff;
   height: 100%;
   transform: translateY(-56px);
 }
@@ -379,89 +380,6 @@ export default {
   border-radius: 100%;
 }
 
-.previewFile {
-  border-radius: 8px;
-  height: 64px;
-  width: auto;
-  margin: 8px;
-  cursor: pointer;
-  transition: 100ms ease;
-  max-width: -moz-available;
-  max-width: -webkit-fill-available;
-}
-
-.previewFile:hover { opacity: 50%; }
-
-.sendMessageContainer {
-  position: fixed;
-  bottom: 64px;
-  width: 100%;
-  z-index: 4000;
-}
-
-.sendMessage {
-  margin: 0px 16px;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
-}
-
-.sendMessage .images {
-  max-height: 368px;
-  overflow-y: scroll;
-}
-
-.sendMessage .inputFields {
-  display: flex;
-  align-items: center;
-}
-
-.sendMessage .plusButton {
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-  margin-left: 8px;
-}
-
-.sendMessage.darkmode { background: var(--darkmodeDark); }
-
-.sendMessage .inputFields .quickButton {
-  outline: none;
-  white-space: nowrap;
-  border: none;
-  background: transparent;
-  font-weight: 500;
-  color: #0094FF;
-  cursor: pointer;
-  font-size: 14px;
-  margin-right: 16px;
-}
-.sendMessage .inputFields .quickButton.removeAll { color: #888888 !important }
-
-.sendMessage button:hover { cursor: pointer; }
-
-.sendMessage input[type=text] {
-  outline: none;
-  border: none;
-  width: 100%;
-  text-indent: 8px;
-  background: white;
-  border-radius: 24px; 
-  height: 39px;
-  font-style: normal;
-  font-weight: 500;
-  z-index: 3px;
-}
-
-.sendMessage input[type=text].darkmode {
-  color: white;  /* darkmode */
-  background: var(--darkmodeDark);
-}
-
-.sendMessage input[type=text]::placeholder { color: #888888; }
-.formImageInput {
-  display: none;
-}
 .messages {
   overflow: scroll;
   overflow-x: hidden;
@@ -477,6 +395,10 @@ export default {
   align-items: flex-end;
   display: flex;
   align-items: top;
+}
+
+.message:first-child {
+  margin-bottom: 14px;
 }
 
 .message.me {
@@ -503,8 +425,9 @@ export default {
   font-size: 14px;
   margin: 6px 12px;
   padding: 10px 12px;
-  background: #eee;
+  background: #F1F2F4;
   overflow-wrap: anywhere;
+  color: #2C394A;
   margin-bottom: 1px;
   /* max-width: 600px; */
   font-weight: 500;

@@ -41,6 +41,7 @@
                     <p><AnimatedNumber :number="ping"/>ms</p>
                 </div>
             </div>
+
             <div class="buttons" :style="themeColors"  v-if="!token">
                 <router-link to="/login" class="login">{{translation("Login")}}</router-link>
                 <router-link to="/signup" class="signup">{{translation("Signup")}}</router-link>
@@ -477,6 +478,9 @@ export default {
 
 /* Small */
 @media only screen and (max-width: 715px)  {
+    .cpuLoad, .ping {
+        display: none;
+    }
     .buttons.small {
         display: none;
     }

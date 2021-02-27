@@ -1,21 +1,19 @@
 <template>
-    <div>
-        <div @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste" class="dropArea"></div>
-        <div class="sendMessageContainer">
-            <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
-                <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
-                <div class="images" :class="{darkmode: darkmode == 'true'}">
-                    <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
-                </div>
-                <div class="inputFields">
-                    <img class="plusButton" src="@/assets/plus.svg" alt="" @click="$refs.files.click()">
-                    <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Message" autocomplete="off">
-                    <div v-if="previews.length > 0" type="file" class="quickButton removeAll" @click.prevent="deselectAll()">{{translation('REMOVE ALL')}}</div>
-                    <button v-if="message || previews.length > 0" type="file" class="quickButton submit" form="sendMessage">{{translation('SEND')}}</button>
-                </div>
-            </form> 
-        </div> 
-    </div>
+    <div @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste" class="dropArea"></div>
+    <div class="sendMessageContainer">
+        <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
+            <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
+            <div class="images" :class="{darkmode: darkmode == 'true'}">
+                <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
+            </div>
+            <div class="inputFields">
+                <img class="plusButton" src="@/assets/plus.svg" alt="" @click="$refs.files.click()">
+                <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Write something..." autocomplete="off">
+                <div v-if="previews.length > 0" type="file" class="quickButton removeAll" @click.prevent="deselectAll()">{{translation('REMOVE ALL')}}</div>
+            </div>
+        </form> 
+        <button :class="{ready: message || previews.length > 0}" type="file" class="submit" form="sendMessage"><img :src="require(`@/assets/send.png`)" ></button>
+    </div> 
 </template>
 
 <script>
@@ -121,17 +119,18 @@ export default {
 <style scoped>
 
 .sendMessageContainer {
-  position: fixed;
-  bottom: 64px;
   width: 100%;
-  z-index: 4000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.sendMessage {
+.sendMessage { 
   margin: 0px 16px;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.11);
+  border-radius: 32px;
+  background: #F1F2F4;
+  margin: 16px 0px;
+  width: 100%;
 }
 
 .sendMessage .images {
@@ -158,7 +157,7 @@ export default {
   white-space: nowrap;
   border: none;
   background: transparent;
-  font-weight: 500;
+  font-weight: 400;
   color: #0094FF;
   cursor: pointer;
   font-size: 14px;
@@ -173,9 +172,9 @@ export default {
   border: none;
   width: 100%;
   text-indent: 8px;
-  background: white;
-  border-radius: 24px; 
-  height: 39px;
+  background: #F1F2F4;
+  border-radius: 100px; 
+  height: 44px;
   font-style: normal;
   font-weight: 500;
   z-index: 3px;
@@ -186,7 +185,9 @@ export default {
   background: var(--darkmodeDark);
 }
 
-.sendMessage input[type=text]::placeholder { color: #888888; }
+.sendMessage input[type=text]::placeholder { 
+  color: #81859D; 
+}
 .formImageInput {
   display: none;
 }
@@ -211,6 +212,29 @@ export default {
     height: 100vh;
     top: 0px;
     left: 0px;
+}
+
+.submit {
+  width: 28px;
+  height: 28px;
+  outline: none;
+  border: none;
+  background: transparent;
+  margin-left: 24px;
+  filter: invert(100%) sepia(83%) saturate(373%) hue-rotate(177deg) brightness(99%) contrast(80%);
+  cursor: not-allowed;
+
+}
+
+.submit img {
+  width: inherit;
+  transform: translateY(-6px) rotate(-30deg);
+  height: inherit;
+}
+
+.ready {
+  filter: invert(68%) sepia(10%) saturate(5037%) hue-rotate(301deg) brightness(112%) contrast(101%);
+  cursor: pointer;
 }
 
 @media only screen and (min-width: 715px)  {
