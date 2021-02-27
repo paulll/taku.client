@@ -12,7 +12,7 @@ async function cacheImages(attachments) {
       console.log(`[SUBTASK]`.bgYellow.black + ` Started ` + `[${i + 1}/${attachments.length}]`.yellow + ` attachmentProcessor.js`);
 
       // Launch subtask      
-      var attachmentProcessor = child_process.fork('../clusters/attachmentProcessor');
+      var attachmentProcessor = child_process.fork('./clusters/attachmentProcessor.js');
 
       // Send image to process to subtask      
       attachmentProcessor.send(attachments[i]);

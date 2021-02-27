@@ -8,9 +8,9 @@ const clusters = require('../handlers/clusters.js');  // Import clusterHandler, 
 
 const io = require('../index.js');
 
-const message = express.Router();
+const router = express.Router();
 
-message.post("/", auth, upload.any(), async (req, res) => {
+router.post("/", auth, upload.any(), async (req, res) => {
     const messageEvent = JSON.parse(req.body.message);
     const channelEvent = JSON.parse(req.body.channel);
     // Load the channel from the database
@@ -92,4 +92,4 @@ message.post("/", auth, upload.any(), async (req, res) => {
     io.sockets.in(channel.uuid).emit('message', message);
 });
 
-module.exports = message;
+module.exports = router;

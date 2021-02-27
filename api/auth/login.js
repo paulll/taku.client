@@ -50,6 +50,6 @@ login.post("/login", async (req, res) => {
         res.json({ error: "Invalid Credentials ｡･ﾟﾟ*(>д<)*ﾟﾟ･｡" });
       }
     }
-  });
+});
 
 module.exports = login;
