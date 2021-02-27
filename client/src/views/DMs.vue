@@ -165,7 +165,7 @@ export default {
 
     },
     async getMessages(offset){
-      var response = await axios.get(`http://taku.moe:8880/messages/${this.$route.params.channel_uuid}/${offset}`, {
+      var response = await axios.get(`http://taku.moe:8880/channels/${this.$route.params.channel_uuid}/${offset}`, {
         withCredentials: true,
       });
 

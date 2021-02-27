@@ -1,4 +1,5 @@
 const colors = require("colors");
+const child_process = require('child_process');
 
 async function cacheImages(attachments) {
   return new Promise(resolve => {

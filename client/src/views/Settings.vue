@@ -28,11 +28,11 @@
       
       <!-- Sounds -->
       <div v-if="user.settings.sounds && path == 'sounds'" class="section sounds" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds?.typing.enabled"        option="Typing"    :optionTitle="translation('Typing')"   :optionCategory="path"     :showValue="true"/>
-        <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds?.mention.enabled"       :optionCategory="path" option="Mention" :optionTitle="translation('Mention')"      :showValue="true"/>
-        <OptionBox  :message="notificationSoundUrl" :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds?.notification.enabled" :optionCategory="path" option="Notification" :optionTitle="translation('Notification')" :showValue="true"/>
-        <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds?.hover.enabled" :optionCategory="path" option="Hover" :optionTitle="translation('Hover')" :showValue="true"/>
-        <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds?.click.enabled" :optionCategory="path" option="Click" :optionTitle="translation('Click')" :showValue="true"/>
+        <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds.typing.enabled"        option="Typing"    :optionTitle="translation('Typing')"   :optionCategory="path"     :showValue="true"/>
+        <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds.mention.enabled"       :optionCategory="path" option="Mention" :optionTitle="translation('Mention')"      :showValue="true"/>
+        <OptionBox  :message="notificationSoundUrl" :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds.notification.enabled" :optionCategory="path" option="Notification" :optionTitle="translation('Notification')" :showValue="true"/>
+        <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds.hover.enabled" :optionCategory="path" option="Hover" :optionTitle="translation('Hover')" :showValue="true"/>
+        <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds.click.enabled" :optionCategory="path" option="Click" :optionTitle="translation('Click')" :showValue="true"/>
       </div>
 
       <!-- Connections user.settings.connectios && -->
@@ -187,7 +187,7 @@ export default {
       return translatedSentence;
     },
     async sendOauthToken(platform, code){
-      await axios.post(`http://taku.moe:8880/user/connection/${platform}`, {code: code}, {
+      await axios.post(`http://taku.moe:8880/connections/${platform}`, {code: code}, {
         withCredentials: true,
       });
       return

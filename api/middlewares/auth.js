@@ -1,7 +1,4 @@
-var monk = require("monk");
-const url = "localhost:27017/anihuu";
-const db = monk(url);
-let users = db.get("users");
+const db = require("../handlers/database.js"); // Import database handler
 
 const jwt = require("jsonwebtoken");
 
@@ -16,7 +13,7 @@ let auth = (req, res, next) => {
         }
 
         // Get user's data from db
-        req.user = (await users.aggregate([
+        req.user = (await db.users.aggregate([
             {
                 '$match': {
                     'uuid': `${user.uuid}`

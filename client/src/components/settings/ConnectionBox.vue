@@ -64,7 +64,7 @@ export default {
           this.hoverSound.play();
         },
         async unlink(platform){
-          const response = await axios.delete(`http://taku.moe:8880/user/connection/${platform}`, {
+          const response = await axios.delete(`http://taku.moe:8880/connections/${platform}`, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
