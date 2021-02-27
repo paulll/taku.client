@@ -82,7 +82,7 @@ export default {
     };
 
     this.socket.on('disconnect', function() {
-      console.log("WS DISCONNECTED!")
+      console.log("[MESSAGE WS] DISCONNECTED!")
     });
 
     this.socket.on('message', message => {
@@ -294,29 +294,8 @@ export default {
   display: flex;
 }
 
-
-
 .messages.darkmode {
   scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
-}
-
-*::-webkit-scrollbar {
-  width: 12px;  
-  position: absolute; 
-
-}
-*::-webkit-scrollbar-track {
-  background-color: transparent; 
-}
-*::-webkit-scrollbar-thumb {
-  background-color: #888888;
-  border: 5px solid #F3F3F3; 
-  border-radius: 16px;
-}
-
-*.darkmode::-webkit-scrollbar-thumb {
-  background-color: var(--darkmodeLight);
-  border: 5px solid var(--darkmodeDark); 
 }
 
 
@@ -340,6 +319,9 @@ export default {
   background: #fff;
   height: 100%;
   transform: translateY(-56px);
+  overflow: hidden;
+  margin-top: 76px;
+  border-radius: 32px;
 }
 
 .DMs.darkmode { background: var(--darkmodeDark); /* darkmode */ }
@@ -388,7 +370,7 @@ export default {
 .messages {
   overflow: scroll;
   overflow-x: hidden;
-  height: calc(100vh - 56px);
+  height: calc(100vh - (76px * 2) + 20px);
 }
 .dummy {
   height: 64px;
@@ -518,10 +500,6 @@ export default {
 }
 
 @media only screen and (max-width: 715px)  {
-  .messages {
-    /* margin-bottom: 112px; */
-    height: calc(100vh - 56px);
-  }
   .DMs { transform: translateY(0px); }
 }
 

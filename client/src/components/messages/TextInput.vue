@@ -9,7 +9,7 @@
             <div class="inputFields">
                 <img class="plusButton" src="@/assets/plus.svg" alt="" @click="$refs.files.click()">
                 <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Write something..." autocomplete="off">
-                <div v-if="previews.length > 0" type="file" class="quickButton removeAll" @click.prevent="deselectAll()">{{translation('REMOVE ALL')}}</div>
+                <div v-if="previews.length > 0" type="file" class="quickButton removeAll" @click.prevent="deselectAll()">{{translation('CLEAR')}}</div>
             </div>
         </form> 
         <button :class="{ready: message || previews.length > 0}" type="file" class="submit" form="sendMessage"><img :src="require(`@/assets/send.png`)" ></button>
@@ -40,7 +40,6 @@ export default {
             attachments: attachments,
           };
 
-          console.log("tesointoisentoisentoisnetoisenti");
           this.emitter.emit("sendMessage", message);
 
           // Reset

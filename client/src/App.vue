@@ -106,20 +106,19 @@ export default {
 }
 *::-webkit-scrollbar {
   position: absolute; 
-
+  width: 4px;
+  height: 4px;
 }
 *::-webkit-scrollbar-track {
   background-color: transparent; 
 }
 *::-webkit-scrollbar-thumb {
   background-color: #888888;
-  border: 6px solid #F3F3F3; 
-  border-radius: 16px;
+  border-radius: 16px;  
 }
 
 *.darkmode::-webkit-scrollbar-thumb {
   background-color: var(--darkmodeLight);
-  border: 6px solid #10121D; 
 }
 
 html {

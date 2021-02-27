@@ -22,12 +22,16 @@ const child_process = require('child_process');
 // OAuth keys, etc
 const osuKey = '4fhm7Z3QT1itZjWqfVSoISHUJHwhOTkwhKu3FTJ6';
 const osuClientId = '5478';
-
+ 
 // const options = {
 //     key: fs.readFileSync("./key.pem"),
 //     cert: fs.readFileSync("./cert.pem")
 // };
 
+const Classes = require("./handlers/classes.js");   // Import Constructor classes
+const clusters = require('./handlers/clusters.js'); // Import clusterHandler, currently used for image processing
+const auth = require("./middlewares/auth.js");      // Import middlewares, rn we have only auth
+const db = require("./handlers/database.js");       // Import database handler
 
 const schema = Joi.object({
   username: Joi.string().alphanum().min(3).max(30).required(),
@@ -37,23 +41,6 @@ const schema = Joi.object({
     .email({ minDomainSegments: 2 })
     .required(),
 });
-
-// Database
-var monk = require("monk");
-const url = "localhost:27017/anihuu";
-const db = monk(url);
-db.then(() => {
-  console.log(`Connected to database ${url}`);
-});
-
-// Database Collections
-let users = db.get("users");
-// users.update({}, { "$set": { 'profile.order': ['favorite_anime', 'osu_profile', 'computer_specs', 'description']}},{multi:true});
-
-let messages = db.get("messages");
-let anime = db.get("anime");
-let notifications = db.get("notifications");
-let channels = db.get("channels");
 
 // API
 var app = express();
@@ -87,7 +74,6 @@ async function createToken(user, res) {
   };
 
   jwt.sign(payload, "h4x0r", { expiresIn: "30d" }, (err, token) => {
-    console.log(token);
     res.cookie("token", token);
     res.json({
       message: "Logged in",
@@ -100,33 +86,6 @@ async function createToken(user, res) {
 }
 
 
-async function cacheImages(attachments){
-  return new Promise(resolve => {
-    // var numchild = require('os').cpus().length;
-    var done = 0;
-    let cachedAttachments = [];
-
-    for (var i = 0; i < attachments.length; i++){
-      console.log(`[SUBTASK]`.bgYellow.black + ` Started ` + `[${i + 1}/${attachments.length}]`.yellow + ` attachmentProcessor.js`);
-      
-      // Launch subtask      
-      var attachmentProcessor = child_process.fork('./clusters/attachmentProcessor');
-      
-      // Send image to process to subtask      
-      attachmentProcessor.send(attachments[i]);
-
-      // Wait for results
-      attachmentProcessor.on('message', cachedAttachment => {
-        cachedAttachments.push(cachedAttachment.result);
-        done++;
-        if (done === attachments.length) {
-          console.log(`[SUBTASK]`.bgYellow.black + ` [${i}/${attachments.length}]`.yellow + ` Subtasks finished successfully`);
-          resolve(cachedAttachments);
-        }
-      });
-    };
-  });
-};
 
 // Online users
 let onlineUsers = [];
@@ -136,7 +95,7 @@ async function addToOnlineUsers(uuid) {
   
   // Update user last seen in their db
   let newLastSeen = new Date().getTime();
-  await users.update({'uuid': uuid}, { "$set": {'profile.status.lastSeen': newLastSeen}});
+  await db.users.update({'uuid': uuid}, { "$set": {'profile.status.lastSeen': newLastSeen}});
 
   // Check if the user is already in there
   const found = onlineUsers.some(user => user.uuid == uuid);
@@ -168,209 +127,45 @@ async function addToOnlineUsers(uuid) {
   return onlineUsers;
 }
 
-// C O N S T R U C T O R for new USERS 🐂🐂🐂🐂🐂🐂🐂
-function User(username, email, password){
-  this.username = username;
-  this.uuid = uuidv4();
-  this.created_at = new Date().getTime();
-  this.profile = {
-    status: {
-      lastSeen: new Date().getTime(),
-    },
-    order: ['favorite_anime', 'osu_profile', 'computer_specs', 'description'],
-    isDeveloper: false,
-    isBetaTester: false,
-    pfp: "http://taku.moe:8880/pfp/_default.png",
-    banner: "http://taku.moe:8880/banner/_default.png",
-    description: "Hi I love anime owo!",
-    anime_list: [],
-    socials: {},
-    connections: {},
-  };
-  this.following = [];
-  this.friend_list = {
-    friends: [],
-    incoming: [],
-    outgoing: [],
-  };
-  this.settings = {
-    show_nsfw: false,
-    account: {
-        email: email,
-        password: password,
-    },
-    language: "en",
-    appearance: {                                                               
-        darkmode: false,
-        animate_pfps: true,
-        theme_color: "#fe7692",
-        flare: {
-            enabled: false,
-            content: "",
-            color: ""
-        }       
-    },
-    sounds: {
-        typing: { 
-            enabled: true,
-            url: "" 
-        },
-        mention: { 
-            enabled: true,
-            url: "" 
-        },
-        notification: { 
-            enabled: true,
-            url: "" 
-        },
-        hover: { 
-            enabled: false,
-            url: "" 
-        },
-        click: { 
-            enabled: false,
-            url: "" 
-        },
-    },
-    connections: {},
-    notifications: {
-        disable_all: false,
-        messages: true,
-        posts: true,
-        comments: true,
-        friend_requests: true,
-        follows: true,
-        emails: true
-    },
-    privacy: {
-        show_status: true,
-        blocked_users: []
-    },
-  }
-};
-
-// C O N S T R U C T O R for new MESSAGES 💭💬
-function Message(author, content, channel_uuid, attachments = []) {
-
-  if (!author) return new Error("'author' must be provided for a message");
-  if (!channel_uuid) return new Error("'channel_uuid' must be provided for a message");
-
-  this.uuid = uuidv4();                       // UUID of the message
-  this.created_at = new Date().getTime();     // Message send date
-  // The content of the message
-  this.content = content;                     // Message send date
-  this.attachments = attachments;             // The files of the message
-  this.seen = [author];                       // Array of user UUIDs who saw it
-  this.channel_uuid = channel_uuid;           // The channel where that message should be in
-  this.author = author;                       // The UUID of the user who made the message
-};
-
-// C O N S T R U C T O R for new CHANNELS 💭💬
-function Channel(author, participants, king) {
-
-  if (!author) return new Error("'author' must be provided to create a channel");
-  if (participants.length < 1) return new Error("there must be at least 1 other participant than the author to create a channel");
-
-  this.uuid = uuidv4();                         // UUID of the channel
-  this.created_at = new Date().getTime();       // Channel creation date
-  this.author = author;                         // The UUID of the user who made the channel
-  this.memberList = [author, ...participants];  // The UUIDs of you and the person you're messaging to
-  this.lastMessage = lastMessage;               // The UUID of the latest message sent in that channel if any
-  if (king) this.king = king;                   // The UUID of who currently owns the group // These apply only, if channel is a group
-};
-
-// C O N S T R U C T O R for new NOTIFICATIONS
-function Notification(type, from, content, post, channel, n_attachments = 0) {
-  // Throw errors if trying to add dumb notifications with missing parameters
-  if (!type) return new Error("'type' must be provided for notifications");
-  if (!from) return new Error("'from' must be provided for post notifications");
-
-  switch (type) {
-    case "Friend Request":
-      if (!from) return new Error("'from' must be provided for friend request notifications ");
-    break;
-    case "Comment":
-      if (!post) return new Error("'post_uuid' must be provided for comment notifications");
-      break;
-    case "Message":
-      if (!channel) return new Error("'channel_uuid' must be provided for message notifications");
-      break;
-    case "Post":
-      if (!post) return new Error("'post_uuid' must be provided for post notifications");
-      break;
-  }
-
-  this.uuid = uuidv4();
-  this.type = type;
-  this.from = {
-    uuid: from.uuid,
-    username: from.username,
-  };
-  if (channel) this.in = `/${channel.type}/${channel.uuid}`; // The channel the notification is coming from
-  if (post)    this.at = `/${post.type}/${post.uuid}`;       // The post the notification is coming from
-  this.created_at = new Date().getTime();
-  this.read = false;
-  this.show = true;
-
-  const maxLength = 32;
-
-  // Badass notification splitter/attachment detector thingy
-  // If theres only attachments
-  if (n_attachments != 0 && !content ) this.content = `${n_attachments} attachments`;  
-
-  // If theres attachments and text
-  else if (n_attachments != 0 && content) {
-    const supposedMessage = `${n_attachments} attachments, ${content}`;
-    if (supposedMessage.length > maxLength) this.content = supposedMessage.split('').slice(0, maxLength).join('') + " . . .";
-    else this.content = `${n_attachments} attachments, ${content}`;
-  }
-
-  // If theres only text
-  else {
-    if (content.length > maxLength) this.content = content.split('').slice(0, maxLength).join('') + " . . .";
-    else this.content = content;
-  }
-};
-
 // Friend Requests 
 const acceptFriendRequest = (me, userToAccept) => {
   return new Promise(async (resolve, reject) => {
     // Add the other users uuid to my pending list
-    await users.update(
+    await db.users.update(
       { uuid: me.uuid },
       { $pull: { 'friend_list.incoming': userToAccept } },
     );
 
     // Add the other user to my friends
-    await users.update(
+    await db.users.update(
       { uuid: me.uuid },
       { $addToSet: { 'friend_list.friends': userToAccept} }
     );
 
     // Add my uuid to the other users pending list
-    await users.update(
+    await db.users.update(
       { uuid: userToAccept },
       { $pull: { 'friend_list.outgoing': me.uuid} },
     );
 
     // Add me.uuid to their friends
-    await users.update(
+    await db.users.update(
       { uuid: userToAccept },
       { $addToSet: { 'friend_list.friends': me.uuid} }
     );
 
     // Create a new DM for those users
     // Check if database contains a channel, which memberList contains these uuids
-    const checkedChannel = (await channels.aggregate([
+    const checkedChannel = (await db.channels.aggregate([
       {'$match': {'memberList': {'$in': [me.uuid]}}}, {'$match': {'memberList': {'$in': [userToAccept]}}}]))[0];
 
     // If there isn't a channel for those 2 users already, make a new one
     if (!checkedChannel){
-      await channels.insert(new Channel(me.uuid, [userToAccept]));
+      await db.channels.insert(new Classes.Channel(me.uuid, [userToAccept]));
     };
 
     // Create the notification
-    let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Accepted your friend request!`);
+    let notification = new Classes.Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Accepted your friend request!`);
 
     // Send event to the specific user
     io.sockets.in(userToAccept).emit('notification', notification);
@@ -382,7 +177,6 @@ const acceptFriendRequest = (me, userToAccept) => {
 const currentMessages = [];
 
 let totalConnections = 0;
-
 let currentLoad = 0;
 let ramUsage = 0;
 
@@ -391,58 +185,22 @@ setInterval(async () => {
   ramUsage = Math.floor(process.memoryUsage().heapUsed / 1000 );
 }, 1000);
 
-// Middleware
-let authJWT = (req, res, next) => {
-  jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-    if (error) {
-      res.status(403);
-      res.json({
-        message: "You must be logged in to view your user info idiot 🖕🖕🖕",
-      });
-      return;
-    }
-
-    // Get user's data from db
-    req.user = (await users.aggregate([
-      {
-        '$match': {
-          'uuid': `${user.uuid}`
-        }
-      }, {
-        '$lookup': {
-          'from': 'notifications', 
-          'localField': 'uuid', 
-          'foreignField': 'owner_uuid', 
-          'as': 'notifications'
-        }
-      }
-    ]))[0];
-    next();
-  });
-};
-
-
 let notificationRoom = '';
 
 // Websockets
 io.on("connection", socket => {
-  totalConnections++;
-
   // console.log(`Total Connections: ${totalConnections}`);
-  
   socket.on("ping", () => {
     socket.emit("pong", {cpu: currentLoad, ram: ramUsage });
   });
-
   // Connect the user to their own unique room for notifications
   socket.on("room", uuid => {
     // console.log("[Notification WS] Joined".red, uuid.red);
     socket.join(uuid);
   });
-
+  
   // Messages
-
-  app.post("/friend/add", authJWT, async (req, res) => { // Add a friend
+  app.post("/friend/add", auth, async (req, res) => { // Add a friend
     let me = req.user
     let userToAdd = req.body.uuid
     
@@ -454,25 +212,25 @@ io.on("connection", socket => {
     };
   
     // Add the other users uuid to my pending list
-    await users.update(
+    await db.users.update(
       { uuid: me.uuid },
       { $addToSet: { 'friend_list.outgoing': userToAdd } }
     );
   
     // Create the notification
-    let notification = new Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Sent you a friend request!`);
+    let notification = new Classes.Notification("Friend Request", {uuid: me.uuid, username: me.username}, `Sent you a friend request!`);
   
     // Send event to the specific user
     // console.log("[Notification WS] Emitting New".red, me.uuid.red);
     io.sockets.in(userToAdd).emit('notification', notification);
     
-    await notifications.update(
+    await db.notifications.update(
       { owner_uuid: userToAdd },
       { $push: { 'list': notification} }
     );
   
     // Add my uuid to the other users pending list
-    await users.update(
+    await db.users.update(
       { uuid: userToAdd },
       { $addToSet: { 'friend_list.incoming': me.uuid} }
     );
@@ -480,20 +238,18 @@ io.on("connection", socket => {
     res.status(200);
     res.json({"message": "Friend Request Sent"});
   });
-
-
-  app.post("/friend/remove", authJWT, async (req, res) => { // Remove a friend
+  app.post("/friend/remove", auth, async (req, res) => { // Remove a friend
    let me = req.user.uuid;
    let userToRemove = req.body.uuid
    
    // Add the other users uuid to my pending list
-   await users.update(
+   await db.users.update(
      { uuid: me },
      { $pull: { 'friend_list.friends': userToRemove } }
    );
   
    // Add my uuid to the other users pending list
-   await users.update(
+   await db.users.update(
      { uuid: userToRemove },
      { $pull: { 'friend_list.friends': me} }
    );
@@ -501,20 +257,18 @@ io.on("connection", socket => {
    res.status(200);
    res.json({"message": "Friend Removed"});
   });
-
-
-  app.post("/friend/cancel", authJWT, async (req, res) => { // Cancel a friend request
+  app.post("/friend/cancel", auth, async (req, res) => { // Cancel a friend request
     let me = req.user.uuid;
     let userToRemove = req.body.uuid
     
     // Add the other users uuid to my pending list
-    await users.update(
+    await db.users.update(
       { uuid: me },
       { $pull: { 'friend_list.outgoing': userToRemove } }
     );
     
     // Add my uuid to the other users pending list
-    await users.update(
+    await db.users.update(
       { uuid: userToRemove },
       { $pull: { 'friend_list.incoming': me} }
     );
@@ -522,9 +276,7 @@ io.on("connection", socket => {
     res.status(200);
     res.json({"message": "Friend Request Cancelled"});
   });
-
-
-  app.post("/friend/accept", authJWT, async (req, res) => { // Accept a friend
+  app.post("/friend/accept", auth, async (req, res) => { // Accept a friend
     let me = req.user;
     let userToAccept = req.body.uuid
     acceptFriendRequest(me, userToAccept);
@@ -532,21 +284,19 @@ io.on("connection", socket => {
     res.status(200);
     res.json({"message": "Friend Request Accepted"});
   });
-
-  
-  app.post("/friend/deny", authJWT, async (req, res) => { // Deny a friend
+  app.post("/friend/deny", auth, async (req, res) => { // Deny a friend
     
     let me = req.user.uuid;
     let userToRemove = req.body.uuid
     
     // Remove other persons uuid from your incoming list
-    await users.update(
+    await db.users.update(
       { uuid: me },
       { $pull: { 'friend_list.incoming': userToRemove } }
     );
     
     // Remove my uuid from other persons outgoing list
-    await users.update(
+    await db.users.update(
       { uuid: userToRemove },
       { $pull: { 'friend_list.outgoing': me} }
     );
@@ -562,7 +312,7 @@ io.on("connection", socket => {
   //     if (error) return
 
   //     // Get user's data from db
-  //     user = (await users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
+  //     user = (await db.users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
 
   //     // Create a typing user object
   //     let typingUser = {
@@ -575,7 +325,7 @@ io.on("connection", socket => {
   //   });
   // });
   socket.on("heartbeat", heartbeat => {
-    console.log(heartbeat);
+    // console.log(heartbeat);
     jwt.verify(heartbeat.user, "h4x0r", async (error, user) => {
       if (!user || user === undefined) return;
 
@@ -611,7 +361,7 @@ app.get("/ping", async (req, res) => {
 app.get("/user/:username", async (req, res) => {
   
   // Get user
-  const user = (await users.find(
+  const user = (await db.users.find(
     { username: req.params.username },
     { collation: { locale: "en", strength: 2 } }
   ))[0];
@@ -630,14 +380,14 @@ app.get("/user/:username", async (req, res) => {
   res.json(user);
 });
 
-app.get("/user", authJWT, async (req, res) => {
+app.get("/user", auth, async (req, res) => {
   res.status(200);
   res.json(req.user);
 });
 
-app.delete("/notifications", authJWT, async (req, res) => {
+app.delete("/notifications", auth, async (req, res) => {
   // Remove other persons uuid from your incoming list
-  await notifications.update(
+  await db.notifications.update(
     { owner_uuid: req.user.uuid },
     { $set: { list: []}}
   );
@@ -657,7 +407,7 @@ app.post("/user/computer", async (req, res) => {
     }
     req.user = user;
 
-    await users.update(
+    await db.users.update(
       { username: req.user.username },
       { $set: { 'profile.computer' : req.body.computer } }
     );
@@ -666,27 +416,27 @@ app.post("/user/computer", async (req, res) => {
     res.json({ message: "done" });
   });
 });
-app.post("/user/anime", authJWT, async (req, res) => {
+app.post("/user/anime", auth, async (req, res) => {
 
   const anime_id = req.body.anime;
   
   console.log(anime_id);
 
   if (req.body.action == true) {
-    await users.update(
+    await db.users.update(
       { uuid: req.user.uuid },
       { $addToSet: { "profile.anime_list" : anime_id } }
     );
   }
   else if (req.body.action == false){
-    await users.update(
+    await db.users.update(
       { uuid: req.user.uuid },
       { $pull: { "profile.anime_list" : anime_id } }
     );
   }
 
   if (req.body.isSignup == true) {
-    await users.update(
+    await db.users.update(
       { uuid: req.user.uuid },
       { $set: { "profile.anime_list" : anime_id } }
     );
@@ -706,7 +456,7 @@ app.post("/user/socials", async (req, res) => {
     }
     req.user = user;
 
-    await users.update(
+    await db.users.update(
       { username: req.user.username },
       { $set: { "profile.socials": body.socials } }
     );
@@ -716,20 +466,20 @@ app.post("/user/socials", async (req, res) => {
   });
 });
 
-app.get("/blockedUsers", authJWT, async (req, res) => {
+app.get("/blockedUsers", auth, async (req, res) => {
   res.status(200);
   res.json(req.user.settings.privacy.blocked_users);
 });
 
-app.get("/dms", authJWT, async (req, res) => {
+app.get("/dms", auth, async (req, res) => {
   res.status(200);
   res.json(req.user.dms);
 });
 
 // Setting Routes
-app.post("/settings", authJWT, async (req, res) => {
+app.post("/settings", auth, async (req, res) => {
 
-    await users.update(
+    await db.users.update(
       { uuid: req.user.uuid },
       { $set: { profile: req.body.profile, settings: req.body.settings, friend_list: req.body.friend_list} }
     );
@@ -737,18 +487,16 @@ app.post("/settings", authJWT, async (req, res) => {
     res.status(200);
     res.json({"message": "Changes saved successfully"});
 });
-app.post("/settings/upload", authJWT, upload.any(), async (req, res) => {
+app.post("/settings/upload", auth, upload.any(), async (req, res) => {
   let file = req.files[0];
   file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
   let link = `http://taku.moe:8880/${file.fieldname}/${req.user.uuid}`;
   
-
   // Add the original image in the cache folder if its not a png/jpeg
   fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/cache/${req.user.uuid}`);
   fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
   
-
   res.status(200);
   res.json({
     "status": 200,
@@ -770,7 +518,7 @@ app.get("/message/:user_id", async (req, res) => {
   });
 
   const targetUser = (
-    await users.find(
+    await db.users.find(
       { _id: req.params.user_id },
       { collation: { locale: "en", strength: 2 } }
     )
@@ -796,11 +544,11 @@ app.post("/search", async (req, res) => {
   let searchString = req.body.searchString.toLowerCase();
 
   const keywords = String.raw`.*${searchString}.*`;
-  const animelist = await anime.find(
+  const animelist = await db.anime.find(
     { "title.english": new RegExp(keywords, "i") }
   );
   
-  const userlist = await users.find(
+  const userlist = await db.users.find(
     { username: {$regex:  new RegExp(keywords, "gi")} },
     { collation: { locale: "en", strength: 2 } }
   );
@@ -816,19 +564,19 @@ app.post("/search", async (req, res) => {
 });
 app.get("/search/anime/:name", async (req, res) => {
     const keywords = String.raw`.*${req.params.name}.*`;
-    const animelist = await anime.find({ "title.english": new RegExp(keywords, "i") });
+    const animelist = await db.anime.find({ "title.english": new RegExp(keywords, "i") });
     res.status(200);
     res.json({ animelist: animelist });
 });
 
 // Anime Endpoints
 app.get("/anime", async (req, res) => {
-  const animelist = await anime.find();
+  const animelist = await db.anime.find();
   res.status(200);
   res.json({ animelist: animelist });
 });
 app.get("/anime/id/:id", async (req, res) => {
-    const result = await anime.find({ id: parseInt(req.params.id) });
+    const result = await db.anime.find({ id: parseInt(req.params.id) });
     res.status(200);
     res.json({ anime: result });
 });
@@ -848,14 +596,14 @@ app.post("/signup", async (req, res) => {
     }
 
     // Check if someone else has the same username
-    if ((await users.find({ username: form.username }, { collation: { locale: "en", strength: 2 } })).length == 1) {
+    if ((await db.users.find({ username: form.username }, { collation: { locale: "en", strength: 2 } })).length == 1) {
         res.status(200);
         res.json({ error: "Username already taken" });
         return;
     }
 
     // Check if the email is already bound to an account
-    if ((await users.find({ email: form.email })).length == 1) {
+    if ((await db.users.find({ email: form.email })).length == 1) {
         res.status(200);
         res.json({ error: "Email already exists" });
         return;
@@ -864,12 +612,12 @@ app.post("/signup", async (req, res) => {
     // Encrypt Passwords
     const hash = await bcrypt.hash(body.password, saltRounds);
 
-    const user = new User(form.username, form.email, hash);
-    console.log(user);
+    const user = new Classes.User(form.username, form.email, hash);
+    // console.log(user);
 
     // Make a new user with the values we got from the signup form and add to database
-    await users.insert(user);
-    await notifications.insert({owner_uuid: user.uuid, list: []});
+    await db.users.insert(user);
+    await db.notifications.insert({owner_uuid: user.uuid, list: []});
 
     // Respond to user
     res.status(200);
@@ -879,7 +627,7 @@ app.post("/login", async (req, res) => {
   // Parse body
   const body = req.body;
 
-  const user = await users.find(
+  const user = await db.users.find(
     { username: body.username },
     { collation: { locale: "en", strength: 2 } }
   );
@@ -901,10 +649,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.delete("/user/connection/:platform", authJWT, async (req, res) => {
+app.delete("/user/connection/:platform", auth, async (req, res) => {
   const plaform = req.params.platform;
 
-  await users.update({'uuid': req.user.uuid}, { '$unset': {'profile.connections.osu': undefined , 'settings.connections.osu': undefined }});
+  await db.users.update({'uuid': req.user.uuid}, { '$unset': {'profile.connections.osu': undefined , 'settings.connections.osu': undefined }});
   
   try {
     const deleteToken = await axios.delete("https://osu.ppy.sh/api/v2/oauth/tokens/current", {
@@ -925,7 +673,7 @@ app.delete("/user/connection/:platform", authJWT, async (req, res) => {
   }
 });
 
-app.post("/user/connection/:platform", authJWT, async (req, res) => {
+app.post("/user/connection/:platform", auth, async (req, res) => {
   const plaform = req.params.platform;
 
   const oauthToken = req.body.code;
@@ -949,7 +697,7 @@ app.post("/user/connection/:platform", authJWT, async (req, res) => {
     if (verifyToken.status == 200) {
       // Security 🤵🏻🕵️🕵️🕵️
       // Not your token, it's OUR token :stalinApproves:
-      await users.update({'uuid': req.user.uuid}, { '$set': {'settings.connections.osu.token': verifyToken.data }});
+      await db.users.update({'uuid': req.user.uuid}, { '$set': {'settings.connections.osu.token': verifyToken.data }});
 
       const user = await axios.get("https://osu.ppy.sh/api/v2/me", {
         headers: {
@@ -957,7 +705,7 @@ app.post("/user/connection/:platform", authJWT, async (req, res) => {
         }}
       );
 
-      await users.update({'uuid': req.user.uuid}, { '$set': {'profile.connections.osu': user.data }});
+      await db.users.update({'uuid': req.user.uuid}, { '$set': {'profile.connections.osu': user.data }});
     }
 
   } catch (error) {
@@ -965,26 +713,10 @@ app.post("/user/connection/:platform", authJWT, async (req, res) => {
   }
 });
 
-// -------------------------------------------------------------------------------
-// NEW MESSAGING SYSTEM POG 👀👀👀👀👀
-// https://discord.com/channels/guild_uuid/channel_uuid
-// https://discord.com/channels/user_uuid/channel_uuid
-// http://taku.moe:8080/messages/66598e6e-f60d-4fdf-95cb-1849c3c40bb8
-// -------------------------------------------------------------------------------
-
-
-// app.get("/group/:group_uuid/:channel_uuid", authJWT, async (req, res) => {
-//   const channel = await channels.find({uuid: req.params.channel_uuid });
-//   console.log(channel);
-// });
-
-
 io.on("connection", socket => {
-
-
-  app.get("/channels", authJWT, async (req, res) => {
+  app.get("/channels", auth, async (req, res) => {
     // let's not talk about this aggregate function
-    let result = await channels.aggregate([
+    let result = await db.channels.aggregate([
       {'$match': { 'memberList': { '$in': [ req.user.uuid ] }}}, 
       {'$lookup': { 'from': 'users',  'localField': 'memberList',  'foreignField': 'uuid',  'as': 'memberList' }}, 
       {'$project': {'_id': 0, 'memberList._id': 0, 'memberList.settings': 0, 'memberList.following': 0, 'memberList.friend_list': 0, 'memberList.created_at': 0, 'memberList.profile.isDeveloper': 0, 'memberList.profile.isBetaTester': 0, 'memberList.profile.pfp': 0, 'memberList.profile.banner': 0, 'memberList.profile.anime_list': 0, 'memberList.profile.socials': 0, 'memberList.profile.description': 0, 'memberList.profile.connections': 0, 'memberList.profile.order': 0 }},
@@ -996,8 +728,8 @@ io.on("connection", socket => {
     res.json({"channels": result});
   });
   
-  app.get("/dm/:channel_uuid", authJWT, async (req, res) => {
-    const dm = (await channels.find({uuid: req.params.channel_uuid }))[0];
+  app.get("/dm/:channel_uuid", auth, async (req, res) => {
+    const dm = (await db.channels.find({uuid: req.params.channel_uuid }))[0];
     if (!dm.memberList.includes(req.user.uuid)) {
       res.status(403);
       res.json({"message": 'Forbidden'});
@@ -1014,14 +746,9 @@ io.on("connection", socket => {
     socket.join(channel_uuid);
   });
 
-  socket.on('disconnect', async function(){
-    console.log("[Channel WS]".bgRed.black, "Disconnected");
-    console.log((await io.allSockets()).size);
-  });
-
   // Clean af optimized piece of database query
-  app.get("/messages/:channel_uuid/:offset", authJWT, async (req, res) => {
-    let response = (await messages.aggregate([
+  app.get("/messages/:channel_uuid/:offset", auth, async (req, res) => {
+    let response = (await db.messages.aggregate([
       {'$match': {'channel_uuid': req.params.channel_uuid}}, 
       {'$sort': {'created_at': -1}}, 
       {'$skip': parseInt(req.params.offset) }, 
@@ -1035,12 +762,11 @@ io.on("connection", socket => {
     res.json(response);
   });
 
-  app.post("/message", authJWT, upload.any(), async (req, res) => {
+  app.post("/message", auth, upload.any(), async (req, res) => {
     const messageEvent = JSON.parse(req.body.message);
     const channelEvent = JSON.parse(req.body.channel);
     // Load the channel from the database
-    let channel = (await channels.find({'uuid': channelEvent.uuid}))[0];
-    console.log(channelEvent);
+    let channel = (await db.channels.find({'uuid': channelEvent.uuid}))[0];
     channel.type = channelEvent.type;
 
     // Check if the user is a member of that channel
@@ -1056,16 +782,16 @@ io.on("connection", socket => {
     // Process attachments if any
     let attachments = [];
     if (req.files.length !== 0) {
-      attachments = await cacheImages(req.files);
+      attachments = await clusters.cacheImages(req.files);
     }
     // Create new message
-    let message = new Message(req.user.uuid, messageEvent.content, channel.uuid, attachments); 
+    let message = new Classes.Message(req.user.uuid, messageEvent.content, channel.uuid, attachments); 
     
-    await messages.insert(message); // Add to message database
+    await db.messages.insert(message); // Add to message database
     // Add to message to the channel it belongs to
-    await channels.update({'uuid': channel.uuid}, { "$set": {'lastMessage': message.uuid }});   
+    await db.channels.update({'uuid': channel.uuid}, { "$set": {'lastMessage': message.uuid }});   
     // 🍘 This should be optimized
-    message = (await messages.aggregate([
+    message = (await db.messages.aggregate([
         {
         '$match': {
             "uuid": message.uuid
@@ -1098,17 +824,15 @@ io.on("connection", socket => {
     // socket.emit("message", message);            // Send to current user
 
     // Create the notification
-    
-    let notification = new Notification("Message", {uuid: req.user.uuid, username: req.user.username}, message.content, undefined, channel, message.attachments.length);
+    let notification = new Classes.Notification("Message", {uuid: req.user.uuid, username: req.user.username}, message.content, undefined, channel, message.attachments.length);
 
     for (member of channel.memberList) {
       if (member != req.user.uuid) {
         // Send event to the specific users
-        await notifications.update(
+        await db.notifications.update(
           { owner_uuid: member },
           { $push: { 'list': notification} }
         );
-        console.log("[Notification WS] Emitting New".red, member.red);
         io.sockets.in(member).emit('notification', notification);
       }      
     }
@@ -1118,13 +842,7 @@ io.on("connection", socket => {
   });
 });
 
-
 const port = process.env.PORT || 8880;
 http.listen(port, () => {
   console.log(`listening on *:${port}`);
 });
-
-
-
-
-// `https://osu.ppy.sh/oauth/authorize?client_id=${osuClientId}?redirect_uri="http://taku.moe:8080/profile"`

@@ -240,25 +240,6 @@ export default {
 
 <style scoped>
 
-*::-webkit-scrollbar {
-  width: 12px;  
-  position: absolute; 
-
-}
-*::-webkit-scrollbar-track {
-  background-color: transparent; 
-}
-*::-webkit-scrollbar-thumb {
-  background-color: #888888;
-  border: 5px solid #F3F3F3; 
-  border-radius: 16px;
-}
-
-*.darkmode::-webkit-scrollbar-thumb {
-  background-color: var(--darkmodeLight);
-  border: 5px solid var(--darkmodeDark); 
-}
-
 .settings {
   min-height: 100vh;
   width: 100%;
