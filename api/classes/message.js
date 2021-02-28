@@ -7,8 +7,7 @@ function Message(author, content, channel_uuid, attachments = []) {
 
     this.uuid = uuidv4();                       // UUID of the message
     this.created_at = new Date().getTime();     // Message send date
-    // The content of the message
-    this.content = content;                     // Message send date
+    this.content = content;                     // The content of the message
     this.attachments = attachments;             // The files of the message
     this.seen = [author];                       // Array of user UUIDs who saw it
     this.channel_uuid = channel_uuid;           // The channel where that message should be in

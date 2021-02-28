@@ -6,14 +6,23 @@ const router = express.Router();
 
 router.get("/", auth, async (req, res) => {
   // let's not talk about this aggregate function
-  let result = await db.channels.aggregate([
+  let channels = await db.channels.aggregate([
       { '$match': { 'memberList': { '$in': [req.user.uuid] } } },
       { '$lookup': { 'from': 'users', 'localField': 'memberList', 'foreignField': 'uuid', 'as': 'memberList' } },
       { '$project': { '_id': 0, 'memberList._id': 0, 'memberList.settings': 0, 'memberList.following': 0, 'memberList.friend_list': 0, 'memberList.created_at': 0, 'memberList.profile.isDeveloper': 0, 'memberList.profile.isBetaTester': 0, 'memberList.profile.pfp': 0, 'memberList.profile.banner': 0, 'memberList.profile.anime_list': 0, 'memberList.profile.socials': 0, 'memberList.profile.description': 0, 'memberList.profile.connections': 0, 'memberList.profile.order': 0 } },
       { '$lookup': { 'from': 'messages', 'localField': 'lastMessage', 'foreignField': 'uuid', 'as': 'lastMessage' } },
       { '$unwind': { 'path': '$lastMessage', 'preserveNullAndEmptyArrays': true } },
   ]);
-  res.status(200).json({ "channels": result });
+  res.status(200).json({ "channels": channels });
+});
+
+router.get("/:channel_uuid", auth, async (req, res) => {
+  const channel = (await db.channels.find({ uuid: req.params.channel_uuid }))[0];
+  if (!channel.memberList.includes(req.user.uuid)) {
+      res.status(401).json({ "message": 'Forbidden' });
+      return;
+  }
+  res.status(200).json({ "channel": channel });
 });
 
 // Clean af optimized piece of database query

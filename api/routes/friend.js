@@ -5,7 +5,7 @@ const auth = require("../middlewares/auth.js");       // Import auth system
 
 const io = require('../index.js');
 
-const friend = express.Router();
+const router = express.Router();
 
 // Friend Requests 
 const acceptFriendRequest = (me, userToAccept) => {
@@ -55,7 +55,7 @@ const acceptFriendRequest = (me, userToAccept) => {
 }
 
 // Messages
-friend.post("/add", auth, async (req, res) => { // Add a friend
+router.post("/add", auth, async (req, res) => { // Add a friend
   let me = req.user
   let userToAdd = req.body.uuid
 
@@ -91,7 +91,7 @@ friend.post("/add", auth, async (req, res) => { // Add a friend
 
   res.status(200).json({ "message": "Friend Request Sent" });
 });
-friend.post("/remove", auth, async (req, res) => { // Remove a friend
+router.post("/remove", auth, async (req, res) => { // Remove a friend
   let me = req.user.uuid;
   let userToRemove = req.body.uuid
 
@@ -109,7 +109,7 @@ friend.post("/remove", auth, async (req, res) => { // Remove a friend
 
   res.status(200).json({ "message": "Friend Removed" });
 });
-friend.post("/cancel", auth, async (req, res) => { // Cancel a friend request
+router.post("/cancel", auth, async (req, res) => { // Cancel a friend request
   let me = req.user.uuid;
   let userToRemove = req.body.uuid
 
@@ -127,14 +127,14 @@ friend.post("/cancel", auth, async (req, res) => { // Cancel a friend request
 
   res.status(200).json({ "message": "Friend Request Cancelled" });
 });
-friend.post("/accept", auth, async (req, res) => { // Accept a friend
+router.post("/accept", auth, async (req, res) => { // Accept a friend
   let me = req.user;
   let userToAccept = req.body.uuid
   acceptFriendRequest(me, userToAccept);
 
   res.status(200).json({ "message": "Friend Request Accepted" });
 });
-friend.post("/deny", auth, async (req, res) => { // Deny a friend
+router.post("/deny", auth, async (req, res) => { // Deny a friend
 
   let me = req.user.uuid;
   let userToRemove = req.body.uuid
@@ -154,4 +154,4 @@ friend.post("/deny", auth, async (req, res) => { // Deny a friend
   res.status(200).json({ "message": "Friend Request Denied" });
 });
 
-module.exports = friend
+module.exports = router

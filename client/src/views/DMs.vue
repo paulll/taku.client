@@ -149,7 +149,7 @@ export default {
     async getChannel(){ 
 
       try {
-        await axios.get(`http://taku.moe:8880/dm/${this.$route.params.channel_uuid}`, {
+        await axios.get(`http://taku.moe:8880/channels/${this.$route.params.channel_uuid}`, {
           withCredentials: true,
         });
       } catch (error) {

@@ -83,4 +83,8 @@ router.post("/socials", auth, async (req, res) => {
     res.json({ message: "done" });
 });
 
+router.get("/blockedUsers", auth, async (req, res) => {
+    res.status(200).json(req.user.settings.privacy.blocked_users);
+});
+
 module.exports = router

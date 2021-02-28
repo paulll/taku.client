@@ -52,7 +52,7 @@ export default {
           withCredentials: true,
         });
       } catch (error) {
-        if (error.status = 403) {
+        if (error.status = 401) {
           localStorage.clear();
           window.location.href = "http://taku.moe:8080/login";
           return

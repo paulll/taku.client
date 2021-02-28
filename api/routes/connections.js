@@ -13,10 +13,6 @@ router.use(auth);
 
 router.route('/:platform')
     .post(async (req, res) => {
-        const plaform = req.params.platform;
-
-        const oauthToken = req.body.code;
-
         const form = {
             grant_type: "authorization_code",
             client_id: osuClientId,

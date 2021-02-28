@@ -19,12 +19,10 @@ router.post("/", auth, upload.any(), async (req, res) => {
 
     // Check if the user is a member of that channel
     if (!channel.memberList.includes(req.user.uuid)) {
-        res.status(403).json({ "message": "Forbidden" });
+        res.status(401).json({ "message": "Forbidden" });
         return;
     }
 
-    // If the user is a member of that channel
-    res.status(200).json({ "message": "Approved message" });
     // Process attachments if any
     let attachments = [];
     if (req.files.length !== 0) {
@@ -37,6 +35,10 @@ router.post("/", auth, upload.any(), async (req, res) => {
     // Add to message to the channel it belongs to
     await db.channels.update({ 'uuid': channel.uuid }, { "$set": { 'lastMessage': message.uuid } });
     // 🍘 This should be optimized
+
+    // If the user is a member of that channel
+    res.status(201).json({ "message": "message created" });
+
     message = (await db.messages.aggregate([
         {
             '$match': {
@@ -93,3 +95,24 @@ router.post("/", auth, upload.any(), async (req, res) => {
 });
 
 module.exports = router;
+
+
+// socket.on("typing", typingEvent => {
+//   // Verify JWT
+//   jwt.verify(typingEvent.user, "h4x0r", async (error, user) => {
+
+//     if (error) return
+
+//     // Get user's data from db
+//     user = (await db.users.find({username: user.username }, { collation: { locale: "en", strength: 2 } }))[0];
+
+//     // Create a typing user object
+//     let typingUser = {
+//       uuid: user.uuid,
+//       pfp: user.profile.pfp
+//     };
+
+//     // Besides the client who is typing
+//     socket.broadcast.emit("typingUser", typingUser);
+//   });
+// });

@@ -1,6 +1,7 @@
+
 ## To-do
 
-<!-- - [x] Add a Mobile add file + button
+- [x] Add a Mobile add file + button
 - [x] Add a small preview resolution for the chat instead of showing full res
 - [x] Add theme color setting
 - [x] Add the logout button in the settings
@@ -25,7 +26,7 @@
 - [x] Fix android ribbon dissapearing on mobile
 - [x] Fix too many socials from wrapping out of their container on mobile
 - [x] Cache the typing sounds etc on mount because they seem to unload after a bit 
-- [x] Add thing for very high ping -->
+- [x] Add thing for very high ping
 
 - [~] Add previews for other file extentions besides images
 - [~] Make all the colors changes throughout the entire site
