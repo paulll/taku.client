@@ -49,30 +49,31 @@
 
     <div class="channels">
       <router-link :to="`/messages/private/${channel.uuid}`" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
-        <router-link :to="`/profile/${channel.memberList[0].username}`"><img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt=""></router-link>
+        <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
         <div class="info">
-          <div v-if="!channel.king">
-            <h1>{{channel.memberList[0].username}}</h1>
+          <div v-if="!channel.senpai">
+            <h1>{{channel.member_list[0].username}}</h1>
             <div class="channelStatus">
               <div class="icon"></div>
-              <p v-if="channel.lastMessage" class="lastMessage">{{channel.lastMessage.content}}</p>
+              <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
             </div>
           </div>
         </div>
       </router-link>
 
-      <div class="channel" v-for="channel in groupChannels" v-if="view == 'group'" :key="channel">
-        <!-- <router-link v-if="!channel.king" :to="`/profile/${channel.memberList[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt=""></router-link> -->
+      <router-link :to="`/messages/group/${channel.uuid}`" class="channel" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
+        <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
+        <img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.pfp}`" alt="">
         <div class="info">
-          <div v-if="channel.king">
-            <router-link :to="`/group/${channel.uuid}`"><h1>{{channel.uuid}}</h1></router-link>
+          <div v-if="channel.senpai">
+            <h1>{{channel.name}}</h1>
             <div class="channelStatus">
               <div class="icon"></div>
-              <p v-if="channel.lastMessage" class="lastMessage">{{channel.lastMessage.content}}</p>
+              <p v-if="channel.status" class="last_message">{{channel.status}}</p>
             </div>
           </div>  
         </div>
-      </div>
+      </router-link>
     </div>
   </div>
   <Chat/>
@@ -108,23 +109,8 @@ export default {
   },
   mounted() {
     this.getChannels();
-    this.sortChannels();
   },
   methods: {
-
-    // Sorts the channels in array based on lastMessages 
-    // But shit doesn't work and idk why, imma go fetch some braincells
-    // TODO: fix the sort function
-    sortChannels() {
-      this.privateChannels.sort(function(a, b) {
-        return b.lastMessage.created_at - a.lastMessage.created_at;
-      });
-      console.log(this.privateChannels);
-
-      // After all the channels are sorted, run filterSearch
-      this.filterSearch();
-    },
-
     // Filter users/groups to searchIndex
     filterSearch() {
 
@@ -137,14 +123,15 @@ export default {
         this.searchGroups = this.groupChannels;
         return
       }
+
       // If the string is found in any dm persons username, it is added to search results
       this.privateChannels.forEach(dm => {
-        if(dm.memberList[0].username.toLowerCase().includes(this.searchString.toLowerCase()))
+        if(dm.member_list[0].username.toLowerCase().includes(this.searchString.toLowerCase()))
           this.searchDMS.push(dm);
       });
       // Now this would only fetch the first users username from the group :kekw:
       this.groupChannels.forEach(group => {
-        if(group.memberList[0].username.toLowerCase().includes(this.searchString.toLowerCase()))
+        if(group.name.toLowerCase().includes(this.searchString.toLowerCase()))
           this.searchGroups.push(group);
       });
     },
@@ -181,20 +168,22 @@ export default {
 
       let channels = [];
       for (let channel of response.data.channels){
-        let memberList = [];
+        let member_list = [];
 
-        for (let member of channel.memberList){
-          if (member.uuid != this.me.uuid) memberList.push(member);
+        for (let member of channel.member_list){
+          if (member.uuid != this.me.uuid) member_list.push(member);
+
+
         }
+        console.log(channel);
         
-        channel.memberList = memberList;
+        channel.member_list = member_list;
 
-        if (channel.memberList.length == 1) this.privateChannels.push(channel);
-        if (channel.memberList.length >= 2) this.groupChannels.push(channel);
+        if (channel.type == "dm") this.privateChannels.push(channel);
+        if (channel.type == "group") this.groupChannels.push(channel);
       }
 
       response.data.channels = channels;
-
       this.channels = response.data.channels;
       this.filterSearch();
     }
@@ -431,7 +420,6 @@ menu div, section h1 {
   width: 48px;
   height: 48px;
   border-radius: 12px;
-  margin-right: 16px;
   object-fit: cover;
 }
 
@@ -484,7 +472,7 @@ menu div, section h1 {
   border-radius: 56px;
 }
 
-.channelStatus .lastMessage {
+.channelStatus .last_message {
   font-family: Work Sans;
   font-style: normal;
   font-weight: 600;

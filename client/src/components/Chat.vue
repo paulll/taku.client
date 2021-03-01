@@ -96,7 +96,7 @@ export default {
     //   dummy.scrollIntoView({behavior: "smooth"});
     // }, 500);
 
-    let lastMessage = {
+    let last_message = {
       author: {
         username: "a72bd87a2nh3hjd"
       }
@@ -110,12 +110,12 @@ export default {
       if (message.content !== undefined) {
         // If the last message is by the same user just add the message content itself without
         // Their username etc
-        if (lastMessage.author.uuid == message.author.uuid) message.author.same_as_last = true;
+        if (last_message.author.uuid == message.author.uuid) message.author.same_as_last = true;
       
         message.content = this.renderHtml(message.content);
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
         
-        lastMessage = message;
+        last_message = message;
         this.messages.unshift(message);
 
         // Play notification sound if they got mentioned
@@ -130,7 +130,7 @@ export default {
           this.mentionSound.play();
         };
 
-        this.lastMessage = message;
+        this.last_message = message;
 
         // Remove this later but for now its here to only show the last 20 messages so the UI doesn't lag
         if (this.messages.length > 100) this.messages.shift();
@@ -177,7 +177,7 @@ export default {
         return
       }
 
-      this.bannerUrl = `http://taku.moe:8880/banner/${channel.memberList.filter(uuid => uuid != this.me.uuid)[0]}`;
+      this.bannerUrl = `http://taku.moe:8880/banner/${channel.member_list.filter(uuid => uuid != this.me.uuid)[0]}`;
 
       // Connect to that dm's socket only if we are allowed to
       this.socket.emit('join_channel', this.$route.params.channel_uuid);
@@ -202,7 +202,7 @@ export default {
         message.content = this.renderHtml(message.content);
         message.attachments = message.attachments.map(attachment => this.renderHtml(attachment.html, attachment.originalurl, attachment.size));
         
-        if (index == arr.length) this.lastMessage = message;
+        if (index == arr.length) this.last_message = message;
       });
 
       this.messages = response.data;

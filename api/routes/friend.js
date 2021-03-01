@@ -35,13 +35,17 @@ const acceptFriendRequest = (me, userToAccept) => {
       );
 
       // Create a new DM for those users
-      // Check if database contains a channel, which memberList contains these uuids
+      // Check if database contains a channel, which member_list contains these uuids
       const checkedChannel = (await db.channels.aggregate([
-          { '$match': { 'memberList': { '$in': [me.uuid] } } }, { '$match': { 'memberList': { '$in': [userToAccept] } } }]))[0];
+          { '$match': { 'type': 'dm' } }, 
+          { '$match': { 'member_list': { '$in': [me.uuid] } } }, 
+          { '$match': { 'member_list': { '$in': [userToAccept] } } }
+      ]))[0];
 
       // If there isn't a channel for those 2 users already, make a new one
       if (!checkedChannel) {
-          await db.channels.insert(new Classes.Channel(me.uuid, [userToAccept]));
+          const newChannel = new Classes.Channel(me.uuid, [userToAccept]);
+          await db.channels.insert(newChannel);
       };
 
       // Create the notification

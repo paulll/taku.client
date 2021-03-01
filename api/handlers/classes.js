@@ -5,9 +5,12 @@ const classFiles = fs.readdirSync('./classes').filter(file => file.endsWith('.js
 const Classes = {};
 for (const file of classFiles) {
   let loadedFile = require(`../classes/${file}`);
-	Classes[loadedFile.name] = loadedFile.constructor;
-}
 
-//console.log(Classes);
+  // if file exports an array of constructors
+  if (loadedFile.length) loadedFile.forEach((constructor, index, arr) => Classes[constructor.name] = arr[index].constructor );
+  else Classes[loadedFile.name] = loadedFile.constructor;
+
+  console.log(`[HANDLER]`.bgMagenta.white + ` loaded ` + `[${file}]`.magenta + ` successfully!`);
+}
 
 module.exports = Classes

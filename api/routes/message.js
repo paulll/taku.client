@@ -18,7 +18,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
     channel.type = channelEvent.type;
 
     // Check if the user is a member of that channel
-    if (!channel.memberList.includes(req.user.uuid)) {
+    if (!channel.member_list.includes(req.user.uuid)) {
         res.status(401).json({ "message": "Forbidden" });
         return;
     }
@@ -33,7 +33,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
 
     await db.messages.insert(message); // Add to message database
     // Add to message to the channel it belongs to
-    await db.channels.update({ 'uuid': channel.uuid }, { "$set": { 'lastMessage': message.uuid } });
+    await db.channels.update({ 'uuid': channel.uuid }, { "$set": { 'last_message': message.uuid } });
     // 🍘 This should be optimized
 
     // If the user is a member of that channel
@@ -78,7 +78,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
     // Create the notification
     let notification = new Classes.Notification("Message", { uuid: req.user.uuid, username: req.user.username }, message.content, undefined, channel, message.attachments.length);
 
-    for (member of channel.memberList) {
+    for (member of channel.member_list) {
         if (member != req.user.uuid) {
             // Send event to the specific users
             await db.notifications.update(
