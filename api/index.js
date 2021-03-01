@@ -56,7 +56,12 @@ io.on("connection", socket => {
     socket.on("ping", () => socket.emit("pong", { cpu: currentLoad, ram: ramUsage }));
     socket.on("room", uuid => socket.join(uuid));
     socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));
+    socket.on('leave_channel', async channel_uuid => {
+        console.log("[Channel WS]".bgRed.black, "Left", channel_uuid.red);
+        socket.leave(channel_uuid);
+    });
     socket.on('join_channel', async channel_uuid => {
+        if(channel_uuid.length < 1) return;
         console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
         socket.join(channel_uuid);
     });

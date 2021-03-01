@@ -1,19 +1,20 @@
 <template>
   <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
-    <ChatHeader/>
+    <ChatHeader v-if="bannerUrl" :bannerUrl="bannerUrl" />
     <div class="messagesWrapper">
       <div class="messagesContainer">
         <div class="messages" :class="{darkmode: darkmode == 'true'}">
           <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
             <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('http://taku.moe:8880/pfp/${message.author.uuid}')`}"></div></router-link>
+            <div class="notch"></div>
             <div class="messageBubble">
-              <h4 class="date">
+              <!-- <h4 class="date">
                 <router-link :to='`/profile/${message.author.username}`'>
                   <strong>{{message.author.username}}</strong>
                 </router-link> 
                 <div class="flare" v-if="message.author.flare && message.author.flare.enabled" :style="{'background': message.author.flare.color}">{{message.author.flare.content}}</div>
                 {{convert(message.created_at)}}
-              </h4>
+              </h4> -->
               <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && (message.content.toLowerCase().includes(me.toLowerCase()) || message.content.toLowerCase().includes('everyone')), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
               <div class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
             </div>
@@ -25,7 +26,7 @@
           
 
         </div>
-        <div class="dummy"></div>  
+        <div class="dummy"></div>
       </div>
     </div>
     <TextInput/>
@@ -43,6 +44,9 @@ const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%
 
 export default {
   name: 'home',
+  // props: {
+  //   channel_information:   { type: Object, required: true },
+  // },
   components: {
     TextInput,
     ChatHeader,
@@ -56,6 +60,7 @@ export default {
       blockedUsers: [],
       typingUsers: [],
       previews: [],
+      bannerUrl: null,
       attachments: [],
       darkmode: localStorage.darkmode,
       typingSfx: localStorage.typing_sfx,
@@ -70,6 +75,7 @@ export default {
   watch: {
       $route(to, from) {
           this.getChannel();
+          this.socket.emit('leave_channel', to.params.channel_uuid);
       }
   },
   mounted() {
@@ -153,7 +159,6 @@ export default {
   unmounted() {
     console.log("attempting to disconnect");
     this.emitter.all.delete("sendMessage");
-    this.socket.emit('leave_channel', this.currentChannel);
     this.socket.disconnect();
   },
   destroyed() {
@@ -164,14 +169,16 @@ export default {
     async getChannel(){ 
 
       try {
-        await axios.get(`http://taku.moe:8880/channels/${this.$route.params.channel_uuid}`, {
+        var channel = (await axios.get(`http://taku.moe:8880/channels/${this.$route.params.channel_uuid}`, {
           withCredentials: true,
-        });
+        })).data.channel;
       } catch (error) {
         console.log(error);        
         return
       }
-      
+
+      this.bannerUrl = `http://taku.moe:8880/banner/${channel.memberList.filter(uuid => uuid != this.me.uuid)[0]}`;
+
       // Connect to that dm's socket only if we are allowed to
       this.socket.emit('join_channel', this.$route.params.channel_uuid);
       this.currentChannel = this.$route.params.channel_uuid;
@@ -201,7 +208,6 @@ export default {
       this.messages = response.data;
 
       console.log(`%c Fetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
-      console.dir(this.messages);
     },
     // This is to convert epoch to the user's time
     // Gotta fix this, apparently its some weird ass timezone in europe
@@ -309,7 +315,12 @@ export default {
   display: flex;
   overflow: scroll;
   overflow-x: hidden;
-  height: calc(100vh - 164px);
+  height: calc(100vh - 155px);
+  
+}
+
+.messages:first-child {
+  padding-bottom: 8px;
 }
 
 .messages.darkmode {
@@ -393,18 +404,52 @@ export default {
 .message {
   padding: 6px 0px;
   margin: 0px 4px 0px 16px;
-  align-items: flex-end;
+  align-items: flex-start;
   display: flex;
-  align-items: top;
+  position: relative;
+  top: 12px;
 }
 
+.message:not(.same) {
+  margin-bottom: -8px;
+}
+
+.message:not(.me) .notch {
+  height: 24px;
+  width: 24px;
+  background: #F1F2F4;
+  position: absolute;
+  top: 12px;
+  left: 32px;
+
+}
 .message.me {
   flex-direction: row-reverse; }
+
+.message.me .notch {
+  height: 24px;
+  width: 24px;
+  background: #F1F2F4;
+  position: absolute;
+
+  top: 12px;
+  right: 32px;
+}
+
+.message.same .notch { display: none };
+
+.messageBubble {
+  align-items: flex-end;
+  flex-direction: column;
+  display: flex;
+}
+
 
 .message.me .messageBubble {
   align-items: flex-end;
   display: flex;
   flex-direction: column;
+  border-radius: 16px 0px 16px 16px;
 }
 
 .message.me .messageBubble .date {
@@ -420,7 +465,7 @@ export default {
   display: flex;
   align-items: center;
   font-size: 14px;
-  margin: 6px 12px;
+  margin: 6px 0px;
   padding: 10px 12px;
   background: #F1F2F4;
   overflow-wrap: anywhere;
@@ -429,7 +474,11 @@ export default {
   /* max-width: 600px; */
   font-weight: 400;
   width: fit-content;
-  border-radius: 12px;
+  border-radius: 0px 16px 16px 0px;
+}
+
+.message.me .messageBubble .content {
+  border-radius: 16px 0px 0px 16px;
 }
 
 .messageBubble .content img { 
@@ -468,13 +517,13 @@ export default {
 .message.same .messageBubble .date { display: none; }
 
 .message.same .content {
-  margin: -4px 12px;
+  margin: -4px 4px;
   transform: translateY(-5px);
 }
 
-.message.same.me .content { margin-right: 50.8px; /* what the fuck why isn't this on the grid */ }
+.message.same.me .content { margin-right: 50px; /* what the fuck why isn't this on the grid */ }
 
-.message.same .content { margin-left: 50.8px; /* what the fuck why isn't this on the grid */ }
+.message.same .content { margin-left: 50px; /* what the fuck why isn't this on the grid */ }
 
 .date a {
   text-decoration: none;
@@ -488,6 +537,11 @@ export default {
   height: 39px;
   background-position: center;
   background-size: cover;
+  position: relative;
+  z-index: 100;
+  border: white 6px solid;
+  box-sizing: content-box;
+
 }
 
 .message.same .pfp { display: none; }

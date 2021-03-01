@@ -15,9 +15,11 @@
     <menu>
       <div @click="view = 'private'" :class="{'active': view == 'private'}">
         PRIVATE
+        <div class="line"></div>
       </div>
       <div @click="view = 'group'" :class="{'active': view == 'group'}">
         GROUPS
+        <div class="line"></div>
       </div>
     </menu>
     <section>
@@ -47,13 +49,13 @@
 
     <div class="channels">
       <router-link :to="`/messages/private/${channel.uuid}`" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
-        <router-link :to="`/profile/${channel.memberList[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt=""></router-link>
+        <router-link :to="`/profile/${channel.memberList[0].username}`"><img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt=""></router-link>
         <div class="info">
           <div v-if="!channel.king">
             <h1>{{channel.memberList[0].username}}</h1>
-            <div class="status">
+            <div class="channelStatus">
               <div class="icon"></div>
-              <div v-if="channel.lastMessage" class="lastMessage">{{channel.lastMessage.content}}</div>
+              <p v-if="channel.lastMessage" class="lastMessage">{{channel.lastMessage.content}}</p>
             </div>
           </div>
         </div>
@@ -64,9 +66,9 @@
         <div class="info">
           <div v-if="channel.king">
             <router-link :to="`/group/${channel.uuid}`"><h1>{{channel.uuid}}</h1></router-link>
-            <div class="status">
+            <div class="channelStatus">
               <div class="icon"></div>
-              <div v-if="channel.lastMessage" class="lastMessage">{{channel.lastMessage.content}}</div>
+              <p v-if="channel.lastMessage" class="lastMessage">{{channel.lastMessage.content}}</p>
             </div>
           </div>  
         </div>
@@ -282,6 +284,7 @@ export default {
     display: flex;
     position: relative;
     padding-left: 16px;
+    align-items: center;
 }
 
 /* .searchBox img {
@@ -342,6 +345,19 @@ menu div.active {
   color: var(--themeColor);
 }
 
+menu div .line {
+  height: 3px;
+  border-radius: 32px;
+  width: 0%;
+  margin-top: 2px;
+  transition: 200ms ease;
+}
+
+menu div.active .line {
+  background: var(--themeColor);
+  width: 40%;
+}
+
 section {
   padding: 0px 16px;
   width: 320px;
@@ -393,6 +409,7 @@ menu div, section h1 {
   transition: 100ms ease-out;
   outline: none;
   border-right: 0px solid #ff006b;
+  overflow: hidden;
 }
 
 .channel a {
@@ -408,10 +425,9 @@ menu div, section h1 {
 
 .channel.router-link-active {
   border-right: 4px solid #ff006b;
-  background: linear-gradient(270deg, #FFBFDE 0%, rgba(255, 234, 241, 0) 100%);
 }
 
-.pfp {
+.channelPfp {
   width: 48px;
   height: 48px;
   border-radius: 12px;
@@ -426,6 +442,7 @@ menu div, section h1 {
   justify-content: space-between;
   text-decoration: none;
   margin-left: 16px;
+  width: 60%;
 }
 
 .info a {
@@ -449,16 +466,17 @@ menu div, section h1 {
   color: #2C394A;
 }
 
-.status {
+.channelStatus {
   display: flex;
   flex-direction: row;
   align-items: center;
   height: 100%;
 }
 
-.status .icon {
+.channelStatus .icon {
   position: static;
   width: 20px;
+  min-width: 20px;
   height: 10px;
 
   border: 3px solid #7FE876;
@@ -466,16 +484,15 @@ menu div, section h1 {
   border-radius: 56px;
 }
 
-.status .lastMessage {
+.channelStatus .lastMessage {
   font-family: Work Sans;
   font-style: normal;
   font-weight: 600;
   font-size: 10px;
-
-  display: flex;
-  align-items: center;
+  white-space: nowrap;
   text-align: center;
-
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: #81859D;
   margin: 0px 4px;
 }
