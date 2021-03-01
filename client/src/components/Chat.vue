@@ -1,30 +1,34 @@
 <template>
   <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
-    <div class="tag-grid">
-      <div class="messages" :class="{darkmode: darkmode == 'true'}">
-        <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
-          <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('http://taku.moe:8880/pfp/${message.author.uuid}')`}"></div></router-link>
-          <div class="messageBubble">
-            <h4 class="date">
-              <router-link :to='`/profile/${message.author.username}`'>
-                <strong>{{message.author.username}}</strong>
-              </router-link> 
-              <div class="flare" v-if="message.author.flare && message.author.flare.enabled" :style="{'background': message.author.flare.color}">{{message.author.flare.content}}</div>
-              {{convert(message.created_at)}}
-            </h4>
-            <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && (message.content.toLowerCase().includes(me.toLowerCase()) || message.content.toLowerCase().includes('everyone')), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
-            <div class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
+    <ChatHeader/>
+    <div class="messagesWrapper">
+      <div class="messagesContainer">
+        <div class="messages" :class="{darkmode: darkmode == 'true'}">
+          <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
+            <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('http://taku.moe:8880/pfp/${message.author.uuid}')`}"></div></router-link>
+            <div class="messageBubble">
+              <h4 class="date">
+                <router-link :to='`/profile/${message.author.username}`'>
+                  <strong>{{message.author.username}}</strong>
+                </router-link> 
+                <div class="flare" v-if="message.author.flare && message.author.flare.enabled" :style="{'background': message.author.flare.color}">{{message.author.flare.content}}</div>
+                {{convert(message.created_at)}}
+              </h4>
+              <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && (message.content.toLowerCase().includes(me.toLowerCase()) || message.content.toLowerCase().includes('everyone')), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
+              <div class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
+            </div>
           </div>
-        </div>
 
-        <div class="typingUsers">
-          <div v-for="pfp of typingUsers" :key="pfp" class="typing" :style="{ 'background-image': `url(${pfp})`}"></div>
-        </div>
-        
+          <div class="typingUsers">
+            <div v-for="pfp of typingUsers" :key="pfp" class="typing" :style="{ 'background-image': `url(${pfp})`}"></div>
+          </div>
+          
 
+        </div>
+        <div class="dummy"></div>  
       </div>
-      <div class="dummy"></div>  
     </div>
+    <TextInput/>
   </div>
 </template>
  
@@ -32,11 +36,17 @@
 import axios from 'axios';
 import io from 'socket.io-client';
 import linkifyHtml from 'linkifyjs/html';
+import TextInput from '@/components/messages/TextInput.vue';
+import ChatHeader from '@/components/ChatHeader.vue';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
 export default {
   name: 'home',
+  components: {
+    TextInput,
+    ChatHeader,
+  },
   data: () => {
     return {
       message: "",
@@ -56,6 +66,11 @@ export default {
       mentionSound: '',
       currentChannel: '',
     };
+  },
+  watch: {
+      $route(to, from) {
+          this.getChannel();
+      }
   },
   mounted() {
 
@@ -292,6 +307,9 @@ export default {
   scrollbar-width: thin;
   flex-direction: column-reverse;
   display: flex;
+  overflow: scroll;
+  overflow-x: hidden;
+  height: calc(100vh - 164px);
 }
 
 .messages.darkmode {
@@ -317,11 +335,12 @@ export default {
 
 .DMs {
   background: #fff;
-  height: 100%;
-  transform: translateY(-56px);
   overflow: hidden;
-  margin-top: 76px;
-  border-radius: 32px;
+  width: 100%;
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  justify-content: end;
 }
 
 .DMs.darkmode { background: var(--darkmodeDark); /* darkmode */ }
@@ -367,11 +386,6 @@ export default {
   border-radius: 100%;
 }
 
-.messages {
-  overflow: scroll;
-  overflow-x: hidden;
-  height: calc(100vh - (76px * 2) + 20px);
-}
 .dummy {
   height: 64px;
   width: 100%;
@@ -382,10 +396,6 @@ export default {
   align-items: flex-end;
   display: flex;
   align-items: top;
-}
-
-.message:first-child {
-  margin-bottom: 14px;
 }
 
 .message.me {
@@ -494,16 +504,6 @@ export default {
 }
 
 @media only screen and (min-width: 715px)  {
-  .sendMessageContainer { bottom: 8px; }
   .dummy { height: 8px; }
-  .DMs { transform: translateY(0px); }
 }
-
-@media only screen and (max-width: 715px)  {
-  .DMs { transform: translateY(0px); }
-}
-
-
-
 </style>
-a

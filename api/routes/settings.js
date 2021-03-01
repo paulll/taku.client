@@ -24,10 +24,10 @@ router.post("/upload", upload.any(), async (req, res) => {
     let link = `http://taku.moe:8880/${file.fieldname}/${req.user.uuid}`;
 
     // Add the original image in the cache folder if its not a png/jpeg
-    fs.copyFileSync(`../db/uploads/${file.filename}`, `../db/${file.fieldname}/cache/${req.user.uuid}`);
-    fs.copyFileSync(`../db/uploads/${file.filename}`, `../db/${file.fieldname}/${req.user.uuid}`);
+    fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/cache/${req.user.uuid}`);
+    fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
 
-    res.status(200).json({
+    res.status(201).json({
         "status": 200,
         "message": "File uploaded successfully",
         "link": link,

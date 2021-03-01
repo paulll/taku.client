@@ -13,7 +13,7 @@
                 </div>
             </transition>
 
-            <form v-if="step == 1" v-on:submit.prevent="signup">
+            <form v-on:submit.prevent="signup">
 
                 <h1>Welcome to taku!</h1>
 
@@ -40,53 +40,6 @@
                 <button type="submit">SIGNUP</button>
 
             </form>
-
-            <form v-if="step == 2" v-on:submit.prevent="saveAnime">
-
-                <h1>Choose your favorite anime</h1>
-
-                <form class="searchBox" @submit.prevent="searchAnime(search)">
-                    <img src="../assets/search.svg" alt="">
-                    <input v-model="search" @keyup="searchAnime(search)" class="search" placeholder="SEARCH ANIME">
-                </form>
-                <div class="animeSelector">
-
-                    <div v-if="animelist" class="animePosters">
-                        <div class="posterContainer" v-for="anime in animelist" :key="anime" :id="anime.id" @click="select($event)" >
-                            <img v-bind:class="{ selected: selectedAnime.has(anime.id)}" :id="anime.id" class="anime" :src="`http://taku.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
-                            <svg v-if="selectedAnime.has(anime.id)" width="46" height="36" viewBox="0 0 46 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M39.9402 0.165039L15.4048 24.2298L6.46488 15.4613L0.95166 20.8688L15.4048 35.0448L45.4534 5.57252L39.9402 0.165039Z" fill="#FF006B"/></svg>
-                        </div>
-                    </div>
-
-                </div>
-
-                
-                <div class="buttonsStep2" v-if="step == 2">
-                    <button class="backButton" @click="window.location.href = `http:/taku.moe/profile/${username}`"> SKIP</button>
-                    <button type="submit">NEXT</button>
-                </div>
-
-            </form>
-
-            <form v-if="step == 3" v-on:submit.prevent="addSocials">
-
-                <h1>Add your socials links</h1>
-
-                <div class="inputField" v-for="field in fields" :key="field">
-                    <img src="../assets/_default.svg" alt="Text">
-                    <input autocomplete="off" :id="field" v-model="socials[field - 1]" class="i" type="text" placeholder="Link...">
-                </div>
-
-                <svg class="addButton" @click="addField()" width="31" height="30" viewBox="0 0 31 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.4998 0.00976562C7.45864 0.00976562 0.916504 6.5519 0.916504 14.5931C0.916504 22.6343 7.45864 29.1764 15.4998 29.1764C23.541 29.1764 30.0832 22.6343 30.0832 14.5931C30.0832 6.5519 23.541 0.00976562 15.4998 0.00976562ZM15.4998 2.19727C22.3588 2.19727 27.8957 7.73411 27.8957 14.5931C27.8957 21.4521 22.3588 26.9889 15.4998 26.9889C8.64085 26.9889 3.104 21.4521 3.104 14.5931C3.104 7.73411 8.64085 2.19727 15.4998 2.19727ZM15.4827 7.28577C15.1929 7.2903 14.9167 7.40968 14.7149 7.61769C14.513 7.82571 14.4019 8.10535 14.4061 8.39518V13.4994H9.30192C9.15699 13.4973 9.01309 13.5241 8.87859 13.5781C8.7441 13.6322 8.62168 13.7124 8.51847 13.8142C8.41525 13.9159 8.33329 14.0372 8.27735 14.1709C8.2214 14.3046 8.19259 14.4482 8.19259 14.5931C8.19259 14.738 8.2214 14.8816 8.27735 15.0153C8.33329 15.149 8.41525 15.2703 8.51847 15.372C8.62168 15.4738 8.7441 15.554 8.87859 15.6081C9.01309 15.6621 9.15699 15.6889 9.30192 15.6869H14.4061V20.791C14.404 20.936 14.4308 21.0799 14.4849 21.2143C14.5389 21.3488 14.6191 21.4713 14.7209 21.5745C14.8227 21.6777 14.9439 21.7597 15.0777 21.8156C15.2114 21.8715 15.3549 21.9003 15.4998 21.9003C15.6448 21.9003 15.7883 21.8715 15.922 21.8156C16.0557 21.7597 16.177 21.6777 16.2788 21.5745C16.3805 21.4713 16.4608 21.3488 16.5148 21.2143C16.5689 21.0799 16.5956 20.936 16.5936 20.791V15.6869H21.6978C21.8427 15.6889 21.9866 15.6621 22.1211 15.6081C22.2556 15.554 22.378 15.4738 22.4812 15.372C22.5844 15.2703 22.6664 15.149 22.7223 15.0153C22.7783 14.8816 22.8071 14.738 22.8071 14.5931C22.8071 14.4482 22.7783 14.3046 22.7223 14.1709C22.6664 14.0372 22.5844 13.9159 22.4812 13.8142C22.378 13.7124 22.2556 13.6322 22.1211 13.5781C21.9866 13.5241 21.8427 13.4973 21.6978 13.4994H16.5936V8.39518C16.5957 8.24879 16.5684 8.10347 16.5133 7.96782C16.4582 7.83218 16.3764 7.70898 16.2728 7.60552C16.1692 7.50206 16.0459 7.42045 15.9102 7.36553C15.7745 7.3106 15.6291 7.28348 15.4827 7.28577Z" fill="#959595"/></svg>
-
-                <div class="buttonsStep2" v-if="step == 3">
-                    <button class="backButton" @click="step = 2"> BACK</button>
-                    <button class="backButton" type="submit"> SKIP</button>
-                    <button type="submit">FINISH</button>
-                </div>
-
-            </form>
-
         </div>
       </div>
   </div>
@@ -103,117 +56,9 @@ export default {
     return {
         error: "",
         angery: false,
-        animelist: [],
-        selectedAnime: new Set(),
-        step: 1,
-        fields: 1,
-        socials: [],
     };
   },
-  created() {
-      this.step = 1;
-  },
-  mounted() {
-      this.getAnime();
-      console.log(this.step);
-  },
   methods: {
-    addField() {
-        // If they do a second error become angry!!!!! 💢💢💢
-        if (this.error) {
-            this.angery = true;
-            setTimeout(() => {
-                this.angery = false;
-            }, 300);
-        }
-
-        this.error = "";
-        if (this.fields >= 5) return this.error = "5 socials max please, you can add more later! owo";
-        this.fields += 1
-        return 
-    },
-    async addSocials(){
-        console.log(this.socials);
-
-        const json = JSON.stringify({socials: [...this.socials], user: localStorage.token});
-        const response = await axios.post('http://taku.moe:8880/user/socials', json, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        // Display backend error
-        if (response.data.error) return this.error = response.data.error;
-
-        // Finish and send the bitch home
-        window.location.href = `/profile/${this.username.toLowerCase()}`;
-
-    },
-    select: function(event) {
-        let targetId = event.currentTarget.id;
-
-        console.log(targetId);
-
-        if (this.selectedAnime.has(targetId)) {
-            this.selectedAnime.delete(targetId);
-            console.log(this.selectedAnime);
-            return
-        }
-
-        this.selectedAnime.add(parseInt(targetId));
-        console.log(this.selectedAnime);    
-    },
-    async getAnime(){
-        let result = await axios.get(`http://taku.moe:8880/anime`, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        this.animelist = result.data.animelist;
-        return
-    },
-    async searchAnime(search) {
-        // Remove empty spaces
-        search.trim();
-
-        // If they cleared their search
-        if(search == "") return this.getAnime();
-
-        // Search for anime
-        this.animelist = (await axios.get(`http://taku.moe:8880/search/anime/${search}`, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })).data.animelist;
-    },
-    async saveAnime(){
-
-        // If they do a second error become angry!!!!! 💢💢💢
-        if (this.error) {
-            this.angery = true;
-            setTimeout(() => {
-                this.angery = false;
-            }, 300);
-        }
-
-        // Reset animation
-        this.error = "";
-        if (this.selectedAnime.size < 3) return this.error = "Please select at least 3 of your favorite anime (个_个)";
-
-        const json = JSON.stringify({anime: [...this.selectedAnime], isSignup: true});
-        const response = await axios.post('http://taku.moe:8880/user/anime', json, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        // Display backend error
-        if (response.data.error) return this.error = response.data.error;
-
-        this.step = 3;
-
-    },
     async signup() {
         
         const usernameRegex = /^[a-zA-Z0-9.\-_]{3,30}$/;
@@ -275,12 +120,11 @@ export default {
         });
             
         localStorage.token = loginResponse.data.token;
-        localStorage.username = response.data.username;
+        localStorage.me = JSON.stringify({uuid: response.data.uuid, username: response.data.username});
 
-        this.step = 2;
+        // Finish and send the bitch home
+        window.location.href = `/profile/${this.username.toLowerCase()}`;
 
-        // Get all anime
-        this.getAnime();
     },
   }
 }

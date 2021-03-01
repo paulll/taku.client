@@ -3,6 +3,7 @@ const db = require("../handlers/database.js"); // Import database handler
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
+const Classes = require("../handlers/classes.js");    // Import Constructor classes
 
 const signup = express.Router();
 

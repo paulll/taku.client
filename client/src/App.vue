@@ -1,13 +1,16 @@
 <template>
-  <!-- <LoadingAnimation/> -->
-  <Header/>
-  <router-view/>
-  <ToolBar/>
+  <div class="shit">
+    <NavBar/>
+    <!-- <LoadingAnimation/> -->
+    <router-view class="FUCKER"/>
+    <ToolBar/>
+  </div>
 </template>
 
 <script>
 import Header from '@/components/Header.vue'
 import ToolBar from '@/components/ToolBar.vue'
+import NavBar from '@/components/NavBar.vue'
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
 
 import io from 'socket.io-client';
@@ -28,6 +31,7 @@ export default {
   components: {
     Header,
     ToolBar,
+    NavBar,
     LoadingAnimation,
   },
   created(){
@@ -95,7 +99,7 @@ export default {
   margin: 0;
   padding: 0;
   font-family: 'Work Sans', sans-serif;
-  box-sizing: none;
+  box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: lightgray transparent;
   scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
@@ -123,6 +127,7 @@ export default {
 
 html {
   width: 100vw;
+  overflow: hidden;
   height: 100vh;
 }
 
@@ -147,6 +152,14 @@ body {
 
 #app {
   overflow: hidden;
+  height: 100vh;
+}
+
+.shit {
+  display: flex;
+}
+
+.FUCKER {
   height: 100vh;
 }
 

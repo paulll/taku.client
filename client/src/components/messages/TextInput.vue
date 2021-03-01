@@ -1,5 +1,5 @@
 <template>
-    <div @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste" class="dropArea"></div>
+    <!-- <div @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste" class="dropArea"></div> -->
     <div class="sendMessageContainer">
         <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
             <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
@@ -111,24 +111,23 @@ export default {
     }
 }
 
-
-
 </script>
 
 <style scoped>
 
 .sendMessageContainer {
+  box-sizing: border-box;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 16px;
 }
 
 .sendMessage { 
   margin: 0px 16px;
   border-radius: 24px;
   background: #F1F2F4;
-  margin: 16px 0px;
   width: 100%;
 }
 

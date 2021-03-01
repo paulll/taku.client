@@ -70,7 +70,7 @@ router.post("/anime", auth, async (req, res) => {
     res.json({ message: `Anime ${anime_id} added to your favorites!` });
 });
 
-router.post("/socials", auth, async (req, res) => {
+router.post("/socials", async (req, res) => {
     // Parse body
     const body = req.body;
 

@@ -43,19 +43,11 @@ const routes = [
     },
   },
   {
-    path: '/messages',
+    path: '/messages/:type?/:channel_uuid?',
     name: 'Messages',
     component: () => import('../views/Messages.vue'),
     meta: {
       title: '⚙ Messages',
-    },
-  },
-  {
-    path: '/dm/:channel_uuid',
-    name: 'DMs',
-    component: () => import('../views/DMs.vue'),
-    meta: {
-      title: '💬 DMs',
     },
   },
   {
