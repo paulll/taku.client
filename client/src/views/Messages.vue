@@ -2,7 +2,15 @@
   <div class="channelsContainer" :class="{darkmode: darkmode == 'true'}">
     <div class="search">
       <h1>Chats</h1>
-      <img src="../assets/search.svg" alt="">
+        <div class="searchBox">
+          <transition name="slide-fade">
+            <input v-if="isSearching" class="searchField" spellcheck="false" :placeholder="translation('Search')" v-model="searchString" @keyup="filterSearch()">
+          </transition>
+          <img @click="toggleSearch()" src="../assets/search.svg" alt="">
+        </div>
+      <!-- <transition name="shrink">
+        <img v-if="!isSearching" @click="toggleSearch()" src="../assets/search.svg" alt="">
+      </transition> -->
     </div>
     <menu>
       <div @click="view = 'private'" :class="{'active': view == 'private'}">
@@ -27,8 +35,18 @@
       <h1 class="emoji">(｡•́︿•̀｡)</h1>
     </div>
 
+    <div class="emptyMessage" v-if="privateChannels.length != 0 && searchString.length > 0 && searchDMS.length == 0 && view == 'private'">  
+      <h1 class="message">I didn't find anyone!</h1>
+      <h1 class="emoji">｡･ﾟﾟ*(>д&lt;)*ﾟﾟ･｡</h1>
+    </div>
+
+    <div class="emptyMessage" v-if="groupChannels.length != 0 && searchString.length > 0 && searchGroups.length == 0 && view == 'group'">  
+      <h1 class="message">I didn't find any groups!</h1>
+      <h1 class="emoji">(╥﹏╥)</h1>
+    </div>
+
     <div class="channels">
-      <router-link :to="`/messages/private/${channel.uuid}`" v-if="view == 'private'" class="channel" v-for="channel in privateChannels" :key="channel">
+      <router-link :to="`/messages/private/${channel.uuid}`" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
         <router-link :to="`/profile/${channel.memberList[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.memberList[0].uuid}`" alt=""></router-link>
         <div class="info">
           <div v-if="!channel.king">
@@ -78,13 +96,73 @@ export default {
       channels: [],
       privateChannels: [],
       groupChannels: [],
+      searchDMS: [],
+      searchGroups: [],
+      searchString: '',
       view: 'private',
+      darkmode: localStorage.darkmode,
+      isSearching: false,
     };
   },
   mounted() {
     this.getChannels();
+    this.sortChannels();
   },
   methods: {
+
+    // Sorts the channels in array based on lastMessages 
+    // But shit doesn't work and idk why, imma go fetch some braincells
+    // TODO: fix the sort function
+    sortChannels() {
+      this.privateChannels.sort(function(a, b) {
+        return b.lastMessage.created_at - a.lastMessage.created_at;
+      });
+      console.log(this.privateChannels);
+
+      // After all the channels are sorted, run filterSearch
+      this.filterSearch();
+    },
+
+    // Filter users/groups to searchIndex
+    filterSearch() {
+
+      // Reset arrays to empty
+      this.searchDMS = [];
+      this.searchGroups = [];
+      // If search results are empty, make them identical to all results
+      if (this.searchString.length == 0) {
+        this.searchDMS = this.privateChannels;
+        this.searchGroups = this.groupChannels;
+        return
+      }
+      // If the string is found in any dm persons username, it is added to search results
+      this.privateChannels.forEach(dm => {
+        if(dm.memberList[0].username.toLowerCase().includes(this.searchString.toLowerCase()))
+          this.searchDMS.push(dm);
+      });
+      // Now this would only fetch the first users username from the group :kekw:
+      this.groupChannels.forEach(group => {
+        if(group.memberList[0].username.toLowerCase().includes(this.searchString.toLowerCase()))
+          this.searchGroups.push(group);
+      });
+    },
+
+    // Fetches right translation of the site
+    translation(sentence){
+        if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
+        else this.languageTable = require(`@/languages/${localStorage.language}.json`);
+        let translatedSentence = this.languageTable[sentence];
+        if (!translatedSentence) return sentence;
+        return translatedSentence;
+    },
+
+    // Toggles the search function
+    toggleSearch() {
+      this.isSearching = !this.isSearching;
+      this.searchString = '';
+      this.filterSearch();
+    },
+
     // Return list of channels this user is in
     async getChannels(){
       try {
@@ -116,6 +194,7 @@ export default {
       response.data.channels = channels;
 
       this.channels = response.data.channels;
+      this.filterSearch();
     }
   }
 }
@@ -123,6 +202,44 @@ export default {
 </script>
 
 <style>
+
+/* what happens when the animation is currently active */
+.slide-fade-enter-active {
+  transform: translateX(256px);
+}
+
+/* where it will end up when the entering animation is done */
+.slide-fade-enter-to {
+  transform: translateX(0px);
+  transition: all .3s ease;
+}
+
+/* apply the transition to the exit animation only when its active so it doesn't snap */
+.slide-fade-leave-active {
+  transition: all .3s ease;
+}
+
+/* where the leaving animation finishes off */
+.slide-fade-leave-to {
+  transform: translateX(256px);
+}
+
+.shrink-enter-active {
+  transform: scale(0.75);
+}
+
+.shrink-leave-active {
+  transition: all .3s ease;
+}
+
+.shrink-enter-to {
+  transform: scale(1);
+  transition: all .3s ease;
+}
+
+.shrink-leave-to {
+  transform: scale(0.75);
+}
 
 .channelsContainer {
   background: white;
@@ -158,6 +275,55 @@ export default {
   height: 32px;
   filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
   cursor: pointer;
+}
+
+.searchBox {
+    width: inherit;
+    display: flex;
+    position: relative;
+    padding-left: 16px;
+}
+
+/* .searchBox img {
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    margin-right: 12px;
+    margin-top: 10px;
+} */
+
+.searchField::placeholder {
+    letter-spacing: 1px;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 1;
+}
+
+.searchField:focus {
+    outline: none;
+}
+
+.searchField.img {
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    margin-left: 12px;
+    margin-top: 10px;
+}
+
+.searchField {
+    text-indent: 16px;
+    width: 100%;
+    max-width: 600px;
+    min-width: 16px;
+    height: 39px;
+    background: rgba(65, 63, 87, 0.25);
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding-left: 24px;
+    margin-right: 14px;
 }
 
 menu {
@@ -224,6 +390,9 @@ menu div, section h1 {
   display: flex;
   padding: 8px 16px;
   text-decoration: none;
+  transition: 100ms ease-out;
+  outline: none;
+  border-right: 0px solid #ff006b;
 }
 
 .channel a {
@@ -233,7 +402,9 @@ menu div, section h1 {
 
 .channel:hover {
   background: #FFF0F6;
+  transform: scale(1.04);
 }
+
 
 .channel.router-link-active {
   border-right: 4px solid #ff006b;

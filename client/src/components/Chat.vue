@@ -340,7 +340,7 @@ export default {
   display: flex;
   height: 100vh;
   flex-direction: column;
-  justify-content: end;
+  justify-content: flex-end;
 }
 
 .DMs.darkmode { background: var(--darkmodeDark); /* darkmode */ }

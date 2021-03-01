@@ -67,11 +67,18 @@ a {
   justify-content: center;
 
   transition: 100ms ease-in-out;
+
+  outline: none;
+}
+
+a:hover {
+  transform: scale(1.04);
 }
 
 a.router-link-active, a:hover {
   background: #FFF0F6;
 }
+
 
 a img {
   width: 32px;
