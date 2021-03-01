@@ -48,7 +48,8 @@
     </div>
 
     <div class="channels">
-      <router-link :to="`/messages/private/${channel.uuid}`" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
+  
+      <router-link :to="`/messages/private/${channel.uuid}`" :style="{'background': `url('http://taku.moe:8880/banner/${channel.member_list[0].uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
         <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
         <div class="info">
           <div v-if="!channel.senpai">
@@ -61,7 +62,8 @@
         </div>
       </router-link>
 
-      <router-link :to="`/messages/group/${channel.uuid}`" class="channel" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
+  
+      <router-link :to="`/messages/group/${channel.uuid}`" class="channel" :style="{'background': `url('http://taku.moe:8880/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
         <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
         <img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.pfp}`" alt="">
         <div class="info">
@@ -401,19 +403,28 @@ menu div, section h1 {
   overflow: hidden;
 }
 
-.channel a {
-  width: 48px;
-  height: 48px
+.channel:not(.router-link-active) {
+  background: white !important;
 }
 
-.channel:hover {
-  background: #FFF0F6;
+.channel:hover:not(.router-link-active) {
+  background: #FFF0F6 !important; 
   transform: scale(1.04);
 }
 
+.channel:hover { transform: scale(1.04); }
 
 .channel.router-link-active {
   border-right: 4px solid #ff006b;
+  background-blend-mode: overlay, normal;
+  background-size: fill;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.channel a {
+  width: 48px;
+  height: 48px
 }
 
 .channelPfp {
