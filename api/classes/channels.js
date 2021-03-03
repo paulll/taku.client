@@ -19,17 +19,18 @@ class Channel {
 
 // C O N S T R U C T O R for new CHANNELS 💭💬
 class GroupChannel extends Channel {
-    constructor(author, participants, last_message, senpai) {
+    constructor(author, participants, last_message, name) {
 
         // Pass the basic properties into superclass constructor
         super(author, participants, last_message);
-
-        this.senpai = senpai;           // Current owner of the group
-        this.name = 'New Group';  // Name of the group
-        this.pfp = '_default';          // Link to the profile picture of the group
-        this.status = 'We are awesome! owo';    // MOTD of the group
-        this.admins = [author];         // Current a dmins of the group
-        this.type = 'group';            // Type of the channel, here it's group
+        // -(x -(a - x)) = a
+        this.senpai = author;                               // Current owner of the group
+        // 'New Group' <- "Why the name is not updating!?!?"
+        this.name = name;                                   // Name of the group
+        this.pfp = '_default';                              // Link to the profile picture of the group
+        this.status = 'We are awesome! owo';                // MOTD of the group
+        this.admins = [author];                             // Current a dmins of the group
+        this.type = 'group';                                // Type of the channel, here it's group
     };
 }
 

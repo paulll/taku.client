@@ -1,9 +1,9 @@
 <template>
-  <header :style="{'background-image': `url('http://taku.moe:8880/banner/${channel.member_list[0].uuid}')`}">
+  <header v-if="channel.type != 'group'" :style="{'background-image': `url('https://taku.moe:2087/banner/${channel.member_list[0].uuid}')`}">
     <div class="headerDetails">
       <div class="headerLeft">
         <div class="channelInfo">
-          <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
+          <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
           <div class="info">
             <div v-if="!channel.senpai">
               <h1>{{channel.member_list[0].username}}</h1>
@@ -16,7 +16,30 @@
         </div>
       </div>
       <div class="headerRight">
-        
+
+
+        <div class="button" :class="{active: isSearching}">
+          <input v-if="isSearching" ref="search" class="searchBox" spellcheck="false" placeholder="Search" v-model="searchString" type="text" @keyup="filterSearch()">
+          <div class="iconContainer" @click="isSearching = !isSearching">
+            <img src="../assets/search.svg" alt="Search">
+          </div>
+        </div>
+
+        <div class="button" @click="emitter.emit('call', channel.member_list)">
+          <div class="iconContainer">
+            <img src="../assets/call.png" alt="Search">
+          </div>
+        </div>
+
+        <div class="button">
+          <div class="iconContainer">
+            <img src="../assets/settings.svg" alt="Search">
+          </div>
+        </div>
+
+        <div class="meInfo">
+          <router-link :to="`/profile/${me.username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${me.uuid}`" alt=""></router-link>
+        </div>
       </div>
     </div>
     
@@ -28,12 +51,14 @@
 <script>
 
 export default {
-  props: {
-    otherUserUUID: { type: String, required: true },
-    channel:   { type: Object, required: true },
+  data: () => {
+    return {
+          me: JSON.parse(localStorage.me),
+          isSearching: false,
+    };
   },
-  mounted(){
-    console.log(this.channel);
+  props: {
+    channel:   { type: Object, required: true },
   },
   methods: {
     convert(epoch) {
@@ -65,7 +90,39 @@ header img {
   object-fit: cover;
 }
 
-.headerLeft, .headerRight { width: 100%; }
+.headerLeft { 
+  width: 100%; 
+}
+
+.headerRight { 
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.headerRight .iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headerRight .iconContainer img {
+  width: 32px;
+  height: 32px;
+  filter: invert(1);
+}
+
+.meInfo {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: 100ms ease-out;
+  outline: none;
+  border-left: 0px solid #ff006b;
+  overflow: hidden;
+}
 
 .channelPfp {
     width: 48px;
@@ -176,6 +233,53 @@ header img {
   overflow: hidden;
   color: #F1F2F4;
   margin: 0px 4px;
+}
+
+.searchBox {
+  outline: none;
+  border: none;
+  text-indent: 8px;
+  height: 44px;
+  width: 100%;
+  background: transparent;
+  font-style: normal;
+  font-weight: 500;
+  z-index: 3px;
+}
+
+.searchBox::placeholder { 
+  color: #81859D; 
+}
+
+.button {
+  cursor: pointer;
+  width: fit-content;
+  min-width: 48px;
+  height: 48px;
+  width: 48px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  transition: 200ms ease-out;
+}
+
+.button.active {
+  width: 100%;
+}
+
+.button:hover, .button.active {
+  background: #F1F2F4;
+  transition: 100ms ease-in;
+}
+
+.button .iconContainer {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
 }
 
 </style>

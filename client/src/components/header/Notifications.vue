@@ -11,7 +11,7 @@
         <div class="notification" :class="{darkmode: darkmode == 'true'}" v-for="notification in notifications" :key="notification">
             <transition name="slide-fade" :id="notification.uuid" >
                 <div class="left" v-show='notification.show'>
-                    <router-link :to="`/profile/${notification.from.username}`"><img :src="`http://taku.moe:8880/pfp/cache/${notification.from.uuid}`"></router-link>
+                    <router-link :to="`/profile/${notification.from.username}`"><img :src="`https://taku.moe:2087/pfp/cache/${notification.from.uuid}`"></router-link>
                     <div class="text">
                         <router-link :to="`/profile/${notification.from.username}`"><p><strong>{{notification.from.username}}</strong> {{convert(notification.created_at)}}</p></router-link>
                         <router-link v-if="notification.in" :to="notification.in"><p>{{translation(notification.content)}}</p></router-link>
@@ -71,7 +71,7 @@ export default {
                     break;
             }
 
-            const response = await axios.post(`http://taku.moe:8880/friend/${option}`, {uuid: uuid}, {
+            const response = await axios.post(`https://taku.moe:2087/friend/${option}`, {uuid: uuid}, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'

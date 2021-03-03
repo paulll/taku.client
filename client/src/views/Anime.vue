@@ -1,8 +1,8 @@
 <template>
     <div class="anime">
         <div class="bannerContainer">
-            <div v-if="anime.id" class="banner" :style="{'background-image' : `linear-gradient(0deg, rgba(255, 0, 107, 0.65), rgba(255, 0, 107, 0.75)), linear-gradient(0deg, #000000, #000000), url(http://taku.moe:8880/anime/banners/${anime.id}.jpg)`}">
-                <img class="poster" :src="`http://taku.moe:8880/anime/posters/${anime.id}.jpg`" alt="">
+            <div v-if="anime.id" class="banner" :style="{'background-image' : `linear-gradient(0deg, rgba(255, 0, 107, 0.65), rgba(255, 0, 107, 0.75)), linear-gradient(0deg, #000000, #000000), url(https://taku.moe:2087/anime/banners/${anime.id}.jpg)`}">
+                <img class="poster" :src="`https://taku.moe:2087/anime/posters/${anime.id}.jpg`" alt="">
                 <div class="info">
                     <div class="title">
                         <h1>{{anime.title.english}} 
@@ -53,7 +53,7 @@ export default {
 
             // Reset animation
             const json = JSON.stringify({anime: id, action: state});
-            const response = await axios.post('http://taku.moe:8880/user/anime', json, {
+            const response = await axios.post('https://taku.moe:2087/user/anime', json, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'
@@ -74,12 +74,12 @@ export default {
         async getData() {
 
             // Get user data
-            const response = await axios.get('http://taku.moe:8880/user', {withCredentials: true});
+            const response = await axios.get('https://taku.moe:2087/user', {withCredentials: true});
             let user = response.data
             this.user = user;
 
             // Get anime data
-            let anime = await axios.get(`http://taku.moe:8880/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+            let anime = await axios.get(`https://taku.moe:2087/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
             anime = Object.assign({}, anime).data.anime[0];
             anime.tags = anime.tags.join(", ");
             this.anime = anime;

@@ -1,108 +1,152 @@
 <template>
   <div class="channelsContainer" :class="{darkmode: darkmode == 'true'}">
-    <div class="search">
-      <h1>Chats</h1>
-        <div class="searchBox">
-          <transition name="slide-fade">
-            <input v-if="isSearching" class="searchField" spellcheck="false" :placeholder="translation('Search')" v-model="searchString" @keyup="filterSearch()">
-          </transition>
-          <img @click="toggleSearch()" src="../assets/search.svg" alt="">
-        </div>
-      <!-- <transition name="shrink">
-        <img v-if="!isSearching" @click="toggleSearch()" src="../assets/search.svg" alt="">
-      </transition> -->
-    </div>
-    <menu>
-      <div @click="view = 'private'" :class="{'active': view == 'private'}">
-        PRIVATE
-        <div class="line"></div>
-      </div>
-      <div @click="view = 'group'" :class="{'active': view == 'group'}">
-        GROUPS
-        <div class="line"></div>
-      </div>
-      <div @click="view = 'invites'" :class="{'active': view == 'invites'}">
-        INVITES
-        <div class="line"></div>
-      </div>
-    </menu>
-    <section>
-      <h1 v-if="privateChannels.length != 0 && view == 'private'">USERS</h1>
-      <h1 v-if="groupChannels.length != 0 && view == 'group'">GROUPS</h1>
-    </section>
+    <div>
+      <div v-if="callState != 'idle'" class="call">
+        {{callInformation.username}} Is calling you!
 
-    <div class="emptyMessage" v-if="privateChannels.length == 0 && view == 'private'">  
-      <h1 class="message">You don't have any dms!</h1>
-      <h1 class="emoji">(｡•́︿•̀｡)</h1>
-    </div>
-
-    <div class="emptyMessage" v-if="groupChannels.length == 0 && view == 'group'">  
-      <h1 class="message">You don't have any group chats!</h1>
-      <h1 class="emoji">(｡•́︿•̀｡)</h1>
-    </div>
-
-    <div class="emptyMessage" v-if="inviteChannels.length == 0 && view == 'invites'">  
-      <h1 class="message">You don't have any invites!</h1>
-      <h1 class="emoji">(｡•́︿•̀｡)</h1>
-    </div>
-
-    <div class="emptyMessage" v-if="privateChannels.length != 0 && searchString.length > 0 && searchDMS.length == 0 && view == 'private'">  
-      <h1 class="message">I didn't find anyone!</h1>
-      <h1 class="emoji">｡･ﾟﾟ*(>д&lt;)*ﾟﾟ･｡</h1>
-    </div>
-
-    <div class="emptyMessage" v-if="groupChannels.length != 0 && searchString.length > 0 && searchGroups.length == 0 && view == 'group'">  
-      <h1 class="message">I didn't find any groups!</h1>
-      <h1 class="emoji">(╥﹏╥)</h1>
-    </div>
-
-    <div class="emptyMessage" v-if="inviteChannels.length != 0 && searchString.length > 0 && searchInvites.length == 0 && view == 'invites'">  
-      <h1 class="message">I didn't find any invites!</h1>
-      <h1 class="emoji">(╥﹏╥)</h1>
-    </div>
-
-    <div class="channels">
-      <router-link :to="`/messages/private/${channel.uuid}`" :style="{'background': `url('http://taku.moe:8880/banner/${channel.member_list[0].uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
-        <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
-        <div class="info">
-          <div v-if="!channel.senpai">
-            <h1>{{channel.member_list[0].username}}</h1>
-            <div class="channelStatus">
-              <div class="icon"></div>
-              <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
-            </div>
+        <div class="button deny" @click="answer()">
+          <div class="iconWrapper">
+            <img src="../assets/deny.svg" alt="New Group">
           </div>
         </div>
-      </router-link>
 
-  
-      <router-link :to="`/messages/group/${channel.uuid}`" class="channel" :style="{'background': `url('http://taku.moe:8880/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
-        <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
-        <img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.pfp}`" alt="">
-        <div class="info">
-          <div v-if="channel.senpai">
-            <h1>{{channel.name}}</h1>
-            <div class="channelStatus">
-              <div class="icon"></div>
-              <p v-if="channel.status" class="last_message">{{channel.status}}</p>
-            </div>
-          </div>  
+        <div class="button accept" @click="hangup()">
+          <div class="iconWrapper">
+            <img src="../assets/checkmark.svg" alt="New Group">
+          </div>
         </div>
-      </router-link>
 
-      <router-link :to="`/messages/invites/`" class="channel" :style="{'background': `url('http://taku.moe:8880/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchInvites" v-if="view == 'group'" :key="channel">
-        <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
-        <img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.pfp}`" alt="">
-        <div class="info">
-          <div v-if="channel.senpai">
-            <h1>{{channel.name}}</h1>
-            <div class="channelStatus">
-              <div class="icon"></div>
-              <p v-if="channel.status" class="last_message">{{channel.status}}</p>
-            </div>
-          </div>  
+      </div>
+
+      <div v-if="me.isCalling" class="call">
+        Calling {{userToCall.username}}...
+      </div>
+
+      <div class="search">
+        <h1>Chats</h1>
+        <div class="button" :class="{active: isSearching}">
+          <input v-if="isSearching" ref="search" class="searchBox" spellcheck="false" placeholder="Search" v-model="searchString" type="text" @keyup="filterSearch()">
+          <div class="iconWrapper" @click="toggleSearch(); $refs.search.$el.focus();">
+            <img src="../assets/search.svg" alt="Search">
+          </div>
         </div>
-      </router-link>
+      </div>
+      <menu>
+        <div @click="view = 'private'" :class="{'active': view == 'private'}">
+          PRIVATE
+          <div class="line"></div>
+        </div>
+        <div @click="view = 'group'" :class="{'active': view == 'group'}">
+          GROUPS
+          <div class="line"></div>
+        </div>
+        <div @click="view = 'invites'" :class="{'active': view == 'invites'}">
+          INVITES
+          <div class="line"></div>
+        </div>
+      </menu>
+      <section>
+        <h1 v-if="privateChannels.length != 0 && view == 'private'">USERS</h1>
+        <h1 v-if="groupChannels.length != 0 && view == 'group'">GROUPS</h1>
+        <h1 v-if="inviteChannels.length != 0 && view == 'invites'">GROUPS</h1>
+      </section>
+
+      <div class="emptyMessage" v-if="privateChannels.length == 0 && view == 'private'">  
+        <h1 class="message">You don't have any dms!</h1>
+        <h1 class="emoji">(｡•́︿•̀｡)</h1>
+      </div>
+
+      <div class="emptyMessage" v-if="groupChannels.length == 0 && view == 'group'">  
+        <h1 class="message">You don't have any group chats!</h1>
+        <h1 class="emoji">(｡•́︿•̀｡)</h1>
+      </div>
+
+      <div class="emptyMessage" v-if="inviteChannels.length == 0 && view == 'invites'">  
+        <h1 class="message">You don't have any invites!</h1>
+        <h1 class="emoji">(｡•́︿•̀｡)</h1>
+      </div>
+
+      <div class="emptyMessage" v-if="privateChannels.length != 0 && searchString.length > 0 && searchDMS.length == 0 && view == 'private'">  
+        <h1 class="message">I didn't find anyone!</h1>
+        <h1 class="emoji">｡･ﾟﾟ*(>д&lt;)*ﾟﾟ･｡</h1>
+      </div>
+
+      <div class="emptyMessage" v-if="groupChannels.length != 0 && searchString.length > 0 && searchGroups.length == 0 && view == 'group'">  
+        <h1 class="message">I didn't find any groups!</h1>
+        <h1 class="emoji">(╥﹏╥)</h1>
+      </div>
+
+      <div class="emptyMessage" v-if="inviteChannels.length != 0 && searchString.length > 0 && searchInvites.length == 0 && view == 'invites'">  
+        <h1 class="message">I didn't find any invites!</h1>
+        <h1 class="emoji">(╥﹏╥)</h1>
+      </div>
+
+      <div class="channels">
+        <router-link :to="`/messages/private/${channel.uuid}`" :style="{'background': `url('https://taku.moe:2087/banner/${channel.member_list[0].uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
+          <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
+          <div class="info">
+            <div v-if="!channel.senpai">
+              <h1>{{channel.member_list[0].username}}</h1>
+              <div class="channelStatus">
+                <div class="icon"></div>
+                <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
+              </div>
+            </div>
+          </div>
+        </router-link>
+
+    
+        <router-link :to="`/messages/group/${channel.uuid}`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
+          <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
+          <img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.pfp}`" alt="">
+          <div class="info">
+            <div v-if="channel.senpai">
+              <h1>{{channel.name}}</h1>
+              <div class="channelStatus">
+                <div class="icon"></div>
+                <p v-if="channel.status" class="last_message">{{channel.status}}</p>
+              </div>
+            </div>
+          </div>
+          <img class="deleteChannel" v-if="channel.type == 'group'" src="../assets/trash.svg" alt="Delete Channel" @click="deleteChannel(channel)">
+        </router-link>
+
+        <router-link :to="`/messages/invites/`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchInvites" v-if="view == 'invites'" :key="channel">
+          <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
+          <img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.pfp}`" alt="">
+          <div class="info">
+            <div v-if="channel.senpai">
+              <h1>{{channel.name}}</h1>
+              <div class="channelStatus">
+                <div class="icon"></div>
+                <p v-if="channel.status" class="last_message">{{channel.status}}</p>
+              </div>
+            </div>  
+          </div>
+        </router-link>
+
+      </div>
+    </div>
+
+    <div class="bottomButtons" >
+      <div class="button" :class="{active: isMakingNewGroup}">
+        <div class="iconWrapper" @click="isMakingNewGroup = !isMakingNewGroup">
+          <img src="../assets/newGroup.png" alt="New Group">
+        </div>
+        <input v-if="isMakingNewGroup" class="searchBox" @enter="makeNewGroup()" placeholder="Group name" v-model="newGroupName" type="text">
+      </div>
+
+      <div class="button deny" v-if="isMakingNewGroup" @click="isMakingNewGroup = !isMakingNewGroup; newGroupName = ''">
+        <div class="iconWrapper">
+          <img src="../assets/deny.svg" alt="New Group">
+        </div>
+      </div>
+
+      <div class="button accept" v-if="isMakingNewGroup" @click="makeNewGroup()">
+        <div class="iconWrapper">
+          <img src="../assets/checkmark.svg" alt="New Group">
+        </div>
+      </div>
 
     </div>
   </div>
@@ -113,6 +157,8 @@
 import axios from 'axios';
 import linkifyHtml from 'linkifyjs/html';
 import Chat from '@/components/Chat.vue';
+import socket from '@/services/socket.js';
+import peer from '@/services/peerjs.js';
 
 export default {
   name: 'home',
@@ -134,12 +180,80 @@ export default {
       view: 'private',
       darkmode: localStorage.darkmode,
       isSearching: false,
+      isMakingNewGroup: false,
+      newGroupName: "",
+      callState: 'idle',
+      
+      callInformation: null,
+      userToCall: null,
     };
   },
   mounted() {
-    this.getChannels();
+
+
+
+    this.getData();
+    this.emitter.on("call", (participants) => this.call(participants));
+    socket.on('call', callInformation => {
+      this.callState = 'beingCalled';
+      this.callInformation = callInformation;
+    });
   },
-  methods: {
+  methods: {   
+    async call(participants){
+      if(this.me.isCalling || this.callState == 'inCall' || this.callState == 'calling' || this.callState == 'beingCalled') return console.log(`Cannot initialize call in this state!`);
+      else console.log(`Call would be initialized now`);
+
+      this.me.isCalling = true;
+
+      this.userToCall = participants[0];
+
+      console.log(participants);
+      socket.emit('call', this.me, participants);
+      socket.emit('join_call', this.$route.params.channel_uuid);
+
+      this.peer = new Peer(this.$route.params.channel_uuid, {
+        secure: true,
+        host: 'rtc.taku.moe',
+        port: '8443'
+      }); 
+
+      const myVideo = document.createElement('video')
+      myVideo.muted = true
+      const peers = {}
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true
+      });
+
+    },
+    async makeNewGroup(){
+      this.isMakingNewGroup = false;
+
+      const invite = {
+        name: this.newGroupName,
+      };
+
+      this.newGroupName = "";
+
+      const response = await axios.post(`https://taku.moe:2087/channels/group`, invite, {
+        withCredentials: true
+      });
+
+      if (response.status == 201) {
+        console.log(response.data);
+        this.view = 'group';
+        this.groupChannels.push(response.data.channel);
+        this.filterSearch();
+        this.$router.push({ path: `/messages/group/${response.data.channel.uuid}` })
+      }
+    },
+    async deleteChannel(channel){
+      const response = await axios.delete(`https://taku.moe:2087/channels/group/${channel.uuid}`, {
+        withCredentials: true
+      });
+
+    },
     // Filter users/groups to searchIndex
     filterSearch() {
 
@@ -189,27 +303,28 @@ export default {
     },
 
     // Return list of channels this user is in
-    async getChannels(){
+    async getData(){
       try {
-          var response = await axios.get(`http://taku.moe:8880/channels`, {
+        var channelsRequest = await axios.get(`https://taku.moe:2087/channels`, {
+          withCredentials: true,
+        });
+        var invitesRequest = await axios.get(`https://taku.moe:2087/channels/invites`, {
           withCredentials: true,
         });
       } catch (error) {
         if (error.status = 401) {
           localStorage.clear();
-          window.location.href = "http://taku.moe:8080/login";
+          window.location.href = "https://taku.moe:2096/login";
           return
         }
       }
 
       let channels = [];
-      for (let channel of response.data.channels){
+      for (let channel of channelsRequest.data.channels){
         let member_list = [];
 
         for (let member of channel.member_list){
           if (member.uuid != this.me.uuid) member_list.push(member);
-
-
         }
         
         channel.member_list = member_list;
@@ -218,8 +333,12 @@ export default {
         if (channel.type == "group") this.groupChannels.push(channel);
       }
 
-      response.data.channels = channels;
-      this.channels = response.data.channels;
+
+      // Channels and invites oki
+      // channelsRequest.data.channels = channels;
+      // this.channels = channelsRequest.data.channels;
+      this.inviteChannels = invitesRequest.data;
+      
       this.filterSearch();
     }
   }
@@ -267,16 +386,106 @@ export default {
   transform: scale(0.75);
 }
 
+.bottomButtons {
+  width: 100%;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 8px;
+}
+
+.button {
+  cursor: pointer;
+  width: fit-content;
+  transition: 100ms ease;
+  min-width: 48px;
+  height: 48px;
+  width: 48px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  border-radius: 12px;
+  transition: 100ms ease;
+}
+
+.button.accept:hover {
+  background: #9aff97;
+}
+
+.button.deny:hover {
+  background: #ff9797;
+}
+
+.button.active {
+  width: 100%;
+}
+
+.button:hover, .button.active {
+  background: #F1F2F4;
+}
+
+.button .iconWrapper {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.iconWrapper img {
+  position: absolute;
+  width: 24px;
+  transform: translateX(12px);
+  height: 24px;
+  filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
+}
+
+.deleteChannel {
+  width: 24px;
+  transform: translateX(12px);
+  height: 24px;
+  filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
+}
+
+.searchBox {
+  outline: none;
+  border: none;
+  text-indent: 8px;
+  height: 44px;
+  width: 100%;
+  background: transparent;
+  font-style: normal;
+  font-weight: 500;
+  z-index: 3px;
+}
+
+.searchBox::placeholder { 
+  color: #81859D; 
+}
+
 .channelsContainer {
   background: white;
   width: 320px;
   min-width: 320px;
   border-right: #F1F2F4 2px solid;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .channelsContainer.darkmode{
   background: #676E78;
   height: 100%;
+}
+
+.call {
+  height: 80px;
+  width: 100%;
+  padding: 16px;
+  background: #7FE876;
 }
 
 .search { 
@@ -332,7 +541,6 @@ export default {
 }
 
 .searchField {
-    text-indent: 16px;
     width: 100%;
     max-width: 600px;
     min-width: 16px;

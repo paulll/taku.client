@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-const socket = io('ws://taku.moe:8880', {
+const socket = io('wss://taku.moe:2087', {
     auth: {
         token: localStorage.token
     }

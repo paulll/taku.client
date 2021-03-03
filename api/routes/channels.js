@@ -56,22 +56,44 @@ router.get("/:channel_uuid/:offset", async (req, res) => {
 
 
 router.post("/group/", async (req, res) => {
-
-  // if (!req.body.participants) res.status(400).json({message: "missing participants"});
-
   const author = req.user.uuid;
   const participants = [];
   req.body.participants ? participants = req.body.participants : [];
   const senpai = author;
   const name = req.body.name;
-
-  const newGroup = new Classes.GroupChannel(author, participants, undefined, name);
+  
+  const newGroup = new Classes.GroupChannel(author, [author, ...participants], undefined, name);
+  
   try {
-    res.status(201).json({message: "group created successfully"});
+    const channel = await db.channels.insert(newGroup);
+    res.status(201).json({message: "group created successfully", channel: channel});
   } catch (error) {
     if (error) res.status(500).json({message: "something went wrong while inserting the group into the database", stacktrace: error});
   }
 
+});
+
+router.delete("/group/:channel_uuid", async (req, res) => {
+  await db.channels.remove({uuid: req.params.channel_uuid});
+  res.status(200).json({message: "group successfully deleted"});
+});
+
+router.get("/invites/", async (req, res) => {
+  const invites = await db.invites.find({to: req.user.uuid});
+  res.status(200).json({invites: invites});
+});
+
+router.post("/invite/", async (req, res) => {
+  const usersToInvite = req.body.usersToInvite;
+  const channel = req.body.channel_uuid;
+
+  for (user of usersToInvite) {
+    const invite = new Classes.Invite(user, req.user.uuid, req.body.channel_uuid);
+    await db.invites.insert(invite);
+    io.sockets.in(user).emit("invite", channel);
+    console.log(invite);
+  }
+  res.status(200).json({message: "invited successfully"});
 });
 
 

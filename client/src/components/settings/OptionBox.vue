@@ -161,7 +161,7 @@ export default {
           
           console.log(this.user.settings.sounds);
           
-          const response = await axios.post('http://taku.moe:8880/settings', this.user, {
+          const response = await axios.post('https://taku.moe:2087/settings', this.user, {
               withCredentials: true,
               headers: {
                   'Content-Type': 'application/json'
@@ -189,7 +189,7 @@ export default {
           let formData = new FormData();
           formData.append('audio', file);
 
-          const response = await axios.post('http://taku.moe:8880/settings/upload', formData, {
+          const response = await axios.post('https://taku.moe:2087/settings/upload', formData, {
               withCredentials: true,
               headers: {
               'Content-Type': 'multipart/form-data'

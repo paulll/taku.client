@@ -50,13 +50,13 @@ export default {
     async getUser() {
 
       try {
-        var user = await axios.get('http://taku.moe:8880/user', {
+        var user = await axios.get('https://taku.moe:2087/user', {
           withCredentials: true,
         });
       } catch (error) {
         if (error.status = 401) {
           localStorage.clear();
-          window.location.href = "http://taku.moe:8080/login";
+          window.location.href = "https://taku.moe:2096/login";
           return
         }
       }

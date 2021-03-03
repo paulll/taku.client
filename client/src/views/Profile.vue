@@ -82,7 +82,7 @@
                     <p class="tags">{{translation('FAVORITE Anime')}}</p>
                     <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
                         <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
-                            <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
+                            <img class="anime" width="84" :src="`https://taku.moe:2087/anime/posters/${id}.jpg`">
                             <Spinner/>
                         </router-link>
                     </div>
@@ -200,13 +200,13 @@ export default {
       NProgress.start();
 
       try {
-        var me = await axios.get('http://taku.moe:8880/user', {
+        var me = await axios.get('https://taku.moe:2087/user', {
           withCredentials: true,
         });  
       } catch (error) {
         if (error.status = 401) {
           localStorage.clear();
-          window.location.href = "http://taku.moe:8080/login";
+          window.location.href = "https://taku.moe:2096/login";
           return
         }
       }
@@ -218,7 +218,7 @@ export default {
     async getUser() {
 
       // Get user data
-      let user = await axios.get(`http://taku.moe:8880/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+      let user = await axios.get(`https://taku.moe:2087/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
       user = Object.assign({}, user).data;
 
       try {
@@ -254,7 +254,7 @@ export default {
                 break;
         }
 
-        const response = await axios.post(`http://taku.moe:8880/friend/${option}`, {uuid: uuid}, {
+        const response = await axios.post(`https://taku.moe:2087/friend/${option}`, {uuid: uuid}, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
@@ -275,7 +275,7 @@ export default {
       this.updateSettings();
     },
     async updateSettings(){
-        const response = await axios.post('http://taku.moe:8880/settings', this.me, {
+        const response = await axios.post('https://taku.moe:2087/settings', this.me, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
@@ -291,7 +291,7 @@ export default {
       let formData = new FormData();
       formData.append(ref, file);
 
-      const response = await axios.post('http://taku.moe:8880/settings/upload', formData, {
+      const response = await axios.post('https://taku.moe:2087/settings/upload', formData, {
         withCredentials: true,
         headers: {
         'Content-Type': 'multipart/form-data'

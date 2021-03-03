@@ -5,7 +5,7 @@ const db = monk(url);
 const colors = require("colors");
 
 db.then(() => {
-  console.log(`[DATABASE]`.bgBlue.black + ` Connected to MangoDB`);
+  console.log(`[DATABASE]`.bgBlue.black + ` Connected to MangoliaDB`);
 });
 
 module.exports = {
@@ -14,4 +14,5 @@ module.exports = {
     anime: db.get("anime"),
     notifications: db.get("notifications"),
     channels: db.get("channels"),
+    invites: db.get("invites"),
 }

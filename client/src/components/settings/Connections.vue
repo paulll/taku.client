@@ -2,7 +2,7 @@
     <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
         <div class="top">
             <div class="heading">
-                <a href="https://osu.ppy.sh/oauth/authorize?client_id=5478&response_type=code&redirect_uri=http://taku.moe:8080/settings/connections"><img src="@/assets/platforms/osu.png"></a>
+                <a href="https://osu.ppy.sh/oauth/authorize?client_id=5478&response_type=code&redirect_uri=https://taku.moe:2096/settings/connections"><img src="@/assets/platforms/osu.png"></a>
                 <img src="@/assets/platforms/discord.png">
             </div>
         </div>

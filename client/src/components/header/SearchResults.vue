@@ -4,7 +4,7 @@
         <div class="users" :class="{darkmode: darkmode == 'true'}">
             <router-link :to="`/profile/${user.username}`" class="user" v-for="user in searchResults?.users" :key="user">
                 <Spinner/>
-                <img :src="`http://taku.moe:8880/pfp/${user.uuid}`" alt="">
+                <img :src="`https://taku.moe:2087/pfp/${user.uuid}`" alt="">
                 <p :class="{darkmode: darkmode == 'true'}">{{user.username}}</p>
             </router-link>
         </div>
@@ -12,7 +12,7 @@
         <div class="animeList" :class="{darkmode: darkmode == 'true'}">
             <router-link :to="`/anime/${anime.id}`" class="animeWrap" v-for="anime in searchResults?.anime" :key="anime">
                 <!-- <img :src="anime.settings.pfp" alt=""> -->
-                <img class="animePoster" :src="`http://taku.moe:8880/anime/posters/${anime.id}.jpg`" alt="Anime">
+                <img class="animePoster" :src="`https://taku.moe:2087/anime/posters/${anime.id}.jpg`" alt="Anime">
             </router-link>
         </div>
 
@@ -47,7 +47,7 @@ export default {
         //         this.searchResults = [];
         //         return
         //     }
-        //     const response  = await axios.post('http://taku.moe:8880/search/', JSON.stringify({ searchString: this.searchString}), { 
+        //     const response  = await axios.post('https://taku.moe:2087/search/', JSON.stringify({ searchString: this.searchString}), { 
         //         withCredentials: true,
         //         headers: {
         //             'Content-Type': 'application/json'

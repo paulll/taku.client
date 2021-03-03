@@ -4,7 +4,7 @@
         <p class="tags">{{translation('FAVORITE Anime')}}</p>
         <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
             <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
-                <img class="anime" width="84" :src="`http://taku.moe:8880/anime/posters/${id}.jpg`">
+                <img class="anime" width="84" :src="`https://taku.moe:2087/anime/posters/${id}.jpg`">
                 <Spinner/>
             </router-link>
         </div>

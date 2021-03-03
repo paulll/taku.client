@@ -20,7 +20,7 @@ router.route('/:platform')
             grant_type: "authorization_code",
             client_id: osuClientId,
             client_secret: osuKey,
-            redirect_uri: "http://taku.moe:8080/settings/connections",
+            redirect_uri: "https://taku.moe:2096/settings/connections",
             code: oauthToken
         };
 

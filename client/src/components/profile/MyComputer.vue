@@ -44,7 +44,7 @@ export default {
             this.$forceUpdate();
         },
         async updateSpecs(){
-            const response  = await axios.post('http://taku.moe:8880/user/computer', JSON.stringify({ user: this.token, computer: this.computer}), { 
+            const response  = await axios.post('https://taku.moe:2087/user/computer', JSON.stringify({ user: this.token, computer: this.computer}), { 
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'

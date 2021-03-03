@@ -7,7 +7,7 @@ process.on('message', attachment => {
     attachment.originalname = `${new Date().getTime().toString()}-${attachment.originalname.replace(/\s/g, "_")}`; // Remove spaces with underscores
     
     // Send original
-    attachment.originalurl = `http://taku.moe:8880/uploads/${attachment.originalname}`;
+    attachment.originalurl = `https://taku.moe:2087/uploads/${attachment.originalname}`;
 
     // Check if image is readable by Jimp
     if(!attachment.mimetype.startsWith("image/")){
@@ -45,7 +45,7 @@ process.on('message', attachment => {
         fs.renameSync(`./db/uploads/${attachment.filename}`, `./db/uploads/${attachment.originalname}`);
 
         // Send new cached file
-        attachment.html = `http://taku.moe:8880/uploads/cache/${attachment.originalname}`;
+        attachment.html = `https://taku.moe:2087/uploads/cache/${attachment.originalname}`;
 
         // Send results
         process.send({

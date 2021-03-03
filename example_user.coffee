@@ -8,8 +8,8 @@
         },    
         isDeveloper: true,                                                          # Is the user developer or not
         isBetaTester: true,                                                         # Is/was the user beta tester or not
-        pfp: "http://taku.moe:8880/uplo...png",                                     # Customizable profile pic
-        banner: "http://taku.moe:8880/uplo....gif",                                 # Customizable profile banner
+        pfp: "https://taku.moe:2087/uplo...png",                                     # Customizable profile pic
+        banner: "https://taku.moe:2087/uplo....gif",                                 # Customizable profile banner
         description: "Hi I love anime owo!",                                        # Customizable description
         anime_list: [24, 36 ,45 ,85, 12, 643, 46, 11, 748, 924],                    # Array of anime uuids
         computer: {                                                                 # Customizable computer section
@@ -89,10 +89,10 @@
         sounds: {
             typing: { 
                 enabled: true,                                                      # If its enabled
-                url: "http://taku.moe:8880/uploads/VR_drum_hat_trappy.wav" },       # Sound URL
+                url: "https://taku.moe:2087/uploads/VR_drum_hat_trappy.wav" },       # Sound URL
             mention: { 
                 enabled: true,                                                      # If its enabled
-                url: "http://taku.moe:8880/uploads/id.mp3" },                       # Sound URL
+                url: "https://taku.moe:2087/uploads/id.mp3" },                       # Sound URL
         },
         notifications: {
             disable_all: false,                                                     # Are all their notifications enabled or not

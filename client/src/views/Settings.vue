@@ -187,13 +187,13 @@ export default {
       return translatedSentence;
     },
     async sendOauthToken(platform, code){
-      await axios.post(`http://taku.moe:8880/connections/${platform}`, {code: code}, {
+      await axios.post(`https://taku.moe:2087/connections/${platform}`, {code: code}, {
         withCredentials: true,
       });
       return
     },
     async getUser() {
-      const user = await axios.get('http://taku.moe:8880/user', {
+      const user = await axios.get('https://taku.moe:2087/user', {
         withCredentials: true,
       });
 

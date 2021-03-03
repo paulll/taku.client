@@ -115,7 +115,7 @@ export default {
     },
     logout(){
       localStorage.removeItem('token');
-      window.location.href = "http://taku.moe:8080";
+      window.location.href = "https://taku.moe:2096";
     },
     updateUI(){
       this.darkmode = localStorage.darkmode;

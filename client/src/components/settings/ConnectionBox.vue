@@ -64,7 +64,7 @@ export default {
           this.hoverSound.play();
         },
         async unlink(platform){
-          const response = await axios.delete(`http://taku.moe:8880/connections/${platform}`, {
+          const response = await axios.delete(`https://taku.moe:2087/connections/${platform}`, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'
@@ -75,7 +75,7 @@ export default {
         },
         async updateSettings(){
             NProgress.start();
-            const response = await axios.post('http://taku.moe:8880/settings', this.user, {
+            const response = await axios.post('https://taku.moe:2087/settings', this.user, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'

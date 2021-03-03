@@ -5,7 +5,7 @@
       <div class="messagesContainer">
         <div class="messages" :class="{darkmode: darkmode == 'true'}">
           <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
-            <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('http://taku.moe:8880/pfp/${message.author.uuid}')`}"></div></router-link>
+            <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('https://taku.moe:2087/pfp/${message.author.uuid}')`}"></div></router-link>
             <div class="notch"></div>
             <div class="messageBubble">
               <!-- <h4 class="date">
@@ -166,7 +166,7 @@ export default {
     async getChannel(){ 
 
       try {
-        var channel = (await axios.get(`http://taku.moe:8880/channels/${this.$route.params.channel_uuid}`, {
+        var channel = (await axios.get(`https://taku.moe:2087/channels/${this.$route.params.channel_uuid}`, {
           withCredentials: true,
         })).data.channel;
       } catch (error) {
@@ -176,8 +176,6 @@ export default {
 
       channel.member_list = channel.member_list.filter(user => user.uuid != this.me.uuid);
 
-      console.log(channel);
-
       // Connect to that dm's socket only if we are allowed to
       socket.emit('join_channel', this.$route.params.channel_uuid);
       this.currentChannel = channel;
@@ -186,7 +184,7 @@ export default {
 
     },
     async getMessages(offset){
-      var response = await axios.get(`http://taku.moe:8880/channels/${this.$route.params.channel_uuid}/${offset}`, {
+      var response = await axios.get(`https://taku.moe:2087/channels/${this.$route.params.channel_uuid}/${offset}`, {
         withCredentials: true,
       });
 
@@ -234,7 +232,7 @@ export default {
       }
 
       // Send
-      axios.post('http://taku.moe:8880/message', formData, {
+      axios.post('https://taku.moe:2087/message', formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -243,7 +241,7 @@ export default {
     },
     // This gets the blocked users of the current user
     async getBlockedUsers(){
-      const response = await axios.get('http://taku.moe:8880/blockedUsers', {
+      const response = await axios.get('https://taku.moe:2087/blockedUsers', {
         withCredentials: true,
       });
 
@@ -345,6 +343,7 @@ export default {
 
 .DMs {
   background: #fff;
+  position: relative;
   overflow: hidden;
   width: 100%;
   display: flex;

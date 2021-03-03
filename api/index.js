@@ -2,18 +2,18 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-var http = require("http");
 const si = require("systeminformation");
 const jwt = require("jsonwebtoken");
+const fs = require('fs');
 const cookieParser = require("cookie-parser");
 const { v4: uuidv4 } = require("uuid");
 const handleHeartbeat = require('./handlers/onlineUserHandler');
-const port = process.env.PORT || 8880;
+const port = process.env.PORT || 2087;
 
-// const options = {
-//     key: fs.readFileSync("./key.pem"),
-//     cert: fs.readFileSync("./cert.pem")
-// };
+const options = {
+    key: fs.readFileSync("./key.pem"),
+    cert: fs.readFileSync("./cert.pem")
+};
 
 const auth = require("./middlewares/auth.js");       // Import auth system
 const authSocket = require("./middlewares/authSocket.js");       // Import auth system
@@ -21,16 +21,16 @@ const db = require("./handlers/database.js");        // Import database handler
 
 // API
 var app = express();
-var http = require("http").createServer(app);
-var io = require("socket.io")(http, {cors: { origin: "*" }});
+var https = require("https").createServer(options, app);
+var io = require("socket.io")(https, {cors: { origin: "*" }});
 io.use(authSocket);
 
 // Export io for other files 
 module.exports = io;
 
-// Middlewares
+// Bloatwares
 app.use(cors({
-    origin: "http://taku.moe:8080", 
+    origin: "https://taku.moe:2096", 
     credentials: true 
 }));
 app.use(morgan("dev"));                                         // Enable HTTP code logs
@@ -60,7 +60,7 @@ io.on("connection", socket => {
     socket.on("ping", () => socket.emit("pong", { cpu: currentLoad, ram: ramUsage }));  // Send ping and pongs
     socket.on("user", uuid => socket.join(uuid));                                       // Join a unique room for each user
 
-    socket.on("room", uuid => socket.join(uuid));                                       // 
+    socket.on("room", uuid => socket.join(uuid));                                       
     socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));                    
     socket.on('leave_channel', async channel_uuid => {
         console.log("[Channel WS]".bgRed.black, "Left", channel_uuid.red);
@@ -72,6 +72,25 @@ io.on("connection", socket => {
         socket.join(channel_uuid);
     });
     socket.on('disconnect', () => console.log("[WS]".bgRed.black, "Disconnected", "Total", `${io.sockets.sockets.size.toString().red}`));
+
+
+
+    socket.on('call', async (caller, participants) => {
+        if (!participants) return
+        for (participant of participants) {
+            console.log("[Calling WS]".bgRed.black, "Calling", participant.uuid.red);
+            socket.to(participant.uuid).emit('call', caller);
+        }
+    });
+
+    // Calls, takes in the call_id you join and your uuid as user_uuid
+    socket.on('join_call', (channel_uuid) => {
+        socket.join(channel_uuid);
+        console.log("[Calling WS]".bgRed.black, "Joined Call in Channel", channel_uuid.red);
+        socket.to(channel_uuid).broadcast.emit('user-connected', channel_uuid);
+        socket.on('disconnect', () => socket.to(channel_uuid).broadcast.emit('user-disconnected', channel_uuid));
+    });
+
 });
 
 let currentLoad = 0;
@@ -87,4 +106,4 @@ setInterval(async () => {
 
 app.get("/", (req, res) => res.status(200).json({message: "hello"})); 
 
-http.listen(port, () => console.log(`listening on *:${port}`)); 
+https.listen(port, () => console.log(`listening on *:${port}`)); 
