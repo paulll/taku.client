@@ -25,21 +25,18 @@ signup.post("/signup", async (req, res) => {
         var form = await schema.validateAsync(body);
     } catch (error) {
         console.log(error);
-        res.status(400);
-        res.json(error);
+        res.status(400).json(error);
     }
 
     // Check if someone else has the same username
     if ((await db.users.find({ username: form.username }, { collation: { locale: "en", strength: 2 } })).length == 1) {
-        res.status(200);
-        res.json({ error: "Username already taken" });
+        res.status(200).json({ error: "Username already taken" });
         return;
     }
 
     // Check if the email is already bound to an account
     if ((await db.users.find({ email: form.email })).length == 1) {
-        res.status(200);
-        res.json({ error: "Email already exists" });
+        res.status(200).json({ error: "Email already exists" });
         return;
     }
 

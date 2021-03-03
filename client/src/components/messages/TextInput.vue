@@ -66,7 +66,7 @@ export default {
             if (this.typingSfx == 'false') return 
 
             // Send new message
-            // this.socket.emit('typing', {user: localStorage.token});
+            // socket.emit('typing', {user: localStorage.token});
             this.typingSound = new Audio(this.typingSoundUrl);
             this.typingSound.volume = 0.2;
             this.typingSound.play();

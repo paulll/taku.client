@@ -1,6 +1,6 @@
 <template>
   <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
-    <ChatHeader v-if="bannerUrl" :bannerUrl="bannerUrl" />
+    <ChatHeader v-if="currentChannel" :channel="currentChannel" />
     <div class="messagesWrapper">
       <div class="messagesContainer">
         <div class="messages" :class="{darkmode: darkmode == 'true'}">
@@ -35,10 +35,10 @@
  
 <script>
 import axios from 'axios';
-import io from 'socket.io-client';
 import linkifyHtml from 'linkifyjs/html';
 import TextInput from '@/components/messages/TextInput.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
+import socket from '@/services/socket.js';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
@@ -51,16 +51,17 @@ export default {
     TextInput,
     ChatHeader,
   },
+  props: {
+    selectedChannel: { type: Object, required: true },
+  },
   data: () => {
     return {
       message: "",
       messages: [],
-      socket: io('ws://taku.moe:8880'),
       me: JSON.parse(localStorage.me),
       blockedUsers: [],
       typingUsers: [],
       previews: [],
-      bannerUrl: null,
       attachments: [],
       darkmode: localStorage.darkmode,
       typingSfx: localStorage.typing_sfx,
@@ -69,13 +70,13 @@ export default {
       mentionSfx: localStorage.mention_sfx,
       mentionSoundUrl: localStorage.mentionSoundUrl,
       mentionSound: '',
-      currentChannel: '',
+      currentChannel: null,
     };
   },
   watch: {
       $route(to, from) {
           this.getChannel();
-          this.socket.emit('leave_channel', to.params.channel_uuid);
+          socket.emit('leave_channel', to.params.channel_uuid);
       }
   },
   mounted() {
@@ -102,11 +103,11 @@ export default {
       }
     };
 
-    this.socket.on('disconnect', function() {
+    socket.on('disconnect', function() {
       console.log("[MESSAGE WS] DISCONNECTED!")
     });
 
-    this.socket.on('message', message => {
+    socket.on('message', message => {
       if (message.content !== undefined) {
         // If the last message is by the same user just add the message content itself without
         // Their username etc
@@ -144,7 +145,7 @@ export default {
 
     });
 
-    // this.socket.on('typingUser', typingUser => {
+    // socket.on('typingUser', typingUser => {
     //   if (this.typingUsers.includes(typingUser.pfp)) return
 
     //   this.typingUsers.push(typingUser.pfp);
@@ -159,11 +160,7 @@ export default {
   unmounted() {
     console.log("attempting to disconnect");
     this.emitter.all.delete("sendMessage");
-    this.socket.disconnect();
-  },
-  destroyed() {
-    //console.log("attempting to disconnect");
-    //this.socket.disconnect();
+    socket.disconnect();
   },
   methods: {
     async getChannel(){ 
@@ -177,11 +174,13 @@ export default {
         return
       }
 
-      this.bannerUrl = `http://taku.moe:8880/banner/${channel.member_list.filter(uuid => uuid != this.me.uuid)[0]}`;
+      channel.member_list = channel.member_list.filter(user => user.uuid != this.me.uuid);
+
+      console.log(channel);
 
       // Connect to that dm's socket only if we are allowed to
-      this.socket.emit('join_channel', this.$route.params.channel_uuid);
-      this.currentChannel = this.$route.params.channel_uuid;
+      socket.emit('join_channel', this.$route.params.channel_uuid);
+      this.currentChannel = channel;
       this.getMessages(0);
       // this.messages.push(response.data.dm.messages)
 
@@ -302,7 +301,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 
 .ganyu {
   mix-blend-mode: screen;

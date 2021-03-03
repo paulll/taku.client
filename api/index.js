@@ -16,12 +16,14 @@ const port = process.env.PORT || 8880;
 // };
 
 const auth = require("./middlewares/auth.js");       // Import auth system
+const authSocket = require("./middlewares/authSocket.js");       // Import auth system
 const db = require("./handlers/database.js");        // Import database handler
 
 // API
 var app = express();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http, {cors: { origin: "*" }});
+io.use(authSocket);
 
 // Export io for other files 
 module.exports = io;
@@ -51,11 +53,15 @@ app.use('/channels',      require("./routes/channels"));        // Import channe
 app.use('/notifications', require("./routes/notifications"));   // Import notifications
 app.use('/connections',   require("./routes/connections"));     // Import connections
 
+
 // Websockets
 io.on("connection", socket => {
-    socket.on("ping", () => socket.emit("pong", { cpu: currentLoad, ram: ramUsage }));
-    socket.on("room", uuid => socket.join(uuid));
-    socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));
+    console.log("[WS]".bgRed.black, "New connection", socket.id.red, "Total", `${io.sockets.sockets.size.toString().red}`);
+    socket.on("ping", () => socket.emit("pong", { cpu: currentLoad, ram: ramUsage }));  // Send ping and pongs
+    socket.on("user", uuid => socket.join(uuid));                                       // Join a unique room for each user
+
+    socket.on("room", uuid => socket.join(uuid));                                       // 
+    socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));                    
     socket.on('leave_channel', async channel_uuid => {
         console.log("[Channel WS]".bgRed.black, "Left", channel_uuid.red);
         socket.leave(channel_uuid);
@@ -65,6 +71,7 @@ io.on("connection", socket => {
         console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
         socket.join(channel_uuid);
     });
+    socket.on('disconnect', () => console.log("[WS]".bgRed.black, "Disconnected", "Total", `${io.sockets.sockets.size.toString().red}`));
 });
 
 let currentLoad = 0;

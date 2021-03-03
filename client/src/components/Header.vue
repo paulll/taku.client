@@ -79,7 +79,7 @@ import AnimatedNumber from '@/components/AnimatedNumber.vue'
 import SearchResults  from '@/components/header/SearchResults.vue'
 
 import axios from 'axios';
-import io from 'socket.io-client';
+import socket from '@/services/socket.js';
 
 let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -89,7 +89,6 @@ export default {
             path: "",
             token: localStorage.token,
             user: undefined,
-            socket: io('ws://taku.moe:8880'),
             ping: null,
             cpu: null,
             ram: null,
@@ -127,8 +126,8 @@ export default {
 
         this.getPing()
 
-        this.socket.on('ping', epoch => this.ping = new Date().getTime() - epoch);
-        this.socket.on('notification', async notification => {
+        socket.on('ping', epoch => this.ping = new Date().getTime() - epoch);
+        socket.on('notification', async notification => {
             
             notification.show = false;                  // Set new notification to hidden when coming in
             this.notifications.unshift(notification);   // Add it to the array of notifications
@@ -145,7 +144,7 @@ export default {
     },
     unmounted() {
         // Disconnect socket when the app closes
-        this.socket.disconnect();
+        socket.disconnect();
     },
     methods: {
         async clearNotifications(){
@@ -211,7 +210,7 @@ export default {
             this.notifications = [...this.user.notifications[0].list.reverse()];
 
             // Connected, let's sign-up for to receive messages for this room
-            this.socket.emit('room', this.user.uuid);
+            socket.emit('room', this.user.uuid);
 
             try {
                 this.themeColors = {
@@ -229,15 +228,15 @@ export default {
             localStorage.setItem('darkmode', response.data.settings.appearance.darkmode);
         },
         async getPing(){
-            this.socket.emit('ping');
+            socket.emit('ping');
             let startTime = new Date().getTime();
             setInterval(() => {
                 startTime = new Date().getTime();
                 // I divided the ms by 2 because theres 2 requests going, one that emits "ping", and then waits for "pong"
-                this.socket.emit('ping');
+                socket.emit('ping');
             }, 1000);
 
-            this.socket.on('pong', stats => {
+            socket.on('pong', stats => {
                 this.ping = ((new Date().getTime() - startTime) / 2).toFixed(0);
                 this.cpu = stats.cpu;
                 this.ram = stats.ram;

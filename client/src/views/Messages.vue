@@ -21,6 +21,10 @@
         GROUPS
         <div class="line"></div>
       </div>
+      <div @click="view = 'invites'" :class="{'active': view == 'invites'}">
+        INVITES
+        <div class="line"></div>
+      </div>
     </menu>
     <section>
       <h1 v-if="privateChannels.length != 0 && view == 'private'">USERS</h1>
@@ -37,6 +41,11 @@
       <h1 class="emoji">(｡•́︿•̀｡)</h1>
     </div>
 
+    <div class="emptyMessage" v-if="inviteChannels.length == 0 && view == 'invites'">  
+      <h1 class="message">You don't have any invites!</h1>
+      <h1 class="emoji">(｡•́︿•̀｡)</h1>
+    </div>
+
     <div class="emptyMessage" v-if="privateChannels.length != 0 && searchString.length > 0 && searchDMS.length == 0 && view == 'private'">  
       <h1 class="message">I didn't find anyone!</h1>
       <h1 class="emoji">｡･ﾟﾟ*(>д&lt;)*ﾟﾟ･｡</h1>
@@ -47,8 +56,12 @@
       <h1 class="emoji">(╥﹏╥)</h1>
     </div>
 
+    <div class="emptyMessage" v-if="inviteChannels.length != 0 && searchString.length > 0 && searchInvites.length == 0 && view == 'invites'">  
+      <h1 class="message">I didn't find any invites!</h1>
+      <h1 class="emoji">(╥﹏╥)</h1>
+    </div>
+
     <div class="channels">
-  
       <router-link :to="`/messages/private/${channel.uuid}`" :style="{'background': `url('http://taku.moe:8880/banner/${channel.member_list[0].uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
         <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
         <div class="info">
@@ -76,6 +89,21 @@
           </div>  
         </div>
       </router-link>
+
+      <router-link :to="`/messages/invites/`" class="channel" :style="{'background': `url('http://taku.moe:8880/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchInvites" v-if="view == 'group'" :key="channel">
+        <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`http://taku.moe:8880/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
+        <img class="channelPfp" :src="`http://taku.moe:8880/pfp/${channel.pfp}`" alt="">
+        <div class="info">
+          <div v-if="channel.senpai">
+            <h1>{{channel.name}}</h1>
+            <div class="channelStatus">
+              <div class="icon"></div>
+              <p v-if="channel.status" class="last_message">{{channel.status}}</p>
+            </div>
+          </div>  
+        </div>
+      </router-link>
+
     </div>
   </div>
   <Chat/>
@@ -83,9 +111,7 @@
  
 <script>
 import axios from 'axios';
-import io from 'socket.io-client';
 import linkifyHtml from 'linkifyjs/html';
-
 import Chat from '@/components/Chat.vue';
 
 export default {
@@ -97,12 +123,13 @@ export default {
     return {
       me: JSON.parse(localStorage.me),
       dms: [],
-      socket: io('ws://taku.moe:8880'),
       channels: [],
       privateChannels: [],
       groupChannels: [],
+      inviteChannels: [],
       searchDMS: [],
       searchGroups: [],
+      searchInvites: [],
       searchString: '',
       view: 'private',
       darkmode: localStorage.darkmode,
@@ -119,10 +146,12 @@ export default {
       // Reset arrays to empty
       this.searchDMS = [];
       this.searchGroups = [];
+      this.searchInvites = [];
       // If search results are empty, make them identical to all results
       if (this.searchString.length == 0) {
         this.searchDMS = this.privateChannels;
         this.searchGroups = this.groupChannels;
+        this.searchInvites = this.inviteChannels;
         return
       }
 
@@ -131,10 +160,15 @@ export default {
         if(dm.member_list[0].username.toLowerCase().includes(this.searchString.toLowerCase()))
           this.searchDMS.push(dm);
       });
-      // Now this would only fetch the first users username from the group :kekw:
+      // If the string is found in any group name, it is added to search results
       this.groupChannels.forEach(group => {
         if(group.name.toLowerCase().includes(this.searchString.toLowerCase()))
           this.searchGroups.push(group);
+      });
+      // If the string is found in any invite group name, it is added to search results
+      this.inviteChannels.forEach(group => {
+        if(group.name.toLowerCase().includes(this.searchString.toLowerCase()))
+          this.searchInvites.push(group);
       });
     },
 
@@ -177,10 +211,9 @@ export default {
 
 
         }
-        console.log(channel);
         
         channel.member_list = member_list;
-
+        this.channels.push(channel);
         if (channel.type == "dm") this.privateChannels.push(channel);
         if (channel.type == "group") this.groupChannels.push(channel);
       }
@@ -194,7 +227,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 
 /* what happens when the animation is currently active */
 .slide-fade-enter-active {
@@ -264,8 +297,8 @@ export default {
 }
 
 .search img {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
   cursor: pointer;
 }
@@ -277,14 +310,6 @@ export default {
     padding-left: 16px;
     align-items: center;
 }
-
-/* .searchBox img {
-    width: 18px;
-    height: 18px;
-    position: absolute;
-    margin-right: 12px;
-    margin-top: 10px;
-} */
 
 .searchField::placeholder {
     letter-spacing: 1px;
@@ -346,7 +371,7 @@ menu div .line {
 
 menu div.active .line {
   background: var(--themeColor);
-  width: 40%;
+  width: 75%;
 }
 
 section {

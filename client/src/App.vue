@@ -13,7 +13,7 @@ import ToolBar from '@/components/ToolBar.vue'
 import NavBar from '@/components/NavBar.vue'
 import LoadingAnimation from '@/components/LoadingAnimation.vue'
 
-import io from 'socket.io-client';
+import socket from '@/services/socket.js';
 import NProgress from 'nprogress';
 import axios from 'axios';
 import 'nprogress/nprogress.css';
@@ -24,7 +24,6 @@ export default {
   name: 'Home',
   data: () => {
     return {
-      socket: io('ws://taku.moe:8880'),
       user: {},
     };
   },
@@ -41,12 +40,11 @@ export default {
     }
   },
   mounted(){
-    // Stop loading bar at the top
     NProgress.done();
   },
   unmounted() {
     // Disconnect socket when the app closes
-    this.socket.disconnect();
+    socket.disconnect();
   },
   methods: {
     async getUser() {
@@ -64,7 +62,7 @@ export default {
       }
 
       this.user = user.data;
-
+      socket.emit('user', user.data.uuid);
       // Start heartbeatting after the userdata has been received so
       this.heartBeat(60000);
     },
@@ -72,10 +70,10 @@ export default {
       if (localStorage.token && this.user.settings?.privacy?.show_status) {
 
         // Emit at start so we dont wait for the next interval
-        this.socket.emit('heartbeat', {user: localStorage.token});
+        socket.emit('heartbeat', {user: localStorage.token});
         console.log("emitting heartbeat");
         setInterval(() => {
-          this.socket.emit('heartbeat', {user: localStorage.token});
+          socket.emit('heartbeat', {user: localStorage.token});
         }, speed);
       }
     }
