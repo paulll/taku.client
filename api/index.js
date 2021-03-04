@@ -73,23 +73,20 @@ io.on("connection", socket => {
     });
     socket.on('disconnect', () => console.log("[WS]".bgRed.black, "Disconnected", "Total", `${io.sockets.sockets.size.toString().red}`));
 
-
-
-    socket.on('call', async (caller, participants) => {
-        if (!participants) return
-        for (participant of participants) {
-            console.log("[Calling WS]".bgRed.black, "Calling", participant.uuid.red);
-            socket.to(participant.uuid).emit('call', caller);
-        }
-    });
-
-    // Calls, takes in the call_id you join and your uuid as user_uuid
-    socket.on('join_call', (channel_uuid) => {
+    socket.on('join_vc_channel', (channel_uuid, user_uuid) => {
         socket.join(channel_uuid);
-        console.log("[Calling WS]".bgRed.black, "Joined Call in Channel", channel_uuid.red);
-        socket.to(channel_uuid).broadcast.emit('user-connected', channel_uuid);
-        socket.on('disconnect', () => socket.to(channel_uuid).broadcast.emit('user-disconnected', channel_uuid));
+        console.log("[Calling WS]".bgRed.black, "Joining channel", channel_uuid.red);
+        socket.to(channel_uuid).broadcast.emit('user_connected', user_uuid)
+        console.log("[Calling WS]".bgRed.black, "Broadcasting new user", user_uuid.red);
     });
+
+    // // Calls, takes in the call_id you join and your uuid as user_uuid
+    // socket.on('join_call', (channel_uuid) => {
+    //     socket.join(channel_uuid);
+    //     console.log("[Calling WS]".bgRed.black, "Joined Call in Channel", channel_uuid.red);
+    //     socket.to(channel_uuid).broadcast.emit('user_connected', channel_uuid);
+    //     socket.on('disconnect', () => socket.to(channel_uuid).broadcast.emit('user_disconnected', channel_uuid));
+    // });
 
 });
 
