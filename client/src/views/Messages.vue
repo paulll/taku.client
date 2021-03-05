@@ -190,17 +190,12 @@ export default {
     };
   },
   mounted() {
-
-
-
     this.getData();
     this.emitter.on("call", (participants) => this.call(participants));
     socket.on('call', callInformation => {
       this.callState = 'beingCalled';
       this.callInformation = callInformation;
     });
-
-
   },
   methods: {   
     async call(participants){
@@ -208,6 +203,7 @@ export default {
       else console.log(`Call would be initialized now`);
 
       this.me.isCalling = true;
+      this.callState == 'inCall';
       this.userToCall = participants[0];
       console.log(participants);
 
@@ -216,13 +212,10 @@ export default {
       // Make a new peer connection
       var peer = new Peer(this.me.uuid, {
         config: {'iceServers': [
-          {url:'stun:stun.l.google.com:19302'},
-          {url:'stun:stun1.l.google.com:19302'},
-          {url:'stun:stun2.l.google.com:19302'},
-          {url:'stun:stun3.l.google.com:19302'},
-          {url:'stun:stun4.l.google.com:19302'},
-          {url: 'turn:turn.bistri.com:80',credential: 'homeo',username: 'homeo'},
-          {url: 'turn:turn.anyfirewall.com:443?transport=tcp',credential: 'webrtc',username: 'webrtc'}
+          {urls:'stun:stun3.l.google.com:19302'},
+          // {url:'stun:stun4.l.google.com:19302'},
+          // {url: 'turn:turn.bistri.com:80',credential: 'homeo',username: 'homeo'},
+          {urls: 'turn:turn.anyfirewall.com:443?transport=tcp',credential: 'webrtc',username: 'webrtc'}
         ]},
         secure: true,
         host: 'rtc.taku.moe',
@@ -236,18 +229,24 @@ export default {
       console.log(peer);
 
       const myvideo = document.createElement('video');
+      myvideo.className = 'videoStream';
       // Mutes monitor feedback
       myvideo.muted = true;
 
 
       const peers = {}
       // Create new data stream containing the video data
-      const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
+      const stream = await navigator.mediaDevices.getUserMedia({audio: {
+        echoCancellation: false,
+        autoGainControl: true,
+        noiseCancellation: false
+      }, video: true});
       addvideoStream(myvideo, stream);
 
       peer.on('call', call => {
         call.answer(stream);
         const video = document.createElement('video');
+        video.className = 'videoStream';
         call.on('stream', stream => addvideoStream(video, stream));
       });
 
@@ -256,16 +255,24 @@ export default {
         connectToNewUser(user_uuid, stream);
       });
 
+      socket.on('user_disconnected', user_uuid => {
+        console.log("disconnected", user_uuid);
+        if (peers[user_uuid]) peers[user_uuid].close()
+      })
+
       // When the peer is ready send an event on the socket that tells everyone else
       // That I joined the call with my user uuid being peer_uuid
       // peer.on('open', peer_uuid => {
       // });
       socket.emit('join_vc_channel', this.$route.params.channel_uuid, this.me.uuid);
 
+
+
       // Connects to new user
       function connectToNewUser(user_uuid, stream){
         var call = peer.call(user_uuid, stream);
         const video = document.createElement('video');
+        video.className = 'videoStream';
         call.on('stream', function(stream) { addvideoStream(video, stream)});
         call.on('close', () => video.remove());
         peers[user_uuid] = call;
@@ -277,37 +284,6 @@ export default {
         videoGrid.append(video);
         console.log("Video grid added!");
       }
-
-
-
-      // When the peer is ready send an event to the backend to notify others
-      // this.peer.on('open', channel_uuid => {
-      //   socket.emit('join_call', channel_uuid);
-      //   console.log(channel_uuid);
-      // })
-
-      // const myAudio = document.createElement('audio')
-      // myAudio.muted = false
-      // const peers = {}
-
-      // const stream = await navigator.mediaDevices.getUserMedia({
-      //   audio: true
-      // });
-
-      // const call = this.peer.call(userId, stream);
-      // const audio = document.createElement('audio');
-      // call.on('stream', userAudioStream => {
-      //   addAudioStream(audio, userAudioStream)
-      // });
-      // call.on('close', () => {
-      //   audio.remove();
-      // });
-
-      // socket.on('user-connected', channel_uuid => {
-      //   connectToNewUser(channel_uuid, stream)
-      // })
-
-      // peers[userId] = call
 
     },
     async makeNewGroup(){
@@ -431,15 +407,18 @@ export default {
 
 <style scoped>
 
+
+
 #video-grid {
-  position: absolute;
   top: 220px;
   right: 350px;
-  width: 400px;
-  height: 400px;
+  display: grid;
+  width: max-content;
   z-index: 400;
+  align-content: center;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
-
 
 /* what happens when the animation is currently active */
 .slide-fade-enter-active {
@@ -727,6 +706,7 @@ menu div, section h1 {
   outline: none;
   border-right: 0px solid #ff006b;
   overflow: hidden;
+  align-items: center;
 }
 
 .channel:not(.router-link-active) {
@@ -796,6 +776,7 @@ menu div, section h1 {
   flex-direction: row;
   align-items: center;
   height: 100%;
+  margin-top: 8px;
 }
 
 .channelStatus .icon {

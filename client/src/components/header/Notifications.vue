@@ -71,7 +71,7 @@ export default {
                     break;
             }
 
-            const response = await axios.post(`https://taku.moe:2087/friend/${option}`, {uuid: uuid}, {
+            const response = await axios.post(`https://taku.moe:2087/friend/${option}`, {uuid}, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'

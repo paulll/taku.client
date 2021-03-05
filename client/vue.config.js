@@ -2,7 +2,7 @@ const fs = require('fs');
 
 module.exports = {
     devServer: {
-        hot: false,
+        public : 'taku.moe:2096',
 	    port: 2096,
         disableHostCheck: true,
         https: true,

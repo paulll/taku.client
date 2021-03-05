@@ -10,7 +10,7 @@ const routes = [
     name: 'Home',
     component: () => import('../views/Home.vue'),
     meta: {
-      title: '🏠 taku',
+      title: 'Taku',
     },
   },
   {
@@ -18,7 +18,7 @@ const routes = [
     name: 'signup',
     component: () => import('../views/Signup.vue'),
     meta: {
-      title: '⚙ Signup',
+      title: 'Taku | Signup',
     },
   },
   {
@@ -26,20 +26,20 @@ const routes = [
     name: 'Login',
     component: () => import('../views/Login.vue'),
     meta: {
-      title: '⚙ Login',
+      title: 'Taku | Login',
     },
   },
   {
     path: '/profile/:username',
     name: 'Profile',
-    component: () => import('../views/Profile.vue')
+    component: () => import('../views/Profile.vue'),
   },
   {
     path: '/settings/:setting?', // the ? makes the param optional so the default route works
     name: 'Settings',
     component: () => import('../views/Settings.vue'),
     meta: {
-      title: '⚙ Settings',
+      title: 'Taku | Settings',
     },
   },
   {
@@ -47,7 +47,7 @@ const routes = [
     name: 'Messages',
     component: () => import('../views/Messages.vue'),
     meta: {
-      title: '⚙ Messages',
+      title: 'Taku | Messages',
     },
   },
   {
@@ -55,7 +55,7 @@ const routes = [
     name: 'Anime',
     component: () => import('../views/Anime.vue'),
     meta: {
-      title: 'Anime',
+      title: 'Taku | Anime',
     },
   },
 ]
@@ -68,7 +68,7 @@ const router = createRouter({
 // this sets the tab title to the current page dynamically
 router.beforeEach(async (to, from, next) => {
   if (to.meta.title) document.title = to.meta.title;
-  if (to.path.startsWith('/profile/')) document.title = "taku | " + to.params.username; 
+  if (to.path.startsWith('/profile/')) document.title = "Taku | " + to.params.username; 
   next();
 });
 

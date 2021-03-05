@@ -2,10 +2,11 @@ const express = require('express');
 const db = require("../handlers/database.js");       // Import database handler
 const auth = require("../middlewares/auth.js");       // Import auth system
 const axios = require('axios');
+require('dotenv').config();
 
 // OAuth keys, etc
-const osuKey = '4fhm7Z3QT1itZjWqfVSoISHUJHwhOTkwhKu3FTJ6';
-const osuClientId = '5478';
+const OSU_KEY = process.env.OSU_KEY;
+const OSU_CLIENT_ID = process.env.OSU_CLIENT_ID;
 
 const router = express.Router();
 
@@ -18,8 +19,8 @@ router.route('/:platform')
 
         const form = {
             grant_type: "authorization_code",
-            client_id: osuClientId,
-            client_secret: osuKey,
+            client_id: OSU_CLIENT_ID,
+            client_secret: OSU_KEY,
             redirect_uri: "https://taku.moe:2096/settings/connections",
             code: oauthToken
         };

@@ -1,9 +1,10 @@
 <template>
-  <header v-if="channel.type != 'group'" :style="{'background-image': `url('https://taku.moe:2087/banner/${channel.member_list[0].uuid}')`}">
+  <header :style="{'background-image': `url('https://taku.moe:2087/banner/${channel.member_list[0].uuid}')`}">
     <div class="headerDetails">
       <div class="headerLeft">
         <div class="channelInfo">
-          <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
+          <router-link  v-if="channel.type == 'dm'" :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
+          <a v-if="channel.type == 'group'"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/_default`" alt=""></a>
           <div class="info">
             <div v-if="!channel.senpai">
               <h1>{{channel.member_list[0].username}}</h1>
@@ -25,9 +26,15 @@
           </div>
         </div>
 
+        <div class="button" v-if="channel.type == 'group'">
+          <div class="iconContainer">
+            <img src="../assets/add-user.png" alt="Add User">
+          </div>
+        </div>
+
         <div class="button" @click="emitter.emit('call', channel.member_list)">
           <div class="iconContainer">
-            <img src="../assets/call.png" alt="Search">
+            <img src="../assets/call.png" alt="Call">
           </div>
         </div>
 
@@ -77,7 +84,7 @@ export default {
 header {
   height: 80px;
   width: 100%;
-  /* background: #ff006b; */
+  background: #ff006b;
   display: flex;
   justify-content: space-between;
   position: absolute;

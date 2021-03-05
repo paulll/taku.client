@@ -15,7 +15,7 @@ async function addToOnlineUsers(uuid) {
     let newLastSeen = new Date().getTime();                                                             
     await db.users.update({ 'uuid': uuid }, { "$set": { 'profile.status.lastSeen': newLastSeen } });    // Update user last seen in their db
     const found = onlineUsers.some(user => user.uuid == uuid);                                          // Check if the user is already in there
-    if (!found) onlineUsers.push({ uuid: uuid, lastSeen: newLastSeen });                                // If they aren't, add them
+    if (!found) onlineUsers.push({ uuid, lastSeen: newLastSeen });                                // If they aren't, add them
     else { // Otherwise if they are found, update their lastSeen
         onlineUsers = onlineUsers.map(user => {
             if (user.lastSeen + 120000 < newLastSeen) return undefined;                 // Remove old users that havent been seen for more than 60 sec
