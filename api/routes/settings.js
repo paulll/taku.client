@@ -28,9 +28,9 @@ router.post("/upload", upload.any(), async (req, res) => {
     fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);
 
     res.status(201).json({
-        "status": 200,
-        "message": "File uploaded successfully",
-        "link": link,
+        status: 200,
+        message: "File uploaded successfully",
+        link,
     });
 });
 

@@ -27,11 +27,11 @@ router.route('/:platform')
 
         try {
             const verifyToken = await axios.post("https://osu.ppy.sh/oauth/token", JSON.stringify(form), {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
                 }
-            }
             );
 
             if (verifyToken.status == 200) {
@@ -40,18 +40,16 @@ router.route('/:platform')
                 await db.users.update({ 'uuid': req.user.uuid }, { '$set': { 'settings.connections.osu.token': verifyToken.data } });
 
                 const user = await axios.get("https://osu.ppy.sh/api/v2/me", {
-                    headers: {
-                        Authorization: `Bearer ${verifyToken.data.access_token}`
+                        headers: {
+                            Authorization: `Bearer ${verifyToken.data.access_token}`
+                        }
                     }
-                }
                 );
 
                 await db.users.update({ 'uuid': req.user.uuid }, { '$set': { 'profile.connections.osu': user.data } });
             }
 
-        } catch (error) {
-            console.log(error);
-        }
+        } catch (error) console.log(error);
     })
     .delete(async (req, res) => {
         const plaform = req.params.platform;
@@ -60,21 +58,17 @@ router.route('/:platform')
 
         try {
             const deleteToken = await axios.delete("https://osu.ppy.sh/api/v2/oauth/tokens/current", {
-                headers: {
-                    Authorization: `Bearer ${req.user.settings.connections.osu.token.access_token}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    headers: {
+                        Authorization: `Bearer ${req.user.settings.connections.osu.token.access_token}`,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
                 }
-            }
             );
 
             res.status(200);
             res.json({ "message": `Unlinked ${plaform} successfully` });
-        } catch (error) {
-            if (error) {
-                res.status(500).json({ "message": error.response });
-            }
-        }
+        } catch (error) if (error) res.status(500).json({ "message": error.response });
     });
 
 module.exports = router

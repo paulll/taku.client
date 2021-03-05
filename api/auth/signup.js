@@ -51,8 +51,7 @@ signup.post("/signup", async (req, res) => {
     await db.notifications.insert({owner_uuid: user.uuid, list: []});
 
     // Respond to user
-    res.status(200);
-    res.json(user); 
+    res.status(200).json(user); 
 });
 
 module.exports = signup

@@ -23,15 +23,13 @@ router.post("/", async (req, res) => {
         anime: animelist,
     }
 
-    res.status(200);
-    res.json(searchResults);
+    res.status(200).json(searchResults);
 
 });
 router.get("/anime/:name", async (req, res) => {
     const keywords = String.raw`.*${req.params.name}.*`;
     const animelist = await db.anime.find({ "title.english": new RegExp(keywords, "i") });
-    res.status(200);
-    res.json({ animelist: animelist });
+    res.status(200).json({ animelist: animelist });
 });
 
 module.exports = router

@@ -23,15 +23,11 @@ router.get("/:username", async (req, res) => {
     //     }
     // }
 
-    res.status(200);
-    res.json(user);
+    res.status(200).json(user);
 });
 
 // Protected Routes
-router.get("/", auth, async (req, res) => {
-    res.status(200);
-    res.json(req.user);
-});
+router.get("/", auth, async (req, res) => res.status(200).json(req.user));
 
 router.post("/computer", auth, async (req, res) => {
     await db.users.update(
@@ -39,8 +35,7 @@ router.post("/computer", auth, async (req, res) => {
         { $set: { 'profile.computer': req.body.computer } }
     );
 
-    res.status(200);
-    res.json({ message: "done" });
+    res.status(200).json({ message: "done" });
 });
 
 router.post("/anime", auth, async (req, res) => {
@@ -66,8 +61,7 @@ router.post("/anime", auth, async (req, res) => {
         );
     }
 
-    res.status(200);
-    res.json({ message: `Anime ${anime_id} added to your favorites!` });
+    res.status(200).json({ message: `Anime ${anime_id} added to your favorites!` });
 });
 
 router.post("/socials", async (req, res) => {
@@ -79,12 +73,9 @@ router.post("/socials", async (req, res) => {
         { $set: { "profile.socials": body.socials } }
     );
 
-    res.status(200);
-    res.json({ message: "done" });
+    res.status(200).json({ message: "done" });
 });
 
-router.get("/blockedUsers", auth, async (req, res) => {
-    res.status(200).json(req.user.settings.privacy.blocked_users);
-});
+router.get("/blockedUsers", auth, async (req, res) =>  res.status(200).json(req.user.settings.privacy.blocked_users));
 
 module.exports = router

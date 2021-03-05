@@ -18,58 +18,26 @@ router.post("/", auth, upload.any(), async (req, res) => {
     channel.type = channelEvent.type;
 
     // Check if the user is a member of that channel
-    if (!channel.member_list.includes(req.user.uuid)) {
-        res.status(401).json({ "message": "Forbidden" });
-        return;
-    }
+    if (!channel.member_list.includes(req.user.uuid)) return res.status(401).json({ "message": "Forbidden" });
 
     // Process attachments if any
     let attachments = [];
-    if (req.files.length !== 0) {
-        attachments = await clusters.cacheImages(req.files);
-    }
+    if (req.files.length !== 0) attachments = await clusters.cacheImages(req.files);
+    
     // Create new message
     let message = new Classes.Message(req.user.uuid, messageEvent.content, channel.uuid, attachments);
 
     await db.messages.insert(message); // Add to message database
-    // Add to message to the channel it belongs to
-    await db.channels.update({ 'uuid': channel.uuid }, { "$set": { 'last_message': message.uuid } });
-    // 🍘 This should be optimized
+    await db.channels.update({ 'uuid': channel.uuid }, { "$set": { 'last_message': message.uuid } }); // Add to message to the channel it belongs to
 
     // If the user is a member of that channel
     res.status(201).json({ "message": "message created" });
 
     message = (await db.messages.aggregate([
-        {
-            '$match': {
-                "uuid": message.uuid
-            }
-        },
-        {
-            '$lookup': {
-                'from': 'users',
-                'localField': 'author',
-                'foreignField': 'uuid',
-                'as': 'author'
-            }
-        },
-        {
-            '$unwind': {
-                'path': '$author',
-                'preserveNullAndEmptyArrays': true
-            }
-        },
-        {
-            '$project': {
-                '_id': 0,
-                'author.settings': 0,
-                'author.profile': 0,
-                'author.created_at': 0,
-                'author.friend_list': 0,
-                'author.following': 0,
-                'author._id': 0
-            }
-        }
+        {'$match': {"uuid": message.uuid}},
+        {'$lookup': {'from': 'users','localField': 'author','foreignField': 'uuid','as': 'author'}},
+        {'$unwind': {'path': '$author','preserveNullAndEmptyArrays': true}},
+        {'$project': { '_id': 0, 'author.settings': 0, 'author.profile': 0, 'author.created_at': 0, 'author.friend_list': 0, 'author.following': 0, 'author._id': 0 } }
     ]))[0];
 
     // socket.broadcast.emit("message", message);  // Send to all other users

@@ -31,10 +31,7 @@ router.get("/:channel_uuid", async (req, res) => {
   ]))[0];
 
   // If the user isn't part of that channel reject their view
-  if (channel && !channel.member_list.some(user => user.uuid == req.user.uuid)) {
-      res.status(401).json({ "message": 'Forbidden' });
-      return;
-  }
+  if (channel && !channel.member_list.some(user => user.uuid == req.user.uuid)) return res.status(401).json({ "message": 'Forbidden' });
 
   res.status(200).json({ "channel": channel });
 });

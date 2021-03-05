@@ -15,40 +15,32 @@ async function createToken(user, res) {
   };
 
   jwt.sign(payload, "h4x0r", { expiresIn: "30d" }, (err, token) => {
-    res.cookie("token", token);
-    res.json({
-      message: "Logged in",
-      token: token,
-      uuid: user.uuid,
-      user: user
-    });
-    res.status(200);
+    res.status(200)
+       .cookie("token", token)
+       .json({
+          message: "Logged in",
+          token: token,
+          uuid: user.uuid,
+          user: user
+        });
   });
 }
 
 login.post("/login", async (req, res) => {
     // Parse body
     const body = req.body;
-  
     const user = await db.users.find(
       { username: body.username },
       { collation: { locale: "en", strength: 2 } }
     );
-  
-    // Try matching
-    try {
+    
+    try {  // Try matching
       const match = await bcrypt.compare(body.password, user[0].settings.account.password);
-      if (match) {
-        createToken(user, res);
-      }
-      // If password doesn't match throw error
-      else throw "error";
+      if (match) createToken(user, res);
+      else throw "error"; // If password doesn't match throw error
     } catch (error) {
       console.log(error);
-      if (error) {
-        res.status(200);
-        res.json({ error: "Invalid Credentials ｡･ﾟﾟ*(>д<)*ﾟﾟ･｡" });
-      }
+      if (error) res.status(200).json({ error: "Invalid Credentials ｡･ﾟﾟ*(>д<)*ﾟﾟ･｡" });
     }
 });
 
