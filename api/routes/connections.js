@@ -49,7 +49,9 @@ router.route('/:platform')
                 await db.users.update({ 'uuid': req.user.uuid }, { '$set': { 'profile.connections.osu': user.data } });
             }
 
-        } catch (error) console.log(error);
+        } catch (error) {
+            console.log(error);
+        }
     })
     .delete(async (req, res) => {
         const plaform = req.params.platform;
@@ -68,7 +70,9 @@ router.route('/:platform')
 
             res.status(200);
             res.json({ "message": `Unlinked ${plaform} successfully` });
-        } catch (error) if (error) res.status(500).json({ "message": error.response });
+        } catch (error) {
+            if (error) res.status(500).json({ "message": error.response });
+        }
     });
 
 module.exports = router

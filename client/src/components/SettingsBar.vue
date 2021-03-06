@@ -1,5 +1,5 @@
 <template>
-  <div @update-theme="updateUI" class="settingsBar" :class="{small: path, darkmode: darkmode == 'true'}" >
+  <div @update-theme="updateUI" class="settingsBar" :class="{darkmode: darkmode == 'true'}" >
     
     <div>
       <router-link :class="{hidden: !path, darkmode: darkmode == 'true'}" @mouseover="playHover()" to="/settings" class="setting back">
@@ -143,7 +143,7 @@ export default {
 .settingsBar {
   background: white;
   min-height: 100vh;
-  width: 100vw;
+  width: 320px;
   transition: 200ms ease;
   overflow: hidden;
   position: fixed;
@@ -176,7 +176,7 @@ export default {
 .setting img {
   width: 32px;
   height: 32px;
-  padding: 8px 12px;
+  margin: 8px 12px;
 }
 
 .setting h1 {
@@ -200,41 +200,13 @@ export default {
 
 .small { width: 56px; }
 .back img { 
-  padding: 12px; 
+  margin: 12px; 
   z-index: 1000;
 }
 
 .hidden {
     opacity: 0%;
     user-select: none;
-}
-
-/* if width is more than 715px */
-@media only screen and (min-width: 715px)  {
-    .settingsBar {
-        padding: 0px 32px;
-    }
-}
-
-/* if width is more than 915px */
-@media only screen and (min-width: 915px)  {
-    .settingsBar {
-        padding: 0px 64px;
-    }
-}
-
-/* if width is more than 1215px */
-@media only screen and (min-width: 1215px)  {
-    .settingsBar {
-        padding: 0px 168px;
-    }
-}
-
-/* if width is more than 1215px */
-@media only screen and (min-width: 1600px)  {
-    .settingsBar {
-        padding: 0px 368px;
-    }
 }
 
 </style>

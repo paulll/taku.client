@@ -113,6 +113,8 @@ import ConnectionBox from '@/components/settings/ConnectionBox.vue'
 import Connections from '@/components/settings/Connections.vue'
 import Guidelines from '@/components/settings/Guidelines.vue'
 
+import translation from '@/services/translator.js'
+
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
@@ -178,14 +180,7 @@ export default {
 
   },
   methods: {
-    // Fetches right translation of the site
-    translation(sentence){
-      if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
-      else this.languageTable = require(`@/languages/${localStorage.language}.json`);
-      let translatedSentence = this.languageTable[sentence];
-      if (!translatedSentence) return sentence;
-      return translatedSentence;
-    },
+    translation,
     async sendOauthToken(platform, code){
       await axios.post(`https://taku.moe:2087/connections/${platform}`, {code: code}, {
         withCredentials: true,
@@ -246,18 +241,20 @@ export default {
 }
 
 
-.settingsArea {
-  width: calc(100% - 32px);
-  background: #F3F3F3;
-  height: inherit;
-  transform: translateX(56px);
-  height: calc(100vh - 60px);
-  padding-top: 60px;
-  transition: 100ms ease;
-  overflow-y: scroll;
 
-  display: flex;
-  justify-content: center;
+.settingsArea {
+    width: calc(100% - 344px);
+    background: #F3F3F3;
+    height: inherit;
+    transform: translateX(56px);
+    height: 100vh;
+    padding-top: 60px;
+    transition: 100ms ease;
+    overflow-y: scroll;
+    display: flex;
+    justify-content: center;
+    right: 0;
+    position: absolute;
 }
 
 .settingsArea.darkmode { background: var(--darkmodeDarker); } /* darkmode */ 

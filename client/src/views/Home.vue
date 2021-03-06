@@ -1,68 +1,39 @@
 <template>
-  <div class="home">
-    <div class="tag-grid">
-
+    <div class="home">
+        <BrowseAnime/>
+        <PopularTags/>        
     </div>
-  </div>
 </template>
 
 <script>
+import BrowseAnime from '@/components/home/BrowseAnime.vue';
+import PopularTags from '@/components/home/PopularTags.vue';
+
 export default {
-  name: 'home',
-  data: () => {
-    return {
-    };
-  },
-  mounted() {
-  },
-  methods: {
-  }
+    name: 'home',
+    components: {
+        PopularTags,
+        BrowseAnime
+    },
 }
 
 </script>
 
 <style scoped>
 
-.center-text {
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 600;
-  background: rgba(0, 0, 0, 0.267);
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.home {
+    height: 100vh;
+    background: white;
 }
 
-.tag-grid {
-  padding: 32px;
-  display: grid;
-  gap: 4px;
+.section {
+    margin-top: 16px;
+    font-family: Work Sans;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
 
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  grid-auto-rows: 90px;
-}
-.tag-grid .card {
-  background-size: cover;
-  background-position: center;
-  background-size: 100%;
-  transition: 100ms ease;
+    color: #2C394A;
 }
 
-.tag-grid .card:hover {
-  background-size: 110%;
-  cursor: pointer;
-}
-
-/* Medium screens */
-@media screen and (min-width: 600px) {
-  .tag-grid .card-tall {
-    grid-row: span 2 / auto;
-  }
-
-  .tag-grid .card-wide {
-    grid-column: span 2 / auto;
-  }
-}
 </style>

@@ -119,6 +119,8 @@ import MyComputer from '@/components/profile/MyComputer.vue'
 import ToolTip from '@/components/ToolTip.vue'
 import Osu from '@/components/profile/Osu.vue'
 
+import translation from '@/services/translator.js'
+
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
@@ -169,14 +171,7 @@ export default {
     }
   },
   methods: {
-    // Fetches right translation of the site
-    translation(sentence){
-      if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
-      else this.languageTable = require(`@/languages/${localStorage.language}.json`);
-      let translatedSentence = this.languageTable[sentence];
-      if (!translatedSentence) return sentence;
-      return translatedSentence;
-    },
+    translation,
     startDrag(event, id){
         let element = document.getElementById(id);
         this.currentlyDraggingElement = id;

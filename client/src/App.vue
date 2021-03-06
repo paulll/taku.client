@@ -35,9 +35,7 @@ export default {
   },
   created(){
     NProgress.start();
-    if (localStorage.token) {
-      this.getUser();
-    }
+    if (localStorage.token) this.getUser();
   },
   mounted(){
     NProgress.done();
@@ -158,7 +156,11 @@ body {
 }
 
 .FUCKER {
+  padding: 16px;
   height: 100vh;
+  max-width: 100%;
+  width: calc(100vw - 80px);
+  background: white;
 }
 
 #nav a.router-link-exact-active {

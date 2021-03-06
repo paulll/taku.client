@@ -7,9 +7,9 @@
       </a>
 
       <div class="group">
-        <!-- <router-link to='/home'>
+        <router-link to='/home'>
           <img src="../assets/home.svg" alt="">
-        </router-link> -->
+        </router-link>
 
         <router-link to='/messages'>
           <img src="../assets/chat.png" alt="">

@@ -4,6 +4,7 @@ const fs = require('fs');
 const classFiles = fs.readdirSync('./classes').filter(file => file.endsWith('.js'));
 const Classes = {};
 for (const file of classFiles) {
+  console.log(`[HANDLER]`.bgMagenta.white + ` loading ` + `[${file}]`.magenta);
   let loadedFile = require(`../classes/${file}`);
 
   // if file exports an array of constructors

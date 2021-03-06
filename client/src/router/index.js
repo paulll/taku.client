@@ -5,17 +5,18 @@ import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
 
 const routes = [
+  { path: '/', redirect: '/home' },
   {
-    path: '/',
+    path: '/home',
     name: 'Home',
     component: () => import('../views/Home.vue'),
     meta: {
-      title: 'Taku',
+      title: 'Taku | Home',
     },
   },
   {
     path: '/signup/',
-    name: 'signup',
+    name: 'Signup',
     component: () => import('../views/Signup.vue'),
     meta: {
       title: 'Taku | Signup',
