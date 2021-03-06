@@ -1,7 +1,7 @@
 const express = require('express');
 const db = require("../handlers/database.js");       // Import database handler
 const auth = require("../middlewares/auth.js");      // Import auth system
-const Classes = require("../handlers/classes.js"); 
+const taku = require("../handlers/classes.js"); 
 
 const router = express.Router();
 
@@ -59,7 +59,7 @@ router.post("/group/", async (req, res) => {
   const senpai = author;
   const name = req.body.name;
   
-  const newGroup = new Classes.GroupChannel(author, [author, ...participants], undefined, name);
+  const newGroup = new taku.GroupChannel(author, [author, ...participants], undefined, name);
   
   try {
     const channel = await db.channels.insert(newGroup);
@@ -85,7 +85,7 @@ router.post("/invite/", async (req, res) => {
   const channel = req.body.channel_uuid;
 
   for (user of usersToInvite) {
-    const invite = new Classes.Invite(user, req.user.uuid, req.body.channel_uuid);
+    const invite = new taku.Invite(user, req.user.uuid, req.body.channel_uuid);
     await db.invites.insert(invite);
     io.sockets.in(user).emit("invite", channel);
     console.log(invite);

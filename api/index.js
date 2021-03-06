@@ -10,7 +10,7 @@ const cookieParser = require("cookie-parser");
 const { v4: uuidv4 } = require("uuid");
 const handleHeartbeat = require('./handlers/onlineUserHandler');
 const port = process.env.PORT || 2087;
-const version = 'v0.92';
+const version = 'v0.102';
 const logo = `  ___       ___       ___       ___   
  /\\  \\     /\\  \\     /\\__\\     /\\__\\  
  \\:\\  \\   /::\\  \\   /:/ _/_   /:/ _/_ 
@@ -63,6 +63,7 @@ app.use('/message',       require("./routes/message"));                 // Impor
 app.use('/channels',      require("./routes/channels"));                // Import channels
 app.use('/notifications', require("./routes/notifications"));           // Import notifications
 app.use('/connections',   require("./routes/connections"));             // Import connections
+app.use('/wallpaper',     require("./routes/wallpaper"));               // Import wallpaper
 
 
 // Websockets

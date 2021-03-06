@@ -12,4 +12,5 @@ module.exports = {
     notifications: db.get("notifications"),
     channels:      db.get("channels"),
     invites:       db.get("invites"),
+    wallpapers:    db.get("wallpapers"),
 };

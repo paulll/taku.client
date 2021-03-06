@@ -1,6 +1,6 @@
 const express = require('express');
 const db = require("../handlers/database.js");       // Import database handler
-const Classes = require("../handlers/classes.js");    // Import Constructor classes
+const taku = require("../handlers/classes.js");    // Import Constructor classes
 const auth = require("../middlewares/auth.js");       // Import auth system
 
 const io = require('../index.js');
@@ -44,12 +44,12 @@ const acceptFriendRequest = (me, userToAccept) => {
 
       // If there isn't a channel for those 2 users already, make a new one
       if (!checkedChannel) {
-          const newChannel = new Classes.Channel(me.uuid, [userToAccept]);
+          const newChannel = new taku.Channel(me.uuid, [userToAccept]);
           await db.channels.insert(newChannel);
       };
 
       // Create the notification
-      let notification = new Classes.Notification("Friend Request", { uuid: me.uuid, username: me.username }, `Accepted your friend request!`);
+      let notification = new taku.Notification("Friend Request", { uuid: me.uuid, username: me.username }, `Accepted your friend request!`);
 
       // Send event to the specific user
       io.sockets.in(userToAccept).emit('notification', notification);
@@ -76,7 +76,7 @@ router.post("/add", auth, async (req, res) => { // Add a friend
   );
 
   // Create the notification
-  let notification = new Classes.Notification("Friend Request", { uuid: me.uuid, username: me.username }, `Sent you a friend request!`);
+  let notification = new taku.Notification("Friend Request", { uuid: me.uuid, username: me.username }, `Sent you a friend request!`);
 
   // Send event to the specific user
   // console.log("[Notification WS] Emitting New".red, me.uuid.red);

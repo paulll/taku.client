@@ -3,7 +3,7 @@ const db = require("../handlers/database.js");       // Import database handler
 const auth = require("../middlewares/auth.js");      // Import auth system
 const multer = require("multer");
 const upload = multer({ dest: "./db/uploads/" });
-const Classes = require("../handlers/classes.js");    // Import Constructor classes
+const taku = require("../handlers/classes.js");    // Import Constructor classes
 const clusters = require('../handlers/clusters.js');  // Import clusterHandler, currently used for image processing
 
 const io = require('../index.js');

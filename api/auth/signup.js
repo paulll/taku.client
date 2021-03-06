@@ -3,7 +3,7 @@ const db = require("../handlers/database.js"); // Import database handler
 const Joi = require("joi");
 const bcrypt = require("bcrypt");
 const saltRounds = 12;
-const Classes = require("../handlers/classes.js");    // Import Constructor classes
+const taku = require("../handlers/classes.js");    // Import Constructor classes
 
 const signup = express.Router();
 
@@ -43,7 +43,7 @@ signup.post("/signup", async (req, res) => {
     // Encrypt Passwords
     const hash = await bcrypt.hash(body.password, saltRounds);
 
-    const user = new Classes.User(form.username, form.email, hash);
+    const user = new taku.User(form.username, form.email, hash);
     // console.log(user);
 
     // Make a new user with the values we got from the signup form and add to database
