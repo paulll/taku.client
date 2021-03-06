@@ -47,10 +47,28 @@ router.post("/like/:wallpaper_uuid", auth, async (req, res) => {
     }
 });
 
+router.post("/dislike/:wallpaper_uuid", auth, async (req, res) => {
+    try {
+        const wallpaper = await db.wallpapers.update({uuid: req.params.wallpaper_uuid}, {$pull: { 'likes': req.user.uuid }});
+        res.status(200).json({message: 'wallpaper successfully updated', likes: wallpaper.likes});
+    } catch (error) {
+        if(error) errorHandler(error, res);
+    }
+});
+
 router.post("/save/:wallpaper_uuid", auth, async (req, res) => {
     try {
         const wallpaper = await db.wallpapers.update({uuid: req.params.wallpaper_uuid}, {$addToSet: { 'saves': req.user.uuid }});
         res.status(200).json({message: 'wallpaper successfully updated', saves: wallpaper.saves});
+    } catch (error) {
+        if(error) errorHandler(error, res);
+    }
+});
+
+router.post("/unsave/:wallpaper_uuid", auth, async (req, res) => {
+    try {
+        const wallpaper = await db.wallpapers.update({uuid: req.params.wallpaper_uuid}, {$pull: { 'saves': req.user.uuid }});
+        res.status(200).json({message: 'wallpaper successfully updated', saves: wallpaper.likes});
     } catch (error) {
         if(error) errorHandler(error, res);
     }

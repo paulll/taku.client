@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 let auth = (req, res, next) => {
     jwt.verify(req.cookies.token, "h4x0r", async (error, user) => {
-        if (error) return res.status(401).json({ message: "You must be logged in to view your user info idiot 🖕🖕🖕", });
+        if (error) return res.status(401).json({ message: "You must be logged in to view your user info idiot 🖕🖕🖕", error});
 
         // Get user's data from db
         req.user = (await db.users.aggregate([
