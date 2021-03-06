@@ -25,7 +25,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
     if (req.files.length !== 0) attachments = await clusters.cacheImages(req.files);
     
     // Create new message
-    let message = new Classes.Message(req.user.uuid, messageEvent.content, channel.uuid, attachments);
+    let message = new taku.Message(req.user.uuid, messageEvent.content, channel.uuid, attachments);
 
     await db.messages.insert(message); // Add to message database
     await db.channels.update({ 'uuid': channel.uuid }, { "$set": { 'last_message': message.uuid } }); // Add to message to the channel it belongs to
@@ -44,7 +44,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
     // socket.emit("message", message);            // Send to current user
 
     // Create the notification
-    let notification = new Classes.Notification("Message", { uuid: req.user.uuid, username: req.user.username }, message.content, undefined, channel, message.attachments.length);
+    let notification = new taku.Notification("Message", { uuid: req.user.uuid, username: req.user.username }, message.content, undefined, channel, message.attachments.length);
 
     for (member of channel.member_list) {
         if (member != req.user.uuid) {

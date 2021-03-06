@@ -52,6 +52,14 @@ const routes = [
     },
   },
   {
+    path: '/wallpaper/:wallpaper_uuid?',
+    name: 'Wallpaper',
+    component: () => import('../views/Wallpaper.vue'),
+    meta: {
+      title: 'Taku | Wallpaper',
+    },
+  },
+  {
     path: '/anime/:id',
     name: 'Anime',
     component: () => import('../views/Anime.vue'),

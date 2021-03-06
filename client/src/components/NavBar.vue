@@ -3,21 +3,33 @@
 
     <nav>
       <a @click="$router.go(-1)">
-        <img src="../assets/back.png" alt="back">
+        <img src="../assets/navbar/Folder.svg" alt="">
       </a>
 
       <div class="group">
         <router-link to='/home'>
-          <img src="../assets/home.svg" alt="">
+          <img src="../assets/navbar/Home.svg" alt="">
+        </router-link>
+
+        <router-link to='/wallpaper'>
+          <img src="../assets/navbar/Wallpaper.svg" alt="">
+        </router-link>
+
+        <router-link to='/upload'>
+          <img src="../assets/navbar/Upload.svg" alt="">
         </router-link>
 
         <router-link to='/messages'>
-          <img src="../assets/chat.png" alt="">
+          <img src="../assets/navbar/Message.svg" alt="">
         </router-link>
 
-        <!-- <router-link to='/notifications'>
-          <img src="../assets/notification.png" alt="">
-        </router-link> -->
+        <router-link to='/notifications'>
+          <img src="../assets/navbar/Bell.svg" alt="">
+        </router-link>
+
+        <router-link to='/trash'>
+          <img src="../assets/navbar/Trash.svg" alt="">
+        </router-link>
       </div>
 
       <router-link to='/settings'>
