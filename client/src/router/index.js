@@ -67,6 +67,14 @@ const routes = [
       title: 'Taku | Anime',
     },
   },
+  {
+    path: '/upload/',
+    name: 'Upload',
+    component: () => import('../views/Upload.vue'),
+    meta: {
+      title: 'Taku | Upload',
+    },
+  },
 ]
 
 const router = createRouter({

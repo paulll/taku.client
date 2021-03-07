@@ -6,7 +6,7 @@ function Wallpaper(image, jimpImage, metadata) {
     if (!jimpImage) throw "'jimpImage' object must be provided for a Wallpaper";
     if (!metadata)  throw "'metadata' object must be provided for a Wallpaper";
 
-    if (metadata.submitter_uuid === undefined) throw "'submitter_uuid' must be provied in metadata";
+    if (metadata.submitter === undefined) throw "'submitter_uuid' must be provied in metadata";
     if (metadata.anime_uuid === undefined)     throw "'anime_uuid' must be provied in metadata";
     if (metadata.season === undefined)         throw "'season' must be provied in metadata";
     if (metadata.episode === undefined)        throw "'episode' must be provied in metadata";
@@ -17,10 +17,10 @@ function Wallpaper(image, jimpImage, metadata) {
     this.uuid = uuidv4();                              // UUID of the Wallpaper
     this.created_at = new Date().getTime();            // Wallpaper creation date
     
-    this.submitter_uuid = metadata.submitter_uuid;     // The UUID of the user who submitted the Wallpaper in the database
+    this.submitter      = metadata.submitter;          // The UUID of the user who submitted the Wallpaper in the database
     this.anime_uuid     = metadata.anime_uuid;         // The UUID of the anime the wallpaper comes from
-    this.season         = metadata.season;             // The season of the series the wallpaper comes from
-    this.episode        = metadata.episode;            // The episode of the series the wallpaper comes from
+    this.season         = parseInt(metadata.season);   // The season of the series the wallpaper comes from
+    this.episode        = parseInt(metadata.episode);  // The episode of the series the wallpaper comes from
     this.timestamp      = metadata.timestamp;          // The timestamp of the series the wallpaper comes from
     this.isNsfw         = metadata.isNsfw;             // If the wallpaper is from an NSFW series (dem tiddies ( ͡° ͜ʖ ͡°))
     this.tags           = metadata.tags;               // The tags of the wallpaper

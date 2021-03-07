@@ -14,17 +14,39 @@ function errorHandler(error, res){
     res.status(500).json({message: 'error updating wallpaper in database', error});
 }
 
-router.get("/:uuid", async (req, res) => res.status(200).json((await db.wallpapers.find({uuid: req.params.uuid}))[0]));
+router.get("/:uuid", async (req, res) => {
+    const wallpaper = await db.wallpapers.aggregate([
+        {'$match':   {'uuid': req.params.uuid}},
+        {'$lookup':  {'from': 'users', 'localField': 'submitter.uuid', 'foreignField': 'uuid', 'as': 'submitter' } },
+        {'$project': {'_id': 0, 'submitter._id': 0, 'submitter.settings': 0, 'submitter.following': 0, 'submitter.friend_list': 0, 'submitter.created_at': 0, 'submitter.profile.isDeveloper': 0, 'submitter.profile.isBetaTester': 0, 'submitter.profile.pfp': 0, 'submitter.profile.banner': 0, 'submitter.profile.anime_list': 0, 'submitter.profile.socials': 0, 'submitter.profile.description': 0, 'submitter.profile.connections': 0, 'submitter.profile.order': 0 } },
+        {'$unwind':  {'path': '$submitter', 'preserveNullAndEmptyArrays': true }},
+    ]);
+    console.log(wallpaper[0]);
+    res.status(200).json(wallpaper[0]);
+});
+
 
 router.get("/random/:amount", async (req, res) => {
-    const wallpapers = await db.wallpapers.aggregate([{'$sample': {'size': parseInt(req.params.amount)}}]);
+    const wallpapers = await db.wallpapers.aggregate([
+        {'$sample': {'size': parseInt(req.params.amount)}},
+        {'$sort' :  {'likes': -1 }}
+    ]);
+    res.status(200).json({ wallpapers });
+});
+
+router.get("/tag/:tag", async (req, res) => {
+    const wallpapers = (await db.wallpapers.aggregate([
+        {'$match': {'tags': req.params.tag}},
+        {'$sort' : {'likes': -1 }}
+    ]));
+
     res.status(200).json({ wallpapers });
 });
 
 router.post("/", auth, upload.any(), async (req, res) => {
     if (!req.body.metadata) return res.status(400).json({message: 'missing metadata'});
     const metadata = JSON.parse(req.body.metadata);
-    metadata.submitter_uuid = req.user.uuid;
+    metadata.submitter.uuid = req.user.uuid;
 
     if (req.files) var image = req.files[0];
     else return res.status(400).json({message: 'missing image'});

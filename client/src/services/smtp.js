@@ -1,3 +1,4 @@
+// Have we installed NodeMailer?
 const SMTPConnection = require("nodemailer/lib/smtp-connection");
 
 function connectToMail() {

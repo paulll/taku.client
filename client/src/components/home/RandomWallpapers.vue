@@ -3,7 +3,7 @@
         <p class="headerText">{{translation('RANDOM Wallpapers')}}</p>
         <div class="scrollRegion">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
-                <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="posterContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
+                <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
                     <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/${wallpaper.fileName}')`}"></div>
                     <Spinner/>
                 </router-link>
@@ -42,16 +42,20 @@ export default {
     padding-bottom: 4px;
 }
 
+.wallpaperContainer {
+    width: 100%;
+}
+
 .wallpaper {
     margin-top: 8px;
     display: grid;
     gap: 8px;
-    grid-template-columns: repeat(20, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .wallpaper .image {
     height: 156px;
-    width: 294.67px;
+    width: 100%;
     background: center no-repeat;
     background-size: cover;
     border-radius: 8px;

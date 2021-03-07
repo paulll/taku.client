@@ -32,7 +32,7 @@
             </div>
 
             <div class="information">
-                <div class="author"></div>
+                <User :user="wallpaper.submitter" />
                 <div class="group">
                     <div class="tags">
                         <div class="tag" v-for="tag in wallpaper.tags" :key="tag">#{{tag.toLowerCase()}}</div>
@@ -51,6 +51,8 @@
 
 <script>
 import axios from 'axios';
+import User from '@/components/User.vue';
+
 export default {
     name: 'wallpaper',
     data: () => {
@@ -61,6 +63,7 @@ export default {
         }
     },
     components: {
+        User,
     },
     mounted(){
         this.getWallpaper();
@@ -80,6 +83,7 @@ export default {
         },
         async getWallpaper(){
             this.wallpaper = (await axios.get(`https://taku.moe:2087/wallpapers/${this.$route.params.wallpaper_uuid}`)).data;
+            console.log(this.wallpaper);
         },
         downloadWallpaper(){
             window.open(`https://taku.moe:2087/wallpapers/download/${this.$route.params.wallpaper_uuid}`);

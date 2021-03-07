@@ -174,13 +174,6 @@ header img {
   height: 48px
 }
 
-.channelPfp {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
 .info {
   padding: 4px 0px;
   display: flex;
