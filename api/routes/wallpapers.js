@@ -15,6 +15,12 @@ function errorHandler(error, res){
 }
 
 router.get("/:uuid", async (req, res) => res.status(200).json((await db.wallpapers.find({uuid: req.params.uuid}))[0]));
+
+router.get("/random/:amount", async (req, res) => {
+    const wallpapers = await db.wallpapers.aggregate([{'$sample': {'size': parseInt(req.params.amount)}}]);
+    res.status(200).json({ wallpapers });
+});
+
 router.post("/", auth, upload.any(), async (req, res) => {
     if (!req.body.metadata) return res.status(400).json({message: 'missing metadata'});
     const metadata = JSON.parse(req.body.metadata);
@@ -36,10 +42,10 @@ router.post("/", auth, upload.any(), async (req, res) => {
     } catch (error) {
         if(error) errorHandler(error, res);
     }
-}); 
+});
 
 router.post("/like/:wallpaper_uuid", auth, async (req, res) => {
-    try {
+    try { 
         const wallpaper = await db.wallpapers.update({uuid: req.params.wallpaper_uuid}, {$addToSet: { 'likes': req.user.uuid }});
         res.status(200).json({message: 'wallpaper successfully updated', likes: wallpaper.likes});
     } catch (error) {

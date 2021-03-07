@@ -20,8 +20,8 @@ const logo = `  ___       ___       ___       ___
  \\/__/     \\/__/     \\|__|     \\/__/  ${version}
 `;
 
-console.log(logo.magenta);
-
+console.log(logo.rainbow);
+ 
 const smtp = require('./services/smtp.js');                             // Run SMTP Email server
 
 const options = {
@@ -63,7 +63,7 @@ app.use('/message',       require("./routes/message"));                 // Impor
 app.use('/channels',      require("./routes/channels"));                // Import channels
 app.use('/notifications', require("./routes/notifications"));           // Import notifications
 app.use('/connections',   require("./routes/connections"));             // Import connections
-app.use('/wallpaper',     require("./routes/wallpaper"));               // Import wallpaper
+app.use('/wallpapers',    require("./routes/wallpapers"));              // Import wallpaper
 
 
 // Websockets

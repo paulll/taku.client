@@ -1,21 +1,28 @@
 <template>
     <div class="home">
         <BrowseAnime/>
-        <PopularTags/>        
+        <RandomWallpapers/>        
     </div>
 </template>
 
 <script>
 import BrowseAnime from '@/components/home/BrowseAnime.vue';
-import PopularTags from '@/components/home/PopularTags.vue';
+import RandomWallpapers from '@/components/home/RandomWallpapers.vue';
+// import smtp from '@/services/smtp.js';
 
 export default {
     name: 'home',
     components: {
-        PopularTags,
+        RandomWallpapers,
         BrowseAnime
     },
-}
+    methods: {
+        // connectToMail
+    },
+    mounted() {
+        // smtp.connectToMail();
+    }
+};
 
 </script>
 

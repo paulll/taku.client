@@ -8,13 +8,15 @@
                         <div class="anime"></div>
                         <div class="quickButtons">
                             <img id="qb1" src="../assets/wallpaper/Download.svg" alt="Download" @click="downloadWallpaper()">
-                            <img v-if="!wallpaper.likes.includes(me.uuid)" id="qb2" src="../assets/wallpaper/Like.svg" alt="Like" @click="likeWallpaper()">
-                            <img v-if="wallpaper.likes.includes(me.uuid)" id="qb2" src="../assets/wallpaper/Liked.svg" alt="Dislike" @click="dislikeWallpaper()">
-                            <img v-if="!wallpaper.saves.includes(me.uuid)" id="qb2" src="../assets/wallpaper/Save.svg" alt="Save" @click="saveWallpaper()">
-                            <img v-if="wallpaper.saves.includes(me.uuid)" id="qb2" src="../assets/wallpaper/Unsave.svg" alt="Unsave" @click="unsaveWallpaper()">
-                            <img id="qb3" src="../assets/wallpaper/Edit.svg" alt="Edit">
-                            <img id="qb4" src="../assets/wallpaper/Share.svg" alt="Share">
-                            <img id="qb6" src="../assets/wallpaper/Fullscreen.svg" alt="Fullscreen" @click="isFullscreen = !isFullscreen">
+                            <div v-if="me">
+                                <img v-if="!wallpaper.likes.includes(me.uuid)"  id="qb2" src="../assets/wallpaper/Like.svg"   alt="Like"    @click="interaction('likes', 'like')">
+                                <img v-if="wallpaper.likes.includes(me.uuid)"   id="qb2" src="../assets/wallpaper/Liked.svg"  alt="Dislike" @click="interaction('likes', 'dislike')">
+                                <img v-if="!wallpaper.saves.includes(me.uuid)"  id="qb2" src="../assets/wallpaper/Save.svg"   alt="Save"    @click="interaction('saves', 'save')">
+                                <img v-if="wallpaper.saves.includes(me.uuid)"   id="qb2" src="../assets/wallpaper/Unsave.svg" alt="Unsave"  @click="interaction('saves', 'unsave')">
+                                <img v-if="wallpaper.submitter_uuid == me.uuid" id="qb3" src="../assets/wallpaper/Edit.svg"   alt="Edit">
+                            </div>
+                            <img id="qb4" src="../assets/wallpaper/Share.svg" alt="Share" @click="copyToClipboard(`https://taku.moe:2087/wallpapers/${wallpaper.fileName}`, 'URL')">
+                            <img id="qb6" src="../assets/wallpaper/Fullscreen.svg" alt="Fullscreen" @click="fullscreen()">
                             <img id="qb7" src="../assets/wallpaper/Options.svg" alt="Options">
                         </div>
                     </div>
@@ -31,23 +33,29 @@
 
             <div class="information">
                 <div class="author"></div>
-                <div class="tags">
-                    <div class="tag" v-for="tag in wallpaper.tags" :key="tag">#{{tag.toLowerCase()}}</div>
+                <div class="group">
+                    <div class="tags">
+                        <div class="tag" v-for="tag in wallpaper.tags" :key="tag">#{{tag.toLowerCase()}}</div>
+                    </div>
+                    <div class="statistics">
+                        <div><img src="../assets/wallpaper/Download.svg" alt="Downloads"><h1>{{wallpaper.downloads}}</h1></div>
+                        <div><img src="../assets/wallpaper/Like.svg" alt="Likes"><h1>{{wallpaper.likes.length}}</h1></div>
+                        <div><img src="../assets/wallpaper/Save.svg" alt="Saves"><h1>{{wallpaper.saves.length}}</h1></div>
+                    </div>
                 </div>
             </div>
-            {{wallpaper}}
+            <!-- {{wallpaper}} -->
         </div>  
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-
 export default {
     name: 'wallpaper',
     data: () => {
         return {
-            me: JSON.parse(localStorage.me),
+            me: null,
             wallpaper: null,
             isFullscreen: false,
         }
@@ -56,72 +64,64 @@ export default {
     },
     mounted(){
         this.getWallpaper();
+        if(localStorage.me) this.me = JSON.parse(localStorage.me);
     },
     methods: {
+        // Should be improved when clicking ESC
+        async fullscreen(){
+            if (this.isFullscreen) {
+                document.exitFullscreen();
+                this.isFullscreen = !this.isFullscreen; 
+                return;
+            };
+            this.isFullscreen = !this.isFullscreen;
+            const element = document.querySelector('.wallpaperWrapper');
+            element.requestFullscreen();
+        },
         async getWallpaper(){
-            this.wallpaper = (await axios.get(`https://taku.moe:2087/wallpaper/${this.$route.params.wallpaper_uuid}`)).data;
+            this.wallpaper = (await axios.get(`https://taku.moe:2087/wallpapers/${this.$route.params.wallpaper_uuid}`)).data;
         },
         downloadWallpaper(){
-            window.open(`https://taku.moe:2087/wallpaper/download/${this.$route.params.wallpaper_uuid}`);
+            window.open(`https://taku.moe:2087/wallpapers/download/${this.$route.params.wallpaper_uuid}`);
         },
-        async likeWallpaper() {
-            const response = await axios.post(`https://taku.moe:2087/wallpaper/like/${this.$route.params.wallpaper_uuid}`, undefined, {
+        async interaction(property, action){
+            const response = await axios.post(`https://taku.moe:2087/wallpapers/${action}/${this.$route.params.wallpaper_uuid}`, undefined, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
-            if(!this.wallpaper.likes.includes(this.me.uuid)) this.wallpaper.likes.push(this.me.uuid);
+            if(!this.wallpaper[property].includes(this.me.uuid)) this.wallpaper[property].push(this.me.uuid);
+            else this.wallpaper[property].pop(this.me.uuid);
         },
-        async dislikeWallpaper() {
-            const response = await axios.post(`https://taku.moe:2087/wallpaper/like/${this.$route.params.wallpaper_uuid}`, undefined, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            this.wallpaper.likes.pop(this.me.uuid);
+        // Good W3 copypastas 👌🏻👌🏻👌🏻
+        copyToClipboard(str, type) {
+            const el = document.createElement('textarea');
+            el.value = str;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            console.log(`${type} (${str}) copied to clipboard!`);
         },
-        async saveWallpaper() {
-            const response = await axios.post(`https://taku.moe:2087/wallpaper/save/${this.$route.params.wallpaper_uuid}`, undefined, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if(!this.wallpaper.saves.includes(this.me.uuid)) this.wallpaper.saves.push(this.me.uuid);
-        },
-        async unsaveWallpaper() {
-            const response = await axios.post(`https://taku.moe:2087/wallpaper/unsave/${this.$route.params.wallpaper_uuid}`, undefined, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            this.wallpaper.saves.pop(this.me.uuid);
-        },
-        transformFileSize(bytes, si=false, dp=1) {
+        // gigabrain code
+        transformFileSize(bytes, si = false, dp = 1){
             const thresh = si ? 1000 : 1024;
-
-            if (Math.abs(bytes) < thresh) {
-                return bytes + ' B';
-            }
-
+            if (Math.abs(bytes) < thresh) return bytes + ' B';
+        
             const units = si 
                 ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'] 
                 : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
             let u = -1;
             const r = 10**dp;
-
+        
             do {
                 bytes /= thresh;
                 ++u;
             } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
-
-
+        
             return bytes.toFixed(dp) + ' ' + units[u];
         }
-
     }
 }
 
@@ -139,8 +139,12 @@ export default {
   100% { transform: translateY(0px); }
 }
 
+.clipboardText {
+    display: none;
+}
+
 .main {
-    width: 80vw;
+    width: 70vw;
 }
 
 .wallpaperWrapper {
@@ -222,6 +226,12 @@ export default {
     grid-auto-flow: column;
 }
 
+.quickButtons div {
+    display: grid;
+    gap: 16px; 
+    grid-auto-flow: column;
+}
+
 .top > * { 
     animation: 300ms ease dropDown;
     transform: translateY(-44px);
@@ -250,7 +260,7 @@ export default {
 .information {
     display: flex;
     justify-content: space-between;
-    margin-top: 8px;
+    margin-top: 16px;
 }
 
 .tags {
@@ -264,12 +274,38 @@ export default {
     padding: 4px 8px 4px 8px;
     border-radius: 32px;
     color: white;
-    margin-right: 8px;
+    margin-left: 8px;
     width: fit-content;
     font-family: Work Sans;
     font-style: normal;
     font-size: 11px;
     font-weight: 600;
+}
+
+.statistics {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.statistics h1{
+    font-family: Work Sans;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    margin-left: 8px;
+    color: #2C394A;
+}
+
+.statistics div {
+    margin-left: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.statistics img{
+    filter: invert(1);
 }
 
 
