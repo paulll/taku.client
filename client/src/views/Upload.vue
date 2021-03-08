@@ -28,6 +28,12 @@
 
       <button>Submit</button>
 
+      <br>
+      <br>
+
+      <label for="file">Upload progress:</label>
+      <progress id="file" :value="uploadValue" :max="uploadMax"> {{uploadValue}}</progress>
+
     </form>
   </div>
 </template>
@@ -39,6 +45,7 @@ export default {
     data: () => {
         return {
           form: {
+            submitter: {},
             anime_uuid: '',
             season: '',
             episode: '',
@@ -47,6 +54,8 @@ export default {
             tags: '',
           },
           wallpaper: {},
+          uploadValue: 0,
+          uploadMax: 0,
         }
     },
     methods: {
@@ -61,14 +70,18 @@ export default {
             this.form.tags = this.form.tags.split(" ").map(tag => tag.replace("#", ""));
 
             let formData = new FormData();
-            console.log(this.form);
-            console.log(this.wallpaper);
 
             // Main Images
             formData.append('metadata', JSON.stringify(this.form));
             formData.append('files',    this.wallpaper);
 
+            this.uploadMax = this.wallpaper.size;
+
             const response = await axios.post('https://taku.moe:2087/wallpapers/', formData, {
+              onUploadProgress: progressEvent => {
+                this.uploadValue = progressEvent.loaded;
+                console.log(progressEvent);
+              },
               withCredentials: true,
               headers: {
                 'Content-Type': 'multipart/form-data'
@@ -76,13 +89,19 @@ export default {
             });
 
             // Clear the form if submitted
-            if(!response.data.error) this.form = {
-              anime_uuid: '',
-              season: '',
-              episode: '',
-              timestamp: '',
-              isNsfw: false,
-              tags: '',
+            if(!response.data.error) {
+              this.form = {
+                submitter: {},
+                anime_uuid: '',
+                season: '',
+                episode: '',
+                timestamp: '',
+                isNsfw: false,
+                tags: '',
+              };
+              this.wallpaper = {};
+              this.uploadValue = 0;
+              this.uploadMax = 0;
             };
 
             // Show message and return back to form
