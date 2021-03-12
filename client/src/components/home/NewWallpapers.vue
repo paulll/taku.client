@@ -1,7 +1,7 @@
 <template>
     <div class="section" v-if="wallpapers">
-        <p class="headerText">{{translation('RANDOM Wallpapers')}}</p>
-        <div class="scrollRegion">
+        <p class="headerText">{{translation('NEW Wallpapers')}}</p>
+        <div class="scrollRegion" v-on:scroll.passive="handleScroll">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
                     <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.filename}')`}"></div>
@@ -24,11 +24,19 @@ export default {
         }
     },
     async mounted(){
-        this.wallpapers = (await axios.get('https://taku.moe:2087/wallpapers/random/20')).data.wallpapers; 
+        this.wallpapers = (await axios.get('https://taku.moe:2087/wallpapers/new/20')).data.wallpapers; 
     },
     methods: {
-        translation
-    }
+        translation,
+        handleScroll: async function(e) {
+            const currentPos = e.target.scrollLeft;
+            const maxScroll = e.target.scrollWidth - e.target.offsetWidth;
+            if (currentPos == maxScroll) {
+                const moreWallpapers = (await axios.get(`https://taku.moe:2087/wallpapers/new/20/${this.wallpapers.length + 1}`)).data.wallpapers;
+                moreWallpapers.forEach(wallpaper => this.wallpapers.push(wallpaper));
+            }
+        }
+    }   
 }
 </script>
 
@@ -45,6 +53,9 @@ export default {
     margin-top: 8px;
     display: grid;
     gap: 8px;
-    grid-template-columns: repeat(20, minmax(240px, 1fr));
+    grid-template-columns: repeat(99999999, minmax(240px, 1fr));
 }
+
+
+
 </style>

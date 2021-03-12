@@ -2,7 +2,7 @@
   <div class="channelsContainer" :class="{darkmode: darkmode == 'true'}">
     <div>
       <div v-if="callState != 'idle'" class="call">
-        {{callInformation.username}} Is calling you!
+        {{callInformation.username}} {{translation('Is calling you!')}}
 
         <div class="button deny" @click="answer()">
           <div class="iconWrapper">
@@ -19,11 +19,11 @@
       </div>
 
       <div v-if="me.isCalling" class="call">
-        Calling {{userToCall.username}}...
+        {{translation('Calling')}} {{userToCall.username}}...
       </div>
 
       <div class="search">
-        <h1>Chats</h1>
+        <h1>{{translation('Chats')}}</h1>
         <div class="button" :class="{active: isSearching}">
           <input v-if="isSearching" ref="search" class="searchBox" spellcheck="false" placeholder="Search" v-model="searchString" type="text" @keyup="filterSearch()">
           <div class="iconWrapper" @click="toggleSearch(); $refs.search.$el.focus();">
@@ -160,6 +160,7 @@ import linkifyHtml from 'linkifyjs/html';
 import Chat from '@/components/Chat.vue';
 import socket from '@/services/socket.js';
 import peer from '@/services/peerjs.js';
+import translation from '@/services/translator.js';
 
 export default {
   name: 'home',
@@ -198,6 +199,7 @@ export default {
     });
   },
   methods: {   
+    translation,
     async call(participants){
       if(this.me.isCalling || this.callState == 'inCall' || this.callState == 'calling' || this.callState == 'beingCalled') return console.log(`Cannot initialize call in this state!`);
       else console.log(`Call would be initialized now`);

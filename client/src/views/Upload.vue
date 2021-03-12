@@ -1,32 +1,48 @@
 <template>
   <div class="formContainer">
     <form action="" v-on:submit.prevent="onSubmit">
-      
-      <label for="wallpaper">wallpaper</label>
-      <input type="file" name="" id="wallpaper" ref="wallpaper" v-on:change="wallpaper = $refs.wallpaper.files[0]" accept="image/*">
 
-      <label for="anime_uuid">anime_uuid</label>
-      <input placeholder="e.g. bbbd0f14-e433-46f7-a713-1a73db5bc9f7" type="text" name="" id="anime_uuid" v-model="form.anime_uuid">
+      <div>
+        <label for="wallpaper">Wallpaper</label>
+        <input type="file" name="" id="wallpaper" ref="wallpaper" v-on:change="wallpaper = $refs.wallpaper.files[0]" accept="image/*">
+      </div>
 
-      <label for="season">season</label>
-      <input placeholder="e.g. 1" type="number" name="" id="season" v-model="form.season">
+      <div>
+        <label for="anime_uuid">anime uuid</label>
+        <input class="textField" placeholder="e.g. bbbd0f14-e433-46f7-a713-1a73db5bc9f7" type="text" name="" id="anime_uuid" v-model="form.anime_uuid">
+      </div>
 
-      <label for="episode">episode</label>
-      <input placeholder="e.g. 3" type="number" name="" id="episode" v-model="form.episode">
+      <div>
+        <label for="season">season</label>
+        <input class="textField" placeholder="e.g. 1" type="number" name="" min="1" id="season" v-model="form.season">
+      </div>
 
-      <label for="timestamp">timestamp</label>
-      <input placeholder="e.g. hh:mm:ss" type="string" name="" id="timestamp" v-model="form.timestamp">
+      <div>
+        <label for="episode">episode</label>
+        <input class="textField" placeholder="e.g. 3" type="number" name="" min="0" id="episode" v-model="form.episode">
+      </div>
 
-      <label for="isNsfw">isNsfw</label>
-      <input type="checkbox" name="" id="isNsfw" v-model="form.isNsfw">
+      <div>
+        <label for="timestamp">timestamp</label>
+        <input class="textField" placeholder="e.g. hh:mm:ss" type="string" name="" id="timestamp" v-model="form.timestamp">
+      </div>
 
-      <label for="tags">tags (seperated by spaces)</label>
-      <input placeholder="e.g. #sky #moon #clouds" type="text" name="" id="tags" v-model="form.tags">
+      <div>
+        <label for="is_nsfw">nsfw</label>
+        <input type="checkbox" name="" id="is_nsfw" v-model="form.is_nsfw">
+      </div>
+
+      <div>
+        <label for="tags">tags (seperated by spaces)</label>
+        <input class="textField" placeholder="e.g. #sky #moon #clouds" type="text" name="" id="tags" v-model="form.tags">
+      </div>
 
       <br>
       <br>
 
-      <button>Submit</button>
+      <div class="submit">
+        <button>Submit</button>
+      </div>      
 
       <br>
       <br>
@@ -50,7 +66,7 @@ export default {
             season: '',
             episode: '',
             timestamp: '',
-            isNsfw: false,
+            is_nsfw: false,
             tags: '',
           },
           wallpaper: {},
@@ -97,7 +113,7 @@ export default {
                 season: '',
                 episode: '',
                 timestamp: '',
-                isNsfw: false,
+                is_nsfw: false,
                 tags: '',
               };
               this.wallpaper = {};
@@ -116,12 +132,67 @@ export default {
 
 .formContainer {
   padding: 128px 128px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit button {
+  border-radius: 16px;
+  background: rgba(65, 63, 87, 0.25);
+  outline: none;
+  cursor: pointer;
+  border: none;
+  height: 44px;
+  transition: 100ms ease;
+}
+
+.submit button:hover {
+  background: rgb(255, 2, 171);
+  transform: scale(1.02);
+  color: white;
+}
+
+.submit button:active {
+  transform: scale(0.92);
 }
 
 form {
   width: 512px;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+div {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #2C394A;
+}
+
+.textField {
+  outline: none;
+  border: none;
+  width: 100%;
+  text-indent: 16px;
+  background: #F1F2F4;
+  border-radius: 100px; 
+  height: 44px;
+  font-style: normal;
+  font-weight: 500;
+  z-index: 3px;
+
+}
+
+#file {
+  width: 100%;
 }
 
 </style>

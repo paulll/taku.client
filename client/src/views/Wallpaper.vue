@@ -3,7 +3,7 @@
         <div class="main">
             <div class="wallpaperWrapper" :class="{'fullscreen': isFullscreen}">
                 <div class="gradient"></div>
-                <div class="wallpaper" :style="{'background-image' : `url('https://taku.moe:2087/wallpapers/${wallpaper.fileName}')`}">
+                <div class="wallpaper" :style="{'background-image' : `url('https://taku.moe:2087/wallpapers/${wallpaper.filename}')`}">
                     <div class="top">
                         <div class="anime"></div>
                         <div class="quickButtons">
@@ -15,7 +15,7 @@
                                 <img v-if="wallpaper.saves.includes(me.uuid)"   id="qb2" src="../assets/wallpaper/Unsave.svg" alt="Unsave"  @click="interaction('saves', 'unsave')">
                                 <img v-if="wallpaper.submitter_uuid == me.uuid" id="qb3" src="../assets/wallpaper/Edit.svg"   alt="Edit">
                             </div>
-                            <img id="qb4" src="../assets/wallpaper/Share.svg" alt="Share" @click="copyToClipboard(`https://taku.moe:2087/wallpapers/${wallpaper.fileName}`, 'URL')">
+                            <img id="qb4" src="../assets/wallpaper/Share.svg" alt="Share" @click="copyToClipboard(`https://taku.moe:2087/wallpapers/${wallpaper.filename}`, 'URL')">
                             <img id="qb6" src="../assets/wallpaper/Fullscreen.svg" alt="Fullscreen" @click="fullscreen()">
                             <img id="qb7" src="../assets/wallpaper/Options.svg" alt="Options">
                         </div>
@@ -26,7 +26,7 @@
                             <h1>{{new Date(wallpaper.created_at).toLocaleString()}}</h1>
                             <h1>{{wallpaper.resolution}}p - {{wallpaper.extension.toUpperCase()}} - {{transformFileSize(wallpaper.size, true)}}</h1>
                         </div>
-                        <h1>{{wallpaper.fileName}}</h1>
+                        <h1>{{wallpaper.filename}}</h1>
                     </div>
                 </div>
             </div>

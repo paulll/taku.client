@@ -6,7 +6,7 @@
             <h1>{{user.username}}</h1>
             <div class="channelStatus">
                 <div class="icon"></div>
-                <p v-if="user.profile.status.lastSeen" class="status">Last seen at {{new Date(user.profile.status.lastSeen).toLocaleString()}}</p>
+                <p v-if="user.profile.status.lastSeen" class="status">{{translation('last seen at')}} {{new Date(user.profile.status.lastSeen).toLocaleString()}}</p>
             </div>
         </div>
         </div>
@@ -14,12 +14,16 @@
 </template>
 
 <script>
+import translation from '@/services/translator.js';
 
 export default {
   name: 'MiniUser',
   props: {
     user: { type: Object, required: true },
   },
+  methods: {
+    translation
+  }
 };
 </script>
 

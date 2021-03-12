@@ -38,6 +38,7 @@ import axios from 'axios';
 import linkifyHtml from 'linkifyjs/html';
 import TextInput from '@/components/messages/TextInput.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
+import translation from '@/services/translator.js';
 import socket from '@/services/socket.js';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
@@ -163,6 +164,7 @@ export default {
     socket.disconnect();
   },
   methods: {
+    translation,
     async getChannel(){ 
 
       try {

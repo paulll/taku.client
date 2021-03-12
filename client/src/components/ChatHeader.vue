@@ -10,7 +10,7 @@
               <h1>{{channel.member_list[0].username}}</h1>
               <div class="channelStatus">
                 <div class="icon"></div>
-                <p v-if="channel.member_list[0].profile.status.lastSeen" class="last_message">Last seen at {{new Date(channel.member_list[0].profile.status.lastSeen).toLocaleString()}}</p>
+                <p v-if="channel.member_list[0].profile.status.lastSeen" class="last_message">{{translation('last seen at')}} {{new Date(channel.member_list[0].profile.status.lastSeen).toLocaleString()}}</p>
               </div>
             </div>
           </div>
@@ -56,6 +56,7 @@
 </template>
  
 <script>
+import translation from '@/services/translator.js';
 
 export default {
   data: () => {
@@ -68,6 +69,7 @@ export default {
     channel:   { type: Object, required: true },
   },
   methods: {
+    translation,
     convert(epoch) {
       const dt = new Date(epoch);
       const hr = dt.getHours();

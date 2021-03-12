@@ -59,10 +59,30 @@ router.get("/:uuid", async (req, res) => {
 //     });
 // });
 
-router.get("/random/:amount", async (req, res) => {
+router.get("/random/:amount/:offset?", async (req, res) => {
     const wallpapers = await db.wallpapers.aggregate([
         {'$sample': {'size': parseInt(req.params.amount)}},
         {'$sort' :  {'likes': -1 }}
+    ]);
+    res.status(200).json({ wallpapers });
+});
+
+router.get("/trending/:amount/:offset?", async (req, res) => {
+    const wallpapers = await db.wallpapers.aggregate([
+        {'$match':  {'created_at': {'$gt': new Date().getTime() - 604800000}}},
+        {'$addFields': {'total_likes': {'$size': '$likes'}}}, 
+        {'$sort': {'total_likes': -1}},
+        {'$skip': parseInt(req.params.offset || 0)},
+        {'$limit' : parseInt(req.params.amount)},
+    ]);
+    res.status(200).json({ wallpapers });
+});
+
+router.get("/new/:amount/:offset?", async (req, res) => {
+    const wallpapers = await db.wallpapers.aggregate([
+        {'$sort': {'created_at': -1}},
+        {'$skip': parseInt(req.params.offset || 0)},
+        {'$limit' : parseInt(req.params.amount)},
     ]);
     res.status(200).json({ wallpapers });
 });
@@ -76,14 +96,14 @@ router.post("/", auth, upload.any(), async (req, res) => {
     else return res.status(400).json({message: 'missing image'});
 
     const jimpImage = await Jimp.read(`db/uploads/${image.filename}`);
-    const fileName = `${new Date().getTime()}-${image.originalname}`;
+    const filename = `${new Date().getTime()}-${image.originalname}`;
     try {
+        jimpImage.filename = filename;
         const wallpaper = new taku.Wallpaper(image, jimpImage, metadata);
         await db.wallpapers.insert(wallpaper);
-        jimpImage.write(`db/wallpapers/${fileName}`);
+        jimpImage.write(`db/wallpapers/${filename}`);
         jimpImage.resize(Jimp.AUTO, 156);
-        jimpImage.write(`db/wallpapers/static/${fileName}`);
-        jimpImage.fileName = fileName;
+        jimpImage.write(`db/wallpapers/static/${filename}`);
         fs.unlink(`db/uploads/${image.filename}`, () => {}); // Delete original file from uploads folder since we moved it to its correct folder
         res.status(201).json({message: 'wallpaper successfully submitted', wallpaper});
     } catch (error) {
@@ -133,7 +153,7 @@ router.get("/download/:wallpaper_uuid", async (req, res) => {
         if (wallpaper == null) return res.status(404).json({message: "wallpaper not found in database"});
         db.wallpapers.update({uuid: req.params.wallpaper_uuid}, {$inc: { 'downloads': 1 }});
                                  // Path of where the file is             // The named file the user gets
-        res.status(200).download(`./db/wallpapers/${wallpaper.fileName}`, wallpaper.fileName);
+        res.status(200).download(`./db/wallpapers/${wallpaper.filename}`, wallpaper.filename);
     } catch (error) {
         if(error) errorHandler(error, res);
     }

@@ -49,11 +49,6 @@ export default {
     grid-template-columns: repeat(20, minmax(100px, 1fr));
 }
 
-.animePosters .anime {
-    height: 156px;
-    width: auto;
-    background: center;
-    border-radius: 8px;
-}
+
 
 </style>

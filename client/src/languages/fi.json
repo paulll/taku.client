@@ -56,5 +56,10 @@
     "Accuracy": "Tarkkuus",
     "Time Wasted": "Aikaa tuhlattu",
     "Hours": "tuntia",
-    "Hour": "tunti"
+    "Hour": "tunti",
+    "last seen at": "Viimeksi nähty",
+    "BROWSE Anime": "SELAA Animea",
+    "NEW Wallpapers": "UUDET Taustakuvat",
+    "RANDOM Wallpapers": "SATUNNAISET Taustakuvat",
+    "TRENDING Wallpapers": "TRENDAAVAT Taustakuvat"
 }

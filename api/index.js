@@ -10,7 +10,7 @@ const cookieParser = require("cookie-parser");
 const { v4: uuidv4 } = require("uuid");
 const handleHeartbeat = require('./handlers/onlineUserHandler');
 const port = process.env.PORT || 2087;
-const version = 'v0.102';
+const version = 'v0.109';
 const Jimp = require("jimp");
 
 const logo = `  ___       ___       ___       ___   
