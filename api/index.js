@@ -11,6 +11,8 @@ const { v4: uuidv4 } = require("uuid");
 const handleHeartbeat = require('./handlers/onlineUserHandler');
 const port = process.env.PORT || 2087;
 const version = 'v0.102';
+const Jimp = require("jimp");
+
 const logo = `  ___       ___       ___       ___   
  /\\  \\     /\\  \\     /\\__\\     /\\__\\  
  \\:\\  \\   /::\\  \\   /:/ _/_   /:/ _/_ 
@@ -108,3 +110,13 @@ setInterval(async () => {
 app.get("/", (req, res) => res.status(200).json({message: "hello"})); 
 
 https.listen(port, () => console.log("[INDEX]".bgCyan.black, `Started on port ${port.toString().cyan}`));
+
+
+
+let wallpapers = fs.readdirSync('./db/wallpapers').filter(image => image.endsWith(".png") || image.endsWith(".jpg"));
+wallpapers.forEach(async wallpaper => {
+    const image = await Jimp.read(`./db/wallpapers/${wallpaper}`);
+    image.resize(Jimp.AUTO, 156);
+    image.write(`./db/wallpapers/static/${wallpaper}`);
+}); 
+

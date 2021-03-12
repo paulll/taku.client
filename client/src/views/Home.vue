@@ -30,6 +30,7 @@ export default {
 
 .home {
     height: 100vh;
+    overflow: scroll;
     background: white;
 }
 

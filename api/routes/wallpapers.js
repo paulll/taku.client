@@ -27,37 +27,37 @@ router.get("/:uuid", async (req, res) => {
 });
 
 // https://taku.moe:2087/wallpapers/static/1615252430325-4ef93bfb8dfe14681d3f50ed4e03290b.jpg?width=34534&height=23534
-router.get("/static/:filename", async (req, res) => {
-    const fileToServe = req.params.filename;
-    const reqWidth = parseInt(req.query.width);
-    const reqHeight = parseInt(req.query.height);
+// router.get("/static/:filename", async (req, res) => {
+//     const fileToServe = req.params.filename;
+//     const reqWidth = parseInt(req.query.width);
+//     const reqHeight = parseInt(req.query.height);
 
-    if (!fileToServe) return res.status(404).json({message: 'file not found'});
+//     if (!fileToServe) return res.status(404).json({message: 'file not found'});
 
-    Jimp.read(`./db/wallpapers/${fileToServe}`, async (err, image) => {
-        if (err) throw err;
-        if (!reqWidth && !reqHeight) {
-            res.setHeader('Content-Type', image._originalMime);
-            const readable = new Readable();
-            readable._read = () => {} // _read is required but you can noop it
-            readable.push(await image.getBufferAsync(image._originalMime))
-            readable.push(null)
-            readable.pipe(res)
-            return
-        }
+//     Jimp.read(`./db/wallpapers/${fileToServe}`, async (err, image) => {
+//         if (err) throw err;
+//         if (!reqWidth && !reqHeight) {
+//             res.setHeader('Content-Type', image._originalMime);
+//             const readable = new Readable();
+//             readable._read = () => {} // _read is required but you can noop it
+//             readable.push(await image.getBufferAsync(image._originalMime))
+//             readable.push(null)
+//             readable.pipe(res)
+//             return
+//         }
 
-        if (image.bitmap.width > reqWidth && !reqHeight) image.resize(reqWidth, Jimp.AUTO);
-        else if (image.bitmap.width > reqWidth && reqHeight) image.resize(reqWidth, reqHeight);   
-        else if (image.bitmap.height > reqHeight && !reqWidth) image.resize(Jimp.AUTO, reqHeight);
+//         if (image.bitmap.width > reqWidth && !reqHeight) image.resize(reqWidth, Jimp.AUTO);
+//         else if (image.bitmap.width > reqWidth && reqHeight) image.resize(reqWidth, reqHeight);   
+//         else if (image.bitmap.height > reqHeight && !reqWidth) image.resize(Jimp.AUTO, reqHeight);
 
-        res.setHeader('Content-Type', image._originalMime);
-        const readable = new Readable();
-        readable._read = () => {}; // _read is required but you can noop it
-        readable.push(await image.getBufferAsync(image._originalMime))
-        readable.push(null)
-        readable.pipe(res)
-    });
-});
+//         res.setHeader('Content-Type', image._originalMime);
+//         const readable = new Readable();
+//         readable._read = () => {}; // _read is required but you can noop it
+//         readable.push(await image.getBufferAsync(image._originalMime))
+//         readable.push(null)
+//         readable.pipe(res)
+//     });
+// });
 
 router.get("/random/:amount", async (req, res) => {
     const wallpapers = await db.wallpapers.aggregate([
@@ -77,13 +77,14 @@ router.post("/", auth, upload.any(), async (req, res) => {
 
     const jimpImage = await Jimp.read(`db/uploads/${image.filename}`);
     const fileName = `${new Date().getTime()}-${image.originalname}`;
-    jimpImage.write(`db/wallpapers/${fileName}`);
-    jimpImage.fileName = fileName;
-    fs.unlink(`db/uploads/${image.filename}`, () => {}); // Delete original file from uploads folder since we moved it to its correct folder
-
     try {
         const wallpaper = new taku.Wallpaper(image, jimpImage, metadata);
         await db.wallpapers.insert(wallpaper);
+        jimpImage.write(`db/wallpapers/${fileName}`);
+        jimpImage.resize(Jimp.AUTO, 156);
+        jimpImage.write(`db/wallpapers/static/${fileName}`);
+        jimpImage.fileName = fileName;
+        fs.unlink(`db/uploads/${image.filename}`, () => {}); // Delete original file from uploads folder since we moved it to its correct folder
         res.status(201).json({message: 'wallpaper successfully submitted', wallpaper});
     } catch (error) {
         if(error) errorHandler(error, res);
