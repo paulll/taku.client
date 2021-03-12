@@ -29,8 +29,9 @@ async function cacheImages(attachments) {
         };
     });
 };
+
 //console.log(Classes);
 
 module.exports = {
-    cacheImages
+    cacheImages,
 }

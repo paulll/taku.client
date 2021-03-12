@@ -7,6 +7,7 @@ const taku = require("../handlers/classes.js");
 const Jimp = require("jimp");
 const fs = require("fs");
 
+const { Readable } = require('stream');
 const router = express.Router();
 
 function errorHandler(error, res){
@@ -25,21 +26,44 @@ router.get("/:uuid", async (req, res) => {
     res.status(200).json(wallpaper[0]);
 });
 
+// https://taku.moe:2087/wallpapers/static/1615252430325-4ef93bfb8dfe14681d3f50ed4e03290b.jpg?width=34534&height=23534
+router.get("/static/:filename", async (req, res) => {
+    const fileToServe = req.params.filename;
+    const reqWidth = parseInt(req.query.width);
+    const reqHeight = parseInt(req.query.height);
+
+    if (!fileToServe) return res.status(404).json({message: 'file not found'});
+
+    Jimp.read(`./db/wallpapers/${fileToServe}`, async (err, image) => {
+        if (err) throw err;
+        if (!reqWidth && !reqHeight) {
+            res.setHeader('Content-Type', image._originalMime);
+            const readable = new Readable();
+            readable._read = () => {} // _read is required but you can noop it
+            readable.push(await image.getBufferAsync(image._originalMime))
+            readable.push(null)
+            readable.pipe(res)
+            return
+        }
+
+        if (image.bitmap.width > reqWidth && !reqHeight) image.resize(reqWidth, Jimp.AUTO);
+        else if (image.bitmap.width > reqWidth && reqHeight) image.resize(reqWidth, reqHeight);   
+        else if (image.bitmap.height > reqHeight && !reqWidth) image.resize(Jimp.AUTO, reqHeight);
+
+        res.setHeader('Content-Type', image._originalMime);
+        const readable = new Readable();
+        readable._read = () => {}; // _read is required but you can noop it
+        readable.push(await image.getBufferAsync(image._originalMime))
+        readable.push(null)
+        readable.pipe(res)
+    });
+});
 
 router.get("/random/:amount", async (req, res) => {
     const wallpapers = await db.wallpapers.aggregate([
         {'$sample': {'size': parseInt(req.params.amount)}},
         {'$sort' :  {'likes': -1 }}
     ]);
-    res.status(200).json({ wallpapers });
-});
-
-router.get("/tag/:tag", async (req, res) => {
-    const wallpapers = (await db.wallpapers.aggregate([
-        {'$match': {'tags': req.params.tag}},
-        {'$sort' : {'likes': -1 }}
-    ]));
-
     res.status(200).json({ wallpapers });
 });
 

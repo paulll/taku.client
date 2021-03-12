@@ -43,7 +43,7 @@ io.use(authSocket);
 module.exports = io;
 
 // Bloatwares
-app.use(cors({origin: "https://taku.moe:2096", credentials: true}));    // Setup cors and allow only https
+app.use(cors({origin: "https://taku.moe", credentials: true}));         // Setup cors and allow only https
 app.use(morgan("dev"));                                                 // Enable HTTP code logs
 app.use(bodyParser.json());                                             // auto parse req.bodies as json
 app.use(express.static("db"));                                          // Enable the db folder to be accessible from the url
@@ -52,7 +52,7 @@ app.use(cookieParser());                                                // Use c
 // Auth     
 app.use(require("./auth/signup"));                                      // Import signup auth
 app.use(require("./auth/login"));                                       // Import login auth
-                
+
 // Routes                       
 app.use('/search',        require("./routes/search"));                  // Import search
 app.use('/anime',         require("./routes/anime"));                   // Import anime
@@ -63,7 +63,8 @@ app.use('/message',       require("./routes/message"));                 // Impor
 app.use('/channels',      require("./routes/channels"));                // Import channels
 app.use('/notifications', require("./routes/notifications"));           // Import notifications
 app.use('/connections',   require("./routes/connections"));             // Import connections
-app.use('/wallpapers',    require("./routes/wallpapers"));              // Import wallpaper
+app.use('/wallpapers',    require("./routes/wallpapers"));              // Import wallpapers
+app.use('/tags',          require("./routes/tags"));                    // Import tags
 
 
 // Websockets
@@ -73,15 +74,15 @@ io.on("connection", socket => {
     socket.on("user", uuid => socket.join(uuid));                                       // Join a unique room for each user
 
     socket.on("room", uuid => socket.join(uuid));                                       
-    socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));                    
-    socket.on('leave_channel', async channel_uuid => {
-        console.log("[Channel WS]".bgRed.black, "Left", channel_uuid.red);
-        socket.leave(channel_uuid);
-    });
+    socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));       
     socket.on('join_channel', async channel_uuid => {
         if(channel_uuid.length < 1) return;
         console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
         socket.join(channel_uuid);
+    });             
+    socket.on('leave_channel', async channel_uuid => {
+        console.log("[Channel WS]".bgRed.black, "Left", channel_uuid.red);
+        socket.leave(channel_uuid);
     });
     socket.on('disconnect', () => console.log("[WS]".bgRed.black, "Disconnected", "Total", `${io.sockets.sockets.size.toString().red}`));
     socket.on('join_vc_channel', (channel_uuid, user_uuid) => {

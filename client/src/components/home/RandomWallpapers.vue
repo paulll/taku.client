@@ -4,7 +4,7 @@
         <div class="scrollRegion">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
-                    <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/${wallpaper.fileName}')`}"></div>
+                    <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.fileName}?height=${156}')`}"></div>
                     <Spinner/>
                 </router-link>
             </div>
@@ -20,12 +20,11 @@ import axios from 'axios';
 export default {
     data: () => {
         return {
-            wallpapers: null,
+            wallpapers: null
         }
     },
     async mounted(){
-        this.wallpapers = (await axios.get('https://taku.moe:2087/wallpapers/random/20')).data.wallpapers;
-        console.log(this.wallpapers);
+        this.wallpapers = (await axios.get('https://taku.moe:2087/wallpapers/random/30')).data.wallpapers; 
     },
     methods: {
         translation
