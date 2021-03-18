@@ -56,12 +56,12 @@ To **create a new** wallpaper you need to send a **JSON object** like this
 ```json
 {
 	// Example body
-	anime_uuid: 'bbbd0f14-e433-46f7-a713-1a73db5bc9f7',
-	season: '1',
-	episode: '3',
-	timestamp: '21:59',
-	is_nsfw: false,
-	tags: [ 'sky', 'night', 'building', 'clouds' ]
+	"anime_uuid": "bbbd0f14-e433-46f7-a713-1a73db5bc9f7",
+	"season": "1",
+	"episode": "3",
+	"timestamp": "21:59",
+	"is_nsfw": false,
+	"tags": [ "sky", "night", "building", "clouds" ]
 }
 ```
 
