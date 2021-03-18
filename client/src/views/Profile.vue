@@ -74,7 +74,7 @@
 
         </div>
         <div class="pageContentWrapper" @dragover="startDrag($event, currentlyDraggingElement)">
-            <div class="pageBackground" :style="{'background-image' : `url('${user.profile.banner}')`}"></div>
+            <!-- <div class="pageBackground" :style="{'background-image' : `url('${user.profile.banner}')`}"></div> -->
             <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
                 <!-- FAVORITE ANIME -->
                 <div :style="{'order': user.profile.order.indexOf('favorite_anime')}" id="favorite_anime" class="capsule" :class="{darkmode: darkmode == 'true'}">
@@ -500,6 +500,7 @@ export default {
     height: 100%;
     overflow-y: scroll;
     position: relative;
+    padding: 0px;
 }
 
 .row {

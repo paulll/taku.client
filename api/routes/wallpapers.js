@@ -92,6 +92,8 @@ router.post("/", auth, upload.any(), async (req, res) => {
     const metadata = JSON.parse(req.body.metadata);
     metadata.submitter.uuid = req.user.uuid;
 
+    console.log(metadata);
+
     if (req.files) var image = req.files[0];
     else return res.status(400).json({message: 'missing image'});
 

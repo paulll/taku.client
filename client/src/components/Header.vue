@@ -395,6 +395,7 @@ export default {
     width: inherit;
     display: flex;
     position: relative;
+    margin-left: 80px; 
 }
 
 .searchBox .glass {
@@ -446,34 +447,12 @@ export default {
     filter: saturate(2);
 }
 
-/* if width is more than 715px */
+/* if width is more than 715px
 @media only screen and (min-width: 715px)  {
     .header .container {
         padding: 0px 32px;
     }
-}
-
-/* if width is more than 915px */
-@media only screen and (min-width: 915px)  {
-    .header .container {
-        padding: 0px 64px;
-    }
-}
-
-/* if width is more than 1215px */
-@media only screen and (min-width: 1215px)  {
-    .header .container {
-        padding: 0px 168px;
-    }
-}
-
-
-/* if width is more than 1215px */
-@media only screen and (min-width: 1600px)  {
-    .header .container {
-        padding: 0px calc(368px)
-    }
-}
+} */
 
 /* Small */
 @media only screen and (max-width: 715px)  {

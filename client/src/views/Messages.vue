@@ -151,7 +151,7 @@
     </div>
   </div>
   <div id="video-grid"></div>
-  <Chat/>
+  <Chat v-if="showChat"/>
 </template>
  
 <script>
@@ -185,7 +185,7 @@ export default {
       isMakingNewGroup: false,
       newGroupName: "",
       callState: 'idle',
-      
+      showChat: true,
       callInformation: null,
       userToCall: null,
     };
@@ -205,10 +205,9 @@ export default {
       else console.log(`Call would be initialized now`);
 
       this.me.isCalling = true;
-      this.callState == 'inCall';
       this.userToCall = participants[0];
-      console.log(participants);
-
+      this.callState = 'inCall';
+      this.showChat = false;
       const videoGrid = document.getElementById('video-grid');
 
       // Make a new peer connection
@@ -234,14 +233,15 @@ export default {
       myvideo.className = 'videoStream';
       // Mutes monitor feedback
       myvideo.muted = true;
-
+      myvideo.controls = true;
 
       const peers = {}
       // Create new data stream containing the video data
       const stream = await navigator.mediaDevices.getUserMedia({audio: {
         echoCancellation: false,
         autoGainControl: true,
-        noiseCancellation: false
+        noiseCancellation: true,
+        channelCount: {max: 2, min: 1},
       }, video: true});
       addvideoStream(myvideo, stream);
 
@@ -249,6 +249,7 @@ export default {
         call.answer(stream);
         const video = document.createElement('video');
         video.className = 'videoStream';
+        video.controls = true;
         call.on('stream', stream => addvideoStream(video, stream));
       });
 
@@ -268,13 +269,12 @@ export default {
       // });
       socket.emit('join_vc_channel', this.$route.params.channel_uuid, this.me.uuid);
 
-
-
       // Connects to new user
       function connectToNewUser(user_uuid, stream){
         var call = peer.call(user_uuid, stream);
         const video = document.createElement('video');
         video.className = 'videoStream';
+        video.controls = true;
         call.on('stream', function(stream) { addvideoStream(video, stream)});
         call.on('close', () => video.remove());
         peers[user_uuid] = call;
@@ -420,6 +420,11 @@ export default {
   align-content: center;
   gap: 16px;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+#video-grid img {
+  width: 128px;
+  height: auto;
 }
 
 /* what happens when the animation is currently active */

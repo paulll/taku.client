@@ -1,62 +1,73 @@
+# Taku.moe 
 
-## To-do
+![Taku](https://cdn.discordapp.com/attachments/806300597338767450/822028698575962123/pwa.png =256x)
 
-- [x] Add a Mobile add file + button
-- [x] Add a small preview resolution for the chat instead of showing full res
-- [x] Add theme color setting
-- [x] Add the logout button in the settings
-- [x] Add custom image/video backgrounds in DM
-- [x] Add nav buttons at the top right of the header on desktop
-- [x] Add search feature
-- [x] Add Loading bar at the top
-- [x] Add Flags
-- [x] Add Ping at the top right next to the buttons on the header
-- [x] Add the Guidelines in the settings
-- [x] Fix the header overlaying the chats
-- [x] Cache user settings on login
-- [x] Cache pfps in a small resolution 
-- [x] Make it so you can paste images from your clipboard
-- [x] Make images clickable in DMs
-- [x] Fix 1mb websocket limit
-- [x] Fix scrollbar on firefox
-- [x] Fix scrollbar colors for darkmode/lightmode
-- [x] Fix header getting white on DMs
-- [x] Fix default mention sound
-- [x] Fix wide images getting out of the message bubble on desktop
-- [x] Fix android ribbon dissapearing on mobile
-- [x] Fix too many socials from wrapping out of their container on mobile
-- [x] Cache the typing sounds etc on mount because they seem to unload after a bit 
-- [x] Add thing for very high ping
+# API 
+This is the full documentation behind the **Taku REST API v1** 
 
-- [~] Add previews for other file extentions besides images
-- [~] Make all the colors changes throughout the entire site
-- [~] Add computer flex feature on profiles
-- [~] Update the settings page into newer format
+Endpoint: `taku.moe:2087/`
 
-- [ ] Fix friends from persisting on users when the person deletes their account and remakes it
-- [ ] Make the profile page update theme when they log in
-- [ ] Fix the search to trycatch old users cus their databases are outdated or just delete all users
+## Auth
+This is the main **login** route
+> **`POST /login`**
+```json
+{
+	// Example body
+	"username": "YOUR_USERNAME",
+	"password": "YOUR_PASSWORD"
+}
+```
 
-- [ ] Add outline on the osu flags because white flags mix in with the lightmode
-- [ ] Add a display english/romaji setting 
-- [ ] Add Reply feature, double tap on pc, slide on mobile
-- [ ] Add a filesize limit on the frontend
-- [ ] Add a uploading animation for messages
-- [ ] Add randomized pitch on typing sounds with toggle switch
-- [ ] Make osu profiles editable 
-- [ ] Make sections on profile draggable so users can choose the order of the things in their profile
-- [ ] Add emoji
-- [ ] Add possibility to link your osu profile
-- [ ] Make the input field in DMs a text area instead so people can send \n
-- [ ] Fix inverted colors on the settings bar
-- [ ] Fix images from being downscaled for the banner
-- [ ] Fix search result pfps are desynced with the actual pfps of the users
-- [ ] Make a user not found page for invalid urls
-- [ ] Auto logout people that are in invalid sessions
-- [ ] Fix the logout on desktop in the settings
-- [ ] Apply the theme color in the profile
-- [ ] Add a colorwheel to the theme color 
+This is the main **signup** route
+> **`POST /signup`**
+```json
+{
+	// Example body
+	"username": "YOUR_USERNAME",
+	"email": "YOUR_EMAIL",
+	"password": "YOUR_PASSWORD"
+}
+```
+<br>
+
+## Anime
+Gets you **all anime**  on the database
+> **`GET /anime/`** 
+
+Gets you a **specific** anime by the **uuid**
+> **`GET /anime/id/{uuid}`**
+> 
+Gets you a selection of **random** anime from the database, the amount defaults to 20 if unspecified
+> **`GET /anime/random/{amount}`**
 
 
+## Wallpapers
+Gets you a **specific** wallpaper by the **uuid**
+> **`GET /wallpapers/{uuid}`** 
 
+Gets you a selection of **random** wallpapers from **different categories** based on the **amount**
+which also have an **offset** allowing you to **fetch more**
+> **`GET /wallpapers/random/{amount}/{offset}`** 
+> **`GET /wallpapers/trending/{amount}/{offset}`** 
+> **`GET /wallpapers/new/{amount}/{offset}`**
 
+To **create a new** wallpaper you need to send a **JSON object** like this
+> **`POST /wallpapers/`**
+```json
+{
+	// Example body
+	anime_uuid: 'bbbd0f14-e433-46f7-a713-1a73db5bc9f7',
+	season: '1',
+	episode: '3',
+	timestamp: '21:59',
+	is_nsfw: false,
+	tags: [ 'sky', 'night', 'building', 'clouds' ]
+}
+```
+
+Heres all the **interactions** you can have with a **wallpaper**
+> **`GET /wallpapers/like/{uuid}`**
+> **`GET /wallpapers/dislike/{uuid}`**
+> **`GET /wallpapers/save/{uuid}`**
+> **`GET /wallpapers/unsave/{uuid}`**
+> **`GET /wallpapers/download/{uuid}`**

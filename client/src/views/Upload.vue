@@ -4,7 +4,7 @@
 
       <div>
         <label for="wallpaper">Wallpaper</label>
-        <input type="file" name="" id="wallpaper" ref="wallpaper" v-on:change="wallpaper = $refs.wallpaper.files[0]" accept="image/*">
+        <input class="fileUpload" type="file" name="" id="wallpaper" ref="wallpaper" v-on:change="wallpaper = $refs.wallpaper.files[0]" accept="image/*">
       </div>
 
       <div>
@@ -183,12 +183,24 @@ label {
   width: 100%;
   text-indent: 16px;
   background: #F1F2F4;
+  border-radius: 16px; 
+  height: 44px;
+  font-style: normal;
+  font-weight: 500;
+  z-index: 3px;
+}
+
+.fileUpload {
+  outline: none;
+  border: none;
+  width: 100%;
+  text-indent: 16px;
+  background: #F1F2F4;
   border-radius: 100px; 
   height: 44px;
   font-style: normal;
   font-weight: 500;
   z-index: 3px;
-
 }
 
 #file {

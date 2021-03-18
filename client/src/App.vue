@@ -1,6 +1,7 @@
 <template>
   <div class="shit">
     <NavBar/>
+    <Header/>
     <!-- <LoadingAnimation/> -->
     <router-view class="FUCKER"/>
     <ToolBar/>

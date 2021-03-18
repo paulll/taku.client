@@ -6,7 +6,7 @@ function Wallpaper(image, jimpImage, metadata) {
     if (!jimpImage) throw "'jimpImage' object must be provided for a Wallpaper";
     if (!metadata)  throw "'metadata' object must be provided for a Wallpaper";
 
-    if (metadata.submitter === undefined) throw "'submitter_uuid' must be provied in metadata";
+    if (metadata.submitter === undefined)      throw "'submitter_uuid' must be provied in metadata";
     if (metadata.anime_uuid === undefined)     throw "'anime_uuid' must be provied in metadata";
     if (metadata.season === undefined)         throw "'season' must be provied in metadata";
     if (metadata.episode === undefined)        throw "'episode' must be provied in metadata";
