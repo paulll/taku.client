@@ -1,6 +1,6 @@
 # Taku.moe 
 
-![Taku](https://cdn.discordapp.com/attachments/806300597338767450/822028698575962123/pwa.png =256x)
+![Taku](https://cdn.discordapp.com/attachments/806300597338767450/822040731048607754/pwa.png)
 
 # API 
 This is the full documentation behind the **Taku REST API v1** 
@@ -35,7 +35,7 @@ Gets you **all anime**  on the database
 > **`GET /anime/`** 
 
 Gets you a **specific** anime by the **uuid**
-> **`GET /anime/id/{uuid}`**
+> **`GET /anime/id/{anime_uuid}`**
 > 
 Gets you a selection of **random** anime from the database, the amount defaults to 20 if unspecified
 > **`GET /anime/random/{amount}`**
@@ -43,12 +43,14 @@ Gets you a selection of **random** anime from the database, the amount defaults 
 
 ## Wallpapers
 Gets you a **specific** wallpaper by the **uuid**
-> **`GET /wallpapers/{uuid}`** 
+> **`GET /wallpapers/{wallpaper_uuid}`** 
 
 Gets you a selection of **random** wallpapers from **different categories** based on the **amount**
 which also have an **offset** allowing you to **fetch more**
 > **`GET /wallpapers/random/{amount}/{offset}`** 
+
 > **`GET /wallpapers/trending/{amount}/{offset}`** 
+
 > **`GET /wallpapers/new/{amount}/{offset}`**
 
 To **create a new** wallpaper you need to send a **JSON object** like this
@@ -66,8 +68,12 @@ To **create a new** wallpaper you need to send a **JSON object** like this
 ```
 
 Heres all the **interactions** you can have with a **wallpaper**
-> **`GET /wallpapers/like/{uuid}`**
-> **`GET /wallpapers/dislike/{uuid}`**
-> **`GET /wallpapers/save/{uuid}`**
-> **`GET /wallpapers/unsave/{uuid}`**
-> **`GET /wallpapers/download/{uuid}`**
+> **`GET /wallpapers/like/{wallpaper_uuid}`**
+
+> **`GET /wallpapers/dislike/{wallpaper_uuid}`**
+
+> **`GET /wallpapers/save/{wallpaper_uuid}`**
+
+> **`GET /wallpapers/unsave/{wallpaper_uuid}`**
+
+> **`GET /wallpapers/download/{wallpaper_uuid}`**
