@@ -201,7 +201,7 @@ export default {
       } catch (error) {
         if (error.status = 401) {
           localStorage.clear();
-          window.location.href = "https://beta.taku.moe/login";
+          window.location.href = "https://taku.moe/login";
           return
         }
       }

@@ -53,11 +53,11 @@
                 <router-link to="/anime" class="button"><img src="../assets/anime.svg" alt=""></router-link>
             </div> -->
             <div class="buttons small" :style="themeColors" v-if="token">
-                <router-link to="/messages" class="button"><img src="../assets/chat.png" alt=""></router-link>
+                <router-link to="/messages" class="button"><img src="../assets/navbar/Message.svg" alt=""></router-link>
             </div>
             <div class="buttons small" :style="themeColors" v-if="token">
                 <div v-if="notifications.length > 0" class="numberOfNotifs">{{notifications.length}}</div>
-                <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/notification.png" alt=""></div>
+                <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/navbar/Bell.svg" alt=""></div>
             </div>
 
             <Notifications :notifications="notifications" :show="showNotifications"/> 
