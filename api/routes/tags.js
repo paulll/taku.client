@@ -18,4 +18,14 @@ router.get("/:tag", async (req, res) => {
     res.status(200).json({ wallpapers });
 });
 
+router.get("/all", async (req, res) => {
+    const tagList = (await db.wallpapers.aggregate([
+        {'addFields': {'likes': {'$size': '$likes'}} 
+        {'$project': {'tags': 1, 'likes': 1} 
+        {'$unwind': {'path': '$tags'} 
+        {'$group': {'_id': 'tags', 'tags': 
+        {'$push': {'tag': '$tags', 'likes': {'$sum': '$likes'}}}}
+    ]))
+});
+
 module.exports = router 
