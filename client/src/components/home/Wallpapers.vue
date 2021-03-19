@@ -5,10 +5,10 @@
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
                     <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.filename}')`}">
-                        <div class="submitter">
+                        <router-link :to="`/profile/${wallpaper.submitter.username}`" class="submitter">
                             <p class="submitterUsername">{{wallpaper.submitter.username}}</p> 
                             <div class="submitterPfp" :style="{'background-image': `url('https://taku.moe:2087/pfp/${wallpaper.submitter.uuid}')`}"></div>
-                        </div>
+                        </router-link>
                     </div>
                     <Spinner/>
                 </router-link>
@@ -24,7 +24,7 @@ import axios from 'axios';
 
 export default {
     props: {
-        endpoint:       { type: String, required: true },
+        endpoint:      { type: String, required: true },
         sectionTitle:  { type: String, required: true },
     },
     data: () => {
@@ -66,6 +66,13 @@ export default {
 }
 
 .image {
+    height: 156px;
+    width: auto;
+
+    background: lightgray center no-repeat;
+    background-size: cover;
+    border-radius: 8px;
+    transition: 100ms ease;
     position: relative;
 }
 
@@ -75,11 +82,21 @@ export default {
     right: 4px;
     display: flex;
     align-items: center;
+    transition: 100ms ease;
+    opacity: 0%;
 }
 
-.submitterUsername {
+.submitter:hover {
+    transform: scale(1.06);
+}
+
+.image:hover .submitter{
+    opacity: 100%;
+}
+
+a {
     color: white;
-    margin-right: 4px;
+    text-decoration: none;
     font-size: 14px;
     font-weight: 400;
 }
@@ -87,6 +104,7 @@ export default {
     width: 24px;
     height: 24px;
     border-radius: 100%;
+    margin-left: 4px;
     background-size: contain;
     background-position: center;
 }

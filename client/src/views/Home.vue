@@ -55,17 +55,7 @@ export default {
     transition: 100ms ease;
 }
 
-.wallpaper .image {
-    height: 156px;
-    width: auto;
-
-    background: lightgray center no-repeat;
-    background-size: cover;
-    border-radius: 8px;
-    transition: 100ms ease;
-}
-
-.animePosters .anime:hover, .wallpaper .image:hover {
+.animePosters .anime:hover {
     transform: scale(1.04);
 }
 
