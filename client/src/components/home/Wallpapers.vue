@@ -4,7 +4,12 @@
         <div class="scrollRegion" v-on:scroll.passive="handleScroll">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
-                    <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.filename}')`}"></div>
+                    <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.filename}')`}">
+                        <div class="submitter">
+                            <p class="submitterUsername">{{wallpaper.submitter.username}}</p> 
+                            <div class="submitterPfp" :style="{'background-image': `url('https://taku.moe:2087/pfp/${wallpaper.submitter.uuid}')`}"></div>
+                        </div>
+                    </div>
                     <Spinner/>
                 </router-link>
             </div>
@@ -60,6 +65,30 @@ export default {
     grid-template-columns: repeat(99999999, minmax(240px, 1fr));
 }
 
+.image {
+    position: relative;
+}
 
+.submitter {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.submitterUsername {
+    color: white;
+    margin-right: 4px;
+    font-size: 14px;
+    font-weight: 400;
+}
+.submitterPfp {
+    width: 24px;
+    height: 24px;
+    border-radius: 100%;
+    background-size: contain;
+    background-position: center;
+}
 
 </style>
