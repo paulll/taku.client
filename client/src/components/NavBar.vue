@@ -54,6 +54,7 @@ nav {
   height: 100vh;
   width: 80px;
   z-index: 1000;
+  position: relative;
 
   display: flex;
   flex-direction: column;

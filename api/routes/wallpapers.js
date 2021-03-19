@@ -62,7 +62,10 @@ router.get("/:uuid", async (req, res) => {
 router.get("/random/:amount/:offset?", async (req, res) => {
     const wallpapers = await db.wallpapers.aggregate([
         {'$sample': {'size': parseInt(req.params.amount)}},
-        {'$sort' :  {'likes': -1 }}
+        {'$sort' :  {'likes': -1 }},
+        {'$lookup':  {'from': 'users', 'localField': 'submitter.uuid', 'foreignField': 'uuid', 'as': 'submitter' } },
+        {'$project': {'_id': 0, 'submitter._id': 0, 'submitter.settings': 0, 'submitter.following': 0, 'submitter.friend_list': 0, 'submitter.created_at': 0, 'submitter.profile.isDeveloper': 0, 'submitter.profile.isBetaTester': 0, 'submitter.profile.pfp': 0, 'submitter.profile.banner': 0, 'submitter.profile.anime_list': 0, 'submitter.profile.socials': 0, 'submitter.profile.description': 0, 'submitter.profile.connections': 0, 'submitter.profile.order': 0 } },
+        {'$unwind':  {'path': '$submitter', 'preserveNullAndEmptyArrays': true }},
     ]);
     res.status(200).json({ wallpapers });
 });
@@ -74,6 +77,9 @@ router.get("/trending/:amount/:offset?", async (req, res) => {
         {'$sort': {'total_likes': -1}},
         {'$skip': parseInt(req.params.offset || 0)},
         {'$limit' : parseInt(req.params.amount)},
+        {'$lookup':  {'from': 'users', 'localField': 'submitter.uuid', 'foreignField': 'uuid', 'as': 'submitter' } },
+        {'$project': {'_id': 0, 'submitter._id': 0, 'submitter.settings': 0, 'submitter.following': 0, 'submitter.friend_list': 0, 'submitter.created_at': 0, 'submitter.profile.isDeveloper': 0, 'submitter.profile.isBetaTester': 0, 'submitter.profile.pfp': 0, 'submitter.profile.banner': 0, 'submitter.profile.anime_list': 0, 'submitter.profile.socials': 0, 'submitter.profile.description': 0, 'submitter.profile.connections': 0, 'submitter.profile.order': 0 } },
+        {'$unwind':  {'path': '$submitter', 'preserveNullAndEmptyArrays': true }},
     ]);
     res.status(200).json({ wallpapers });
 });
@@ -83,6 +89,9 @@ router.get("/new/:amount/:offset?", async (req, res) => {
         {'$sort': {'created_at': -1}},
         {'$skip': parseInt(req.params.offset || 0)},
         {'$limit' : parseInt(req.params.amount)},
+        {'$lookup':  {'from': 'users', 'localField': 'submitter.uuid', 'foreignField': 'uuid', 'as': 'submitter' } },
+        {'$project': {'_id': 0, 'submitter._id': 0, 'submitter.settings': 0, 'submitter.following': 0, 'submitter.friend_list': 0, 'submitter.created_at': 0, 'submitter.profile.isDeveloper': 0, 'submitter.profile.isBetaTester': 0, 'submitter.profile.pfp': 0, 'submitter.profile.banner': 0, 'submitter.profile.anime_list': 0, 'submitter.profile.socials': 0, 'submitter.profile.description': 0, 'submitter.profile.connections': 0, 'submitter.profile.order': 0 } },
+        {'$unwind':  {'path': '$submitter', 'preserveNullAndEmptyArrays': true }},
     ]);
     res.status(200).json({ wallpapers });
 });
