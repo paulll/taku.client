@@ -33,7 +33,6 @@ export default {
 .home {
     height: 100vh;
     overflow: scroll;
-    padding: 16px 0px 16px 16px;
     background: white;
 }
 

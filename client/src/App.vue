@@ -158,6 +158,7 @@ body {
 
 .FUCKER {
   padding: 16px;
+  padding-top: 55px;
   height: 100vh;
   max-width: 100%;
   width: calc(100vw - 80px);

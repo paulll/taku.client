@@ -3,12 +3,20 @@
         <p class="headerText">{{translation(sectionTitle)}}</p>
         <div class="scrollRegion" v-on:scroll.passive="handleScroll">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
-                <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
+                <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="(wallpaper, index) of wallpapers" :key="{wallpaper}">
                     <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.filename}')`}">
                         <router-link :to="`/profile/${wallpaper.submitter.username}`" class="submitter">
                             <p class="submitterUsername">{{wallpaper.submitter.username}}</p> 
                             <div class="submitterPfp" :style="{'background-image': `url('https://taku.moe:2087/pfp/${wallpaper.submitter.uuid}')`}"></div>
                         </router-link>
+                        <div class="menu" >
+                            <img id="qb1" src="../../assets/wallpaper/Download.svg" alt="Download" @click="downloadWallpaper(wallpaper.uuid)">
+                            <div v-if="me">
+                                <img v-if="!wallpaper.likes.includes(me.uuid)"  id="qb2" src="../../assets/wallpaper/Like.svg"   alt="Like"    @click="interaction('likes', 'like', wallpaper.uuid, index)">
+                                <img v-if="wallpaper.likes.includes(me.uuid)"   id="qb2" src="../../assets/wallpaper/Liked.svg"  alt="Dislike" @click="interaction('likes', 'dislike', wallpaper.uuid, index)">
+                            </div>
+                            <img src="../../assets/wallpaper/Options.svg" alt="Options">                           
+                        </div>
                     </div>
                     <Spinner/>
                 </router-link>
@@ -29,6 +37,7 @@ export default {
     },
     data: () => {
         return {
+            me: JSON.parse(localStorage.me),
             wallpapers: null
         }
     },
@@ -37,6 +46,19 @@ export default {
     },
     methods: {
         translation,
+        downloadWallpaper(wallpaper_uuid){
+            window.open(`https://taku.moe:2087/wallpapers/download/${wallpaper_uuid}`);
+        },
+        async interaction(property, action, wallpaper_uuid){
+            const response = await axios.post(`https://taku.moe:2087/wallpapers/${action}/${wallpaper_uuid}`, undefined, {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            if(!this.wallpapers[index][property].includes(this.me.uuid)) this.wallpaper[index][property].push(this.me.uuid);
+            else this.wallpapers[index][property].pop(this.me.uuid);
+        },
         handleScroll: async function(e) {
             const currentPos = e.target.scrollLeft;
             const maxScroll = e.target.scrollWidth - e.target.offsetWidth;
@@ -76,21 +98,33 @@ export default {
     position: relative;
 }
 
-.submitter {
+.menu {
     position: absolute;
-    bottom: 4px;
-    right: 4px;
+    top: 8px;
     display: flex;
-    align-items: center;
+    gap: 8px;
+    right: 8px;
     transition: 100ms ease;
     opacity: 0%;
 }
 
-.submitter:hover {
-    transform: scale(1.06);
+    
+.menu * { transition: 100ms ease; }
+
+.submitter {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    transition: 100ms ease;
 }
 
-.image:hover .submitter{
+.submitter:hover, .menu *:hover {
+    transform: scale(1.1);
+}
+
+.image:hover .menu, .image:hover .submitterUsername{
     opacity: 100%;
 }
 
@@ -107,6 +141,11 @@ a {
     margin-left: 4px;
     background-size: contain;
     background-position: center;
+}
+
+.submitterUsername {
+    opacity: 0%;
+    transition: 100ms ease;
 }
 
 </style>
