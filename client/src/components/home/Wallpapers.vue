@@ -52,9 +52,7 @@ export default {
         async interaction(property, action, wallpaper_uuid){
             const response = await axios.post(`https://taku.moe:2087/wallpapers/${action}/${wallpaper_uuid}`, undefined, {
                 withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: {'Content-Type': 'application/json'}
             });
             if(!this.wallpapers[index][property].includes(this.me.uuid)) this.wallpaper[index][property].push(this.me.uuid);
             else this.wallpapers[index][property].pop(this.me.uuid);
@@ -93,7 +91,7 @@ export default {
 
     background: lightgray center no-repeat;
     background-size: cover;
-    border-radius: 8px;
+    border-radius: 12px;
     transition: 100ms ease;
     position: relative;
 }
@@ -105,11 +103,14 @@ export default {
     gap: 8px;
     right: 8px;
     transition: 100ms ease;
+    align-items: flex-start;
     opacity: 0%;
 }
 
     
 .menu * { transition: 100ms ease; }
+.menu *:hover { transform: scale(1.1); }
+.image:hover .menu, .image:hover .submitterUsername{ opacity: 100%; }
 
 .submitter {
     position: absolute;
@@ -120,25 +121,11 @@ export default {
     transition: 100ms ease;
 }
 
-.submitter:hover, .menu *:hover {
-    transform: scale(1.1);
-}
-
-.image:hover .menu, .image:hover .submitterUsername{
-    opacity: 100%;
-}
-
-a {
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 400;
-}
 .submitterPfp {
     width: 24px;
     height: 24px;
     border-radius: 100%;
-    margin-left: 4px;
+    margin-left: 8px;
     background-size: contain;
     background-position: center;
 }
@@ -147,5 +134,14 @@ a {
     opacity: 0%;
     transition: 100ms ease;
 }
+
+a {
+    color: white;
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+a:hover { text-decoration: underline; }
 
 </style>
