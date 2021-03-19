@@ -1,6 +1,6 @@
 <template>
     <div class="section" v-if="wallpapers">
-        <p class="headerText">{{translation('NEW Wallpapers')}}</p>
+        <p class="headerText">{{translation(sectionTitle)}}</p>
         <div class="scrollRegion" v-on:scroll.passive="handleScroll">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
@@ -18,13 +18,17 @@ import Spinner from '@/components/Spinner.vue'
 import axios from 'axios';
 
 export default {
+    props: {
+        endpoint:       { type: String, required: true },
+        sectionTitle:  { type: String, required: true },
+    },
     data: () => {
         return {
             wallpapers: null
         }
     },
     async mounted(){
-        this.wallpapers = (await axios.get('https://taku.moe:2087/wallpapers/new/20')).data.wallpapers; 
+        this.wallpapers = (await axios.get(this.endpoint)).data.wallpapers; 
     },
     methods: {
         translation,
@@ -32,7 +36,7 @@ export default {
             const currentPos = e.target.scrollLeft;
             const maxScroll = e.target.scrollWidth - e.target.offsetWidth;
             if (currentPos == maxScroll) {
-                const moreWallpapers = (await axios.get(`https://taku.moe:2087/wallpapers/new/20/${this.wallpapers.length + 1}`)).data.wallpapers;
+                const moreWallpapers = (await axios.get(`${this.endpoint}${this.wallpapers.length + 1}`)).data.wallpapers;
                 moreWallpapers.forEach(wallpaper => this.wallpapers.push(wallpaper));
             }
         }

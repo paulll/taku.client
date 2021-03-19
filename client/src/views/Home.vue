@@ -1,25 +1,21 @@
 <template>
     <div class="home">
         <BrowseAnime/>
-        <RandomWallpapers/>
-        <TrendingWallpapers/>
-        <NewWallpapers/>
+        <Wallpapers :sectionTitle="'NEW Wallpapers'"        :endpoint="'https://taku.moe:2087/wallpapers/new/20/'"/>
+        <Wallpapers :sectionTitle="'TRENDING Wallpapers'"   :endpoint="'https://taku.moe:2087/wallpapers/trending/20/'"/>
+        <Wallpapers :sectionTitle="'RANDOM Wallpapers'"     :endpoint="'https://taku.moe:2087/wallpapers/random/20/'"/>
     </div>
 </template>
 
 <script>
 import BrowseAnime from '@/components/home/BrowseAnime.vue';
-import RandomWallpapers from '@/components/home/RandomWallpapers.vue';
-import TrendingWallpapers from '@/components/home/TrendingWallpapers.vue';
-import NewWallpapers from '@/components/home/NewWallpapers.vue';
+import Wallpapers from '@/components/home/Wallpapers.vue';
 // import smtp from '@/services/smtp.js';
 
 export default {
     name: 'home',
     components: {
-        TrendingWallpapers,
-        NewWallpapers,
-        RandomWallpapers,
+        Wallpapers,
         BrowseAnime
     },
     methods: {
