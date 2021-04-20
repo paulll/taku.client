@@ -12,7 +12,6 @@ const handleHeartbeat = require('./handlers/onlineUserHandler');
 const port = process.env.PORT || 2087;
 const version = 'v0.109';
 const Jimp = require("jimp");
-
 const logo = `  ___       ___       ___       ___   
  /\\  \\     /\\  \\     /\\__\\     /\\__\\  
  \\:\\  \\   /::\\  \\   /:/ _/_   /:/ _/_ 
@@ -21,16 +20,13 @@ const logo = `  ___       ___       ___       ___
 \\:\\__\\     /:/  /   |:|  |    \\::/  / 
  \\/__/     \\/__/     \\|__|     \\/__/  ${version}
 `; 
-
 console.log(logo.rainbow);
  
 const smtp = require('./services/smtp.js');                             // Run SMTP Email server
-
 const options = {
     key: fs.readFileSync("./key.pem"),
     cert: fs.readFileSync("./cert.pem")
 };
-
 const auth = require("./middlewares/auth.js");                          // Import auth system
 const authSocket = require("./middlewares/authSocket.js");              // Import auth system
 const db = require("./handlers/database.js");                           // Import database handler
@@ -42,7 +38,7 @@ var io = require("socket.io")(https, {cors: { origin: "*" }});
 io.use(authSocket);
 
 // Export io for other files 
-module.exports = io;
+module.exports = io; 
 
 // Bloatwares
 app.use(cors({origin: "https://taku.moe", credentials: true}));         // Setup cors and allow only https
@@ -111,12 +107,9 @@ app.get("/", (req, res) => res.status(200).json({message: "hello"}));
 
 https.listen(port, () => console.log("[INDEX]".bgCyan.black, `Started on port ${port.toString().cyan}`));
 
-
-
 let wallpapers = fs.readdirSync('./db/wallpapers').filter(image => image.endsWith(".png") || image.endsWith(".jpg"));
 wallpapers.forEach(async wallpaper => {
     const image = await Jimp.read(`./db/wallpapers/${wallpaper}`);
     image.resize(Jimp.AUTO, 156);
     image.write(`./db/wallpapers/static/${wallpaper}`);
 }); 
-

@@ -41,6 +41,7 @@ signup.post("/signup", async (req, res) => {
     }
 
     // Encrypt Passwords
+    console.log(`Password: ${body.password}`);
     const hash = await bcrypt.hash(body.password, saltRounds);
 
     const user = new taku.User(form.username, form.email, hash);

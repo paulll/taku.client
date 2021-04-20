@@ -1,7 +1,7 @@
 <template>
   <div class="shit">
     <NavBar/>
-    <Header/>
+    <!-- <Header/> -->
     <!-- <LoadingAnimation/> -->
     <router-view class="FUCKER"/>
     <ToolBar/>
@@ -37,6 +37,11 @@ export default {
   created(){
     NProgress.start();
     if (localStorage.token) this.getUser();
+    if (!localStorage.settings) localStorage.setItem('settings', JSON.stringify({
+      messages: {
+        isChannellistVisible: true
+      }
+    }));
   },
   mounted(){
     NProgress.done();

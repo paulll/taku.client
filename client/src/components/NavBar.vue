@@ -2,7 +2,7 @@
   <div>
 
     <nav>
-      <a @click="$router.go(-1)">
+      <a v-if="$route.name == 'Messages'" @click="toggleChannelList()">
         <img src="../assets/navbar/Folder.svg" alt="">
       </a>
 
@@ -44,6 +44,15 @@
 
 export default {
   name: 'NavBar',
+  methods: {
+    toggleChannelList(){
+      let settings = JSON.parse(localStorage.settings);
+      settings.messages.isChannellistVisible = !settings.messages.isChannellistVisible;
+      localStorage.settings = JSON.stringify(settings);
+      this.emitter.emit('updateUI');
+    }
+  },
+  
 };
 </script>
 

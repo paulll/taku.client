@@ -1,5 +1,5 @@
 var monk = require("monk");
-const url = "localhost:27017/anihuu";
+const url = "mongodb+srv://backend:2IOE2UHdM099cAoE@cluster0.2b5yb.mongodb.net/taku?retryWrites=true&w=majority";
 const db = monk(url);
 const colors = require("colors");
 
@@ -10,7 +10,7 @@ module.exports = {
     messages:      db.get("messages"),
     anime:         db.get("anime"),
     notifications: db.get("notifications"),
-    channels:      db.get("channels"),
+    channels:      db.get("channels"), 
     invites:       db.get("invites"),
     wallpapers:    db.get("wallpapers"),
 };

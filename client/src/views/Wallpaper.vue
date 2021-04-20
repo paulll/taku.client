@@ -86,6 +86,7 @@ export default {
             console.log(this.wallpaper);
         },
         downloadWallpaper(){
+            this.wallpaper.downloads++;
             window.open(`https://taku.moe:2087/wallpapers/download/${this.$route.params.wallpaper_uuid}`);
         },
         async interaction(property, action){

@@ -1,5 +1,5 @@
 <template>
-  <div class="channelsContainer" :class="{darkmode: darkmode == 'true'}">
+  <div class="channelsContainer" v-if="settings.messages.isChannellistVisible" :class="{darkmode: darkmode == 'true'}">
     <div>
       <div v-if="callState != 'idle'" class="call">
         {{callInformation.username}} {{translation('Is calling you!')}}
@@ -170,6 +170,7 @@ export default {
   data: () => {
     return {
       me: JSON.parse(localStorage.me),
+      settings: JSON.parse(localStorage.settings),
       dms: [],
       channels: [],
       privateChannels: [],
@@ -193,6 +194,7 @@ export default {
   mounted() {
     this.getData();
     this.emitter.on("call", (participants) => this.call(participants));
+    this.emitter.on('updateUI', () => this.updateUI());
     socket.on('call', callInformation => {
       this.callState = 'beingCalled';
       this.callInformation = callInformation;
@@ -200,6 +202,10 @@ export default {
   },
   methods: {   
     translation,
+    updateUI(){
+      this.darkmode = localStorage.darkmode;
+      this.settings = JSON.parse(localStorage.settings);
+    },
     async call(participants){
       if(this.me.isCalling || this.callState == 'inCall' || this.callState == 'calling' || this.callState == 'beingCalled') return console.log(`Cannot initialize call in this state!`);
       else console.log(`Call would be initialized now`);
@@ -222,12 +228,6 @@ export default {
         host: 'rtc.taku.moe',
         port: '8443'
       }); 
-
-      // const myPeer = new Peer({
-
-      // });
-
-      console.log(peer);
 
       const myvideo = document.createElement('video');
       myvideo.className = 'videoStream';
