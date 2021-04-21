@@ -76,11 +76,13 @@ export default {
   },
   watch: {
       $route(to, from) {
+          this.loadMessagesFromCache();
           this.getChannel();
           socket.emit('leave_channel', to.params.channel_uuid);
       }
   },
   mounted() {
+    this.loadMessagesFromCache();
     this.getBlockedUsers();
     this.getChannel();
 
@@ -165,6 +167,24 @@ export default {
   },
   methods: {
     translation,
+    loadMessagesFromCache(){
+      let cachedMessages = JSON.parse(localStorage.messages);
+      if (cachedMessages[this.$route.params.channel_uuid]){
+        this.messages = JSON.parse(cachedMessages[this.$route.params.channel_uuid]);
+      }
+    },
+    cacheMessages(messages){
+      let cachedMessages = JSON.parse(localStorage.messages);
+
+      if (Object.keys(cachedMessages) == null){
+        localStorage.setItem('messages', JSON.stringify({}));
+        console.log("Created message cache");
+      }
+
+      cachedMessages[this.$route.params.channel_uuid] = JSON.stringify(messages);
+      localStorage.messages = JSON.stringify(cachedMessages);
+      console.log("Cached messages");
+    },
     async getChannel(){ 
 
       try {
@@ -205,6 +225,7 @@ export default {
       });
 
       this.messages = response.data;
+      this.cacheMessages(response.data);
       console.log(`%c Fetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
     },
     // This is to convert epoch to the user's time
