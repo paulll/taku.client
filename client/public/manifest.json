@@ -1,6 +1,6 @@
 {
-    "theme_color": "#ff006b",
-    "background_color": "#ff006b",
+    "theme_color": "#111215",
+    "background_color": "#111215",
     "display": "standalone",
     "scope": "/",
     "start_url": "/dms",

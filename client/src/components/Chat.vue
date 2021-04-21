@@ -81,7 +81,6 @@ export default {
       }
   },
   mounted() {
-
     this.getBlockedUsers();
     this.getChannel();
 
@@ -205,7 +204,6 @@ export default {
       });
 
       this.messages = response.data;
-
       console.log(`%c Fetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
     },
     // This is to convert epoch to the user's time
