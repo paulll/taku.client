@@ -45,6 +45,7 @@ router.post("/", auth, upload.any(), async (req, res) => {
 
     // Create the notification
     let notification = new taku.Notification("Message", { uuid: req.user.uuid, username: req.user.username }, message.content, undefined, channel, message.attachments.length);
+    io.sockets.in(req.user.uuid).emit('message', message);
 
     for (member of channel.member_list) {
         if (member != req.user.uuid) {
@@ -55,11 +56,13 @@ router.post("/", auth, upload.any(), async (req, res) => {
             );
             
             io.sockets.in(member).emit('notification', notification);
+            io.sockets.in(member).emit('message', message);
         }
     }
 
+
     // Send event to the specific user
-    io.sockets.in(channel.uuid).emit('message', message);
+    // io.sockets.in(channel.uuid).emit('message', message);
 });
 
 module.exports = router;

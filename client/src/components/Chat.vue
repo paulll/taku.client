@@ -108,7 +108,8 @@ export default {
     });
 
     socket.on('message', message => {
-      if (message.content !== undefined) {
+      console.log(message);
+      if (message.content !== undefined && message.channel_uuid == this.$route.params.channel_uuid) {
         // If the last message is by the same user just add the message content itself without
         // Their username etc
         if (last_message.author.uuid == message.author.uuid) message.author.same_as_last = true;

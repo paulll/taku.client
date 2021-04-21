@@ -111,7 +111,7 @@
         </router-link>
 
     
-        <!-- <router-link :to="`/messages/group/${channel.uuid}`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
+        <router-link :to="`/messages/group/${channel.uuid}`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
           <img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.pfp}`" alt="">
           <div class="info">
             <div v-if="channel.senpai">
@@ -123,7 +123,7 @@
             </div>
           </div>
           <img class="deleteChannel" v-if="channel.type == 'group'" src="../assets/trash.svg" alt="Delete Channel" @click="deleteChannel(channel)">
-        </router-link> -->
+        </router-link>
 <!-- 
         <router-link :to="`/messages/invites/`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchInvites" v-if="view == 'invites'" :key="channel">
           <img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.pfp}`" alt="">
@@ -375,7 +375,11 @@ export default {
       this.privateChannels = JSON.parse(localStorage.getItem('privateChannels'));
       this.groupChannels = JSON.parse(localStorage.getItem('groupChannels'));
 
-      if (this.$route.params.channel_uuid == ''){
+      // This runs so fucking fast in here
+      // Auto update the URL if theres no channel 
+      // E.g. if tthe url is https://taku.moe/messages/
+      // This will redirect it to the first private channel they have
+      if (this.$route.params.channel_uuid == '' && this.privateChannels != null){
         this.$router.push(`/messages/private/${this.privateChannels[0].uuid}`);
       }
 
@@ -420,12 +424,6 @@ export default {
       localStorage.setItem('privateChannels', JSON.stringify(this.privateChannels));
       localStorage.setItem('groupChannels', JSON.stringify(this.groupChannels));
 
-      // Auto update the URL if theres no channel 
-      // E.g. if tthe url is https://taku.moe/messages/
-      // This will redirect it to the first private channel they have
-      if (this.$route.params.channel_uuid == ''){
-        this.$router.push(`/messages/private/${this.privateChannels[0].uuid}`);
-      }
 
       this.inviteChannels = invitesRequest.data;
       this.filterSearch();
