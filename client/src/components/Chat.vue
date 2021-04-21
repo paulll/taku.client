@@ -323,7 +323,7 @@ export default {
 }
 
 .messages.darkmode {
-  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
+  scrollbar-color: var(--light)var(--dark) ;
 }
 
 
@@ -344,7 +344,7 @@ export default {
 }
 
 .DMs {
-  background: #fff;
+  background: var(--light);
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -353,8 +353,6 @@ export default {
   flex-direction: column;
   justify-content: flex-end;
 }
-
-.DMs.darkmode { background: var(--darkmodeDark); /* darkmode */ }
 
 .file {
   color: black;
@@ -417,7 +415,7 @@ export default {
 .message:not(.me) .notch {
   height: 24px;
   width: 24px;
-  background: #F1F2F4;
+  background: var(--dark);
   position: absolute;
   top: 12px;
   left: 32px;
@@ -429,11 +427,15 @@ export default {
 .message.me .notch {
   height: 24px;
   width: 24px;
-  background: #F1F2F4;
+  background: var(--dark);
   position: absolute;
 
   top: 12px;
   right: 32px;
+}
+
+.message .notch.darkmode {
+  background: var(--dark);
 }
 
 .message.same .notch { display: none };
@@ -442,6 +444,7 @@ export default {
   align-items: flex-end;
   flex-direction: column;
   display: flex;
+  gap: 12px;
 }
 
 
@@ -450,6 +453,7 @@ export default {
   display: flex;
   flex-direction: column;
   border-radius: 16px 0px 16px 16px;
+  gap: 12px;
 }
 
 .message.me .messageBubble .date {
@@ -467,9 +471,9 @@ export default {
   font-size: 14px;
   margin: 6px 0px;
   padding: 10px 12px;
-  background: #F1F2F4;
+  background: var(--dark);
   overflow-wrap: anywhere;
-  color: #2C394A;
+  color: var(--textLight);
   margin-bottom: 1px;
   /* max-width: 600px; */
   font-weight: 400;
@@ -485,11 +489,6 @@ export default {
   cursor: pointer; 
   max-width: 512px;
   max-height: 168px;
-}
-
-.messageBubble .content.darkmode {
-  background: #141520; /* darkmode */
-  color: white; /* darkmode */
 }
 
 .message .messageBubble .content.mention {
@@ -539,16 +538,15 @@ export default {
   background-size: cover;
   position: relative;
   z-index: 100;
-  border: white 6px solid;
+  border: var(--light) 6px solid;
   box-sizing: content-box;
-
 }
 
 .message.same .pfp { display: none; }
 
 .flare {
   border-radius: 32px;
-  color: var(--darkmodeDark);
+  color: var(--dark);
   font-weight: 700;
   display: flex;
   align-items: center;

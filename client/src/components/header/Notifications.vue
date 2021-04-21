@@ -147,7 +147,7 @@ export default {
 }
 
 .notificationBox.darkmode {
-    background: var(--darkmodeDark);
+    background: var(--dark);
     color: white;
 }
 

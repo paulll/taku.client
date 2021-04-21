@@ -583,7 +583,7 @@ export default {
 }
 
 .pageContent.darkmode {
-    background:  var(--darkmodeDark);
+    background:  var(--dark);
     color: white;
 }
 

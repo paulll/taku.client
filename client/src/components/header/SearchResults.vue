@@ -63,8 +63,8 @@ export default {
 <style scoped>
 
 .searchResults.darkmode {
-    scrollbar-color: var(--darkmodeLight)var(--darkmodeDark);
-    background: var(--darkmodeDark) !important;
+    scrollbar-color: var(--light)var(--dark);
+    background: var(--dark) !important;
     color: white !important;
 }
 
@@ -97,8 +97,8 @@ export default {
 }
 
 .users.darkmode::-webkit-scrollbar-thumb, .animeList.darkmode::-webkit-scrollbar-thumb {
-  background-color: var(--darkmodeLight);
-  border: 6px solid var(--darkmodeDark); 
+  background-color: var(--light);
+  border: 6px solid var(--dark); 
 }
 
 

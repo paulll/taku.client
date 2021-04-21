@@ -257,7 +257,7 @@ export default {
     position: absolute;
 }
 
-.settingsArea.darkmode { background: var(--darkmodeDarker); } /* darkmode */ 
+.settingsArea.darkmode { background: var(--darker); } /* darkmode */ 
 
 .connectionsList {
   margin-top: 24px;
@@ -340,7 +340,7 @@ export default {
 }
 
 .appearance.darkmode {
-  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
+  scrollbar-color: var(--light)var(--dark) ;
 }
 
 .accountSettings {
@@ -350,7 +350,7 @@ export default {
 }
 
 .accountSettings.darkmode {
-  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
+  scrollbar-color: var(--light)var(--dark) ;
 }
 
 </style>

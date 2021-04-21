@@ -2,7 +2,7 @@
   <div>
 
     <nav>
-      <a v-if="$route.name == 'Messages'" @click="toggleChannelList()">
+      <a @click="toggleChannelList()">
         <img src="../assets/navbar/Folder.svg" alt="">
       </a>
 
@@ -10,26 +10,26 @@
         <router-link to='/home'>
           <img src="../assets/navbar/Home.svg" alt="">
         </router-link>
-
+<!-- 
         <router-link to='/wallpaper'>
           <img src="../assets/navbar/Wallpaper.svg" alt="">
         </router-link>
 
         <router-link to='/upload'>
           <img src="../assets/navbar/Upload.svg" alt="">
-        </router-link>
+        </router-link> -->
 
         <router-link to='/messages'>
           <img src="../assets/navbar/Message.svg" alt="">
         </router-link>
-
+<!-- 
         <router-link to='/notifications'>
           <img src="../assets/navbar/Bell.svg" alt="">
         </router-link>
 
         <router-link to='/trash'>
           <img src="../assets/navbar/Trash.svg" alt="">
-        </router-link>
+        </router-link> -->
       </div>
 
       <router-link to='/settings'>
@@ -59,9 +59,9 @@ export default {
 <style scoped>
 
 nav {
-  background: white;
+  background: var(--darker);
   height: 100vh;
-  width: 80px;
+  width: 56px;
   z-index: 1000;
   position: relative;
 
@@ -69,9 +69,8 @@ nav {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
+  padding: 8px 0px;
 
-  border-right: #F1F2F4 2px solid;
 }
 
 .group {
@@ -80,25 +79,22 @@ nav {
 }
 
 a {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   transition: 100ms ease-in-out;
-
   outline: none;
 }
 
 a:hover {
-  transform: scale(1.04);
+
 }
 
 a.router-link-active, a:hover {
-  background: #FFF0F6;
+  background: #2C1820;
 }
 
 

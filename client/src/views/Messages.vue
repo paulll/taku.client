@@ -4,7 +4,7 @@
       <div v-if="callState != 'idle'" class="call">
         {{callInformation.username}} {{translation('Is calling you!')}}
 
-        <div class="button deny" @click="answer()">
+        <!-- <div class="button deny" @click="answer()">
           <div class="iconWrapper">
             <img src="../assets/deny.svg" alt="New Group">
           </div>
@@ -14,7 +14,7 @@
           <div class="iconWrapper">
             <img src="../assets/checkmark.svg" alt="New Group">
           </div>
-        </div>
+        </div> -->
 
       </div>
 
@@ -23,15 +23,14 @@
       </div>
 
       <div class="search">
-        <h1>{{translation('Chats')}}</h1>
-        <div class="button" :class="{active: isSearching}">
-          <input v-if="isSearching" ref="search" class="searchBox" spellcheck="false" placeholder="Search" v-model="searchString" type="text" @keyup="filterSearch()">
+        <div class="button">
+          <input ref="search" class="searchBox" spellcheck="false" placeholder="Search users and channels" v-model="searchString" type="text" @keyup="filterSearch()">
           <div class="iconWrapper" @click="toggleSearch(); $refs.search.$el.focus();">
             <img src="../assets/search.svg" alt="Search">
           </div>
         </div>
       </div>
-      <menu>
+      <menu class="view">
         <div @click="view = 'private'" :class="{'active': view == 'private'}">
           PRIVATE
           <div class="line"></div>
@@ -45,10 +44,15 @@
           <div class="line"></div>
         </div>
       </menu>
+
+      <section v-if="groupChannels.some(channel => channel.isPinned == true)">
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.75137 13.1617C4.74169 13.4819 4.99473 13.7483 5.31526 13.7566C5.53968 13.7633 5.7681 13.7666 5.99983 13.7666C7.14532 13.7666 8.49248 13.7035 9.5558 13.3608C10.0881 13.1891 10.557 12.9451 10.8937 12.5968C11.2328 12.2461 11.4332 11.7942 11.4332 11.22C11.4332 10.6111 11.1977 10.1423 10.8213 9.78593C10.4477 9.4323 9.9383 9.19205 9.39026 9.0276C8.29467 8.69883 7.01196 8.66377 6.25424 8.65991L6.25377 8.65991L5.85878 8.65977L5.85826 8.65977C4.72154 8.66519 3.40943 8.73949 2.37886 9.08685C1.86289 9.26076 1.41006 9.5055 1.08547 9.85103C0.758645 10.1989 0.566504 10.6443 0.566504 11.2067C0.566504 11.5508 0.647171 11.958 0.921625 12.3438C1.19613 12.7297 1.65821 13.0852 2.40542 13.3367C2.71121 13.4413 3.03978 13.2759 3.1433 12.9745L3.14338 12.9743C3.2466 12.6714 3.08299 12.3434 2.77876 12.2412C2.28909 12.0763 2.02979 11.8838 1.89194 11.705C1.7558 11.5285 1.72986 11.3548 1.72986 11.2067C1.72986 10.7779 2.04342 10.4299 2.75982 10.1856C3.47403 9.94213 4.55325 9.81675 5.99983 9.81675C7.44638 9.81675 8.52549 9.94329 9.23959 10.189C9.95551 10.4353 10.2698 10.7864 10.2698 11.22C10.2698 11.6484 9.95632 11.9962 9.23988 12.2402C8.52565 12.4835 7.44642 12.6087 5.99983 12.6087C5.77925 12.6087 5.56216 12.606 5.34854 12.6L5.34854 12.6L5.34497 12.6C5.03988 12.6024 4.7605 12.8379 4.75137 13.1617ZM4.75137 13.1617C4.75137 13.1618 4.75136 13.1618 4.75136 13.1619L4.85132 13.1647L4.75137 13.1616C4.75137 13.1617 4.75137 13.1617 4.75137 13.1617ZM9.69094 3.90256C9.69094 1.87881 8.03487 0.233313 5.99983 0.233313C3.96482 0.233313 2.30805 1.87879 2.30805 3.90256C2.30805 5.92567 3.96484 7.57114 5.99983 7.57114C8.03486 7.57114 9.69094 5.92565 9.69094 3.90256ZM3.47208 3.90256C3.47208 2.51841 4.60541 1.39129 5.99983 1.39129C7.39426 1.39129 8.52759 2.51841 8.52759 3.90256C8.52759 5.28602 7.39427 6.41316 5.99983 6.41316C4.6054 6.41316 3.47208 5.28602 3.47208 3.90256Z" fill="#6D6E72" stroke="#6D6E72" stroke-width="0.2"/></svg><h1>PINNED</h1>
+      </section>
+
       <section>
-        <h1 v-if="privateChannels.length != 0 && view == 'private'">USERS</h1>
+        <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.75137 13.1617C4.74169 13.4819 4.99473 13.7483 5.31526 13.7566C5.53968 13.7633 5.7681 13.7666 5.99983 13.7666C7.14532 13.7666 8.49248 13.7035 9.5558 13.3608C10.0881 13.1891 10.557 12.9451 10.8937 12.5968C11.2328 12.2461 11.4332 11.7942 11.4332 11.22C11.4332 10.6111 11.1977 10.1423 10.8213 9.78593C10.4477 9.4323 9.9383 9.19205 9.39026 9.0276C8.29467 8.69883 7.01196 8.66377 6.25424 8.65991L6.25377 8.65991L5.85878 8.65977L5.85826 8.65977C4.72154 8.66519 3.40943 8.73949 2.37886 9.08685C1.86289 9.26076 1.41006 9.5055 1.08547 9.85103C0.758645 10.1989 0.566504 10.6443 0.566504 11.2067C0.566504 11.5508 0.647171 11.958 0.921625 12.3438C1.19613 12.7297 1.65821 13.0852 2.40542 13.3367C2.71121 13.4413 3.03978 13.2759 3.1433 12.9745L3.14338 12.9743C3.2466 12.6714 3.08299 12.3434 2.77876 12.2412C2.28909 12.0763 2.02979 11.8838 1.89194 11.705C1.7558 11.5285 1.72986 11.3548 1.72986 11.2067C1.72986 10.7779 2.04342 10.4299 2.75982 10.1856C3.47403 9.94213 4.55325 9.81675 5.99983 9.81675C7.44638 9.81675 8.52549 9.94329 9.23959 10.189C9.95551 10.4353 10.2698 10.7864 10.2698 11.22C10.2698 11.6484 9.95632 11.9962 9.23988 12.2402C8.52565 12.4835 7.44642 12.6087 5.99983 12.6087C5.77925 12.6087 5.56216 12.606 5.34854 12.6L5.34854 12.6L5.34497 12.6C5.03988 12.6024 4.7605 12.8379 4.75137 13.1617ZM4.75137 13.1617C4.75137 13.1618 4.75136 13.1618 4.75136 13.1619L4.85132 13.1647L4.75137 13.1616C4.75137 13.1617 4.75137 13.1617 4.75137 13.1617ZM9.69094 3.90256C9.69094 1.87881 8.03487 0.233313 5.99983 0.233313C3.96482 0.233313 2.30805 1.87879 2.30805 3.90256C2.30805 5.92567 3.96484 7.57114 5.99983 7.57114C8.03486 7.57114 9.69094 5.92565 9.69094 3.90256ZM3.47208 3.90256C3.47208 2.51841 4.60541 1.39129 5.99983 1.39129C7.39426 1.39129 8.52759 2.51841 8.52759 3.90256C8.52759 5.28602 7.39427 6.41316 5.99983 6.41316C4.6054 6.41316 3.47208 5.28602 3.47208 3.90256Z" fill="#6D6E72" stroke="#6D6E72" stroke-width="0.2"/></svg><h1 v-if="privateChannels.length != 0 && view == 'private'">USERS</h1>
         <h1 v-if="groupChannels.length != 0 && view == 'group'">GROUPS</h1>
-        <h1 v-if="inviteChannels.length != 0 && view == 'invites'">GROUPS</h1>
+        <h1 v-if="inviteChannels.length != 0 && view == 'invites'">INVITES</h1>
       </section>
 
       <div class="emptyMessage" v-if="privateChannels.length == 0 && view == 'private'">  
@@ -82,7 +86,7 @@
       </div>
 
       <div class="channels">
-        <router-link :to="`/messages/private/${channel.uuid}`" :style="{'background': `url('https://taku.moe:2087/banner/${channel.member_list[0].uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
+        <router-link :to="`/messages/private/${channel.uuid}`" v-if="view == 'private'" class="channel" v-for="channel in searchDMS" :key="channel">
           <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
           <div class="info">
             <div v-if="!channel.senpai">
@@ -91,13 +95,18 @@
                 <div class="icon"></div>
                 <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
               </div>
+
             </div>
           </div>
+          <menu>
+            <div></div>
+            <div></div>
+            <div></div>
+          </menu>
         </router-link>
 
     
-        <router-link :to="`/messages/group/${channel.uuid}`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
-          <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
+        <!-- <router-link :to="`/messages/group/${channel.uuid}`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchGroups" v-if="view == 'group'" :key="channel">
           <img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.pfp}`" alt="">
           <div class="info">
             <div v-if="channel.senpai">
@@ -109,10 +118,9 @@
             </div>
           </div>
           <img class="deleteChannel" v-if="channel.type == 'group'" src="../assets/trash.svg" alt="Delete Channel" @click="deleteChannel(channel)">
-        </router-link>
-
+        </router-link> -->
+<!-- 
         <router-link :to="`/messages/invites/`" class="channel" :style="{'background': `url('https://taku.moe:2087/banner/${channel.uuid}'), linear-gradient(270deg, #FFBFDE 0%,rgba(255, 255, 255) 100%)`}" v-for="channel in searchInvites" v-if="view == 'invites'" :key="channel">
-          <!-- <router-link v-if="!channel.senpai" :to="`/profile/${channel.member_list[0].username}`"><img class="pfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link> -->
           <img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.pfp}`" alt="">
           <div class="info">
             <div v-if="channel.senpai">
@@ -123,12 +131,12 @@
               </div>
             </div>  
           </div>
-        </router-link>
+        </router-link> -->
 
       </div>
     </div>
 
-    <div class="bottomButtons" >
+    <!-- <div class="bottomButtons" >
       <div class="button" :class="{active: isMakingNewGroup}">
         <div class="iconWrapper" @click="isMakingNewGroup = !isMakingNewGroup">
           <img src="../assets/newGroup.png" alt="New Group">
@@ -148,7 +156,7 @@
         </div>
       </div>
 
-    </div>
+    </div> -->
   </div>
   <div id="video-grid"></div>
   <Chat v-if="showChat"/>
@@ -182,7 +190,6 @@ export default {
       searchString: '',
       view: 'private',
       darkmode: localStorage.darkmode,
-      isSearching: false,
       isMakingNewGroup: false,
       newGroupName: "",
       callState: 'idle',
@@ -358,7 +365,6 @@ export default {
 
     // Toggles the search function
     toggleSearch() {
-      this.isSearching = !this.isSearching;
       this.searchString = '';
       this.filterSearch();
     },
@@ -393,7 +399,6 @@ export default {
         if (channel.type == "dm") this.privateChannels.push(channel);
         if (channel.type == "group") this.groupChannels.push(channel);
       }
-
 
       // Channels and invites oki
       // channelsRequest.data.channels = channels;
@@ -478,14 +483,14 @@ export default {
   width: fit-content;
   transition: 100ms ease;
   min-width: 48px;
-  height: 48px;
-  width: 48px;
-
+  width: 100%;
+  height: 32px;
   position: relative;
-
+  background: var(--light);
+  border: transparent 1px solid;
   display: flex;
   align-items: center;
-  border-radius: 12px;
+  border-radius: 4px;
   transition: 100ms ease;
 }
 
@@ -502,7 +507,8 @@ export default {
 }
 
 .button:hover, .button.active {
-  background: #F1F2F4;
+  /* background: #F1F2F4; */
+  border: var(--hoverOutline) 1px solid;
 }
 
 .button .iconWrapper {
@@ -518,7 +524,7 @@ export default {
   width: 24px;
   transform: translateX(12px);
   height: 24px;
-  filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
+  filter: invert(51%) sepia(1%) saturate(2032%) hue-rotate(191deg) brightness(81%) contrast(80%);
 }
 
 .deleteChannel {
@@ -532,32 +538,29 @@ export default {
   outline: none;
   border: none;
   text-indent: 8px;
-  height: 44px;
+  height: 100%;
   width: 100%;
   background: transparent;
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 10px;
   z-index: 3px;
+  color: white; 
 }
 
 .searchBox::placeholder { 
-  color: #81859D; 
+  color: var(--textDark); 
 }
 
 .channelsContainer {
-  background: white;
+  background: var(--dark);
   width: 320px;
   min-width: 320px;
-  border-right: #F1F2F4 2px solid;
-
+  color: var(--textDark);
+  padding: 8px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.channelsContainer.darkmode{
-  background: #676E78;
-  height: 100%;
 }
 
 .call {
@@ -571,9 +574,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px;
-  height: 80px;
-  border-bottom: 2px solid #F1F2F4;
+  padding: 0px;
 } 
 
 .search h1 {
@@ -581,21 +582,18 @@ export default {
   font-style: normal;
   font-weight: 600;
   font-size: 18px;
-  color: #2C394A;
+  color: inherit;
 }
 
 .search img {
   width: 24px;
   height: 24px;
-  filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
   cursor: pointer;
 }
 
 .searchBox {
-    width: inherit;
     display: flex;
     position: relative;
-    padding-left: 16px;
     align-items: center;
 }
 
@@ -632,23 +630,23 @@ export default {
     margin-right: 14px;
 }
 
-menu {
+menu.view {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px
+  padding: 16px 8px;
 }
 
-menu div {
+menu.view div {
   width: 100%;
   cursor: pointer;
 }
 
-menu div.active {
+menu.view div.active {
   color: var(--themeColor);
 }
 
-menu div .line {
+menu.view div .line {
   height: 3px;
   border-radius: 32px;
   width: 0%;
@@ -656,35 +654,30 @@ menu div .line {
   transition: 200ms ease;
 }
 
-menu div.active .line {
+menu.view div.active .line {
   background: var(--themeColor);
   width: 75%;
 }
 
 section {
-  padding: 0px 16px;
-  width: 320px;
+  padding: 0px 8px;
+  width: 100%;
   height: 32px;
+  gap: 8px;
   display: flex;
   align-items: center;
   text-align: center;
 }
 
-menu div, section h1 {
+menu.view div, section h1 {
   font-family: Work Sans;
   font-style: normal;
   font-weight: 600;
   font-size: 10px;
   line-height: 117.9%;
-
-  color: #81859D;
 }
 
-/* .channels {
-  padding: 16px;
-  display: grid;
-  gap: 16px;
-} */
+
 
 .emptyMessage {
   display: flex;
@@ -704,46 +697,61 @@ menu div, section h1 {
   color: #81859D;
 }
 
+.channels {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+} 
+
 .channel {
   width: 100%;
   display: flex;
-  padding: 8px 16px;
+  padding: 8px;
+  color: var(--textLight);
+  border-radius: 4px;
+  border: transparent 1px solid;
+  height: 48px;
   text-decoration: none;
   transition: 100ms ease-out;
   outline: none;
-  border-right: 0px solid #ff006b;
   overflow: hidden;
   align-items: center;
 }
 
-.channel:not(.router-link-active) {
-  background: white !important;
-}
-
-.channel:hover:not(.router-link-active) {
-  background: #FFF0F6 !important; 
-  transform: scale(1.04);
-}
-
-.channel:hover { transform: scale(1.04); }
-
 .channel.router-link-active {
-  border-right: 4px solid #ff006b;
-  background-blend-mode: overlay, normal;
-  background-size: fill;
-  background-size: cover;
-  background-repeat: no-repeat;
+  background: var(--light);
+}
+
+.channel:hover { 
+  border: var(--hoverOutline) 1px solid;
 }
 
 .channel a {
-  width: 48px;
-  height: 48px
+  width: 32px;
+  height: 32px;
+}
+
+.channel menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 32px;  
+  height: 32px;
+}
+
+.channel menu * {
+  width: 4px;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--hoverOutline);
 }
 
 .channelPfp {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 32px;
   object-fit: cover;
 }
 
@@ -753,19 +761,18 @@ menu div, section h1 {
   flex-direction: column;
   justify-content: space-between;
   text-decoration: none;
-  margin-left: 16px;
-  width: 60%;
+  margin-left: 8px;
+  width: 100%;
 }
 
 .info a {
   width: fit-content;
   text-decoration: none;
-
 }
 
 .info a, h1{
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 14px;
   line-height: 117.9%;
   /* identical to box height, or 17px */
@@ -774,8 +781,6 @@ menu div, section h1 {
   display: flex;
   align-items: center;
   text-align: left;
-
-  color: #2C394A;
 }
 
 .channelStatus {
@@ -783,7 +788,8 @@ menu div, section h1 {
   flex-direction: row;
   align-items: center;
   height: 100%;
-  margin-top: 8px;
+  margin-top: 4px;
+  color: var(--textDark);
 }
 
 .channelStatus .icon {
@@ -806,7 +812,6 @@ menu div, section h1 {
   text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #81859D;
   margin: 0px 4px;
 }
 

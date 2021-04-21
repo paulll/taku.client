@@ -78,7 +78,7 @@ a:not(.router-link-active) {
   transition: 100ms ease;
 }
 
-.mh-header.darkmode { background: var(--darkmodeDark); } /* darkmode */
+.mh-header.darkmode { background: var(--dark); } /* darkmode */
 .mh-header.darkmode img { filter: invert(1); }
 
 @media only screen and (max-width: 715px){

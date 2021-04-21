@@ -92,9 +92,12 @@ export default {
 
 :root {
   --themeColor: #ff006b;
-  --darkmodeLight: #363952;
-  --darkmodeDark: #10121D;
-  --darkmodeDarker: #08090E;
+  --textDark: #6D6E72;
+  --textLight: #F3F3F3;
+  --darker: #111215;
+  --dark: #17191E;
+  --light: #1D2026;
+  --hoverOutline: #3A404D;
 }
 
 * {
@@ -104,11 +107,11 @@ export default {
   box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: lightgray transparent;
-  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
+  scrollbar-color: var(--light) var(--dark);
 }
 
 *.darkmode {
-  scrollbar-color: var(--darkmodeLight)var(--darkmodeDark) ;
+  scrollbar-color: var(--light) var(--dark);
 }
 *::-webkit-scrollbar {
   position: absolute; 
@@ -124,7 +127,7 @@ export default {
 }
 
 *.darkmode::-webkit-scrollbar-thumb {
-  background-color: var(--darkmodeLight);
+  background-color: var(--light);
 }
 
 html {
@@ -134,7 +137,7 @@ html {
 }
 
 body {
-  background: #141A22; /* darkmode */
+  background: var(--dark); /* darkmode */
 }
 
 #nprogress .bar {

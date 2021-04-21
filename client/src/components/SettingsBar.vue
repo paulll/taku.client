@@ -154,7 +154,7 @@ export default {
   justify-content: space-between;
 }
 
-.settingsBar.darkmode { background: var(--darkmodeDark); } /* darkmode */
+.settingsBar.darkmode { background: var(--dark); } /* darkmode */
 .settingsbar:not(.small) { padding-top: 0px; }
 .setting {
   display: flex;

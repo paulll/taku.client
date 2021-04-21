@@ -3,7 +3,7 @@
     <div class="sendMessageContainer">
         <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
             <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
-            <div class="images" :class="{darkmode: darkmode == 'true'}">
+            <div class="images" :class="{darkmode: darkmode == 'true', padding: previews.length != 0}">
                 <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
             </div>
             <div class="inputFields">
@@ -127,13 +127,20 @@ export default {
 .sendMessage { 
   margin: 0px 16px;
   border-radius: 24px;
-  background: #F1F2F4;
+  background: var(--darker);
   width: 100%;
 }
 
 .sendMessage .images {
   max-height: 368px;
   overflow-y: scroll;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.padding {
+  padding: 8px
 }
 
 .sendMessage .inputFields {
@@ -148,7 +155,7 @@ export default {
   margin-left: 8px;
 }
 
-.sendMessage.darkmode { background: var(--darkmodeDark); }
+.sendMessage.darkmode { background: var(--dark); }
 
 .sendMessage .inputFields .quickButton {
   outline: none;
@@ -170,7 +177,7 @@ export default {
   border: none;
   width: 100%;
   text-indent: 8px;
-  background: #F1F2F4;
+  background: var(--darker);
   border-radius: 100px; 
   height: 44px;
   font-style: normal;
@@ -180,11 +187,11 @@ export default {
 
 .sendMessage input[type=text].darkmode {
   color: white;  /* darkmode */
-  background: var(--darkmodeDark);
+  background: var(--dark);
 }
 
 .sendMessage input[type=text]::placeholder { 
-  color: #81859D; 
+  color: var(--textDark); 
 }
 .formImageInput {
   display: none;
@@ -194,7 +201,6 @@ export default {
   border-radius: 8px;
   height: 64px;
   width: auto;
-  margin: 8px;
   cursor: pointer;
   transition: 100ms ease;
   max-width: -moz-available;
@@ -234,5 +240,7 @@ export default {
   filter: invert(68%) sepia(10%) saturate(5037%) hue-rotate(301deg) brightness(112%) contrast(101%);
   cursor: pointer;
 }
+
+
 
 </style>
