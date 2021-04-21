@@ -8,78 +8,92 @@ class Cache {
     }
 
     /** 
+     * Updates the localstorage by stringifying the current object in RAM
      * @private
-     * 
-     * Updates the localstorage by stringifying the current object in ram
      * */
-    updateLocalStorage(object){
+    void updateLocalStorage(object){
         localStorage.cache = JSON.stringify(object);
     }
 
     /**
+     * Forcefully refresh RAM cache from localstorage
      * @private
-     * if for some reason we have to forcefully refresh from localstorage
      */
-    forceRefresh(){
+    void forceRefresh(){
         let cache = JSON.parse(localStorage.cache);
         this.channels = chace.channels;
         this.messages = chace.messages;
     }
 
     /**
+     * Returns everything from RAM cache
      * @public
-     * Returns everything from ram
      */
     getAll(){
         return this;
     }
 
     /**
-     * @public
      * Returns all cached messages from a channel
+     * @public
      */
     getMessages(channel){
         return this.messages;
     }
 
     /**
-     * @public
      * Returns all cached channels
+     * @public
      */
     getChannels(){
         return this.channels;
     }
 
     /**
+     * Updates localstorage with all channels provided
      * @public
-     * updates localstorage with all channels provided
      */
-    syncChannels(channels){
+    void syncChannels(channels){
         this.channels = channels;
         updateLocalStorage(this);
     }
 
     /**
+     * Updates localstorage with all messages provided
      * @public
-     * updates localstorage with all messages provided
      */
-    syncMessages(messages){
+    void syncMessages(messages){
         this.messages = messages;
         updateLocalStorage(this);
     }
-    
-    // appends a single provided channel to the cache;
-    appendChannel(channel){
+
+    /**
+     * Appends a single provided channel to the cache
+     * @public
+     */
+    void appendChannel(channel){
         this.channels.push(channel);
         updateLocalStorage(this);
     }
 
-    // appends a single provided message to the cache;
-    appendMessage(message){
+    /**
+     * Appends a single provided message to the cache
+     * @public
+     */
+    void appendMessage(message){
         this.messages.push(message);
         updateLocalStorage(this);
     }
 
+    /**
+     * Logs whats inside the RAM cache currently
+     * @public
+     */
+    void log(){
+        console.log(this);
+    }
 };
+
+console.log(cache);
 
 export default Cache;

@@ -39,6 +39,7 @@ import linkifyHtml from 'linkifyjs/html';
 import TextInput from '@/components/messages/TextInput.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
 import translation from '@/services/translator.js';
+// import Cache from '@/services/cache.js'; 
 import socket from '@/services/socket.js';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
@@ -168,12 +169,15 @@ export default {
   methods: {
     translation,
     loadMessagesFromCache(){
+      if (!localStorage.messages) return
       let cachedMessages = JSON.parse(localStorage.messages);
       if (cachedMessages[this.$route.params.channel_uuid]){
         this.messages = JSON.parse(cachedMessages[this.$route.params.channel_uuid]);
       }
     },
     cacheMessages(messages){
+      if (!localStorage.messages) localStorage.setItem('messages', JSON.stringify({}));
+
       let cachedMessages = JSON.parse(localStorage.messages);
 
       if (Object.keys(cachedMessages) == null){
