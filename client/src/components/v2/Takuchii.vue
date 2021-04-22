@@ -16,24 +16,24 @@ export default {
 
 <style scoped>
 .takuchii {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(244px);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	transform: translateY(244px);
 }
 
 .takuchii .message {
-  margin-bottom: 12px;
-  color: #81859D;
-  text-align: center;
-  margin-top: 8px;
-  font-weight: 500;
-  font-size: 16px;
+	margin-bottom: 12px;
+	color: #81859D;
+	text-align: center;
+	margin-top: 8px;
+	font-weight: 500;
+	font-size: 16px;
 }
 
 .takuchii .emoji {
-  font-size: 32px;
-  color: #81859D;
+	font-size: 32px;
+	color: #81859D;
 }
 </style>

@@ -1,30 +1,30 @@
 <template>
-    <div>
-        <router-link :to="`/messages/private/${channel.uuid}`" class="channel">
-            <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
-            <div class="info">
-            <div v-if="!channel.senpai">
-                <h1>{{channel.member_list[0].username}}</h1>
-                <div class="channelStatus">
-                <div class="icon"></div>
-                <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
-                </div>
-            </div>
-            </div>
-            <menu>
-                <div></div>
-                <div></div>
-                <div></div>
-            </menu>
-        </router-link>
-    </div>
+  <div>
+    <router-link :to="`/messages/private/${channel.uuid}`" class="channel">
+      <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
+      <div class="info">
+      <div v-if="!channel.senpai">
+        <h1>{{channel.member_list[0].username}}</h1>
+        <div class="channelStatus">
+        <div class="icon"></div>
+        <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
+        </div>
+      </div>
+      </div>
+      <menu>
+        <div></div>
+        <div></div>
+        <div></div>
+      </menu>
+    </router-link>
+  </div>
 </template>
 
 <script>
 export default {
-    props: {
-        channel:{ type: Object, required: true },
-    },
+  props: {
+    channel:{ type: Object, required: true },
+  },
 }
 </script>
 
