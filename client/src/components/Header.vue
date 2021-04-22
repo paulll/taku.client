@@ -153,7 +153,7 @@ export default {
                 await sleep(30);
             }
 
-            await axios.delete('https://taku.moe:2087/notifications', {
+            await axios.delete(`${this.rootPath}:2087/notifications`, {
                 withCredentials: true
             }); 
 
@@ -172,7 +172,7 @@ export default {
                 this.searchResults = [];
                 return
             }
-            const response  = await axios.post('https://taku.moe:2087/search/', JSON.stringify({ searchString: this.searchString}), { 
+            const response  = await axios.post(`${this.rootPath}:2087/search/`, JSON.stringify({ searchString: this.searchString}), { 
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ export default {
             }, 1000);
         },
         async getUser() {
-            const response = await axios.get('https://taku.moe:2087/user', {
+            const response = await axios.get(`${this.rootPath}:2087/user`, {
                 withCredentials: true,
             });
 

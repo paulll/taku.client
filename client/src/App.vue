@@ -54,13 +54,13 @@ export default {
     async getUser() {
 
       try {
-        var user = await axios.get('https://taku.moe:2087/user', {
+        var user = await axios.get(`${this.rootPath}:2087/user`, {
           withCredentials: true,
         });
       } catch (error) {
         if (error.status = 401) {
           localStorage.clear();
-          window.location.href = "https://taku.moe/login";
+          window.location.href = `${this.rootPath}/login`;
           return
         }
       }

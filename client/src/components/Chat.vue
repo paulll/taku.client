@@ -5,7 +5,7 @@
       <div class="messagesContainer">
         <div class="messages" :class="{darkmode: darkmode == 'true'}">
           <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
-            <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('https://taku.moe:2087/pfp/${message.author.uuid}')`}"></div></router-link>
+            <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('${rootPath}:2087/pfp/${message.author.uuid}')`}"></div></router-link>
             <div class="notch"></div>
             <div class="messageBubble">
               <!-- <h4 class="date">
@@ -175,7 +175,7 @@ export default {
     async getChannel(){ 
 
       try {
-        var channel = (await axios.get(`https://taku.moe:2087/channels/${this.$route.params.channel_uuid}`, {
+        var channel = (await axios.get(`${this.rootPath}:2087/channels/${this.$route.params.channel_uuid}`, {
           withCredentials: true,
         })).data.channel;
       } catch (error) {
@@ -193,7 +193,7 @@ export default {
 
     },
     async getMessages(offset){
-      var response = await axios.get(`https://taku.moe:2087/channels/${this.$route.params.channel_uuid}/${offset}`, {
+      var response = await axios.get(`${this.rootPath}:2087/channels/${this.$route.params.channel_uuid}/${offset}`, {
         withCredentials: true,
       });
 
@@ -241,7 +241,7 @@ export default {
       }
 
       // Send
-      axios.post('https://taku.moe:2087/message', formData, {
+      axios.post(`${this.rootPath}:2087/message`, formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -250,7 +250,7 @@ export default {
     },
     // This gets the blocked users of the current user
     async getBlockedUsers(){
-      const response = await axios.get('https://taku.moe:2087/blockedUsers', {
+      const response = await axios.get(`${this.rootPath}:2087/blockedUsers`, {
         withCredentials: true,
       });
 

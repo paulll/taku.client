@@ -82,7 +82,7 @@ export default {
         });
 
         // Send JSON to backend
-        const response = await axios.post('https://taku.moe:2087/login', json, {
+        const response = await axios.post(`${this.rootPath}:2087/login`, json, {
             withCredentials: true,
             headers: {
                 'Content-Type': 'application/json'

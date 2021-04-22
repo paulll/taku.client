@@ -1,7 +1,7 @@
 <template>
     <div class="user">
         <div class="container">
-            <router-link :to="`/profile/${user.username}`"><img class="pfp" :src="`https://taku.moe:2087/pfp/${user.uuid}`" alt=""></router-link>
+            <router-link :to="`/profile/${user.username}`"><img class="pfp" :src="`${rootPath}:2087/pfp/${user.uuid}`" alt=""></router-link>
             <div class="info">
                 <h1>{{user.username}}</h1>
                 <div class="userStatus">

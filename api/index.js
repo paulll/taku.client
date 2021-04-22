@@ -22,7 +22,7 @@ const logo = `  ___       ___       ___       ___
 `; 
 console.log(logo.rainbow);
 
-process.env.DEV_MODE = false;                                            // Used to disable HTTPS and other things that can cause problems when running server locally
+process.env.DEV_MODE = true;                                            // Used to disable HTTPS and other things that can cause problems when running server locally
                                          
 if(process.env.DEV_MODE == 'true') {
     console.warn('DEVELOPMENT MODE IS ENABLED!');
@@ -62,7 +62,7 @@ module.exports = io;
 
 // Bloatwares
 if(process.env.DEV_MODE == 'true') {
-    app.use(cors());  // Setup cors and allow http and set origin to localhost
+    app.use(cors({ origin: "http://localhost", credentials: true }));                 // Setup cors and allow http and set origin to localhost
 } else {
     app.use(cors({origin: "https://taku.moe", credentials: true}));     // Setup cors and allow only https
 }
