@@ -21,8 +21,8 @@ router.post("/upload", upload.any(), async (req, res) => {
     let file = req.files[0];
     file.originalname = `${new Date().getTime()}-${file.originalname.replace(/\s/g, "_")}`;
 
-    let link = `https://taku.moe:2087/${file.fieldname}/${req.user.uuid}`;
-
+    var link = `${process.env.rootPath}/${file.fieldname}/${req.user.uuid}`;
+    
     // Add the original image in the cache folder if its not a png/jpeg
     fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/cache/${req.user.uuid}`);
     fs.copyFileSync(`./db/uploads/${file.filename}`, `./db/${file.fieldname}/${req.user.uuid}`);

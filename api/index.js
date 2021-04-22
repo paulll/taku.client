@@ -21,6 +21,15 @@ const logo = `  ___       ___       ___       ___
  \\/__/     \\/__/     \\|__|     \\/__/  ${version}
 `; 
 console.log(logo.rainbow);
+
+process.env.DEV_MODE = true;                                            // Used to disable HTTPS and other things that can cause problems when running server locally
+                                         
+if(process.env.DEV_MODE) {
+    console.warn('DEVELOPMENT MODE IS ENABLED!');
+    process.env.rootPath = 'localhost:2087'
+} else {
+    process.env.rootPath = 'https://taku.moe:2087'
+}
  
 const smtp = require('./services/smtp.js');                             // Run SMTP Email server
 const options = {
@@ -30,18 +39,34 @@ const options = {
 const auth = require("./middlewares/auth.js");                          // Import auth system
 const authSocket = require("./middlewares/authSocket.js");              // Import auth system
 const db = require("./handlers/database.js");                           // Import database handler
+const { debug } = require("console");
 
 // API
 var app = express();
-var https = require("https").createServer(options, app);
+
+// Run server either http or https
+if(process.env.DEV_MODE) {
+    var https = require("http").createServer(app);
+} else {
+    var https = require("https").createServer(options, app);
+}
+
 var io = require("socket.io")(https, {cors: { origin: "*" }});
 io.use(authSocket);
+
+// Initialize directories
+require('./services/initDirectories.js').initDirectories();
 
 // Export io for other files 
 module.exports = io; 
 
 // Bloatwares
-app.use(cors({origin: "https://taku.moe", credentials: true}));         // Setup cors and allow only https
+if(process.env.DEV_MODE) {
+    app.use(cors());  // Setup cors and allow http and set origin to localhost
+} else {
+    app.use(cors({origin: "https://taku.moe", credentials: true}));     // Setup cors and allow only https
+}
+
 app.use(morgan("dev"));                                                 // Enable HTTP code logs
 app.use(bodyParser.json());                                             // auto parse req.bodies as json
 app.use(express.static("db"));                                          // Enable the db folder to be accessible from the url

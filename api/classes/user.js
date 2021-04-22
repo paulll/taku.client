@@ -12,8 +12,8 @@ function User(username, email, password) {
         order: ['favorite_anime', 'osu_profile', 'computer_specs', 'description'],
         isDeveloper: false,
         isBetaTester: false,
-        pfp: "https://taku.moe:2087/pfp/_default.png",
-        banner: "https://taku.moe:2087/banner/_default.png",
+        pfp: `${process.env.rootPath}/pfp/_default.png`,
+        banner: `${process.env.rootPath}/banner/_default.png`,
         description: "Hi I love anime owo!",
         anime_list: [],
         socials: {},
@@ -45,15 +45,15 @@ function User(username, email, password) {
         sounds: {
             typing: {
                 enabled: true,
-                url: "https://taku.moe:2087/audio/keystroke.wav"
+                url: `${process.env.rootPath}/audio/keystroke.wav`
             },
             mention: {
                 enabled: true,
-                url: "https://taku.moe:2087/audio/mention.wav"
+                url: `${process.env.rootPath}/audio/mention.wav`
             },
             notification: {
                 enabled: true,
-                url: "https://taku.moe:2087/audio/notification.wav"
+                url: `${process.env.rootPath}/audio/notification.wav`
             },
         },
         connections: {},
