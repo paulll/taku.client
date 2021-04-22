@@ -22,9 +22,9 @@ const logo = `  ___       ___       ___       ___
 `; 
 console.log(logo.rainbow);
 
-process.env.DEV_MODE = true;                                            // Used to disable HTTPS and other things that can cause problems when running server locally
+process.env.DEV_MODE = false;                                            // Used to disable HTTPS and other things that can cause problems when running server locally
                                          
-if(process.env.DEV_MODE) {
+if(process.env.DEV_MODE == 'true') {
     console.warn('DEVELOPMENT MODE IS ENABLED!');
     process.env.rootPath = 'localhost:2087'
 } else {
@@ -42,10 +42,10 @@ const db = require("./handlers/database.js");                           // Impor
 const { debug } = require("console");
 
 // API
-var app = express();
+var app = express(); 
 
 // Run server either http or https
-if(process.env.DEV_MODE) {
+if(process.env.DEV_MODE == 'true') {
     var https = require("http").createServer(app);
 } else {
     var https = require("https").createServer(options, app);
@@ -61,7 +61,7 @@ require('./services/initDirectories.js').initDirectories();
 module.exports = io; 
 
 // Bloatwares
-if(process.env.DEV_MODE) {
+if(process.env.DEV_MODE == 'true') {
     app.use(cors());  // Setup cors and allow http and set origin to localhost
 } else {
     app.use(cors({origin: "https://taku.moe", credentials: true}));     // Setup cors and allow only https
