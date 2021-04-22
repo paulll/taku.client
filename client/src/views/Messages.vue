@@ -1,5 +1,5 @@
 <template>
-  <div class="channelsContainer" v-if="settings.messages.isChannellistVisible" :class="{darkmode: darkmode == 'true'}">
+  <div class="channelsContainer" v-if="privateChannels && settings.messages.isChannellistVisible" :class="{darkmode: darkmode == 'true'}">
     <div>
       <div v-if="callState != 'idle'" class="call">
         {{callInformation.username}} {{translation('Is calling you!')}}
@@ -45,9 +45,9 @@
         </div>
       </menu>
 
-      <section v-if="groupChannels.some(channel => channel.isPinned == true)">
+      <!-- <section v-if="groupChannels.some(channel => channel.isPinned == true)">
         <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.75137 13.1617C4.74169 13.4819 4.99473 13.7483 5.31526 13.7566C5.53968 13.7633 5.7681 13.7666 5.99983 13.7666C7.14532 13.7666 8.49248 13.7035 9.5558 13.3608C10.0881 13.1891 10.557 12.9451 10.8937 12.5968C11.2328 12.2461 11.4332 11.7942 11.4332 11.22C11.4332 10.6111 11.1977 10.1423 10.8213 9.78593C10.4477 9.4323 9.9383 9.19205 9.39026 9.0276C8.29467 8.69883 7.01196 8.66377 6.25424 8.65991L6.25377 8.65991L5.85878 8.65977L5.85826 8.65977C4.72154 8.66519 3.40943 8.73949 2.37886 9.08685C1.86289 9.26076 1.41006 9.5055 1.08547 9.85103C0.758645 10.1989 0.566504 10.6443 0.566504 11.2067C0.566504 11.5508 0.647171 11.958 0.921625 12.3438C1.19613 12.7297 1.65821 13.0852 2.40542 13.3367C2.71121 13.4413 3.03978 13.2759 3.1433 12.9745L3.14338 12.9743C3.2466 12.6714 3.08299 12.3434 2.77876 12.2412C2.28909 12.0763 2.02979 11.8838 1.89194 11.705C1.7558 11.5285 1.72986 11.3548 1.72986 11.2067C1.72986 10.7779 2.04342 10.4299 2.75982 10.1856C3.47403 9.94213 4.55325 9.81675 5.99983 9.81675C7.44638 9.81675 8.52549 9.94329 9.23959 10.189C9.95551 10.4353 10.2698 10.7864 10.2698 11.22C10.2698 11.6484 9.95632 11.9962 9.23988 12.2402C8.52565 12.4835 7.44642 12.6087 5.99983 12.6087C5.77925 12.6087 5.56216 12.606 5.34854 12.6L5.34854 12.6L5.34497 12.6C5.03988 12.6024 4.7605 12.8379 4.75137 13.1617ZM4.75137 13.1617C4.75137 13.1618 4.75136 13.1618 4.75136 13.1619L4.85132 13.1647L4.75137 13.1616C4.75137 13.1617 4.75137 13.1617 4.75137 13.1617ZM9.69094 3.90256C9.69094 1.87881 8.03487 0.233313 5.99983 0.233313C3.96482 0.233313 2.30805 1.87879 2.30805 3.90256C2.30805 5.92567 3.96484 7.57114 5.99983 7.57114C8.03486 7.57114 9.69094 5.92565 9.69094 3.90256ZM3.47208 3.90256C3.47208 2.51841 4.60541 1.39129 5.99983 1.39129C7.39426 1.39129 8.52759 2.51841 8.52759 3.90256C8.52759 5.28602 7.39427 6.41316 5.99983 6.41316C4.6054 6.41316 3.47208 5.28602 3.47208 3.90256Z" fill="#6D6E72" stroke="#6D6E72" stroke-width="0.2"/></svg><h1>PINNED</h1>
-      </section>
+      </section> -->
 
       <section v-if="privateChannels.length != 0 && view == 'private'">
         <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.75137 13.1617C4.74169 13.4819 4.99473 13.7483 5.31526 13.7566C5.53968 13.7633 5.7681 13.7666 5.99983 13.7666C7.14532 13.7666 8.49248 13.7035 9.5558 13.3608C10.0881 13.1891 10.557 12.9451 10.8937 12.5968C11.2328 12.2461 11.4332 11.7942 11.4332 11.22C11.4332 10.6111 11.1977 10.1423 10.8213 9.78593C10.4477 9.4323 9.9383 9.19205 9.39026 9.0276C8.29467 8.69883 7.01196 8.66377 6.25424 8.65991L6.25377 8.65991L5.85878 8.65977L5.85826 8.65977C4.72154 8.66519 3.40943 8.73949 2.37886 9.08685C1.86289 9.26076 1.41006 9.5055 1.08547 9.85103C0.758645 10.1989 0.566504 10.6443 0.566504 11.2067C0.566504 11.5508 0.647171 11.958 0.921625 12.3438C1.19613 12.7297 1.65821 13.0852 2.40542 13.3367C2.71121 13.4413 3.03978 13.2759 3.1433 12.9745L3.14338 12.9743C3.2466 12.6714 3.08299 12.3434 2.77876 12.2412C2.28909 12.0763 2.02979 11.8838 1.89194 11.705C1.7558 11.5285 1.72986 11.3548 1.72986 11.2067C1.72986 10.7779 2.04342 10.4299 2.75982 10.1856C3.47403 9.94213 4.55325 9.81675 5.99983 9.81675C7.44638 9.81675 8.52549 9.94329 9.23959 10.189C9.95551 10.4353 10.2698 10.7864 10.2698 11.22C10.2698 11.6484 9.95632 11.9962 9.23988 12.2402C8.52565 12.4835 7.44642 12.6087 5.99983 12.6087C5.77925 12.6087 5.56216 12.606 5.34854 12.6L5.34854 12.6L5.34497 12.6C5.03988 12.6024 4.7605 12.8379 4.75137 13.1617ZM4.75137 13.1617C4.75137 13.1618 4.75136 13.1618 4.75136 13.1619L4.85132 13.1647L4.75137 13.1616C4.75137 13.1617 4.75137 13.1617 4.75137 13.1617ZM9.69094 3.90256C9.69094 1.87881 8.03487 0.233313 5.99983 0.233313C3.96482 0.233313 2.30805 1.87879 2.30805 3.90256C2.30805 5.92567 3.96484 7.57114 5.99983 7.57114C8.03486 7.57114 9.69094 5.92565 9.69094 3.90256ZM3.47208 3.90256C3.47208 2.51841 4.60541 1.39129 5.99983 1.39129C7.39426 1.39129 8.52759 2.51841 8.52759 3.90256C8.52759 5.28602 7.39427 6.41316 5.99983 6.41316C4.6054 6.41316 3.47208 5.28602 3.47208 3.90256Z" fill="#6D6E72" stroke="#6D6E72" stroke-width="0.2"/></svg><h1>USERS</h1>
@@ -66,17 +66,18 @@
       <Takuchii message="I didn't find any groups!" emoji="(╥﹏╥)"         v-if="groupChannels.length != 0 && searchString.length > 0 && searchGroups.length == 0 && view == 'group'"/>        
       <Takuchii message="I didn't find any invites!" emoji="(╥﹏╥)"        v-if="inviteChannels.length != 0 && searchString.length > 0 && searchInvites.length == 0 && view == 'invites'"/>        
 
-      <div class="channels">
-        <div v-if="view == 'private'">
+      <div>
+        <div class="channels" v-if="view == 'private'">
           <Channel :channel="channel" v-for="channel in searchDMS" :key="channel"/>
         </div>
-        <div v-if="view == 'group'">
+        <div class="channels" v-if="view == 'group'">
           <Channel :channel="channel" v-for="channel in searchGroups" :key="channel"/>
         </div>
       </div>
+
     </div>
 
-    <!-- <div class="bottomButtons" >
+    <div class="bottomButtons"> 
       <div class="button" :class="{active: isMakingNewGroup}">
         <div class="iconWrapper" @click="isMakingNewGroup = !isMakingNewGroup">
           <img src="../assets/newGroup.png" alt="New Group">
@@ -96,7 +97,7 @@
         </div>
       </div>
 
-    </div> -->
+    </div>
   </div>
   <div id="video-grid"></div>
   <Chat v-if="showChat"/>
@@ -312,10 +313,15 @@ export default {
 
     // Loads from local storage
     loadCache(){
-      this.channels = JSON.parse(localStorage.getItem('channels'));
-      this.privateChannels = JSON.parse(localStorage.getItem('privateChannels'));
-      this.groupChannels = JSON.parse(localStorage.getItem('groupChannels'));
+      const channels = JSON.parse(localStorage.getItem('channels'));
+      const privateChannels = JSON.parse(localStorage.getItem('privateChannels'));
+      const groupChannels = JSON.parse(localStorage.getItem('groupChannels'));
 
+      if (channels == "") return;
+
+      this.channels = channels;
+      this.privateChannels = privateChannels;
+      this.groupChannels = groupChannels;
       // This runs so fucking fast in here
       // Auto update the URL if theres no channel 
       // E.g. if tthe url is https://taku.moe/messages/
@@ -340,6 +346,7 @@ export default {
         }
       }
 
+
       // Reset this to simply avoid having dupes when merging with cache
       this.privateChannels = [];
       this.groupChannels = [];
@@ -353,6 +360,7 @@ export default {
         
         channel.member_list = member_list;
 
+        if(typeof this.channels !== 'array') this.channels = [];
         this.channels.push(channel);
         if (channel.type == "dm") this.privateChannels.push(channel);
         if (channel.type == "group") this.groupChannels.push(channel);
@@ -639,7 +647,7 @@ menu.view div, section h1 {
 
 .channels {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   flex-direction: column;
 } 
 

@@ -1,7 +1,9 @@
 <template>
-<div class="loadingio-spinner-dual-ring-y1f2vcdnfzb"><div class="ldio-b073b5dxyqi">
-<div></div><div><div></div></div>
-</div></div>
+  <div>
+    <div class="loadingio-spinner-dual-ring-y1f2vcdnfzb"><div class="ldio-b073b5dxyqi">
+    <div></div><div><div></div></div>
+    </div></div>
+</div>
 </template>
 
 <script>

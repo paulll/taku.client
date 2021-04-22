@@ -1,15 +1,17 @@
 <template>
-    {{displayNumber}}
+    <div>
+        {{displayNumber}}
+    </div>
 </template>
 
 <script>
 export default {
     props:{'number':{default:0}},
     data: function(){
-  	return {
-        displayNumber:0,
-        interval:false
-    }
+        return {
+            displayNumber:0,
+            interval:false
+        }
     },
   
     ready:function(){

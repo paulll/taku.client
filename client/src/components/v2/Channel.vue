@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div v-if="channel.member_list[0]">
     <router-link :to="`/messages/${channel.type}/${channel.uuid}`" class="channel">
       <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
-      <div>
+      <div> 
         <h1 v-if="channel.type == 'dm'">{{channel.member_list[0].username}}</h1>
         <h1 v-if="channel.type == 'group'">{{channel.name}}</h1>
         <div class="channelStatus">

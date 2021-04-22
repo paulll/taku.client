@@ -42,7 +42,7 @@ router.get("/:channel_uuid/:offset", async (req, res) => {
       { '$match': { 'channel_uuid': req.params.channel_uuid } },
       { '$sort': { 'created_at': -1 } },
       { '$skip': parseInt(req.params.offset) },
-      { '$limit': 20 },
+      { '$limit': 50 },
       { '$lookup': { 'from': 'users', 'localField': 'author', 'foreignField': 'uuid', 'as': 'author' } },
       { '$unwind': { 'path': '$author', 'preserveNullAndEmptyArrays': true } },
       { '$project': { '_id': 0, 'author.settings': 0, 'author.profile': 0, 'author.created_at': 0, 'author.friend_list': 0, 'author.following': 0, 'author._id': 0 } },

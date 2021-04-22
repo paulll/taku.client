@@ -179,11 +179,13 @@ export default {
           withCredentials: true,
         })).data.channel;
       } catch (error) {
-        console.log(error);        
+        console.log(error);         
         return
       }
 
-      channel.member_list = channel.member_list.filter(user => user.uuid != this.me.uuid);
+      if(!channel) return;
+
+      if(channel && channel.member_list) channel.member_list = channel.member_list.filter(user => user.uuid != this.me.uuid);
 
       // Connect to that dm's socket only if we are allowed to
       socket.emit('join_channel', this.$route.params.channel_uuid);
@@ -195,6 +197,7 @@ export default {
       var response = await axios.get(`${this.rootPath}:2087/channels/${this.$route.params.channel_uuid}/${offset}`, {
         withCredentials: true,
       });
+
 
       // This has one of the most weird bugs where it fixes the original variable
       // Before even running it

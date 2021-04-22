@@ -8,8 +8,9 @@
             <pre id="row4"> /::\__\ /::\:\__\ /::-"\__\ /:/_/\__\</pre>
             <pre id="row5">/:/\/__/ \/\::/  / \;:;-",-" \:\/:/  /</pre>
             <pre id="row6">\:\__\     /:/  /   |:|  |    \::/  /  indev</pre>
-            <pre id="row7"> \/__/     \/__/     \|__|     \/__/   v0.75</pre>
+            <pre id="row7"> \/__/     \/__/     \|__|     \/__/   v0.146</pre>
         </div>
+        <h1>fuck this sites broken -geoxor</h1>
     </div>
 </template>
 
@@ -30,6 +31,15 @@ export default {
     justify-content: center;
     align-items: center;
     z-index: 10;
+    flex-direction: column;
+}
+
+.loadingAnimation h1 {
+    font-size: 14px;
+    font-weight: 400;
+    margin-top: 12px;
+    font-family: monospace;
+    color: white;
 }
 
 .loadingAnimation .rows pre {
