@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const DEV_MODE = true;                          // Determines if the app is in development mode, disables https and other stuff for compability
+const DEV_MODE = false;                          // Determines if the app is in development mode, disables https and other stuff for compability
 
 if(DEV_MODE) {
     var public = 'localhost';

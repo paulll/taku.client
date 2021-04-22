@@ -1,6 +1,6 @@
 <template>
   <div>
-    <router-link :to="`/messages/private/${channel.uuid}`" class="channel">
+    <router-link :to="`/messages/${type}/${channel.uuid}`" class="channel">
       <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
       <div v-if="!channel.senpai">
@@ -24,6 +24,7 @@
 export default {
   props: {
     channel:{ type: Object, required: true },
+    type:{ type: String, required: true },
   },
 }
 </script>

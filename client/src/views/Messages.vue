@@ -68,10 +68,10 @@
 
       <div class="channels">
         <div v-if="view == 'private'">
-          <Channel :channel="channel" v-for="channel in searchDMS" :key="channel"/>
+          <Channel :channel="channel" :type="view" v-for="channel in searchDMS" :key="channel"/>
         </div>
         <div v-if="view == 'group'">
-          <Channel :channel="channel" v-for="channel in searchGroups" :key="channel"/>
+          <Channel :channel="channel" :type="view" v-for="channel in searchGroups" :key="channel"/>
         </div>
       </div>
     </div>

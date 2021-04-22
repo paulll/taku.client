@@ -4,7 +4,7 @@ import router from './router'
 import mitt from 'mitt'
 // import Cache from '@/services/cache.js';
 
-const DEV_MODE = true;                          // Determines if the app is in development mode, disables https and other stuff for compability
+const DEV_MODE = false;                          // Determines if the app is in development mode, disables https and other stuff for compability
 
 const emitter = mitt();
 
