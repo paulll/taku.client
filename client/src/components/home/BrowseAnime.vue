@@ -4,7 +4,7 @@
         <div class="scrollRegion">
             <div class="animePosters" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/anime/${anime.id}`" class="posterContainer" v-for="anime in animeList" :key="anime.id" :id="anime.id">
-                    <div class="anime" width="84" :style="{'background-image': `url('https://taku.moe:2087/anime/posters/${anime.id}.jpg')`}"></div>
+                    <div class="anime" width="84" :style="{'background-image': `url('${rootPath}:2087/anime/posters/${anime.id}.jpg')`}"></div>
                     <Spinner/>
                 </router-link>
             </div>
@@ -24,7 +24,7 @@ export default {
         }
     },
     async mounted(){
-        this.animeList = (await axios.get('https://taku.moe:2087/anime/random')).data.animeList;
+        this.animeList = (await axios.get(`${this.rootPath}:2087/anime/random`)).data.animeList;
         console.log(this.animeList);
     },
     methods: {

@@ -1,9 +1,9 @@
 <template>
     <div class="home">
         <BrowseAnime/>
-        <Wallpapers :sectionTitle="'NEW Wallpapers'"        :endpoint="'https://taku.moe:2087/wallpapers/new/20/'"/>
-        <Wallpapers :sectionTitle="'TRENDING Wallpapers'"   :endpoint="'https://taku.moe:2087/wallpapers/trending/20/'"/>
-        <Wallpapers :sectionTitle="'RANDOM Wallpapers'"     :endpoint="'https://taku.moe:2087/wallpapers/random/20/'"/>
+        <Wallpapers :sectionTitle="'NEW Wallpapers'"        :endpoint="`${rootPath}:2087/wallpapers/new/20/`"/>
+        <Wallpapers :sectionTitle="'TRENDING Wallpapers'"   :endpoint="`${rootPath}:2087/wallpapers/trending/20/`"/>
+        <Wallpapers :sectionTitle="'RANDOM Wallpapers'"     :endpoint="`${rootPath}:2087/wallpapers/random/20/`"/>
     </div>
 </template>
 

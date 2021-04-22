@@ -4,7 +4,7 @@
         <div class="scrollRegion" v-on:scroll.passive="handleScroll">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
-                    <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.filename}')`}"></div>
+                    <div class="image" width="84" :style="{'background-image': `url('${rootPath}:2087/wallpapers/static/${wallpaper.filename}')`}"></div>
                     <Spinner/>
                 </router-link>
             </div>

@@ -182,13 +182,13 @@ export default {
   methods: {
     translation,
     async sendOauthToken(platform, code){
-      await axios.post(`https://taku.moe:2087/connections/${platform}`, {code: code}, {
+      await axios.post(`${this.rootPath}:2087/connections/${platform}`, {code: code}, {
         withCredentials: true,
       });
       return
     },
     async getUser() {
-      const user = await axios.get('https://taku.moe:2087/user', {
+      const user = await axios.get(`${this.rootPath}:2087/user`, {
         withCredentials: true,
       });
 

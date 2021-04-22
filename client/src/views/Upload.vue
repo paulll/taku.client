@@ -93,7 +93,7 @@ export default {
 
             this.uploadMax = this.wallpaper.size;
 
-            const response = await axios.post('https://taku.moe:2087/wallpapers/', formData, {
+            const response = await axios.post(`${this.rootPath}:2087/wallpapers/`, formData, {
               onUploadProgress: progressEvent => {
                 this.uploadValue = progressEvent.loaded;
                 this.uploadMax = progressEvent.total;

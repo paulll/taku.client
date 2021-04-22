@@ -4,7 +4,7 @@
         <div class="scrollRegion" v-on:scroll.passive="handleScroll">
             <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="(wallpaper, index) of wallpapers" :key="{wallpaper}">
-                    <div class="image" width="84" :style="{'background-image': `url('https://taku.moe:2087/wallpapers/static/${wallpaper.filename}')`}">
+                    <div class="image" width="84" :style="{'background-image': `url('${rootPath}:2087/wallpapers/static/${wallpaper.filename}')`}">
                         <router-link :to="`/profile/${wallpaper.submitter.username}`" class="submitter">
                             <p class="submitterUsername">{{wallpaper.submitter.username}}</p> 
                             <div class="submitterPfp" :style="{'background-image': `url('https://taku.moe:2087/pfp/${wallpaper.submitter.uuid}')`}"></div>
@@ -47,10 +47,10 @@ export default {
     methods: {
         translation,
         downloadWallpaper(wallpaper_uuid){
-            window.open(`https://taku.moe:2087/wallpapers/download/${wallpaper_uuid}`);
+            window.open(`${this.rootPath}:2087/wallpapers/download/${wallpaper_uuid}`);
         },
         async interaction(property, action, wallpaper_uuid){
-            const response = await axios.post(`https://taku.moe:2087/wallpapers/${action}/${wallpaper_uuid}`, undefined, {
+            const response = await axios.post(`${this.rootPath}:2087/wallpapers/${action}/${wallpaper_uuid}`, undefined, {
                 withCredentials: true,
                 headers: {'Content-Type': 'application/json'}
             });
