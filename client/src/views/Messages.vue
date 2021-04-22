@@ -251,7 +251,7 @@ export default {
 
       this.newGroupName = "";
 
-      const response = await axios.post(`https://taku.moe:2087/channels/group`, invite, {
+      const response = await axios.post(`${this.rootPath}:2087/channels/group`, invite, {
         withCredentials: true
       });
 
@@ -264,7 +264,7 @@ export default {
       }
     },
     async deleteChannel(channel){
-      const response = await axios.delete(`https://taku.moe:2087/channels/group/${channel.uuid}`, {
+      const response = await axios.delete(`${this.rootPath}:2087/channels/group/${channel.uuid}`, {
         withCredentials: true
       });
 
@@ -330,12 +330,12 @@ export default {
     // Return list of channels this user is in
     async getData(){
       try {
-        var channelsRequest = await axios.get(`https://taku.moe:2087/channels`, {withCredentials: true});
-        var invitesRequest = await axios.get(`https://taku.moe:2087/channels/invites`, {withCredentials: true});
+        var channelsRequest = await axios.get(`${this.rootPath}:2087/channels`, {withCredentials: true});
+        var invitesRequest = await axios.get(`${this.rootPath}:2087/channels/invites`, {withCredentials: true});
       } catch (error) {
         if (error.status = 401) {
           localStorage.clear();
-          window.location.href = "https://taku.moe/login";
+          window.location.href = `${this.rootPath}/login`;
           return
         }
       }
