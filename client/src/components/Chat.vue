@@ -190,7 +190,6 @@ export default {
       this.currentChannel = channel;
       this.getMessages(0);
       // this.messages.push(response.data.dm.messages)
-
     },
     async getMessages(offset){
       var response = await axios.get(`${this.rootPath}:2087/channels/${this.$route.params.channel_uuid}/${offset}`, {

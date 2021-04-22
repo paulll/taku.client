@@ -60,7 +60,6 @@ router.post("/", auth, upload.any(), async (req, res) => {
         }
     }
 
-
     // Send event to the specific user
     // io.sockets.in(channel.uuid).emit('message', message);
 });

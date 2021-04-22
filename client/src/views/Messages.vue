@@ -68,10 +68,10 @@
 
       <div class="channels">
         <div v-if="view == 'private'">
-          <Channel :channel="channel" :type="view" v-for="channel in searchDMS" :key="channel"/>
+          <Channel :channel="channel" v-for="channel in searchDMS" :key="channel"/>
         </div>
         <div v-if="view == 'group'">
-          <Channel :channel="channel" :type="view" v-for="channel in searchGroups" :key="channel"/>
+          <Channel :channel="channel" v-for="channel in searchGroups" :key="channel"/>
         </div>
       </div>
     </div>
@@ -146,7 +146,7 @@ export default {
   },
   mounted() {
     this.loadCache();
-    this.getData();
+    this.getChannels();
     this.emitter.on("call", (participants) => this.call(participants));
     this.emitter.on('updateUI', () => this.updateUI());
     socket.on('call', callInformation => {
@@ -328,7 +328,7 @@ export default {
     },
 
     // Return list of channels this user is in
-    async getData(){
+    async getChannels(){
       try {
         var channelsRequest = await axios.get(`https://taku.moe:2087/channels`, {withCredentials: true});
         var invitesRequest = await axios.get(`https://taku.moe:2087/channels/invites`, {withCredentials: true});
@@ -341,7 +341,6 @@ export default {
       }
 
       // Reset this to simply avoid having dupes when merging with cache
-      this.channels = [];
       this.privateChannels = [];
       this.groupChannels = [];
 
@@ -361,10 +360,11 @@ export default {
 
 
       // Store new data in cache
-      localStorage.setItem('channels', JSON.stringify(this.channels));
       localStorage.setItem('privateChannels', JSON.stringify(this.privateChannels));
       localStorage.setItem('groupChannels', JSON.stringify(this.groupChannels));
 
+
+      console.log(channelsRequest.data.channels);
 
       this.inviteChannels = invitesRequest.data;
       this.filterSearch();

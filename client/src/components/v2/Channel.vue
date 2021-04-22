@@ -1,10 +1,11 @@
 <template>
   <div>
-    <router-link :to="`/messages/${type}/${channel.uuid}`" class="channel">
+    <router-link :to="`/messages/${channel.type}/${channel.uuid}`" class="channel">
       <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
-      <div v-if="!channel.senpai">
-        <h1>{{channel.member_list[0].username}}</h1>
+      <div>
+        <h1 v-if="channel.type == 'dm'">{{channel.member_list[0].username}}</h1>
+        <h1 v-if="channel.type == 'group'">{{channel.name}}</h1>
         <div class="channelStatus">
         <div class="icon"></div>
         <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
@@ -24,7 +25,6 @@
 export default {
   props: {
     channel:{ type: Object, required: true },
-    type:{ type: String, required: true },
   },
 }
 </script>
