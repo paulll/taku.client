@@ -59,40 +59,20 @@
         <h1>INVITES</h1>
       </section>
 
-
-      <div class="emptyMessage" v-if="privateChannels.length == 0 && view == 'private'">  
-        <h1 class="message">You don't have any dms!</h1>
-        <h1 class="emoji">(｡•́︿•̀｡)</h1>
-      </div>
-
-      <div class="emptyMessage" v-if="groupChannels.length == 0 && view == 'group'">  
-        <h1 class="message">You don't have any group chats!</h1>
-        <h1 class="emoji">(｡•́︿•̀｡)</h1>
-      </div>
-
-      <div class="emptyMessage" v-if="inviteChannels.length == 0 && view == 'invites'">  
-        <h1 class="message">You don't have any invites!</h1>
-        <h1 class="emoji">(｡•́︿•̀｡)</h1>
-      </div>
-
-      <div class="emptyMessage" v-if="privateChannels.length != 0 && searchString.length > 0 && searchDMS.length == 0 && view == 'private'">  
-        <h1 class="message">I didn't find anyone!</h1>
-        <h1 class="emoji">｡･ﾟﾟ*(>д&lt;)*ﾟﾟ･｡</h1>
-      </div>
-
-      <div class="emptyMessage" v-if="groupChannels.length != 0 && searchString.length > 0 && searchGroups.length == 0 && view == 'group'">  
-        <h1 class="message">I didn't find any groups!</h1>
-        <h1 class="emoji">(╥﹏╥)</h1>
-      </div>
-
-      <div class="emptyMessage" v-if="inviteChannels.length != 0 && searchString.length > 0 && searchInvites.length == 0 && view == 'invites'">  
-        <h1 class="message">I didn't find any invites!</h1>
-        <h1 class="emoji">(╥﹏╥)</h1>
-      </div>
+      <Takuchii message="You don't have any dms!" emoji="(｡•́︿•̀｡)"         v-if="privateChannels.length == 0 && view == 'private'"/>
+      <Takuchii message="You don't have any group chats!" emoji="(｡•́︿•̀｡)" v-if="groupChannels.length == 0 && view == 'group'"/>  
+      <Takuchii message="You don't have any invites!" emoji="(｡•́︿•̀｡)"     v-if="inviteChannels.length == 0 && view == 'invites'"/>  
+      <Takuchii message="I didn't find anyone!" emoji="｡･ﾟﾟ*(>д&lt;)*ﾟﾟ･｡"    v-if="privateChannels.length != 0 && searchString.length > 0 && searchDMS.length == 0 && view == 'private'"/>  
+      <Takuchii message="I didn't find any groups!" emoji="(╥﹏╥)"         v-if="groupChannels.length != 0 && searchString.length > 0 && searchGroups.length == 0 && view == 'group'"/>        
+      <Takuchii message="I didn't find any invites!" emoji="(╥﹏╥)"        v-if="inviteChannels.length != 0 && searchString.length > 0 && searchInvites.length == 0 && view == 'invites'"/>        
 
       <div class="channels">
-        <Channel :channel="channel" v-for="channel in searchDMS" :key="channel"/>
-        <Channel :channel="channel" v-for="channel in searchGroups" :key="channel"/>
+        <div v-if="view == 'private'">
+          <Channel :channel="channel" v-for="channel in searchDMS" :key="channel"/>
+        </div>
+        <div v-if="view == 'group'">
+          <Channel :channel="channel" v-for="channel in searchGroups" :key="channel"/>
+        </div>
       </div>
     </div>
 
@@ -132,12 +112,14 @@ import translation from '@/services/translator.js';
 // Components
 import Chat from '@/components/Chat.vue';
 import Channel from '@/components/v2/Channel.vue'; 
+import Takuchii from '@/components/v2/Takuchii.vue'; 
 
 export default {
   name: 'home',
   components: {
     Chat,
     Channel,
+    Takuchii,
   },
   data: () => {
     return {
@@ -393,8 +375,6 @@ export default {
 </script>
 
 <style scoped>
-
-
 
 #video-grid {
   top: 220px;
@@ -655,26 +635,6 @@ menu.view div, section h1 {
   font-weight: 600;
   font-size: 10px;
   line-height: 117.9%;
-}
-
-
-
-.emptyMessage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  transform: translateY(244px);
-}
-
-.emptyMessage .message {
-  margin-bottom: 12px;
-  color: #81859D;
-}
-
-.emptyMessage .emoji {
-  font-size: 32px;
-  color: #81859D;
 }
 
 .channels {
