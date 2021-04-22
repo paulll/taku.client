@@ -7,7 +7,10 @@
         <h1 v-if="channel.type == 'dm'">{{channel.member_list[0].username}}</h1>
         <h1 v-if="channel.type == 'group'">{{channel.name}}</h1>
         <div class="channelStatus">
-        <div class="icon"></div>
+        <div class="icon" :class="{
+          online: parseInt(channel.member_list[0].profile.status.lastSeen) > new Date().getTime() - 300000,
+          offline: parseInt(channel.member_list[0].profile.status.lastSeen) <= new Date().getTime() - 300000,
+          }"></div>
         <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
         </div>
       </div>
@@ -121,13 +124,21 @@ export default {
 
 .channelStatus .icon {
   position: static;
-  width: 20px;
-  min-width: 20px;
+  width: 16px;
+  min-width: 18px;
   height: 10px;
 
-  border: 3px solid #7FE876;
+  border: transparent 3px solid;
   box-sizing: border-box;
   border-radius: 56px;
+}
+
+.offline {
+  border: #626262 3px solid !important;
+}
+
+.online {
+  border: #7FE876 3px solid !important;
 }
 
 .channelStatus .last_message {

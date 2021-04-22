@@ -346,6 +346,7 @@ export default {
         }
       }
 
+      if(typeof this.channels !== 'array') this.channels = [];
 
       // Reset this to simply avoid having dupes when merging with cache
       this.privateChannels = [];
@@ -360,7 +361,7 @@ export default {
         
         channel.member_list = member_list;
 
-        if(typeof this.channels !== 'array') this.channels = [];
+        
         this.channels.push(channel);
         if (channel.type == "dm") this.privateChannels.push(channel);
         if (channel.type == "group") this.groupChannels.push(channel);
