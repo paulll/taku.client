@@ -77,3 +77,8 @@ Heres all the **interactions** you can have with a **wallpaper**
 > **`GET /wallpapers/unsave/{wallpaper_uuid}`**
 
 > **`GET /wallpapers/download/{wallpaper_uuid}`**
+
+
+## Development
+When developing the site, change the **`DEV_MODE`** to `true` in *`api/index`*, *`client/vue.config.js`* and *`client/src/main.js`*
+This changes the routing from `taku.moe` to `localhost`
