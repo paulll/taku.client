@@ -3,15 +3,20 @@ class Cache {
     constructor(){
         let cache = JSON.parse(localStorage.cache);
 
-        this.channels = chace.channels;
-        this.messages = chace.messages;
+        if (cache == null) localStorage.setItem("cache", JSON.stringify({}));
+        if (cache.channels == null) cache.channels = {};
+        if (cache.messages == null) cache.messages = {};
+
+        this.channels = {};
+        this.messages = {};
     }
 
     /** 
      * Updates the localstorage by stringifying the current object in RAM
      * @private
      * */
-    void updateLocalStorage(object){
+    static updateLocalStorage(object){
+        this.log();
         localStorage.cache = JSON.stringify(object);
     }
 
@@ -19,17 +24,17 @@ class Cache {
      * Forcefully refresh RAM cache from localstorage
      * @private
      */
-    void forceRefresh(){
+    static forceRefresh(){
         let cache = JSON.parse(localStorage.cache);
-        this.channels = chace.channels;
-        this.messages = chace.messages;
+        this.channels = cache.channels;
+        this.messages = cache.messages;
     }
 
     /**
      * Returns everything from RAM cache
      * @public
      */
-    getAll(){
+    static getAll(){
         return this;
     }
 
@@ -37,7 +42,7 @@ class Cache {
      * Returns all cached messages from a channel
      * @public
      */
-    getMessages(channel){
+    static getMessages(channel){
         return this.messages;
     }
 
@@ -45,7 +50,7 @@ class Cache {
      * Returns all cached channels
      * @public
      */
-    getChannels(){
+    static getChannels(){
         return this.channels;
     }
 
@@ -53,7 +58,7 @@ class Cache {
      * Updates localstorage with all channels provided
      * @public
      */
-    void syncChannels(channels){
+    static syncChannels(channels){
         this.channels = channels;
         updateLocalStorage(this);
     }
@@ -62,16 +67,25 @@ class Cache {
      * Updates localstorage with all messages provided
      * @public
      */
-    void syncMessages(messages){
-        this.messages = messages;
+    static syncMessages(channel, messages){
+        if (typeof this.messages[channel] === 'undefined') this.appendChannel(channel);
+        this.messages[channel] = messages;
         updateLocalStorage(this);
+    }
+
+    /**
+     * Allocates channel to the cache
+     * @public
+     */
+    static createChannel(channel){
+        this.channels[channel] = {};
     }
 
     /**
      * Appends a single provided channel to the cache
      * @public
      */
-    void appendChannel(channel){
+    static appendChannel(channel){
         this.channels.push(channel);
         updateLocalStorage(this);
     }
@@ -80,7 +94,7 @@ class Cache {
      * Appends a single provided message to the cache
      * @public
      */
-    void appendMessage(message){
+    static appendMessage(message){
         this.messages.push(message);
         updateLocalStorage(this);
     }
@@ -89,11 +103,9 @@ class Cache {
      * Logs whats inside the RAM cache currently
      * @public
      */
-    void log(){
-        console.log(this);
+    static log(){
+        console.log(this.channels, this.messages);
     }
 };
-
-console.log(cache);
 
 export default Cache;

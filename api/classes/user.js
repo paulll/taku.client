@@ -45,23 +45,15 @@ function User(username, email, password) {
         sounds: {
             typing: {
                 enabled: true,
-                url: ""
+                url: "https://taku.moe:2087/audio/keystroke.wav"
             },
             mention: {
                 enabled: true,
-                url: ""
+                url: "https://taku.moe:2087/audio/mention.wav"
             },
             notification: {
                 enabled: true,
-                url: ""
-            },
-            hover: {
-                enabled: false,
-                url: ""
-            },
-            click: {
-                enabled: false,
-                url: ""
+                url: "https://taku.moe:2087/audio/notification.wav"
             },
         },
         connections: {},

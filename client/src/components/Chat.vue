@@ -39,8 +39,8 @@ import linkifyHtml from 'linkifyjs/html';
 import TextInput from '@/components/messages/TextInput.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
 import translation from '@/services/translator.js';
-// import Cache from '@/services/cache.js'; 
 import socket from '@/services/socket.js';
+import Cache from '@/services/cache.js';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
@@ -77,9 +77,9 @@ export default {
   },
   watch: {
       $route(to, from) {
-          this.loadMessagesFromCache();
-          this.getChannel();
-          socket.emit('leave_channel', to.params.channel_uuid);
+        this.loadMessagesFromCache();
+        this.getChannel();
+        socket.emit('leave_channel', to.params.channel_uuid);
       }
   },
   mounted() {
@@ -140,25 +140,8 @@ export default {
         // Remove this later but for now its here to only show the last 20 messages so the UI doesn't lag
         if (this.messages.length > 100) this.messages.shift();
 
-        // // Scroll to the bottom everytime someone sends a new message
-        // setTimeout(() => {
-        //   let dummy = document.querySelector(".dummy");
-        //   dummy.scrollIntoView({behavior: "auto"});
-        // }, 1);
       }
-
     });
-
-    // socket.on('typingUser', typingUser => {
-    //   if (this.typingUsers.includes(typingUser.pfp)) return
-
-    //   this.typingUsers.push(typingUser.pfp);
-
-    //   setTimeout(() => {
-    //     this.typingUsers.shift();
-    //   }, 3000);
-
-    // });
     this.emitter.on("sendMessage", message => this.sendMessage(message));
   },
   unmounted() {

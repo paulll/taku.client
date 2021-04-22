@@ -7,7 +7,7 @@
                 <input class="search" spellcheck="false" :placeholder="translation('Search')" v-model="searchString" @keyup="getDataSearch()">
                 
                 <SearchResults v-if="searchString.length > 0" :searchResults="searchResults"/>
-            </div>
+            </div> 
 
             <!-- SHOW SERVER CPU LOAD IN HEADER -->
             <div class="cpuLoad" v-if="!token || token">

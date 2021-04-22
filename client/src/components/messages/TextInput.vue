@@ -5,7 +5,7 @@
             <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
             <div class="images" :class="{darkmode: darkmode == 'true', padding: previews.length != 0}">
                 <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
-            </div>
+            </div> 
             <div class="inputFields">
                 <img class="plusButton" src="@/assets/plus.svg" alt="" @click="$refs.files.click()">
                 <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Write something..." autocomplete="off">
@@ -67,7 +67,7 @@ export default {
 
             // Send new message
             // socket.emit('typing', {user: localStorage.token});
-            this.typingSound = new Audio(this.typingSoundUrl);
+            this.typingSound = new Audio(localStorage.typingSoundUrl);
             this.typingSound.volume = 0.2;
             this.typingSound.play();
             this.typingSound.currentTime = 0;
@@ -181,12 +181,13 @@ export default {
   border-radius: 100px; 
   height: 44px;
   font-style: normal;
+  color: var(--textLight); /* le darkmode */
   font-weight: 500;
   z-index: 3px;
 }
 
 .sendMessage input[type=text].darkmode {
-  color: white;  /* darkmode */
+  color: var(--textLight);
   background: var(--dark);
 }
 
