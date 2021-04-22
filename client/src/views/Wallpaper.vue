@@ -3,7 +3,7 @@
         <div class="main">
             <div class="wallpaperWrapper" :class="{'fullscreen': isFullscreen}">
                 <div class="gradient"></div>
-                <div class="wallpaper" :style="{'background-image' : `url('https://taku.moe:2087/wallpapers/${wallpaper.filename}')`}">
+                <div class="wallpaper" :style="{'background-image' : `url('${rootPath}:2087/wallpapers/${wallpaper.filename}')`}">
                     <div class="top">
                         <div class="anime"></div>
                         <div class="quickButtons">
@@ -15,7 +15,7 @@
                                 <img v-if="wallpaper.saves.includes(me.uuid)"   id="qb2" src="../assets/wallpaper/Unsave.svg" alt="Unsave"  @click="interaction('saves', 'unsave')">
                                 <img v-if="wallpaper.submitter_uuid == me.uuid" id="qb3" src="../assets/wallpaper/Edit.svg"   alt="Edit">
                             </div>
-                            <img id="qb4" src="../assets/wallpaper/Share.svg" alt="Share" @click="copyToClipboard(`https://taku.moe:2087/wallpapers/${wallpaper.filename}`, 'URL')">
+                            <img id="qb4" src="../assets/wallpaper/Share.svg" alt="Share" @click="copyToClipboard(`${rootPath}:2087/wallpapers/${wallpaper.filename}`, 'URL')">
                             <img id="qb6" src="../assets/wallpaper/Fullscreen.svg" alt="Fullscreen" @click="fullscreen()">
                             <img id="qb7" src="../assets/wallpaper/Options.svg" alt="Options">
                         </div>
@@ -82,15 +82,15 @@ export default {
             element.requestFullscreen();
         },
         async getWallpaper(){
-            this.wallpaper = (await axios.get(`https://taku.moe:2087/wallpapers/${this.$route.params.wallpaper_uuid}`)).data;
+            this.wallpaper = (await axios.get(`${this.rootPath}:2087/wallpapers/${this.$route.params.wallpaper_uuid}`)).data;
             console.log(this.wallpaper);
         },
         downloadWallpaper(){
             this.wallpaper.downloads++;
-            window.open(`https://taku.moe:2087/wallpapers/download/${this.$route.params.wallpaper_uuid}`);
+            window.open(`${this.rootPath}:2087/wallpapers/download/${this.$route.params.wallpaper_uuid}`);
         },
         async interaction(property, action){
-            const response = await axios.post(`https://taku.moe:2087/wallpapers/${action}/${this.$route.params.wallpaper_uuid}`, undefined, {
+            const response = await axios.post(`${this.rootPath}:2087/wallpapers/${action}/${this.$route.params.wallpaper_uuid}`, undefined, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'
