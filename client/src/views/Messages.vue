@@ -1,6 +1,6 @@
 <template>
   <div class="channelsContainer" v-if="privateChannels && settings.messages.isChannellistVisible" :class="{darkmode: darkmode == 'true'}">
-    <div>
+    <div class="top" >
       <div v-if="callState != 'idle'" class="call">
         {{callInformation.username}} {{translation('Is calling you!')}}
 
@@ -66,7 +66,7 @@
       <Takuchii message="I didn't find any groups!" emoji="(╥﹏╥)"         v-if="groupChannels.length != 0 && searchString.length > 0 && searchGroups.length == 0 && view == 'group'"/>        
       <Takuchii message="I didn't find any invites!" emoji="(╥﹏╥)"        v-if="inviteChannels.length != 0 && searchString.length > 0 && searchInvites.length == 0 && view == 'invites'"/>        
 
-      <div>
+      <div class="channelsWrapper">
         <div class="channels" v-if="view == 'private'">
           <Channel :channel="channel" v-for="channel in searchDMS" :key="channel"/>
         </div>
@@ -521,8 +521,14 @@ export default {
   color: var(--textDark); 
 }
 
+.channelsWrapper {
+  height: 100%;
+  overflow: scroll;
+}
+
 .channelsContainer {
   background: var(--dark);
+  height: 100%;
   width: 320px;
   min-width: 320px;
   color: var(--textDark);
@@ -530,6 +536,12 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.channelsContainer .top {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .call {
@@ -632,6 +644,7 @@ section {
   padding: 0px 8px;
   width: 100%;
   height: 32px;
+  min-height: 32px;
   gap: 8px;
   display: flex;
   align-items: center;
@@ -646,10 +659,13 @@ menu.view div, section h1 {
   line-height: 117.9%;
 }
 
+
 .channels {
   display: flex;
   gap: 4px;
   flex-direction: column;
 } 
+
+
 
 </style>

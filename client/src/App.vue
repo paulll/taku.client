@@ -174,6 +174,7 @@ body {
 
 .shit {
   display: flex;
+  height: 100%;
 }
 
 .FUCKER {
