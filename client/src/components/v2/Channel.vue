@@ -1,5 +1,5 @@
 <template>
-  <div v-if="channel.member_list[0]">
+  <div v-if="channel.member_list[0]" @click="cachedChannels.push(channel.uuid)">
     <router-link :to="`/messages/${channel.type}/${channel.uuid}`" class="channel">
       <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
@@ -15,17 +15,23 @@
         </div>
       </div>
       </div>
-      <menu>
+      <p class="cacheStatus" v-if="cachedChannels.includes(channel.uuid)">CACHED</p>
+      <!-- <menu>
         <div></div>
         <div></div>
         <div></div>
-      </menu>
+      </menu> -->
     </router-link>
   </div>
 </template>
 
 <script>
 export default {
+  data: () => {
+    return {
+      cachedChannels: Object.keys(JSON.parse(localStorage.messages)) || [],
+    }
+  },
   props: {
     channel:{ type: Object, required: true },
   },
@@ -36,7 +42,7 @@ export default {
 .channel {
   width: 100%;
   display: flex;
-  padding: 8px;
+  padding: 8px 16px 8px 8px;
   color: var(--textLight);
   border-radius: 4px;
   border: transparent 1px solid;
@@ -151,5 +157,16 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0px 4px;
+  max-width: 160px;
 }
+
+.cacheStatus {
+  color: #7FE876;
+  font-family: Work Sans;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 117.9%;
+}
+
 </style>

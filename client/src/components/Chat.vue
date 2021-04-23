@@ -79,7 +79,7 @@ export default {
       $route(to, from) {
         this.loadMessagesFromCache();
         this.getChannel();
-        socket.emit('leave_channel', to.params.channel_uuid);
+        // socket.emit('leave_channel', to.params.channel_uuid);
       }
   },
   mounted() {
@@ -105,10 +105,6 @@ export default {
         username: "a72bd87a2nh3hjd"
       }
     };
-
-    socket.on('disconnect', function() {
-      console.log("[MESSAGE WS] DISCONNECTED!")
-    });
 
     socket.on('message', message => {
       console.log(message);
@@ -145,9 +141,7 @@ export default {
     this.emitter.on("sendMessage", message => this.sendMessage(message));
   },
   unmounted() {
-    console.log("attempting to disconnect");
     this.emitter.all.delete("sendMessage");
-    socket.disconnect();
   },
   methods: {
     translation,
@@ -188,7 +182,7 @@ export default {
       if(channel && channel.member_list) channel.member_list = channel.member_list.filter(user => user.uuid != this.me.uuid);
 
       // Connect to that dm's socket only if we are allowed to
-      socket.emit('join_channel', this.$route.params.channel_uuid);
+      // socket.emit('join_channel', this.$route.params.channel_uuid);
       this.currentChannel = channel;
       this.getMessages(0);
       // this.messages.push(response.data.dm.messages)
