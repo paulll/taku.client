@@ -36,8 +36,6 @@
 
 <script>
 
-import axios from 'axios';
-
 const header = require("../components/Header");
 
 /* eslint-disable */
@@ -82,12 +80,7 @@ export default {
         });
 
         // Send JSON to backend
-        const response = await axios.post(`${this.rootPath}:2087/login`, json, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await this.api.user.login(json);
 
         // Display backend error
         if (response.data.error) return this.error = response.data.error;

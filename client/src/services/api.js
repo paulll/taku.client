@@ -187,6 +187,14 @@ class User extends API {
     }
 
     /**
+     * Post login credentials into backend and returns the login token on successful login
+     * @param {Object} json Json object, which contains login credentials
+     */
+    async login(json){ 
+        return super.postRequest('login', undefined, json, {'Content-Type': 'application/json'});
+    }
+
+    /**
      * Returns the user object of the logged in user, takes no input parameters
      */
     async fetchMe(){
@@ -221,7 +229,7 @@ class User extends API {
     /**
      * Interfaces with the users friends for example to Add, delete or update a relationship
      * @param {String} params Either add or remove, tells backend are we adding this user as friend or removing them from friends
-     * @param {String} uuid The users uuid that is being added to friends or removed from friends
+     * @param {String} uuid The users uuid that is being added to friends or removed from friends commited
      */
     async updateFriend(params, uuid) {
         return super.postRequest('friend', params, {uuid}, {'Content-Type': 'application/json'});
