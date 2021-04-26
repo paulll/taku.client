@@ -195,9 +195,10 @@ export default {
       NProgress.start();
 
       try {
-        var me = await axios.get(`${this.rootPath}:2087/user`, {
-          withCredentials: true,
-        });  
+        // var me = await axios.get(`${this.rootPath}:2087/user`, {
+        //   withCredentials: true,
+        // });  
+        var me = api.user.fetchMe();
       } catch (error) {
         if (error.status = 401) {
           localStorage.clear();

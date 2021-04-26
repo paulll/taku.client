@@ -7,20 +7,29 @@ const BACKEND_PORT = '2087';
 if(DEV_MODE) ROOT_PATH = 'http://localhost';
 
 class API {
-    constructor(){
-    }
-
-    static log(...messages) {
+    log(...messages) {
         console.log("%c[API]", 'color: #ff0066; font-weight: bold;', ...messages);
     }
 
-    static async postRequest(route, endpoint, params, body){
-        const response = await axios.post(`${ROOT_PATH}:${BACKEND_PORT}/${route}/${endpoint}/${params}`, body || undefined, {
+    logResponse(response){
+        if(response.data.message) this.log(response.data.message);
+        else if(response.data) this.log(response.data);
+    }
+
+    async postRequest(route, endpoint, params, body){
+        this.logResponse(await axios.post(`${ROOT_PATH}:${BACKEND_PORT}/${route}/${endpoint}/${params}`, body || undefined, {
+            withCredentials: true
+        }));
+    }
+
+    async getRequest(route, endpoint, params){
+        const response = await axios.get(`${ROOT_PATH}:${BACKEND_PORT}/${route}/${endpoint}/${params}`, {
             withCredentials: true
         });
 
-        if(response.data.message) API.log(response.data.message);
-        else if(response.data) API.log(response.data);
+        this.logResponse(response);
+
+        return response.data
     }
 };
 
@@ -28,29 +37,33 @@ class API {
 class Channels extends API {
     constructor(){
         super();
-        API.log('Initialized channel handler');        
+        super.log('Initialized channel handler');
     }
 
     async pin(channelUuid){
-        API.postRequest('channels', 'pin', channelUuid)
+        super.postRequest('channels', 'pin', channelUuid)
     }
 
     async unpin(channelUuid){
-        API.postRequest('channels', 'unpin', channelUuid)
+        super.postRequest('channels', 'unpin', channelUuid)
     }
 }
  
 class Notifications extends API {
     constructor() {
         super();
-        API.log('Initialized notification handler');
+        super.log('Initialized notification handler');
     }
 }
 
-class Users extends API {
+class User extends API {
     constructor() {
         super();
-        API.log('Initialized user handler');
+        super.log('Initialized user handler');
+    }
+
+    async fetchMe(){
+        super.getRequest('user');
     }
 }
 
@@ -58,7 +71,7 @@ console.log("[API] Class Loaded");
 const api = {
     channels: new Channels,
     notifications: new Notifications,
-    users: new Users,
+    user: new User,
     DEV_MODE: DEV_MODE,
 }; 
 
