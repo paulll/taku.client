@@ -313,9 +313,9 @@ export default {
 
     // Loads from local storage
     loadCache(){
-      const channels = this.cache.getChannels();
+      const channels = Object.values(this.cache.getChannels());
 
-      if (channels == Object.keys(channels).length == 0 || channels == null) return;
+      if (channels.length == 0 || channels == null) return;
 
       this.channels = channels;
       this.privateChannels = channels.filter(channel => channel.type == 'dm');

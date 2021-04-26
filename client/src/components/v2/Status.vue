@@ -1,9 +1,6 @@
 <template>
     <div class="status">
-        <div class="icon" :class="{
-            online: parseInt(profile.status.lastSeen) > new Date().getTime() - 300000,
-            offline: parseInt(profile.status.lastSeen) <= new Date().getTime() - 300000,
-            }">
+        <div class="icon" :class="curStatus">
         </div>
         <div class="text" v-if="showText">
             <p>bababooey</p>
@@ -17,6 +14,23 @@ export default {
         profile:    { type: Object,  required: true },
         showText:   { type: Boolean, required: false,    default: false},
     },
+    data: () => {
+        return {
+            curStatus: 'offline',
+        }
+    },
+    mounted() {
+        this.getStatus();
+    },
+    methods: {
+        getStatus() {
+            if(parseInt(this.profile.status.lastSeen) > new Date().getTime() - 300000) {
+                this.curStatus = 'online';
+            } else {
+                this.curStatus = 'offline';
+            }
+        }
+    }
 }
 </script>
 

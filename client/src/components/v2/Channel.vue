@@ -12,12 +12,12 @@
         </div>
       </div>
       </div>
-      <p class="cacheStatus" v-if="cachedChannels.includes(channel.uuid)">CACHED</p>
-      <!-- <menu>
+      <!-- <p class="cacheStatus" v-if="cachedChannels.includes(channel.uuid)">CACHED</p> -->
+      <menu>
         <div></div>
         <div></div>
         <div></div>
-      </menu> -->
+      </menu>
     </router-link>
   </div>
 </template>
