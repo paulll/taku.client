@@ -522,7 +522,7 @@ export default {
 }
 
 .channelsWrapper {
-  height: min-content;
+  height: 100%;
   overflow-y: scroll;
 }
 

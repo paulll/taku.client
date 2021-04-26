@@ -1,8 +1,8 @@
 <template>
-  <div class="channel" v-if="channel.member_list[0]" @mouseenter="showMiniProfile($event)" @mouseleave="mouseLeftHover()" @click="cachedChannels.push(channel.uuid)">
+  <div class="channel" v-if="channel.member_list[0]" @click="cachedChannels.push(channel.uuid)">
     <MiniProfile v-if="isShowingMiniProfile" :posX="MiniProfilePosX" :posY="MiniProfilePosY" :profile="channel.member_list[0].profile" :uuid="channel.member_list[0].uuid" :username="channel.member_list[0].username"/>
     <router-link :to="`/messages/${channel.type}/${channel.uuid}`" class="channelContent">
-      <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
+      <router-link :to="`/profile/${channel.member_list[0].username}`" @mouseenter="showMiniProfile($event)" @mouseleave="mouseLeftHover()" ><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
       <div> 
         <h1 v-if="channel.type == 'dm'">{{channel.member_list[0].username}}</h1>

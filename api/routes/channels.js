@@ -105,18 +105,18 @@ router.post("/invite/", async (req, res) => {
 });
 
 router.post("/pin/:channel_uuid", async (req, res) => {
-  const channel = req.body.channel_uuid;
+  const channel = req.params.channel_uuid;
 
   await db.users.update(
       { username: req.user.username },
-      { $set: { 'settings.pinned_channels': channel}}
+      { $addToSet: { 'settings.pinned_channels': channel}}
   );
 
   res.status(200).json({message: "pinned successfully"});
 });
 
 router.post("/unpin/:channel_uuid", async (req, res) => {
-  const channel = req.body.channel_uuid;
+  const channel = req.params.channel_uuid;
 
   await db.users.update(
       { username: req.user.username },

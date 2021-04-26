@@ -499,6 +499,7 @@ export default {
     height: 100%;
     overflow-y: scroll;
     position: relative;
+    width: 100%;
     padding: 0px;
 }
 
@@ -579,6 +580,7 @@ export default {
     flex-direction: column;
     color: #414141;
     background: #F3F3F3;
+    height: 100%;
 }
 
 .pageContent.darkmode {
