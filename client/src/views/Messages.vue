@@ -313,15 +313,13 @@ export default {
 
     // Loads from local storage
     loadCache(){
-      const channels = JSON.parse(localStorage.getItem('channels'));
-      const privateChannels = JSON.parse(localStorage.getItem('privateChannels'));
-      const groupChannels = JSON.parse(localStorage.getItem('groupChannels'));
+      const channels = this.cache.getChannels();
 
-      if (channels == "") return;
+      if (channels == Object.keys(channels).length == 0 || channels == null) return;
 
       this.channels = channels;
-      this.privateChannels = privateChannels;
-      this.groupChannels = groupChannels;
+      this.privateChannels = channels.filter(channel => channel.type == 'dm');
+      this.groupChannels = channels.filter(channel => channel.type == 'group');
       // This runs so fucking fast in here
       // Auto update the URL if theres no channel 
       // E.g. if tthe url is https://taku.moe/messages/
@@ -361,19 +359,12 @@ export default {
         
         channel.member_list = member_list;
 
-        
         this.channels.push(channel);
+        this.cache.updateChannel(channel)
+
         if (channel.type == "dm") this.privateChannels.push(channel);
         if (channel.type == "group") this.groupChannels.push(channel);
       }
-
-
-      // Store new data in cache
-      localStorage.setItem('privateChannels', JSON.stringify(this.privateChannels));
-      localStorage.setItem('groupChannels', JSON.stringify(this.groupChannels));
-
-
-      console.log(channelsRequest.data.channels);
 
       this.inviteChannels = invitesRequest.data;
       this.filterSearch();

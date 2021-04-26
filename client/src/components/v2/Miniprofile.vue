@@ -1,5 +1,5 @@
 <template>
-    <div class="miniProfile" :style="themeColors">
+    <div class="ToolTip" :style="themeColors">
         <p>{{message}}</p>
     </div>
 </template>
@@ -9,8 +9,10 @@
 export default {
     // These are the props that need (or may not need) to be passed down from the parent
     props: {
-        name:           { type: String, required: true },
+        message:        { type: String, required: true },
         themeColors:    { type: Object, required: false },      // Colors for the buttons
+        profilePic:     { type: String, required: true },       // Link to the profile picture
+        backgroundPic:  { type: String, required: true },       // Link to the profile background picture
     },
     data: () => {
         return {

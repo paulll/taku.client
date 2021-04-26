@@ -1,67 +1,50 @@
-
 class Cache {
     constructor(){
-        let cache = JSON.parse(localStorage.cache);
-
-        if (cache == null) localStorage.setItem("cache", JSON.stringify({}));
-        if (cache.channels == null) cache.channels = {};
-        if (cache.messages == null) cache.messages = {};
-
-        this.channels = {};
-        this.messages = {};
+        Cache.log("Constructed Cache");
+        if (!localStorage.cache || localStorage.cache === 'undefined') Cache.initCache();
+        this.cache = JSON.parse(localStorage.cache);
+        if (this.cache == null) Cache.initCache();
     }
 
-    static updateLocalStorage(object){
-        this.log();
-        localStorage.cache = JSON.stringify(object);
+    static log(...messages) {
+        console.log("[CACHE]", ...messages);
     }
 
-    static forceRefresh(){
-        let cache = JSON.parse(localStorage.cache);
-        this.channels = cache.channels;
-        this.messages = cache.messages;
+    static initCache(){
+        this.cache = {
+            channels: {},
+            messages: {}, 
+        };
+        localStorage.setItem("cache", JSON.stringify(this.cache));
+        Cache.log("Initialized Cache");
     }
 
-    static getAll(){
-        return this;
+    updateLocalStorage(){
+        console.log(this.cache);
+        localStorage.setItem('cache', JSON.stringify(this.cache));
+        Cache.log("Local storage Updated");
     }
 
-    static getMessages(channel){
-        return this.messages;
+    updateChannel(channel){
+        this.cache.channels[channel.uuid] = channel;
+        cache.updateLocalStorage();
     }
 
-    static getChannels(){
-        return this.channels;
+    appendMessage(message){
+        this.cache.messages.push(message);
+        cache.updateLocalStorage();
     }
 
-    static syncChannels(channels){
-        this.channels = channels;
-        updateLocalStorage(this);
+    getChannels(){
+        Cache.log("Got channels");
+        return this.cache.channels;
     }
 
-    static syncMessages(channel, messages){
-        if (typeof this.messages[channel] === 'undefined') this.appendChannel(channel);
-        this.messages[channel] = messages;
-        updateLocalStorage(this);
-    }
-
-    static createChannel(channel){
-        this.channels[channel] = {};
-    }
-
-    static appendChannel(channel){
-        this.channels.push(channel);
-        updateLocalStorage(this);
-    }
-
-    static appendMessage(message){
-        this.messages.push(message);
-        updateLocalStorage(this);
-    }
-
-    static log(){
-        console.log(this.channels, this.messages);
+    forceRefresh(){
+        this.cache = JSON.parse(localStorage.cache);
     }
 };
 
-export default Cache;
+console.log("[CACHE] Class Loaded");
+const cache = new Cache; 
+export default cache;

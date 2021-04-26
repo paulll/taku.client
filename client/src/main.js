@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import mitt from 'mitt'
-// import Cache from '@/services/cache.js';
+import cache from '@/services/cache.js';
 
 const DEV_MODE = false;                          // Determines if the app is in development mode, disables https and other stuff for compability
 
@@ -17,6 +17,6 @@ if(DEV_MODE) {
 } else {
     app.config.globalProperties.rootPath = 'https://taku.moe';
 }
-// app.config.globalProperties.cache = Cache;
+app.config.globalProperties.cache = cache;
 app.mount('#app');
 

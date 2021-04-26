@@ -7,11 +7,8 @@
         <h1 v-if="channel.type == 'dm'">{{channel.member_list[0].username}}</h1>
         <h1 v-if="channel.type == 'group'">{{channel.name}}</h1>
         <div class="channelStatus">
-        <div class="icon" :class="{
-          online: parseInt(channel.member_list[0].profile.status.lastSeen) > new Date().getTime() - 300000,
-          offline: parseInt(channel.member_list[0].profile.status.lastSeen) <= new Date().getTime() - 300000,
-          }"></div>
-        <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
+          <Status :profile="channel.member_list[0]?.profile" :showText="true"/>
+          <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
         </div>
       </div>
       </div>
@@ -26,6 +23,8 @@
 </template>
 
 <script>
+import Status from '@/components/v2/Status.vue'
+
 export default {
   computed: {
     cachedChannels: () => {
@@ -39,6 +38,9 @@ export default {
   props: {
     channel:{ type: Object, required: true },
   },
+  components: {
+    Status,
+  }
 }
 </script>
 
@@ -130,25 +132,6 @@ export default {
   height: 100%;
   margin-top: 4px;
   color: var(--textDark);
-}
-
-.channelStatus .icon {
-  position: static;
-  width: 16px;
-  min-width: 18px;
-  height: 10px;
-
-  border: transparent 3px solid;
-  box-sizing: border-box;
-  border-radius: 56px;
-}
-
-.offline {
-  border: #626262 3px solid !important;
-}
-
-.online {
-  border: #7FE876 3px solid !important;
 }
 
 .channelStatus .last_message {
