@@ -110,7 +110,6 @@
 </template>
  
 <script>
-import axios from 'axios';
 import linkifyHtml from 'linkifyjs/html';
 import socket from '@/services/socket.js';
 import peer from '@/services/peerjs.js';
@@ -259,10 +258,6 @@ export default {
 
       this.newGroupName = "";
 
-      // const response = await axios.post(`${this.rootPath}:2087/channels/group`, body, {
-      //   withCredentials: true
-      // });
-
       const response = await this.api.channels.createGroup(body)
 
       if (response.status == 201) {
@@ -274,9 +269,6 @@ export default {
       }
     },
     async deleteChannel(channel){
-      // const response = await axios.delete(`${this.rootPath}:2087/channels/group/${channel.uuid}`, {
-      //   withCredentials: true
-      // });
       const response = await this.api.channels.deleteGroup(channel.uuid)
     },
     // Filter users/groups to searchIndex
@@ -343,10 +335,10 @@ export default {
     // Return list of channels this user is in
     async getChannels(){
       try {
-        var channelsRequest = await axios.get(`${this.rootPath}:2087/channels`, {withCredentials: true});
-        var invitesRequest = await axios.get(`${this.rootPath}:2087/channels/invites`, {withCredentials: true});
+        var channelsRequest = await this.api.channels.getChannels();
+        var invitesRequest = await this.api.channels.getInvites();
       } catch (error) {
-        if (error.status = 401) {
+        if (error.status == 401) {
           localStorage.clear();
           window.location.href = `${this.rootPath}/login`;
           return

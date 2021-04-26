@@ -125,9 +125,6 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 NProgress.configure({ showSpinner: false });
  
-import axios from 'axios';
-
-
 export default {
   name: 'user',
   components: {
@@ -199,7 +196,9 @@ export default {
     async getUser() {
 
       // Get user data
-      let user = await axios.get(`${this.rootPath}:2087/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+    //   let user = await axios.get(`${this.rootPath}:2087/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+      let user = await this.api.user.fetchUser(this.$route.params.username, { 'Access-Control-Allow-Origin': '*' })
+      console.log(user)
       user = Object.assign({}, user).data;
 
       try {
@@ -234,13 +233,7 @@ export default {
                 }
                 break;
         }
-
-        const response = await axios.post(`${this.rootPath}:2087/friend/${option}`, {uuid}, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await this.api.user.updateFriend(option, uuid, {'Content-Type': 'application/json'});
         this.getUser();
         this.getMe();
     },
@@ -256,12 +249,7 @@ export default {
       this.updateSettings();
     },
     async updateSettings(){
-        const response = await axios.post(`${this.rootPath}:2087/settings`, this.me, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await this.api.user.updateSettings(this.me, {'Content-Type': 'application/json'});
         this.getUser();
     },
     async uploadFile(ref){
@@ -272,12 +260,7 @@ export default {
       let formData = new FormData();
       formData.append(ref, file);
 
-      const response = await axios.post(`${this.rootPath}:2087/settings/upload`, formData, {
-        withCredentials: true,
-        headers: {
-        'Content-Type': 'multipart/form-data'
-        }
-      });
+      const response = await this.api.user.uploadFile(formData, {'Content-Type': 'multipart/form-data'});
 
       // If form submitted with no error:
       if(response.data.status == 200) {

@@ -51,11 +51,18 @@ class API {
      * const response = super.postRequest('channels/group', undefined, body);
      * 
      */
-    async postRequest(route, params, body){
-        const response = await axios.post(this.constructEndpoint(route, params), body || undefined, {
-            withCredentials: true
-        });
-
+    async postRequest(route, params, body, headers){
+        if(headers) {
+            const response = await axios.post(this.constructEndpoint(route, params), body || undefined, {
+                withCredentials: true,
+                headers: headers
+            });
+        } else {
+            const response = await axios.post(this.constructEndpoint(route, params), body || undefined, {
+                withCredentials: true
+            });
+        }
+        
         this.logResponse(response);
         return response;
     }
@@ -71,10 +78,17 @@ class API {
      * const response = super.getRequest('user');
      * 
      */
-    async getRequest(route, params){
-        const response = await axios.get(this.constructEndpoint(route, params), {
-            withCredentials: true
-        });
+    async getRequest(route, params, headers){
+        if(headers) {
+            const response = await axios.get(this.constructEndpoint(route, params), {
+                withCredentials: true,
+                headers: headers
+            });
+        } else {
+            const response = await axios.get(this.constructEndpoint(route, params), {
+                withCredentials: true
+            });
+        }
 
         this.logResponse(response);
         return response;
@@ -108,12 +122,20 @@ class Channels extends API {
         super.log('Initialized channel handler');
     }
 
+    async getChannels(){
+        return super.getRequest('channels');
+    }
+
+    async getInvites(){
+        return super.getRequest('channels/invites');
+    }
+
     async pin(channelUuid){
-        super.postRequest('channels/pin', channelUuid)
+        super.postRequest('channels/pin', channelUuid);
     }
 
     async unpin(channelUuid){
-        super.postRequest('channels/unpin', channelUuid)
+        super.postRequest('channels/unpin', channelUuid);
     }
 
     async createGroup(body){
@@ -139,7 +161,23 @@ class User extends API {
     }
 
     async fetchMe(){
-        super.getRequest('user');
+        return super.getRequest('user');
+    }
+
+    async fetchUser(username, headers) {
+        return super.getRequest('user', username, headers);
+    }
+
+    async uploadFile(formData, headers){
+        return super.postRequest('settings/upload', undefined, formData, headers);
+    }
+
+    async updateSettings(me, headers){
+        return super.postRequest('settings', undefined, me, headers);
+    }
+
+    async updateFriend(params, uuid, headers) {
+        return super.postRequest('friend', params, {uuid}, headers);
     }
 }
 
