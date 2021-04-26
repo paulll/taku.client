@@ -253,15 +253,17 @@ export default {
     async makeNewGroup(){
       this.isMakingNewGroup = false;
 
-      const invite = {
+      const body = {
         name: this.newGroupName,
       };
 
       this.newGroupName = "";
 
-      const response = await axios.post(`${this.rootPath}:2087/channels/group`, invite, {
-        withCredentials: true
-      });
+      // const response = await axios.post(`${this.rootPath}:2087/channels/group`, body, {
+      //   withCredentials: true
+      // });
+
+      const response = await this.api.channels.createGroup(body)
 
       if (response.status == 201) {
         console.log(response.data);
@@ -272,10 +274,10 @@ export default {
       }
     },
     async deleteChannel(channel){
-      const response = await axios.delete(`${this.rootPath}:2087/channels/group/${channel.uuid}`, {
-        withCredentials: true
-      });
-
+      // const response = await axios.delete(`${this.rootPath}:2087/channels/group/${channel.uuid}`, {
+      //   withCredentials: true
+      // });
+      const response = await this.api.channels.deleteGroup(channel.uuid)
     },
     // Filter users/groups to searchIndex
     filterSearch() {

@@ -24,7 +24,6 @@ class Cache {
     }
 
     updateChannel(channel){
-        Cache.log("Local storage Updated");
         this.cache.channels[channel.uuid] = channel;
         cache.updateLocalStorage();
     }
