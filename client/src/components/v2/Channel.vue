@@ -1,5 +1,6 @@
 <template>
-  <div v-if="channel.member_list[0]" @click="cachedChannels.push(channel.uuid)">
+  <div v-if="channel.member_list[0]" @mouseenter="showMiniProfile()" @mouseleave="mouseLeftHover()" @click="cachedChannels.push(channel.uuid)">
+    <MiniProfile v-if="isShowingMiniProfile" :profile="channel.member_list[0].profile" :uuid="channel.member_list[0].uuid" :username="channel.member_list[0].username"/>
     <router-link :to="`/messages/${channel.type}/${channel.uuid}`" class="channel">
       <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
@@ -7,23 +8,24 @@
         <h1 v-if="channel.type == 'dm'">{{channel.member_list[0].username}}</h1>
         <h1 v-if="channel.type == 'group'">{{channel.name}}</h1>
         <div class="channelStatus">
-          <Status :profile="channel.member_list[0]?.profile" :showText="true"/>
+          <Status :profile="channel.member_list[0]?.profile"/>
           <p v-if="channel.last_message" class="last_message">{{channel.last_message.content}}</p>
         </div>
       </div>
       </div>
       <!-- <p class="cacheStatus" v-if="cachedChannels.includes(channel.uuid)">CACHED</p> -->
-      <menu>
-        <div></div>
-        <div></div>
-        <div></div>
-      </menu>
+        <menu>
+          <div></div>
+          <div></div>
+          <div></div>
+        </menu>
     </router-link>
   </div>
 </template>
 
 <script>
 import Status from '@/components/v2/Status.vue'
+import MiniProfile from '@/components/v2/MiniProfile.vue'; 
 
 export default {
   computed: {
@@ -35,16 +37,41 @@ export default {
       }
     },
   },
+  data: () => { 
+    return {
+      isShowingMiniProfile: false,
+      isHoveringOver: false,
+    }
+  },
   props: {
     channel:{ type: Object, required: true },
   },
   components: {
+    MiniProfile,
     Status,
+  },
+  methods: {
+    sleep: ms => new Promise(resolve => setTimeout(resolve, ms)), 
+    async showMiniProfile(){
+      this.isHoveringOver = true;
+      await this.sleep(500);
+      if(this.isHoveringOver) this.isShowingMiniProfile = true;
+    },
+    async mouseLeftHover() {
+      this.isHoveringOver = false;
+      await this.sleep(250);
+      if(!this.isHoveringOver) this.isShowingMiniProfile = false;
+    }
   }
 }
 </script>
 
 <style scoped>
+
+template {
+  position: relative;
+}
+
 .channel {
   width: 100%;
   display: flex;

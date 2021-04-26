@@ -8,9 +8,9 @@
           <div class="info">
             <div v-if="!channel.senpai">
               <h1>{{channel.member_list[0].username}}</h1>
-              <div class="channelStatus">
-                <div class="icon"></div>
-                <p v-if="channel.member_list[0].profile.status.lastSeen" class="last_message">{{translation('last seen at')}} {{new Date(channel.member_list[0].profile.status.lastSeen).toLocaleString()}}</p>
+              <div class="channelStatus" v-if="channel.member_list[0].profile">
+                <Status :profile="channel.member_list[0].profile" :showText="true" :showFullText="true"/>
+                <!-- <p class="last_message">{{translation('last seen at')}} {{new Date(channel.member_list[0].profile.status.lastSeen).toLocaleString()}}</p> -->
               </div>
             </div>
           </div>
@@ -57,6 +57,7 @@
  
 <script>
 import translation from '@/services/translator.js';
+import Status from '@/components/v2/Status.vue'
 
 export default {
   data: () => {
@@ -67,6 +68,9 @@ export default {
   },
   props: {
     channel:   { type: Object, required: true },
+  },
+  components: {
+    Status,
   },
   methods: {
     translation,

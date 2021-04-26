@@ -1,35 +1,57 @@
 <template>
     <div class="status">
-        <div class="icon" :class="curStatus">
+        <!-- this is some sus code -->
+        <div class="icon" :class="{
+            online: curStatus == 'online', 
+            offline: curStatus == 'offline', 
+            small: size == 'small',
+            big: size == 'big'}
+            ">
         </div>
-        <div class="text" v-if="showText">
-            <p>bababooey</p>
+        <div class="text" v-if="showText" :style="{'font-size': textSize, 'color': textColor}">
+            <p>{{statusText}}</p>
         </div>
     </div>
 </template>
 
 <script>
+import translation from '@/services/translator.js';
+
 export default {
     props: {
-        profile:    { type: Object,  required: true },
-        showText:   { type: Boolean, required: false,    default: false},
+        profile:      { type: Object,   required: true },
+        showText:     { type: Boolean,  required: false, default: false },
+        showFullText: { type: Boolean,  required: false, default: false },
+        textColor:    { type: String,   required: false, default: 'F1F2F4'},
+        textSize:     { type: Number,   required: false, default: 10 },
+        size:         { type: String,   required: false, default: 'small' },
     },
-    data: () => {
-        return {
-            curStatus: 'offline',
-        }
-    },
-    mounted() {
-        this.getStatus();
-    },
-    methods: {
-        getStatus() {
+    computed: {
+        curStatus: function() {
             if(parseInt(this.profile.status.lastSeen) > new Date().getTime() - 300000) {
-                this.curStatus = 'online';
+                return 'online';
             } else {
-                this.curStatus = 'offline';
+                return 'offline';
+            }
+        },
+
+        statusText: function() {
+            if(this.curStatus == 'offline') {
+                if(this.showFullText) {
+                    return `${translation('last seen at')} ${new Date(this.profile.status.lastSeen).toLocaleString()}`;
+                } else {
+                    return 'Offline'
+                }
+            } else {
+                return 'Online'
             }
         }
+    },
+    // mounted() {
+    //     this.getStatus();
+    // },
+    methods: {
+        translation,
     }
 }
 </script>
@@ -52,6 +74,9 @@ export default {
   border-radius: 56px;
 }
 
+.icon.big {
+    transform: scale(1.3);
+}
 .offline {
   border: #626262 3px solid !important;
 }
@@ -68,9 +93,8 @@ export default {
   white-space: nowrap;
   text-align: center;
   overflow: hidden;
-  text-overflow: ellipsis;
+  color: #F1F2F4;
   margin: 0px 4px;
-  max-width: 160px;
 }
 
 </style>

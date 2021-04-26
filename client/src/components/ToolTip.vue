@@ -1,5 +1,5 @@
 <template>
-    <div class="miniProfile" :style="themeColors">
+    <div class="ToolTip" :style="themeColors">
         <p>{{message}}</p>
     </div>
 </template>

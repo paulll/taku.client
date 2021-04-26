@@ -122,6 +122,7 @@ export default {
         
         last_message = message;
         this.messages.unshift(message);
+        this.cache.appendMessage(message.channel_uuid, message);
 
         // Play notification sound if they got mentioned
         if (
@@ -150,10 +151,8 @@ export default {
   methods: {
     translation,
     loadMessagesFromCache(){
-      if (!localStorage.messages) return
-      let cachedMessages = JSON.parse(localStorage.messages);
-      if (cachedMessages[this.$route.params.channel_uuid]){
-        this.messages = JSON.parse(cachedMessages[this.$route.params.channel_uuid]);
+      if (this.$route.params.channel_uuid){
+        this.messages = this.cache.getChannel(this.$route.params.channel_uuid).messages;
       }
     },
     cacheMessages(messages){
@@ -212,7 +211,7 @@ export default {
       });
 
       this.messages = response.data;
-      this.cacheMessages(response.data);
+      this.cache.updateMessages(this.$route.params.channel_uuid, response.data);
       console.log(`%c Fetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
     },
     // This is to convert epoch to the user's time

@@ -13,31 +13,38 @@ class Cache {
     static initCache(){
         this.cache = {
             channels: {},
-            messages: {}, 
         };
         localStorage.setItem("cache", JSON.stringify(this.cache));
         Cache.log("Initialized Cache");
     }
 
     updateLocalStorage(){
-        console.log(this.cache);
         localStorage.setItem('cache', JSON.stringify(this.cache));
         Cache.log("Local storage Updated");
     }
 
     updateChannel(channel){
+        Cache.log("Local storage Updated");
         this.cache.channels[channel.uuid] = channel;
         cache.updateLocalStorage();
     }
 
-    appendMessage(message){
-        this.cache.messages.push(message);
+    updateMessages(channelUuid, messages){
+        this.cache.channels[channelUuid].messages = messages;
+        cache.updateLocalStorage();
+    }
+
+    appendMessage(channelUuid, message){
+        this.cache.channels[channelUuid].messages.push(message);
         cache.updateLocalStorage();
     }
 
     getChannels(){
-        Cache.log("Got channels");
         return this.cache.channels;
+    }
+
+    getChannel(channelUuid){
+        return this.cache.channels[channelUuid];
     }
 
     forceRefresh(){
