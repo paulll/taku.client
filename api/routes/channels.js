@@ -17,6 +17,7 @@ router.get("/", async (req, res) => {
       { '$unwind': { 'path': '$last_message', 'preserveNullAndEmptyArrays': true } },
       { '$sort' : { 'last_message.created_at' : -1 } }
   ]);
+
   res.status(200).json({ "channels": channels });
 });
 

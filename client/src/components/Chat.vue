@@ -40,7 +40,6 @@ import TextInput from '@/components/messages/TextInput.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
 import translation from '@/services/translator.js';
 import socket from '@/services/socket.js';
-import Cache from '@/services/cache.js';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
@@ -107,7 +106,12 @@ export default {
     };
 
     socket.on('message', message => {
-      console.log(message);
+
+      // Electron notification
+      new Notification(message.author.username, {
+        body: message.content
+      });
+
       if (message.content !== undefined && message.channel_uuid == this.$route.params.channel_uuid) {
         // If the last message is by the same user just add the message content itself without
         // Their username etc

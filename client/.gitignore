@@ -24,3 +24,5 @@ pnpm-debug.log*
 
 # Backup files
 *.zip
+#Electron-builder output
+/dist_electron
