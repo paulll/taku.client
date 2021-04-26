@@ -7,7 +7,7 @@ class Cache {
     }
 
     static log(...messages) {
-        console.log("[CACHE]", ...messages);
+        console.log("%c[CACHE]", 'color: #c3ff00; font-weight: bold;', ...messages);
     }
 
     static initCache(){
@@ -35,6 +35,7 @@ class Cache {
     }
 
     appendMessage(channelUuid, message){
+        if(!this.cache.channels[channelUuid].messages) this.cache.channels[channelUuid].messages = [];
         this.cache.channels[channelUuid].messages.push(message);
         cache.updateLocalStorage();
     }

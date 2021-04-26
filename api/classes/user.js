@@ -70,6 +70,7 @@ function User(username, email, password) {
             show_status: true,
             blocked_users: []
         },
+        pinned_channels: [],
     }
 };
 

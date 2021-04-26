@@ -112,7 +112,7 @@ export default {
 
 .myComputerItem input[type=text] {
     display: none;
-    background: #ff006b;
+    background-color: #ff006b;
     padding: 8px 0px;
     text-indent: 8px;
     border: 4px transparent;

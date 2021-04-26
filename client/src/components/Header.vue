@@ -383,7 +383,7 @@ export default {
 
 .login {
     margin-right: 14px;
-    background: #FF006B;
+    background-color: #ff006b;
     color: white;
 }
 

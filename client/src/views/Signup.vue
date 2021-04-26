@@ -217,7 +217,7 @@ export default {
     height: 47px;
     border: none;
     outline: none;
-    background: #FF006B;
+    background-color: #ff006b;
     border-radius: 24px;
 
     font-family: Work Sans, system-ui;;

@@ -322,7 +322,6 @@ export default {
 
 <style scoped>
 
-
 .userProfile::-webkit-scrollbar {
   width: 12px;  
   position: absolute; 

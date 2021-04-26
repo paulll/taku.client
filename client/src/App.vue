@@ -4,7 +4,7 @@
     <NavBar/>
     <!-- <Header/> -->
     <!-- <LoadingAnimation/> -->
-    <router-view class="FUCKER"/>
+    <router-view/>
     <!-- <ToolBar/> -->
   </div>
 </template>
@@ -120,6 +120,10 @@ export default {
   scrollbar-width: thin;
   scrollbar-color: lightgray transparent;
   scrollbar-color: var(--light) var(--dark);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  object-fit: cover; 
 }
 
 *.darkmode {

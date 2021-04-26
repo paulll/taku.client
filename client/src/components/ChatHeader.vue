@@ -90,7 +90,7 @@ export default {
 header {
   height: 80px;
   width: 100%;
-  background: #ff006b;
+  background-color: #ff006b;
   display: flex;
   justify-content: space-between;
   position: absolute;

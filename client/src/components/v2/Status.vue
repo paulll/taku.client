@@ -76,6 +76,7 @@ export default {
 
 .icon.big {
     transform: scale(1.3);
+    margin: 0px 4px;
 }
 .offline {
   border: #626262 3px solid !important;

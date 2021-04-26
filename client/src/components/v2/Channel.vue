@@ -1,7 +1,7 @@
 <template>
-  <div v-if="channel.member_list[0]" @mouseenter="showMiniProfile()" @mouseleave="mouseLeftHover()" @click="cachedChannels.push(channel.uuid)">
-    <MiniProfile v-if="isShowingMiniProfile" :profile="channel.member_list[0].profile" :uuid="channel.member_list[0].uuid" :username="channel.member_list[0].username"/>
-    <router-link :to="`/messages/${channel.type}/${channel.uuid}`" class="channel">
+  <div class="channel" v-if="channel.member_list[0]" @mouseenter="showMiniProfile($event)" @mouseleave="mouseLeftHover()" @click="cachedChannels.push(channel.uuid)">
+    <MiniProfile v-if="isShowingMiniProfile" :posX="MiniProfilePosX" :posY="MiniProfilePosY" :profile="channel.member_list[0].profile" :uuid="channel.member_list[0].uuid" :username="channel.member_list[0].username"/>
+    <router-link :to="`/messages/${channel.type}/${channel.uuid}`" class="channelContent">
       <router-link :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
       <div> 
@@ -14,11 +14,12 @@
       </div>
       </div>
       <!-- <p class="cacheStatus" v-if="cachedChannels.includes(channel.uuid)">CACHED</p> -->
-        <menu>
-          <div></div>
-          <div></div>
-          <div></div>
-        </menu>
+      <menu @click="isShowingDropMenu = true">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <DropMenu v-if="isShowingDropMenu" :channel="channel" @mouseleave="isShowingDropMenu = false"/>
+      </menu>
     </router-link>
   </div>
 </template>
@@ -26,6 +27,7 @@
 <script>
 import Status from '@/components/v2/Status.vue'
 import MiniProfile from '@/components/v2/MiniProfile.vue'; 
+import DropMenu from '@/components/v2/DropMenu.vue'; 
 
 export default {
   computed: {
@@ -39,8 +41,11 @@ export default {
   },
   data: () => { 
     return {
+      isShowingDropMenu: false,
       isShowingMiniProfile: false,
       isHoveringOver: false,
+      MiniProfilePosX: 0,
+      MiniProfilePosY: 0,
     }
   },
   props: {
@@ -49,17 +54,20 @@ export default {
   components: {
     MiniProfile,
     Status,
+    DropMenu,
   },
   methods: {
     sleep: ms => new Promise(resolve => setTimeout(resolve, ms)), 
-    async showMiniProfile(){
+    async showMiniProfile(e){
       this.isHoveringOver = true;
       await this.sleep(500);
+      if (!this.isShowingMiniProfile) this.MiniProfilePosX = e.clientX;
+      if (!this.isShowingMiniProfile) this.MiniProfilePosY = e.clientY;
       if(this.isHoveringOver) this.isShowingMiniProfile = true;
     },
     async mouseLeftHover() {
       this.isHoveringOver = false;
-      await this.sleep(250);
+      await this.sleep(350);
       if(!this.isHoveringOver) this.isShowingMiniProfile = false;
     }
   }
@@ -68,11 +76,11 @@ export default {
 
 <style scoped>
 
-template {
-  position: relative;
+.channel {
+  /* position: relative; */
 }
 
-.channel {
+.channelContent {
   width: 100%;
   display: flex;
   padding: 8px 16px 8px 8px;
@@ -83,34 +91,34 @@ template {
   text-decoration: none;
   transition: 100ms ease-out;
   outline: none;
-  overflow: hidden;
   align-items: center;
 }
 
-.channel.router-link-active {
+.channelContent.router-link-active {
   background: var(--light);
 }
 
-.channel:hover { 
+.channelContent:hover { 
   border: var(--hoverOutline) 1px solid;
 }
 
-.channel a {
+.channelContent a {
   width: 32px;
   height: 32px;
 }
 
-.channel menu {
+.channelContent menu {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
   justify-content: center;
   gap: 2px;
   width: 32px;  
   height: 32px;
 }
 
-.channel menu * {
+.channelContent menu .dot {
   width: 4px;
   height: 4px;
   border-radius: 4px;

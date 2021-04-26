@@ -52,9 +52,6 @@ export default {
     TextInput,
     ChatHeader,
   },
-  props: {
-    selectedChannel: { type: Object, required: true },
-  },
   data: () => {
     return {
       message: "",
@@ -195,6 +192,7 @@ export default {
         withCredentials: true,
       });
 
+      if (response.data.length == 0) return;
 
       // This has one of the most weird bugs where it fixes the original variable
       // Before even running it
@@ -212,7 +210,7 @@ export default {
 
       this.messages = response.data;
       this.cache.updateMessages(this.$route.params.channel_uuid, response.data);
-      console.log(`%c Fetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
+      console.log(`%cFetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
     },
     // This is to convert epoch to the user's time
     // Gotta fix this, apparently its some weird ass timezone in europe
@@ -249,7 +247,7 @@ export default {
     },
     // This gets the blocked users of the current user
     async getBlockedUsers(){
-      const response = await axios.get(`${this.rootPath}:2087/blockedUsers`, {
+      const response = await axios.get(`${this.rootPath}:2087/user/blockedUsers`, {
         withCredentials: true,
       });
 

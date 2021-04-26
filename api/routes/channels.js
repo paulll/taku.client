@@ -18,6 +18,16 @@ router.get("/", async (req, res) => {
       { '$sort' : { 'last_message.created_at' : -1 } }
   ]);
 
+  const user = (await db.users.find(
+    { uuid: req.user.uuid },
+    { collation: { locale: "en", strength: 2 } }
+  ))[0];
+
+  channels.map(channel => {
+    channel.isPinned = false;
+    if(user.settings.pinned_channels.includes(channel.uuid)) channel.isPinned = true;
+  })
+
   res.status(200).json({ "channels": channels });
 });
 
@@ -92,6 +102,28 @@ router.post("/invite/", async (req, res) => {
     console.log(invite);
   }
   res.status(200).json({message: "invited successfully"});
+});
+
+router.post("/pin/:channel_uuid", async (req, res) => {
+  const channel = req.body.channel_uuid;
+
+  await db.users.update(
+      { username: req.user.username },
+      { $set: { 'settings.pinned_channels': channel}}
+  );
+
+  res.status(200).json({message: "pinned successfully"});
+});
+
+router.post("/unpin/:channel_uuid", async (req, res) => {
+  const channel = req.body.channel_uuid;
+
+  await db.users.update(
+      { username: req.user.username },
+      { $pull: { 'settings.pinned_channels': channel}}
+  );
+
+  res.status(200).json({message: "unpinned successfully"});
 });
 
 
