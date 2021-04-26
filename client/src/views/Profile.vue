@@ -197,7 +197,7 @@ export default {
 
       // Get user data
     //   let user = await axios.get(`${this.rootPath}:2087/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
-      let user = await this.api.user.fetchUser(this.$route.params.username, { 'Access-Control-Allow-Origin': '*' })
+      let user = await this.api.user.fetchUser(this.$route.params.username)
       console.log(user)
       user = Object.assign({}, user).data;
 
@@ -215,7 +215,7 @@ export default {
       }
 
       user.isFriend = (user.friend_list.friends.includes(this.me.uuid));     
-
+    
       this.user = user;
       console.log(this.user);
     },
@@ -233,7 +233,7 @@ export default {
                 }
                 break;
         }
-        const response = await this.api.user.updateFriend(option, uuid, {'Content-Type': 'application/json'});
+        const response = await this.api.user.updateFriend(option, uuid);
         this.getUser();
         this.getMe();
     },
@@ -249,7 +249,7 @@ export default {
       this.updateSettings();
     },
     async updateSettings(){
-        const response = await this.api.user.updateSettings(this.me, {'Content-Type': 'application/json'});
+        const response = await this.api.user.updateSettings(this.me);
         this.getUser();
     },
     async uploadFile(ref){
@@ -260,7 +260,7 @@ export default {
       let formData = new FormData();
       formData.append(ref, file);
 
-      const response = await this.api.user.uploadFile(formData, {'Content-Type': 'multipart/form-data'});
+      const response = await this.api.user.uploadFile(formData);
 
       // If form submitted with no error:
       if(response.data.status == 200) {

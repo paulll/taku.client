@@ -40,43 +40,36 @@ class API {
     }
 
     /**
-     * 
      * Creates a new POST request to the backend
-     * 
      * @param {String} route The route you wanna make a request to e.g. channels/pin
      * @param {String} params Any optional params the url should have e.g. channels/pin/:channel_uuid
      * @param {Object} body An optional body object to send to the route
-     * @example 
-     * 
-     * const response = super.postRequest('channels/group', undefined, body);
-     * 
+     * @example const response = super.postRequest('channels/group', undefined, body);
      */
     async postRequest(route, params, body, headers){
         if(headers) {
             const response = await axios.post(this.constructEndpoint(route, params), body || undefined, {
                 withCredentials: true,
-                headers: headers
+                headers,
             });
+
+            this.logResponse(response);
+            return response;
         } else {
             const response = await axios.post(this.constructEndpoint(route, params), body || undefined, {
                 withCredentials: true
             });
+
+            this.logResponse(response);
+            return response;
         }
-        
-        this.logResponse(response);
-        return response;
     }
 
     /**
-     * 
      * Creates a new GET request to the backend
-     * 
      * @param {String} route The route you wanna make a request to e.g. channels/pin
      * @param {String} params Any optional params the url should have e.g. channels/pin/:channel_uuid
-     * @example 
-     * 
-     * const response = super.getRequest('user');
-     * 
+     * @example const response = super.getRequest('user');
      */
     async getRequest(route, params, headers){
         if(headers) {
@@ -84,26 +77,24 @@ class API {
                 withCredentials: true,
                 headers: headers
             });
+
+            this.logResponse(response);
+            return response;
         } else {
             const response = await axios.get(this.constructEndpoint(route, params), {
                 withCredentials: true
             });
-        }
 
-        this.logResponse(response);
-        return response;
+            this.logResponse(response);
+            return response;
+        }
     }
 
     /**
-     * 
      * Creates a new DELETE request to the backend
-     * 
      * @param {String} route The route you wanna make a request to e.g. channels/group
      * @param {String} params Any optional params the url should have e.g. channels/group/:channel_uuid
-     * @example 
-     * 
-     * const response = super.deleteRequest('channels/group', channelUuid);
-     * 
+     * @example const response = super.deleteRequest('channels/group', channelUuid);
      */
     async deleteRequest(route, params){
         const response = await axios.delete(this.constructEndpoint(route, params), {
@@ -115,38 +106,70 @@ class API {
     }
 };
 
-
+/**
+ * Handles all the endpoint functions for Channels
+ */
 class Channels extends API {
     constructor(){
         super();
         super.log('Initialized channel handler');
     }
 
+    /**
+     * Gets all of the users channels
+     */
     async getChannels(){
         return super.getRequest('channels');
     }
-
+    
+    /**
+     * Gets all of the users invites
+     */
     async getInvites(){
         return super.getRequest('channels/invites');
     }
-
+    
+    /**
+     * Pins a channel
+     * @param {String} channelUuid The UUID of the channel to pin
+     * @example api.channels.pin(channel.uuid);
+     */
     async pin(channelUuid){
         super.postRequest('channels/pin', channelUuid);
     }
 
+    /**
+     * Unpins a channel
+     * @param {String} channelUuid The UUID of the channel to pin
+     * @example api.channels.unpin(channel.uuid);
+     */
     async unpin(channelUuid){
         super.postRequest('channels/unpin', channelUuid);
     }
 
+    /**
+     * Creates a group
+     * @param {Object} body An object containing group properties such as name & participants
+     * @example api.channels.createGroup({name: "new group", participants: ["user_uuid1", "user_uuid2"]});
+     */
     async createGroup(body){
         return super.postRequest('channels/group', undefined, body);
     }
 
+    /**
+     * Deletes a group
+     * @param {String} channelUuid The UUID of the channel to delete
+     * @example api.channels.deleteGroup(channel_uuid);
+     */
     async deleteGroup(channelUuid){
         return super.deleteRequest('channels/group', channelUuid);
     }
 }
  
+
+/**
+ * Handles all the endpoint functions for Notifications
+ */
 class Notifications extends API {
     constructor() {
         super();
@@ -154,30 +177,54 @@ class Notifications extends API {
     }
 }
 
+/**
+ * Handles all the endpoint functions for User
+ */
 class User extends API {
     constructor() {
         super();
         super.log('Initialized user handler');
     }
 
+    /**
+     * Returns the user object of the logged in user, takes no input parameters
+     */
     async fetchMe(){
         return super.getRequest('user');
     }
 
-    async fetchUser(username, headers) {
-        return super.getRequest('user', username, headers);
+    /**
+     * Returns a user object from the database
+     * @param {String} username The username, whose user-object we are fetching from the database
+     */
+    async fetchUser(username){
+        return super.getRequest('user', username, { 'Access-Control-Allow-Origin': '*' });
     }
 
-    async uploadFile(formData, headers){
-        return super.postRequest('settings/upload', undefined, formData, headers);
+    /**
+     * Uploads a file for the user's settings
+     * @param {FormData} formData The username, whose user-object we are fetching from the database
+     * 
+     */
+    async uploadFile(formData){
+        return super.postRequest('settings/upload', undefined, formData, {'Content-Type': 'multipart/form-data'});
     }
 
-    async updateSettings(me, headers){
-        return super.postRequest('settings', undefined, me, headers);
+    /**
+     * Reposts the settings object into the user's settings property in the database
+     * @param {Object} me Logged in users user-object, which contains all information of the user
+     */
+    async updateSettings(me){
+        return super.postRequest('settings', undefined, me, {'Content-Type': 'application/json'});
     }
 
-    async updateFriend(params, uuid, headers) {
-        return super.postRequest('friend', params, {uuid}, headers);
+    /**
+     * Interfaces with the users friends for example to Add, delete or update a relationship
+     * @param {String} params Either add or remove, tells backend are we adding this user as friend or removing them from friends
+     * @param {String} uuid The users uuid that is being added to friends or removed from friends
+     */
+    async updateFriend(params, uuid) {
+        return super.postRequest('friend', params, {uuid}, {'Content-Type': 'application/json'});
     }
 }
 
