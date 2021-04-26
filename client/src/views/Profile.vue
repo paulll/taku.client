@@ -30,7 +30,7 @@
                         <div class="infoField" v-if="token">
 
                             <!-- Other ppl buttons -->
-                            <div class="otherUserButtons" v-if="user.username != me.username">
+                            <div class="otherUserButtons" v-if="user.username != me.username && me.friend_list">
                                 
                                 <!-- Add friend button -->
                                 <button :style="themeColors" @click="friend(user.uuid, 'add')"     v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))"  class="button">{{translation("Add")}}</button>

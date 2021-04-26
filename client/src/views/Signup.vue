@@ -46,8 +46,6 @@
 </template>
 
 <script>
-
-import axios from 'axios';
 /* eslint-disable */
 
 export default {
@@ -95,11 +93,7 @@ export default {
         });
 
         // Send JSON to backend
-        const response = await axios.post(`${this.rootPath}:2087/signup`, json, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const response = await this.api.user.signup(json);
 
         // Display backend error
         if (response.data.error) return this.error = response.data.error;
@@ -112,12 +106,7 @@ export default {
         });
 
         // Send JSON to backend
-        const loginResponse = await axios.post(`${this.rootPath}:2087/login`, loginJson, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const loginResponse = await this.api.user.login(loginJson);
             
         localStorage.token = loginResponse.data.token;
         localStorage.me = JSON.stringify({uuid: response.data.uuid, username: response.data.username});

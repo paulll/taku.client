@@ -122,7 +122,7 @@ export default {
   width: 4px;
   height: 4px;
   border-radius: 4px;
-  background: var(--hoverOutline);
+  background: var(--textDark);
 }
 
 .channelPfp {

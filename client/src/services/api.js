@@ -195,10 +195,18 @@ class User extends API {
     }
 
     /**
+     * Post signup credentials into backend and returns the result of signup process
+     * @param {Object} json Json object, which contains signup credentials
+     */
+     async signup(json){ 
+        return super.postRequest('signup', undefined, json, {'Content-Type': 'application/json'});
+    }
+
+    /**
      * Returns the user object of the logged in user, takes no input parameters
      */
     async fetchMe(){
-        return super.getRequest('user');
+        return (await super.getRequest('user')).data;
     }
 
     /**
@@ -206,7 +214,7 @@ class User extends API {
      * @param {String} username The username, whose user-object we are fetching from the database
      */
     async fetchUser(username){
-        return super.getRequest('user', username, { 'Access-Control-Allow-Origin': '*' });
+        return (await super.getRequest('user', username, { 'Access-Control-Allow-Origin': '*' }));
     }
 
     /**
