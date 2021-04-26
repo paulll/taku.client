@@ -27,10 +27,14 @@
 
 <script>
 export default {
-  data: () => {
-    return {
-      cachedChannels: Object.keys(JSON.parse(localStorage.messages)) || [],
-    }
+  computed: {
+    cachedChannels: () => {
+      if(localStorage.messages){
+        return Object.keys(JSON.parse(localStorage.messages))
+      } else {
+        return [];
+      }
+    },
   },
   props: {
     channel:{ type: Object, required: true },
