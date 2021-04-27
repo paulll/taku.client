@@ -34,7 +34,6 @@
 </template>
  
 <script>
-import axios from 'axios';
 import linkifyHtml from 'linkifyjs/html';
 import TextInput from '@/components/messages/TextInput.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
@@ -169,9 +168,7 @@ export default {
     async getChannel(){ 
 
       try {
-        var channel = (await axios.get(`${this.rootPath}:2087/channels/${this.$route.params.channel_uuid}`, {
-          withCredentials: true,
-        })).data.channel;
+        var channel = (await this.api.channels.getChannel(this.$route.params.channel_uuid)).data.channel;
       } catch (error) {
         console.log(error);         
         return
@@ -188,10 +185,7 @@ export default {
       // this.messages.push(response.data.dm.messages)
     },
     async getMessages(offset){
-      var response = await axios.get(`${this.rootPath}:2087/channels/${this.$route.params.channel_uuid}/${offset}`, {
-        withCredentials: true,
-      });
-
+      var response = await this.api.channels.getChannel(this.$route.params.channel_uuid, offset);
       if (response.data.length == 0) return;
 
       // This has one of the most weird bugs where it fixes the original variable
@@ -238,19 +232,11 @@ export default {
       }
 
       // Send
-      axios.post(`${this.rootPath}:2087/message`, formData, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }); 
+      this.api.channels.sendMessage(formData);
     },
     // This gets the blocked users of the current user
     async getBlockedUsers(){
-      const response = await axios.get(`${this.rootPath}:2087/user/blockedUsers`, {
-        withCredentials: true,
-      });
-
+      const response = await this.api.user.fetchBlockedUsers();
       this.blockedUsers = response.data
     },
     // takes URLS and makes them embedded HTMLs

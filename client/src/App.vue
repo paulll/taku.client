@@ -17,7 +17,6 @@ import LoadingAnimation from '@/components/LoadingAnimation.vue'
 
 import socket from '@/services/socket.js';
 import NProgress from 'nprogress';
-import axios from 'axios';
 import 'nprogress/nprogress.css';
 
 NProgress.configure({ showSpinner: false });
@@ -55,19 +54,17 @@ export default {
     async getUser() {
 
       try {
-        var user = await axios.get(`${this.rootPath}:2087/user`, {
-          withCredentials: true,
-        });
+        var user = await this.api.user.fetchMe();
       } catch (error) {
-        if (error.status = 401) {
+        if (error.status == 401) {
           localStorage.clear();
           window.location.href = `${this.rootPath}/login`;
           return
         }
       }
 
-      this.user = user.data;
-      socket.emit('user', user.data.uuid);
+      this.user = user;
+      socket.emit('user', user.uuid);
       // Start heartbeatting after the userdata has been received so
       this.heartBeat(60000);
     },

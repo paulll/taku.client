@@ -26,8 +26,6 @@
 
 <script>
 
-import axios from 'axios';
-
 // Lifecycles
 export default {
     name: 'anime',
@@ -53,12 +51,13 @@ export default {
 
             // Reset animation
             const json = JSON.stringify({anime: id, action: state});
-            const response = await axios.post(`${this.rootPath}:2087/user/anime`, json, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+            // const response = await axios.post(`${this.rootPath}:2087/user/anime`, json, {
+            //     withCredentials: true,
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     }
+            // });
+            const response = await this.api.anime.toggleAnime(json);
 
             // Display backend error
             if (response.data.error) {
@@ -74,12 +73,11 @@ export default {
         async getData() {
 
             // Get user data
-            const response = await axios.get(`${this.rootPath}:2087/user`, {withCredentials: true});
-            let user = response.data
-            this.user = user;
+            this.user = await this.api.user.fetchMe();
 
             // Get anime data
-            let anime = await axios.get(`${this.rootPath}:2087/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+            //let anime = await axios.get(`${this.rootPath}:2087/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+            let anime = await this.api.anime.getAnime(this.$route.params.id)
             anime = Object.assign({}, anime).data.anime[0];
             anime.tags = anime.tags.join(", ");
             this.anime = anime;

@@ -121,6 +121,29 @@ class Channels extends API {
     async getChannels(){
         return super.getRequest('channels');
     }
+
+    /**
+     * Gets specific channel
+     * @param {String} channelUuid The UUID of the channel that is being fetched from the database
+     * @param {Number} messageOffset (OPTIONAL) The offset, how many latest messages will be skipped on fetch
+     */
+    async getChannel(channelUuid, messageOffset){
+        var params;
+        if(messageOffset !== undefined) {
+            params = `${channelUuid}/${messageOffset}`
+        } else {
+            params = channelUuid;
+        }
+        return super.getRequest('channels', params);
+    }
+
+    /**
+     * Sends a message to specific channel
+     * @param {FormData} formData The data of the message
+     */
+    async sendMessage(formData) {
+        return super.postRequest('message', undefined, formData, {'Content-Type': 'multipart/form-data'})
+    }
     
     /**
      * Gets all of the users invites
@@ -242,6 +265,36 @@ class User extends API {
     async updateFriend(params, uuid) {
         return super.postRequest('friend', params, {uuid}, {'Content-Type': 'application/json'});
     }
+
+    /**
+     * Returns the list of blocked users by logged in user
+     */
+    async fetchBlockedUsers() {
+        return super.getRequest('user/blockedUsers')
+    }
+}
+
+class Anime extends API {
+    constructor() {
+        super();
+        super.log('Initialized anime handler');
+    }
+
+    /**
+     * Gets the anime object from database from the provided anime id
+     * @param {String} animeID The ID of the anime that is beign fetched from database
+     */
+    async getAnime(animeID) {
+        return super.getRequest('anime/id', animeID, { 'Access-Control-Allow-Origin': '*' });
+    }
+
+    /**
+     * Toggles the bookmark of the anime for specific user
+     * @param {Object} json The json of the currently bookmarked animes
+     */
+    async toggleAnime(json) {
+        return super.postRequest('user/anime', undefined, json, {'Content-Type': 'application/json'});
+    }
 }
 
 console.log("[API] Class Loaded");
@@ -249,6 +302,7 @@ const api = {
     channels: new Channels,
     notifications: new Notifications,
     user: new User,
+    anime: new Anime,
     DEV_MODE: DEV_MODE,
 }; 
 
