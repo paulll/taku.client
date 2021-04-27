@@ -292,23 +292,23 @@ export default {
         case 'alpha_asc':
           if(this.searchDMS.length > 1)
             this.searchDMS.sort(   (a, b) => (a.member_list[0].username.toLowerCase() > b.member_list[0].username.toLowerCase()) ? 1 : -1);
-          if(this.searchGroups.length > 1)
-            this.searchGroups.sort((a, b) => (a.member_list[0].username > b.member_list[0].username) ? 1 : -1);
+          // if(this.searchGroups.length > 1)
+          //   this.searchGroups.sort((a, b) => (a.member_list[0].username > b.member_list[0].username) ? 1 : -1);
           // this.inviteChannels.sort((a, b) => (a - b));
         break;
         case 'alpha_desc':
           if(this.searchDMS.length > 1)
             this.searchDMS.sort(   (a, b) => (b.member_list[0].username.toLowerCase() > a.member_list[0].username.toLowerCase()) ? 1 : -1); 
-          if(this.searchGroups.length > 1)
-            this.searchGroups.sort((a, b) => (b.member_list[0].username > a.member_list[0].username) ? 1 : -1);
+          // if(this.searchGroups.length > 1)
+          //   this.searchGroups.sort((a, b) => (b.member_list[0].username > a.member_list[0].username) ? 1 : -1);
           // this.inviteChannels.sort((a, b) => (b + a));
         break;
         // Todo: make checker, which checks if last_message exists
         case 'oldest':
-          this.searchDMS.sort((a, b) => (a.last_message.created_at > b.last_message.created_at) ? 1 : -1);
+          //this.searchDMS.sort((a, b) => (a.last_message.created_at > b.last_message.created_at) ? 1 : -1);
         break;
         default:
-          this.searchDMS.sort((a, b) => (b.last_message.created_at > a.last_message.created_at) ? 1 : -1);
+          //this.searchDMS.sort((a, b) => (b.last_message.created_at > a.last_message.created_at) ? 1 : -1);
         break;
       }
     },
