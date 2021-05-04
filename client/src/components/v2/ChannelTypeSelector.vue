@@ -60,7 +60,7 @@ menu.view div .line {
 
 menu.view div.active .line {
   background: var(--themeColor);
-  width: 75%;
+  width: 150%;
 }
 
 menu.view div {

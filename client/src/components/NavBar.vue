@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <nav>
       <a @click="toggleChannelList()">
         <img src="../assets/navbar/Folder.svg" alt="">

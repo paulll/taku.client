@@ -1,5 +1,5 @@
 var monk = require("monk");
-const url = "mongodb+srv://backend:2IOE2UHdM099cAoE@cluster0.2b5yb.mongodb.net/taku?retryWrites=true&w=majority";
+const url = "localhost/taku";
 const db = monk(url);
 const colors = require("colors");
 

@@ -1,59 +1,59 @@
 <template>
   <div @update-theme="updateUI" class="settingsBar">
-    <router-link to="/settings/account"  class="setting">
+    <!-- <router-link to="/settings/account"  class="setting">
       <img src="../assets/account.png" alt="account">
       <h1>{{translation('Account')}}</h1>
-    </router-link> 
+    </router-link>  -->
 
-    <router-link to="/settings/language"  class="setting">
+    <!-- <router-link to="/settings/language"  class="setting">
       <img src="../assets/language.png" alt="language">
       <h1>{{translation('Language')}}</h1>
-    </router-link> 
+    </router-link>  -->
 
-    <router-link to="/settings/notification"  class="setting">
+    <!-- <router-link to="/settings/notification"  class="setting">
       <img src="../assets/notification.png" alt="notification">
       <h1>{{translation('Notifications')}}</h1>
-    </router-link>
+    </router-link> -->
 
     <router-link to="/settings/appearance"  class="setting">
       <img src="../assets/appearance.png" alt="appearance">
       <h1>{{translation('Appearance')}}</h1>
     </router-link>
 
-    <router-link to="/settings/sounds"  class="setting">
+    <!-- <router-link to="/settings/sounds"  class="setting">
       <img src="../assets/sounds.png" alt="Sounds">
       <h1>{{translation('Sounds')}}</h1>
-    </router-link>
+    </router-link> -->
 
-    <router-link to="/settings/connections"  class="setting">
+    <!-- <router-link to="/settings/connections"  class="setting">
       <img src="../assets/connections.png" alt="connections">
       <h1>{{translation('Connections')}}</h1>
-    </router-link> 
+    </router-link>  -->
 
-    <router-link to="/settings/nsfw"  class="setting">
+    <!-- <router-link to="/settings/nsfw"  class="setting">
       <img src="../assets/nsfw.png" alt="nsfw">
       <h1>{{translation('NSFW')}} Content</h1>
-    </router-link>
+    </router-link> -->
 
-    <router-link to="/settings/feedback"  class="setting">
+    <!-- <router-link to="/settings/feedback"  class="setting">
       <img src="../assets/feedback.png" alt="feedback">
       <h1>{{translation('Feedback')}}</h1>
-    </router-link>
+    </router-link> -->
 
-    <router-link to="/settings/privacy"  class="setting">
+    <!-- <router-link to="/settings/privacy"  class="setting">
       <img src="../assets/privacy.png" alt="privacy">
       <h1>{{translation('Privacy')}}</h1>
-    </router-link>
+    </router-link> -->
 
-    <router-link to="/settings/guidelines"  class="setting">
+    <!-- <router-link to="/settings/guidelines"  class="setting">
       <img src="../assets/guidelines.png" alt="guidelines">
       <h1>{{translation('Guidelines')}}</h1>
-    </router-link>
+    </router-link> -->
 
-    <router-link to="/settings/acknowledgements"  class="setting">
+    <!-- <router-link to="/settings/acknowledgements"  class="setting">
       <img src="../assets/acknowledgements.png" alt="acknowledgements">
       <h1>{{translation('Acknowledgements')}}</h1>
-    </router-link>
+    </router-link> -->
   </div>
 </template>
 

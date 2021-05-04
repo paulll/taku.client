@@ -9,7 +9,6 @@
         <div class="messages" >
           <div class="noMessages" v-if="messages.length == 0 && !isLoading">
             <img :src="require('@/assets/no-messages.png')" alt="No messages!">
-            <h1>Oh no! you've never spoken to this person before!</h1>
           </div>
 
           <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
