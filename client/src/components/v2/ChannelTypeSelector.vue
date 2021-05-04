@@ -63,7 +63,7 @@ menu.view div.active .line {
   width: 75%;
 }
 
-menu.view div, section h1 {
+menu.view div {
   font-family: Work Sans;
   font-style: normal;
   font-weight: 600;

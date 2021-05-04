@@ -596,7 +596,9 @@ export default {
   justify-content: center;
   margin-right: 4px;
   padding: 0px 8px;
-}
+} 
+
+
 
 @media only screen and (min-width: 715px)  {
   .dummy { height: 8px; }
