@@ -1,108 +1,105 @@
 <template>
-  <div class="settings">
-    <div v-if="user.settings">
-      <SettingsBar :themeColor="user.settings.appearance.theme_color"/>
+  <SettingsBar/>
+
+  <div v-if="user.settings" class="settingsArea" >
+
+    <!-- Account -->
+    <div v-if="user.settings.account && path == 'account'" class="section account">
+      <!-- <img class="pfp" :src="user.profile.pfp" alt=""> -->
+      <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Username"  :optionTitle="translation('Username')"  :showValue="true" :optionValue="user.username"  :showSplitter="true"/>
+      <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Email"     :optionTitle="translation('Email')"     :showValue="true" :optionValue="user.email"     :showSplitter="true"/>
+      <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Password"  :optionTitle="translation('Password')"  :showValue="true"  optionValue="**************" :showSplitter="true"/>
     </div>
 
-    <div v-if="user.settings" class="settingsArea" :class="{darkmode: darkmode == 'true'}">
+    <!-- Language -->
+    <div v-if="user.settings.language && path == 'language'" class="section language" >
+      OTTODO: DRopropdown for language 
+    </div>
 
-      <!-- Account -->
-      <div v-if="user.settings.account && path == 'account'" class="section account">
-        <!-- <img class="pfp" :src="user.profile.pfp" alt=""> -->
-        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Username"  :optionTitle="translation('Username')"  :showValue="true" :optionValue="user.username"  :showSplitter="true"/>
-        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Email"     :optionTitle="translation('Email')"     :showValue="true" :optionValue="user.email"     :showSplitter="true"/>
-        <OptionBox  :optionCategory="path" type="text"  :darkmode="darkmode" :user="user" option="Password"  :optionTitle="translation('Password')"  :showValue="true"  optionValue="**************" :showSplitter="true"/>
+    <!-- Appearance -->
+    <div v-if="user.settings.appearance && path == 'appearance'" class="section appearance" >
+      <OptionBox  :user="user"                        :darkmode="darkmode"                                     option="Darkmode"    :optionTitle="translation('Darkmode')"     :optionCategory="path"  :toggleButtons="true"      :optionValue="user.settings.appearance.darkmode"/>
+      <OptionBox  :toggleButtons="true"  type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"  option="Flare"       :optionTitle="translation('Flare')"        :optionCategory="path"  :optionValue="user.settings.appearance.flare.enabled"         :fields="[{placeholder: 'e.g. Shimakaze', selector: 'content', maxLength: 32 }, {placeholder: 'e.g. #ff0022', selector: 'color', maxLength: 7}, ]"/>
+      <OptionBox  :toggleButtons="false" type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"  option="Theme Color" :optionTitle="translation('Theme Color')"  :optionCategory="path"  :optionValue="user.settings.appearance.theme_color"           :fields="[{placeholder: 'e.g. #ff0022', maxLength: 7 }]"/>
+    </div>
+    
+    <!-- Sounds -->
+    <div v-if="user.settings.sounds && path == 'sounds'" class="section sounds" >
+      <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds.typing.enabled"        option="Typing"    :optionTitle="translation('Typing')"   :optionCategory="path"     :showValue="true"/>
+      <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds.mention.enabled"       :optionCategory="path" option="Mention" :optionTitle="translation('Mention')"      :showValue="true"/>
+      <OptionBox  :message="notificationSoundUrl" :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds.notification.enabled" :optionCategory="path" option="Notification" :optionTitle="translation('Notification')" :showValue="true"/>
+      <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds.hover.enabled" :optionCategory="path" option="Hover" :optionTitle="translation('Hover')" :showValue="true"/>
+      <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds.click.enabled" :optionCategory="path" option="Click" :optionTitle="translation('Click')" :showValue="true"/>
+    </div>
+
+    <!-- Connections user.settings.connectios && -->
+    <div v-if="path == 'connections'" class="section connections" >
+      <Connections   :user="user" :darkmode="darkmode"/>
+      <div class="connectionsList">
+        <ConnectionBox v-if="user.settings.connections.osu" :user="user" :darkmode="darkmode" connectionPlatform="osu" :showSplitter="true" :connectionPlatformDetails="user.profile.connections.osu"/>
       </div>
+    </div>
 
-      <!-- Language -->
-      <div v-if="user.settings.language && path == 'language'" class="section language" :class="{darkmode: darkmode == 'true'}">
-        OTTODO: DRopropdown for language 
+    <!-- Privacy -->
+    <div v-if="user.settings.privacy && path == 'privacy'" class="section privacy" >
+      <OptionBox  :user="user" :darkmode="darkmode" option="Show Status" :optionTitle="translation('Show Status')"    :optionCategory="path"   :toggleButtons="true"   :optionValue="user.settings.privacy.show_status"/>
+      <OptionBox  :user="user" :darkmode="darkmode" option="Blocked Users" :optionTitle="translation('Blocked Users')"  :optionCategory="path"   :listContent="user.settings.privacy.blocked_users" :showValue="true" :list="true" />
+    </div>
+
+    <!-- Info -->
+    <div v-if="path == 'info'" class="section info">
+      <div class="optionBox" >
+        <div class="top">
+          <div class="heading">
+            <img src="../assets/user.png" alt="darkmode">
+            <h1>WHO WE ARE</h1>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <!-- Appearance -->
-      <div v-if="user.settings.appearance && path == 'appearance'" class="section appearance" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :user="user"                        :darkmode="darkmode"                                     option="Darkmode"    :optionTitle="translation('Darkmode')"     :optionCategory="path"  :toggleButtons="true"      :optionValue="user.settings.appearance.darkmode"/>
-        <OptionBox  :toggleButtons="true"  type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"  option="Flare"       :optionTitle="translation('Flare')"        :optionCategory="path"  :optionValue="user.settings.appearance.flare.enabled"         :fields="[{placeholder: 'e.g. Shimakaze', selector: 'content', maxLength: 32 }, {placeholder: 'e.g. #ff0022', selector: 'color', maxLength: 7}, ]"/>
-        <OptionBox  :toggleButtons="false" type="text"  :darkmode="darkmode" :user="user"  :showSplitter="true"  option="Theme Color" :optionTitle="translation('Theme Color')"  :optionCategory="path"  :optionValue="user.settings.appearance.theme_color"           :fields="[{placeholder: 'e.g. #ff0022', maxLength: 7 }]"/>
+    <!-- acknowledgements -->
+    <div v-if="path == 'acknowledgements'" class="section acknowledgements">
+      <div class="optionBox" >
+        <div class="top">
+          <div class="heading">
+            <img src="../assets/dev.png" alt="darkmode">
+            <h1>Developers</h1>
+          </div>
+        </div>
+        <div class="splitter" ></div>
+        <div class="devsBottom">
+          <div class="credits"  v-for="user in credits" :key="user">
+            <p><router-link :to="`/profile/${user.user}`"><strong>{{user.user}}</strong></router-link> - {{user.role}}</p>
+          </div>
+        </div>
       </div>
       
-      <!-- Sounds -->
-      <div v-if="user.settings.sounds && path == 'sounds'" class="section sounds" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :fileUrl="typingSoundUrl"       :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="typingSoundUrl"       :optionValue="user.settings.sounds.typing.enabled"        option="Typing"    :optionTitle="translation('Typing')"   :optionCategory="path"     :showValue="true"/>
-        <OptionBox  :fileUrl="mentionSoundUrl"      :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="mentionSoundUrl"      :optionValue="user.settings.sounds.mention.enabled"       :optionCategory="path" option="Mention" :optionTitle="translation('Mention')"      :showValue="true"/>
-        <OptionBox  :message="notificationSoundUrl" :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="notificationSoundUrl" :optionValue="user.settings.sounds.notification.enabled" :optionCategory="path" option="Notification" :optionTitle="translation('Notification')" :showValue="true"/>
-        <OptionBox  :fileUrl="hoverSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="hoverSoundUrl" :optionValue="user.settings.sounds.hover.enabled" :optionCategory="path" option="Hover" :optionTitle="translation('Hover')" :showValue="true"/>
-        <OptionBox  :fileUrl="clickSoundUrl"        :toggleButtons="true"  type="file"  :showSplitter="true" :darkmode="darkmode" :user="user"  property="clickSoundUrl" :optionValue="user.settings.sounds.click.enabled" :optionCategory="path" option="Click" :optionTitle="translation('Click')" :showValue="true"/>
-      </div>
-
-      <!-- Connections user.settings.connectios && -->
-      <div v-if="path == 'connections'" class="section connections" :class="{darkmode: darkmode == 'true'}">
-        <Connections   :user="user" :darkmode="darkmode"/>
-        <div class="connectionsList">
-          <ConnectionBox v-if="user.settings.connections.osu" :user="user" :darkmode="darkmode" connectionPlatform="osu" :showSplitter="true" :connectionPlatformDetails="user.profile.connections.osu"/>
+      <!-- libraries -->
+      <div class="optionBox" >
+        <div class="top">
+          <div class="heading">
+            <img src="../assets/library.png" alt="darkmode">
+            <h1>Libraries</h1>
+          </div>
         </div>
-      </div>
-
-      <!-- Privacy -->
-      <div v-if="user.settings.privacy && path == 'privacy'" class="section privacy" :class="{darkmode: darkmode == 'true'}">
-        <OptionBox  :user="user" :darkmode="darkmode" option="Show Status" :optionTitle="translation('Show Status')"    :optionCategory="path"   :toggleButtons="true"   :optionValue="user.settings.privacy.show_status"/>
-        <OptionBox  :user="user" :darkmode="darkmode" option="Blocked Users" :optionTitle="translation('Blocked Users')"  :optionCategory="path"   :listContent="user.settings.privacy.blocked_users" :showValue="true" :list="true" />
-      </div>
-
-      <!-- Info -->
-      <div v-if="path == 'info'" class="section info">
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/user.png" alt="darkmode">
-              <h1>WHO WE ARE</h1>
-            </div>
+        <div class="splitter" ></div>
+        <div class="devsBottom">
+          <div class="credits"  v-for="lib in libraries" :key="lib">
+            <img class="libIcon" :src="lib.img" alt="darkmode">
+            <p><a :href="lib.link" target="_blank"><strong>{{lib.lib}}</strong></a> - {{lib.creator}}</p>
           </div>
         </div>
       </div>
 
-      <!-- acknowledgements -->
-      <div v-if="path == 'acknowledgements'" class="section acknowledgements">
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/dev.png" alt="darkmode">
-              <h1>Developers</h1>
-            </div>
-          </div>
-          <div class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
-          <div class="devsBottom">
-            <div class="credits" :class="{darkmode: darkmode == 'true'}" v-for="user in credits" :key="user">
-              <p><router-link :to="`/profile/${user.user}`"><strong>{{user.user}}</strong></router-link> - {{user.role}}</p>
-            </div>
-          </div>
-        </div>
-        
-        <!-- libraries -->
-        <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
-          <div class="top">
-            <div class="heading">
-              <img src="../assets/library.png" alt="darkmode">
-              <h1>Libraries</h1>
-            </div>
-          </div>
-          <div class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
-          <div class="devsBottom">
-            <div class="credits" :class="{darkmode: darkmode == 'true'}" v-for="lib in libraries" :key="lib">
-              <img class="libIcon" :src="lib.img" alt="darkmode">
-              <p><a :href="lib.link" target="_blank"><strong>{{lib.lib}}</strong></a> - {{lib.creator}}</p>
-            </div>
-          </div>
-        </div>
+    </div>
 
-      </div>
-
-      <!-- Guidelines -->
-      <div v-if="path == 'guidelines'" class="section guidelines">
-        <Guidelines/>
-      </div>
+    <!-- Guidelines -->
+    <div v-if="path == 'guidelines'" class="section guidelines">
+      <Guidelines/>
     </div>
   </div>
+ 
 </template>
 <script>
 import SettingsBar from '@/components/SettingsBar.vue'
@@ -240,13 +237,10 @@ export default {
   width: 100%;
 }
 
-
-
 .settingsArea {
-    width: calc(100% - 344px);
-    background: #F3F3F3;
+    width: 100%;
+    background-color: var(--light);
     height: inherit;
-    transform: translateX(56px);
     height: 100vh;
     padding-top: 60px;
     transition: 100ms ease;
@@ -254,7 +248,6 @@ export default {
     display: flex;
     justify-content: center;
     right: 0;
-    position: absolute;
 }
 
 .settingsArea.darkmode { background: var(--darker); } /* darkmode */ 

@@ -32,7 +32,7 @@ export default {
 
 <template>
   <div class="mh-headerContainer">
-    <header class="mh-header" @update-theme="updateUI" :class="{darkmode: darkmode == 'true'}">
+    <header class="mh-header" @update-theme="updateUI" >
       <ul v-if="mode == 'nav'" class="mh-headerButtons">
         <li><router-link to="/" class="mh-headerButton"><img src="../assets/home.svg" alt=""></router-link></li>
         <li><router-link to="/anime" class="mh-headerButton"><img src="../assets/anime.svg" alt=""></router-link></li>

@@ -1,14 +1,14 @@
 <template>
     <!-- <div @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste" class="dropArea"></div> -->
     <div class="sendMessageContainer">
-        <form id="sendMessage" class="sendMessage" :class="{darkmode: darkmode == 'true'}" v-on:submit.prevent="sendMessage" >
+        <form id="sendMessage" class="sendMessage"  v-on:submit.prevent="sendMessage" >
             <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
             <div class="images" :class="{darkmode: darkmode == 'true', padding: previews.length != 0}">
                 <img class="previewFile" v-for="file in previews" :src="file" :key="file" @click="deselect(previews.indexOf(file))" alt="">
             </div> 
             <div class="inputFields">
                 <img class="plusButton" src="@/assets/plus.svg" alt="" @click="$refs.files.click()">
-                <input :class="{darkmode: darkmode == 'true'}" ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Write something..." autocomplete="off">
+                <input  ref="message" type="text" name="chat" @keydown="typing()" id="chat" v-model="message" maxlength="4096" placeholder="Write something..." autocomplete="off">
                 <div v-if="previews.length > 0" type="file" class="quickButton removeAll" @click.prevent="deselectAll()">{{translation('CLEAR')}}</div>
             </div>
         </form> 

@@ -1,12 +1,12 @@
 <template>
-  <div class="DMs" :class="{darkmode: darkmode == 'true'}" @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
+  <div class="DMs"  @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste">
     <ChatHeader v-if="currentChannel" :channel="currentChannel" />
     <div class="messagesWrapper">
       <div class="messagesContainer">
         <div class="loadingSpinner" v-if="isLoading">
           <Spinner/>
         </div>
-        <div class="messages" :class="{darkmode: darkmode == 'true'}">
+        <div class="messages" >
           <div class="noMessages" v-if="messages.length == 0 && !isLoading">
             <img :src="require('@/assets/no-messages.png')" alt="No messages!">
             <h1>Oh no! you've never spoken to this person before!</h1>
@@ -24,7 +24,7 @@
                 {{convert(message.created_at)}}
               </h4> -->
               <h2 class="content" v-if="message.content.length != 0" :class="{mention: message.content.includes('@') && (message.content.toLowerCase().includes(me.toLowerCase()) || message.content.toLowerCase().includes('everyone')), darkmode: darkmode == 'true'}" v-html="message.content"></h2>
-              <div class="content" :class="{darkmode: darkmode == 'true'}" v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
+              <div class="content"  v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
             </div>
           </div>
 

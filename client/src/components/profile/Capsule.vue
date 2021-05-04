@@ -1,8 +1,8 @@
 <template>
-    <div v-if="section = 'favorite_anime'" id="favorite_anime" class="capsule" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="section = 'favorite_anime'" id="favorite_anime" class="capsule" >
         <img draggable v-if="edit" class="move" src="@/assets/move.png">
         <p class="tags">{{translation('FAVORITE Anime')}}</p>
-        <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
+        <div class="scrollableRegion animePosters" >
             <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
                 <img class="anime" width="84" :src="`https://taku.moe:2087/anime/posters/${id}.jpg`">
                 <Spinner/>
@@ -10,23 +10,23 @@
         </div>
     </div>
 
-    <div v-if="section = 'computer_specs' && user.profile.computer" id="computer_specs" class="capsule" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="section = 'computer_specs' && user.profile.computer" id="computer_specs" class="capsule" >
         <img draggable v-if="edit" class="move" src="@/assets/move.png">
-        <p class="tags" :class="{darkmode: darkmode == 'true'}">{{translation('MY Computer')}}</p>
+        <p class="tags" >{{translation('MY Computer')}}</p>
         <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
     </div>
 
-    <div v-if="section = 'osu_profile' && user.profile.connections?.osu" id="osu_profile" class="capsule" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="section = 'osu_profile' && user.profile.connections?.osu" id="osu_profile" class="capsule" >
         <img draggable v-if="edit" class="move" src="@/assets/move.png">
         <p class="tags">{{translation('osu! Profile')}}</p>
         <Osu :profile="user.profile.connections?.osu" :edit="edit"/>               
     </div>
     
-    <div v-if="section = 'description'" id="description" class="capsule" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="section = 'description'" id="description" class="capsule" >
         <img draggable v-if="edit" class="move" src="@/assets/move.png">
         <p class="tags">{{translation('DESCRIPTION')}}</p>
-        <textarea v-if="!edit" class="description" :class="{darkmode: darkmode == 'true'}" readonly='true'>{{user.profile.description}}</textarea>
-        <textarea rows="10" cols="100" v-if="edit" class="description" :class="{darkmode: darkmode == 'true'}" v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
+        <textarea v-if="!edit" class="description"  readonly='true'>{{user.profile.description}}</textarea>
+        <textarea rows="10" cols="100" v-if="edit" class="description"  v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
     </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-    <div v-if="user" class="userProfile" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="user" class="userProfile" >
         <div class="bannerContainer">
             <div class="gradient">
                 <input type="file" ref="banner" style="display: none" accept="image/*" @change="uploadFile('banner')">
@@ -8,7 +8,7 @@
             <div class="banner" :style="{'background-image' : `url('${user.profile.banner}')`}">
             </div>
             <div class="headingWrapper">
-                <div class="heading" :class="{darkmode: darkmode == 'true'}">
+                <div class="heading" >
                     <div class="pfp">
                         <div v-if="user.username" class="image" :style="{'background-image': `url('${user.profile.pfp}')`}">
                             <input type="file" ref="pfp" style="display: none" accept="image/*" @change="uploadFile('pfp')">
@@ -33,28 +33,28 @@
                             <div class="otherUserButtons" v-if="user.username != me.username && me.friend_list">
                                 
                                 <!-- Add friend button -->
-                                <button :style="themeColors" @click="friend(user.uuid, 'add')"     v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))"  class="button">{{translation("Add")}}</button>
-                                <button :style="themeColors" @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">{{translation('Cancel Request')}}</button>
+                                <button @click="friend(user.uuid, 'add')"     v-if="!(me.friend_list.friends.includes(user.uuid) || me.friend_list.incoming.includes(user.uuid) || me.friend_list.outgoing.includes(user.uuid))"  class="button">{{translation("Add")}}</button>
+                                <button @click="friend(user.uuid, 'cancel')"  v-if="me.friend_list.outgoing.includes(user.uuid)" class="button">{{translation('Cancel Request')}}</button>
                                 
-                                <button :style="themeColors" @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Accept')}}</button>
-                                <button :style="themeColors" @click="friend(user.uuid, 'deny')"     v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Deny')}}</button>
+                                <button @click="friend(user.uuid, 'accept')"   v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Accept')}}</button>
+                                <button @click="friend(user.uuid, 'deny')"     v-if="me.friend_list.incoming.includes(user.uuid)" class="button">{{translation('Deny')}}</button>
                                 <!-- Remove friend -->
-                                <button :style="themeColors" @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">{{translation('Remove')}}</button>
+                                <button @click="friend(user.uuid, 'remove')"   v-if="me.friend_list.friends.includes(user.uuid)" class="button">{{translation('Remove')}}</button>
                         
                                 <!-- Send DM button -->
-                                <button :style="themeColors" class="button" v-if="user.uuid != me.uuid && user.isFriend"><router-link :to="`/dm/${user.uuid}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
+                                <button class="button" v-if="user.uuid != me.uuid && user.isFriend"><router-link :to="`/dm/${user.uuid}`"><img src="../assets/chatroom.png" alt=""></router-link></button>
                                 
                                 <!-- Block button -->
-                                <button :style="themeColors" @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
-                                <button :style="themeColors" @click="block()" v-if="me.settings?.privacy.blocked_users.includes(user.uuid)" class="button">{{translation('Unblock')}}</button>
+                                <button @click="block()" v-if="!me.settings?.privacy.blocked_users.includes(user.uuid)" class="button"><img src="../assets/flag.png" alt=""></button>
+                                <button @click="block()" v-if="me.settings?.privacy.blocked_users.includes(user.uuid)" class="button">{{translation('Unblock')}}</button>
                                 
                             </div>
 
                             <!-- My buttons -->
                             <div class="myButtons" v-if="user.username == me.username">
                                 <!-- Edit button -->
-                                <button :style="themeColors" v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">{{translation('Edit')}}</button>
-                                <button :style="themeColors" v-if="edit" @click="toggleEdit(); updateSettings();" class="button">{{translation('Save')}}</button>
+                                <button v-if="!edit" @click="toggleEdit()" class="button"><img src="../assets/edit.svg" alt="Edit">{{translation('Edit')}}</button>
+                                <button v-if="edit" @click="toggleEdit(); updateSettings();" class="button">{{translation('Save')}}</button>
                             </div>
 
                         </div>
@@ -75,12 +75,12 @@
         </div>
         <div class="pageContentWrapper" @dragover="startDrag($event, currentlyDraggingElement)">
             <!-- <div class="pageBackground" :style="{'background-image' : `url('${user.profile.banner}')`}"></div> -->
-            <div class="pageContent" :class="{darkmode: darkmode == 'true'}">
+            <div class="pageContent" >
                 <!-- FAVORITE ANIME -->
-                <div :style="{'order': user.profile.order.indexOf('favorite_anime')}" id="favorite_anime" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div :style="{'order': user.profile.order.indexOf('favorite_anime')}" id="favorite_anime" class="capsule" >
                     <img draggable v-if="edit" @dragstart="startDrag($event, 'favorite_anime')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('FAVORITE Anime')}}</p>
-                    <div class="scrollableRegion animePosters" :class="{darkmode: darkmode == 'true'}">
+                    <div class="scrollableRegion animePosters" >
                         <router-link :to="`/anime/${id}`" class="posterContainer" v-for="id in user.profile.anime_list" :key="id" :id="id">
                             <img class="anime" width="84" :src="`${rootPath}:2087/anime/posters/${id}.jpg`">
                             <Spinner/>
@@ -88,24 +88,24 @@
                     </div>
                 </div>
                 <!-- COMPUTER SPECS -->
-                <div :style="{'order': user.profile.order.indexOf('computer_specs')}" id="computer_specs" v-if="user.profile.computer" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div :style="{'order': user.profile.order.indexOf('computer_specs')}" id="computer_specs" v-if="user.profile.computer" class="capsule" >
                     <img draggable v-if="edit" @dragstart="startDrag($event, 'computer_specs')" class="move" src="@/assets/move.png">
-                    <p class="tags" :class="{darkmode: darkmode == 'true'}">{{translation('MY Computer')}}</p>
+                    <p class="tags" >{{translation('MY Computer')}}</p>
                     <MyComputer :computer="user.profile.computer" :edit="edit" :themeColors="themeColors"/>
                 </div>
                 <!-- OSU PROFILE -->
-                <div :style="{'order': user.profile.order.indexOf('osu_profile')}" id="osu_profile" v-if="user.profile.connections?.osu" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div :style="{'order': user.profile.order.indexOf('osu_profile')}" id="osu_profile" v-if="user.profile.connections?.osu" class="capsule" >
                     <img draggable v-if="edit" @dragstart="startDrag($event, 'osu_profile')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('osu! Profile')}}</p>
                     <Osu :profile="user.profile.connections?.osu" :edit="edit"/>               
                 </div>
                 
                 <!-- DESCRIPTION -->
-                <div :style="{'order': user.profile.order.indexOf('description')}" id="description" class="capsule" :class="{darkmode: darkmode == 'true'}">
+                <div :style="{'order': user.profile.order.indexOf('description')}" id="description" class="capsule" >
                     <img draggable v-if="edit" @dragstart="startDrag($event, 'description')" class="move" src="@/assets/move.png">
                     <p class="tags">{{translation('DESCRIPTION')}}</p>
-                    <textarea v-if="!edit" class="description" :class="{darkmode: darkmode == 'true'}" readonly='true'>{{user.profile.description}}</textarea>
-                    <textarea rows="10" cols="100" v-if="edit" class="description" :class="{darkmode: darkmode == 'true'}" v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
+                    <textarea v-if="!edit" class="description"  readonly='true'>{{user.profile.description}}</textarea>
+                    <textarea rows="10" cols="100" v-if="edit" class="description"  v-model="me.profile.description" type="text" >{{me.profile.description}}</textarea>
                 </div>
             </div>
         </div>

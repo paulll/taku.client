@@ -1,13 +1,13 @@
 <template>
     <div>
-        <div class="textHeader" :class="{darkmode: darkmode == 'true'}">
+        <div class="textHeader" >
             <div class="top"></div>
             <div class="heading">
                 <h1>GUIDELINES</h1>
             </div>
         </div>
 
-        <div class="textParagraph" :class="{darkmode: darkmode == 'true'}">
+        <div class="textParagraph" >
             <div class="top">
                 <div class="heading">
                     <p>

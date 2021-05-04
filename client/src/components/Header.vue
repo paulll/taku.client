@@ -42,30 +42,30 @@
                 </div>
             </div>
 
-            <div class="buttons" :style="themeColors"  v-if="!token">
+            <div class="buttons"  v-if="!token">
                 <router-link to="/login" class="login">{{translation("Login")}}</router-link>
                 <router-link to="/signup" class="signup">{{translation("Signup")}}</router-link>
             </div>
-            <!-- <div class="buttons small" :style="themeColors" v-if="token">
+            <!-- <div class="buttons small" v-if="token">
                 <router-link to="/home" class="button"><img src="../assets/home.svg" alt=""></router-link>
             </div>
-            <div class="buttons small" :style="themeColors" v-if="token">
+            <div class="buttons small" v-if="token">
                 <router-link to="/anime" class="button"><img src="../assets/anime.svg" alt=""></router-link>
             </div> -->
-            <div class="buttons small" :style="themeColors" v-if="token">
+            <div class="buttons small" v-if="token">
                 <router-link to="/messages" class="button"><img src="../assets/navbar/Message.svg" alt=""></router-link>
             </div>
-            <div class="buttons small" :style="themeColors" v-if="token">
+            <div class="buttons small" v-if="token">
                 <div v-if="notifications.length > 0" class="numberOfNotifs">{{notifications.length}}</div>
                 <div class="button" @click="showNotifications = !showNotifications" ><img src="../assets/navbar/Bell.svg" alt=""></div>
             </div>
 
             <Notifications :notifications="notifications" :show="showNotifications"/> 
 
-            <div class="buttons small" :style="themeColors" v-if="token">
+            <div class="buttons small" v-if="token">
                 <router-link to="/settings" class="button"><img src="../assets/settings.svg" alt=""></router-link>
             </div>
-            <div class="buttons" :style="themeColors" v-if="token && user">
+            <div class="buttons" v-if="token && user">
                 <router-link :to='`/profile/${user.username}`'><div class="pfp" :style="{'background-image' : `url('${user.pfp}')`}"></div></router-link>
             </div>
         </div>

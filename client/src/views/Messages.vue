@@ -1,5 +1,5 @@
 <template>
-  <div class="channelsContainer" v-if="privateChannels && settings.messages.isChannellistVisible" :class="{darkmode: darkmode == 'true'}">
+  <div class="channelsContainer" v-if="privateChannels && settings.messages.isChannellistVisible" >
     <div class="top" >
       <div class="search">
         <div class="button">

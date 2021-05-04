@@ -2,7 +2,7 @@
     <div class="section" v-if="wallpapers">
         <p class="headerText">{{translation('NEW Wallpapers')}}</p>
         <div class="scrollRegion" v-on:scroll.passive="handleScroll">
-            <div class="wallpaper" :class="{darkmode: darkmode == 'true'}">
+            <div class="wallpaper" >
                 <router-link :to="`/wallpaper/${wallpaper.uuid}`" class="wallpaperContainer" v-for="wallpaper in wallpapers" :key="wallpaper">
                     <div class="image" width="84" :style="{'background-image': `url('${rootPath}:2087/wallpapers/static/${wallpaper.filename}')`}"></div>
                     <Spinner/>

@@ -7,7 +7,7 @@
         </div>
         <div class="myComputerItem">
             <div v-for="component of computer" :key="component" >
-                <p v-if="!edit"  :style="themeColors" :class="{active: activeTab == component.category}" >{{component.item}}</p>
+                <p v-if="!edit"  :class="{active: activeTab == component.category}" >{{component.item}}</p>
                 <input v-if="edit" :class="{active: activeTab == component.category}" v-model="component.item" type="text" @change="updateSpecs">
             </div>
         </div>

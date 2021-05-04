@@ -1,15 +1,15 @@
 <template >
-    <div class="searchResults" :class="{darkmode: darkmode == 'true'}">
+    <div class="searchResults" >
         <p v-if="searchResults.users?.length > 0" class="tags"><strong>USERS</strong></p>
-        <div class="users" :class="{darkmode: darkmode == 'true'}">
+        <div class="users" >
             <router-link :to="`/profile/${user.username}`" class="user" v-for="user in searchResults?.users" :key="user">
                 <Spinner/>
                 <img :src="`${rootPath}:2087/pfp/${user.uuid}`" alt="">
-                <p :class="{darkmode: darkmode == 'true'}">{{user.username}}</p>
+                <p >{{user.username}}</p>
             </router-link>
         </div>
         <p v-if="searchResults.anime?.length > 0" class="tags"><strong>ANIME</strong></p>
-        <div class="animeList" :class="{darkmode: darkmode == 'true'}">
+        <div class="animeList" >
             <router-link :to="`/anime/${anime.id}`" class="animeWrap" v-for="anime in searchResults?.anime" :key="anime">
                 <!-- <img :src="anime.settings.pfp" alt=""> -->
                 <img class="animePoster" :src="`${rootPath}:2087/anime/posters/${anime.id}.jpg`" alt="Anime">

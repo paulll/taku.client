@@ -1,5 +1,5 @@
 <template >
-    <div v-if="show" class="notificationBox" :class="{darkmode: darkmode == 'true'}">
+    <div v-if="show" class="notificationBox" >
         <div class="heading">
             <div class="left">
                 <p>{{translation('NOTIFICATIONS')}} ({{Object.keys(notifications).length}})</p>
@@ -8,7 +8,7 @@
         </div>
 
         <p v-if="Object.keys(notifications).length == 0" class="noNotifications">{{translation("You don't have any notifications!")}} <strong>(｡•́︿•̀｡)</strong></p>
-        <div class="notification" :class="{darkmode: darkmode == 'true'}" v-for="notification in notifications" :key="notification">
+        <div class="notification"  v-for="notification in notifications" :key="notification">
             <transition name="slide-fade" :id="notification.uuid" >
                 <div class="left" v-show='notification.show'>
                     <router-link :to="`/profile/${notification.from.username}`"><img :src="`${rootPath}:2087/pfp/cache/${notification.from.uuid}`"></router-link>

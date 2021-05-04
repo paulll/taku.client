@@ -1,5 +1,5 @@
 <template>
-    <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+    <div class="optionBox" >
         <div class="top">
             <div class="heading">
                 <a href="https://osu.ppy.sh/oauth/authorize?client_id=5478&response_type=code&redirect_uri=https://taku.moe/settings/connections"><img src="@/assets/platforms/osu.png"></a>

@@ -1,5 +1,5 @@
 <template>
-    <div class="optionBox" :class="{darkmode: darkmode == 'true'}">
+    <div class="optionBox" >
         <div class="top">
             <div class="heading">
                 <div>
@@ -8,12 +8,12 @@
 
                 </div>
                 <div v-if="toggleButtons" class="onOff" :style="themeColors">
-                    <button  @click="toggleOption(true, option.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == true}">{{translation("on")}}</button>
-                    <button  @click="toggleOption(false, option.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == false}">{{translation("off")}}</button>
+                    <button  @click="toggleOption(true, option.toLowerCase().replace(/\s/g, '_'))" :class="{'active': optionValue == true}">{{translation("on")}}</button>
+                    <button  @click="toggleOption(false, option.toLowerCase().replace(/\s/g, '_'))" :class="{'active': optionValue == false}">{{translation("off")}}</button>
                 </div>
             </div>
         </div>
-        <div v-if="showSplitter" class="splitter" :class="{darkmode: darkmode == 'true'}"></div>
+        <div v-if="showSplitter" class="splitter" ></div>
         <div v-if="showValue" class="bottom">
             <a   v-if="type == 'file' && fileUrl" target="_blank" :href="user.settings[optionCategory][option.toLowerCase().replace(/\s/g, '_')].url"><p>{{user.settings[optionCategory][option.toLowerCase().replace(/\s/g, '_')].url.split("/")[user.settings[optionCategory][option.toLowerCase().replace(/\s/g, '_')].url.split("/").length - 1]}}</p></a>
         <!--  -->    <a   v-if="type == 'file' && !fileUrl" href=""><p>{{translation("Default")}}</p></a>

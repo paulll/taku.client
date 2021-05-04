@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="scrollableRegion stats osu" :class="{darkmode: darkmode == 'true'}">
+        <div class="scrollableRegion stats osu" >
             <div class="stat osuprofile">
                 <Spinner/>
                 <a :href="`https://osu.ppy.sh/users/${profile.id}`" target="_blank"><img class="osuPfp" :src="profile.avatar_url" alt=""></a>

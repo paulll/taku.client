@@ -2,7 +2,7 @@
     <div class="section" v-if="animeList">
         <p class="headerText">{{translation('BROWSE Anime')}}</p>
         <div class="scrollRegion">
-            <div class="animePosters" :class="{darkmode: darkmode == 'true'}">
+            <div class="animePosters" >
                 <router-link :to="`/anime/${anime.id}`" class="posterContainer" v-for="anime in animeList" :key="anime.id" :id="anime.id">
                     <div class="anime" width="84" :style="{'background-image': `url('${rootPath}:2087/anime/posters/${anime.id}.jpg')`}"></div>
                     <Spinner/>

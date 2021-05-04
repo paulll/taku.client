@@ -1,5 +1,5 @@
 <template>
-    <div class="connectionBox" :class="{darkmode: darkmode == 'true'}">
+    <div class="connectionBox" >
         <div class="top">
             <div class="heading">
                 <div>
