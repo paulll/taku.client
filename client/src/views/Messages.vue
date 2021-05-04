@@ -265,7 +265,7 @@ export default {
         this.channels.push(channel);
         this.cache.updateChannel(channel)
 
-        if (channel.type == "dm" && !channel.isPinned) this.privateChannels.push(channel);
+        if (channel.type == "private" && !channel.isPinned) this.privateChannels.push(channel);
         if (channel.type == "group" && !channel.isPinned) this.groupChannels.push(channel);
       }
 

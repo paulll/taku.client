@@ -166,8 +166,6 @@ io.on("connection", socket => {
         let notification = new taku.Notification("Message", { uuid: messageEvent.author.uuid, username: messageEvent.author.username }, message.content);
         io.sockets.in(message.author.uuid).emit('message', message);
     
-        console.log(message);
-
         for (member of channel.member_list) {
             if (member != message.author.uuid) {
                 // Send event to the specific users
