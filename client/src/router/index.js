@@ -33,6 +33,7 @@ const routes = [
   {
     path: '/profile/:username',
     name: 'profile',
+    props: true,
     component: () => import(/* webpackChunkName: "profile" */ '@/views/Profile'),
   },
   {
@@ -46,6 +47,7 @@ const routes = [
   {
     path: '/messages/:type?/:channel_uuid?',
     name: 'messages',
+    props: true,
     component: () => import(/* webpackChunkName: "messages" */ '@/views/Messages'),
     meta: {
       title: 'Taku | Messages',

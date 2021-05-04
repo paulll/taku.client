@@ -145,6 +145,10 @@ export default {
       userToCall: null,
     };
   },
+  props: {
+    type: { type: String, require: true },
+    channel_uuid: { type: String, require: true },
+  },
   mounted() {
     this.loadCache();
     this.getChannels();
@@ -240,7 +244,7 @@ export default {
       // That I joined the call with my user uuid being peer_uuid
       // peer.on('open', peer_uuid => {
       // });
-      socket.emit('join_vc_channel', this.$route.params.channel_uuid, this.me.uuid);
+      socket.emit('join_vc_channel', this.channel_uuid, this.me.uuid);
 
       // Connects to new user
       function connectToNewUser(user_uuid, stream){
@@ -370,7 +374,7 @@ export default {
       // Auto update the URL if theres no channel 
       // E.g. if tthe url is https://taku.moe/messages/
       // This will redirect it to the first private channel they have
-      if (this.$route.params.channel_uuid == '' && this.privateChannels != null){
+      if (this.channel_uuid == '' && this.privateChannels != null){
         this.$router.push(`/messages/private/${this.privateChannels[0].uuid}`);
       }
 

@@ -135,6 +135,9 @@ export default {
     Socials,
     Osu,
   },
+  props: {
+      username: { type: String, required: true }
+  },
   data: () => {
     return {
         darkmode: localStorage.darkmode,
@@ -196,8 +199,8 @@ export default {
     async getUser() {
 
       // Get user data
-    //   let user = await axios.get(`${this.rootPath}:2087/user/${this.$route.params.username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
-      let user = await this.api.user.fetchUser(this.$route.params.username)
+    //   let user = await axios.get(`${this.rootPath}:2087/user/${username}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+      let user = await this.api.user.fetchUser(this.username)
       console.log(user)
       user = Object.assign({}, user).data;
 

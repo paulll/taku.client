@@ -65,6 +65,9 @@ export default {
     components: {
         User,
     },
+    props: {
+        wallpaper_uuid: {type: String, required: true}
+    },
     mounted(){
         this.getWallpaper();
         if(localStorage.me) this.me = JSON.parse(localStorage.me);
@@ -82,15 +85,15 @@ export default {
             element.requestFullscreen();
         },
         async getWallpaper(){
-            this.wallpaper = (await axios.get(`${this.rootPath}:2087/wallpapers/${this.$route.params.wallpaper_uuid}`)).data;
+            this.wallpaper = (await axios.get(`${this.rootPath}:2087/wallpapers/${this.wallpaper_uuid}`)).data;
             console.log(this.wallpaper);
         },
         downloadWallpaper(){
             this.wallpaper.downloads++;
-            window.open(`${this.rootPath}:2087/wallpapers/download/${this.$route.params.wallpaper_uuid}`);
+            window.open(`${this.rootPath}:2087/wallpapers/download/${this.wallpaper_uuid}`);
         },
         async interaction(property, action){
-            const response = await axios.post(`${this.rootPath}:2087/wallpapers/${action}/${this.$route.params.wallpaper_uuid}`, undefined, {
+            const response = await axios.post(`${this.rootPath}:2087/wallpapers/${action}/${this.wallpaper_uuid}`, undefined, {
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json'

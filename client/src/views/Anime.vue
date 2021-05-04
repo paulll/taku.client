@@ -37,6 +37,9 @@ export default {
             saved: false,
         };
     },
+    props: {
+        id: {type: String, required: true}
+    },
     mounted() {
         this.getData();
     },
@@ -76,8 +79,8 @@ export default {
             this.user = await this.api.user.fetchMe();
 
             // Get anime data
-            //let anime = await axios.get(`${this.rootPath}:2087/anime/id/${this.$route.params.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
-            let anime = await this.api.anime.getAnime(this.$route.params.id)
+            //let anime = await axios.get(`${this.rootPath}:2087/anime/id/${this.id}/`, { headers: { 'Access-Control-Allow-Origin': '*' } });
+            let anime = await this.api.anime.getAnime(this.id)
             anime = Object.assign({}, anime).data.anime[0];
             anime.tags = anime.tags.join(", ");
             this.anime = anime;
