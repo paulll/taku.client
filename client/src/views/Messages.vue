@@ -1,14 +1,6 @@
 <template>
   <div class="channelsContainer" v-if="privateChannels && settings.messages.isChannellistVisible" :class="{darkmode: darkmode == 'true'}">
     <div class="top" >
-      <div v-if="callState != 'idle'" class="call">
-        {{callInformation.username}} {{translation('Is calling you!')}}
-      </div>
-
-      <div v-if="me.isCalling" class="call">
-        {{translation('Calling')}} {{userToCall.username}}...
-      </div>
-
       <div class="search">
         <div class="button">
           <input ref="search" class="searchBox" spellcheck="false" placeholder="Search users and channels" v-model="searchString" type="text" @keyup="filterSearch()">
@@ -122,10 +114,7 @@ export default {
       darkmode: localStorage.darkmode,
       isMakingNewGroup: false,
       newGroupName: "",
-      callState: 'idle',
       showChat: true,
-      callInformation: null,
-      userToCall: null,
     };
   },
   props: {
@@ -135,17 +124,11 @@ export default {
   mounted() {
     this.loadCache();
     this.getChannels();
-    this.emitter.on("call", (participants) => this.call(participants));
     this.emitter.on('updateUI', () => this.updateUI()); 
     this.emitter.on('pin', channel => this.pin(channel));
     this.emitter.on('unpin', channel => this.unpin(channel));
     this.emitter.on('resortChannels', sortType => this.sort(sortType));
     this.emitter.on('channelViewUpdate', view => this.view = view);
-
-    socket.on('call', callInformation => {
-      this.callState = 'beingCalled';
-      this.callInformation = callInformation;
-    });
   },
   methods: {   
     translation,
@@ -166,86 +149,6 @@ export default {
     updateUI(){
       this.darkmode = localStorage.darkmode;
       this.settings = JSON.parse(localStorage.settings);
-    },
-    async call(participants){
-      if(this.me.isCalling || this.callState == 'inCall' || this.callState == 'calling' || this.callState == 'beingCalled') return console.log(`Cannot initialize call in this state!`);
-      else console.log(`Call would be initialized now`);
-
-      this.me.isCalling = true;
-      this.userToCall = participants[0];
-      this.callState = 'inCall';
-      this.showChat = false;
-      const videoGrid = document.getElementById('video-grid');
-
-      // Make a new peer connection
-      var peer = new Peer(this.me.uuid, {
-        config: {'iceServers': [
-          {urls:'stun:stun3.l.google.com:19302'},
-          // {url:'stun:stun4.l.google.com:19302'},
-          // {url: 'turn:turn.bistri.com:80',credential: 'homeo',username: 'homeo'},
-          {urls: 'turn:turn.anyfirewall.com:443?transport=tcp',credential: 'webrtc',username: 'webrtc'}
-        ]},
-        secure: true,
-        host: 'rtc.taku.moe',
-        port: '8443'
-      }); 
-
-      const myvideo = document.createElement('video');
-      myvideo.className = 'videoStream';
-      // Mutes monitor feedback
-      myvideo.muted = true;
-      myvideo.controls = true;
-
-      const peers = {}
-      // Create new data stream containing the video data
-      const stream = await navigator.mediaDevices.getUserMedia({audio: {
-        echoCancellation: false,
-        autoGainControl: true,
-        noiseCancellation: true,
-        channelCount: {max: 2, min: 1},
-      }, video: true});
-      addvideoStream(myvideo, stream);
-
-      peer.on('call', call => {
-        call.answer(stream);
-        const video = document.createElement('video');
-        video.className = 'videoStream';
-        video.controls = true;
-        call.on('stream', stream => addvideoStream(video, stream));
-      });
-
-      socket.on('user_connected', user_uuid => {
-        console.log("user_connected", user_uuid);
-        connectToNewUser(user_uuid, stream);
-      });
-
-      socket.on('user_disconnected', user_uuid => {
-        console.log("disconnected", user_uuid);
-        if (peers[user_uuid]) peers[user_uuid].close()
-      })
-
-      // When the peer is ready send an event on the socket that tells everyone else
-      // That I joined the call with my user uuid being peer_uuid
-      socket.emit('join_vc_channel', this.channel_uuid, this.me.uuid);
-
-      // Connects to new user
-      function connectToNewUser(user_uuid, stream){
-        var call = peer.call(user_uuid, stream);
-        const video = document.createElement('video');
-        video.className = 'videoStream';
-        video.controls = true;
-        call.on('stream', function(stream) { addvideoStream(video, stream)});
-        call.on('close', () => video.remove());
-        peers[user_uuid] = call;
-      };
-
-      function addvideoStream(video, stream){
-        video.srcObject = stream;
-        video.onloadedmetadata = event => video.play();
-        videoGrid.append(video);
-        console.log("Video grid added!");
-      }
-
     },
     async makeNewGroup(){
       this.isMakingNewGroup = false;
@@ -558,13 +461,6 @@ export default {
     display: flex;
     flex-direction: column;
     height: 100%;
-}
-
-.call {
-  height: 80px;
-  width: 100%;
-  padding: 16px;
-  background: #7FE876;
 }
 
 .search { 
