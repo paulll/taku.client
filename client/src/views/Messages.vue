@@ -116,7 +116,7 @@ export default {
     channel_uuid: { type: String, require: true },
   },
   mounted() {
-    this.view = this.type;
+    this.view = this.type || 'private';
     this.getChannels();
     this.emitter.on('updateUI', () => this.updateUI()); 
     this.emitter.on('pin', channel => this.pin(channel));
@@ -168,31 +168,24 @@ export default {
     },
     // Filter users/groups to searchIndex
     sort(sortType){
-      console.log(sortType); 
-      console.log(this.searchDMS);
-      // Sort arrays to the way user wants, if no config is set, defaults to newest
-      switch(sortType) {
-        case 'alpha_asc':
-          if(this.searchDMS.length > 1)
-            this.searchDMS.sort(   (a, b) => (a.member_list[0].username.toLowerCase() > b.member_list[0].username.toLowerCase()) ? 1 : -1);
-          // if(this.searchGroups.length > 1)
-          //   this.searchGroups.sort((a, b) => (a.member_list[0].username > b.member_list[0].username) ? 1 : -1);
-          // this.inviteChannels.sort((a, b) => (a - b));
-        break;
-        case 'alpha_desc':
-          if(this.searchDMS.length > 1)
-            this.searchDMS.sort(   (a, b) => (b.member_list[0].username.toLowerCase() > a.member_list[0].username.toLowerCase()) ? 1 : -1); 
-          // if(this.searchGroups.length > 1)
-          //   this.searchGroups.sort((a, b) => (b.member_list[0].username > a.member_list[0].username) ? 1 : -1);
-          // this.inviteChannels.sort((a, b) => (b + a));
-        break;
-        // Todo: make checker, which checks if last_message exists
-        case 'oldest':
-          //this.searchDMS.sort((a, b) => (a.last_message.created_at > b.last_message.created_at) ? 1 : -1);
-        break;
-        default:
-          //this.searchDMS.sort((a, b) => (b.last_message.created_at > a.last_message.created_at) ? 1 : -1);
-        break;
+      if(this.searchDMS.length > 1) {
+        switch(sortType) {
+          case 'alpha_asc':
+            this.searchDMS.sort((a, b) => (a.member_list[0].username.toLowerCase() > b.member_list[0].username.toLowerCase()) ? 1 : -1);
+          break;
+          case 'alpha_desc':
+            this.searchDMS.sort((a, b) => (a.member_list[0].username.toLowerCase() < b.member_list[0].username.toLowerCase()) ? 1 : -1); 
+          break;
+          case 'status_asc':
+            this.searchDMS.sort((a, b) => (a.member_list[0].profile.status.lastSeen < b.member_list[0].profile.status.lastSeen) ? 1 : -1); 
+          break;
+          case 'status_desc':
+            this.searchDMS.sort((a, b) => (a.member_list[0].profile.status.lastSeen > b.member_list[0].profile.status.lastSeen) ? 1 : -1); 
+          break
+          default:
+            //this.searchDMS.sort((a, b) => (b.last_message.created_at > a.last_message.created_at) ? 1 : -1);
+          break;
+        }
       }
     },
     filterSearch() {
