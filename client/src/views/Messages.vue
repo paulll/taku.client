@@ -17,25 +17,8 @@
           </div>
         </div>
       </div>
-      <menu class="view">
-        <div @click="view = 'private'" :class="{'active': view == 'private'}">
-          PRIVATE
-          <div class="line"></div>
-        </div>
-        <div @click="view = 'group'" :class="{'active': view == 'group'}">
-          GROUPS
-          <div class="line"></div>
-        </div>
-        <div @click="view = 'invites'" :class="{'active': view == 'invites'}">
-          INVITES
-          <div class="line"></div>
-        </div>
-        <div @click="isShowingSortMenu = true">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77349 9.59869C6.79149 9.61469 6.80849 9.62969 6.82549 9.64769C7.90449 10.7537 8.49949 12.2187 8.49949 13.7737V17.7577L10.7355 16.5397C10.9115 16.4437 11.0205 16.2557 11.0205 16.0487V13.7617C11.0205 12.2127 11.6095 10.7527 12.6785 9.65269L17.5155 4.50769C17.8285 4.17469 18.0005 3.73769 18.0005 3.27669V2.34069C18.0005 1.87669 17.6345 1.49969 17.1865 1.49969H2.31549C1.86649 1.49969 1.50049 1.87669 1.50049 2.34069V3.27669C1.50049 3.73769 1.67249 4.17469 1.98549 4.50669L6.77349 9.59869ZM8.14649 19.5007C7.94449 19.5007 7.74449 19.4467 7.56249 19.3387C7.21049 19.1287 6.99949 18.7577 6.99949 18.3457V13.7737C6.99949 12.6387 6.57649 11.5697 5.80549 10.7507C5.78249 10.7317 5.75949 10.7107 5.73949 10.6887L0.893488 5.53569C0.317488 4.92369 0.000488281 4.12069 0.000488281 3.27669V2.34069C0.000488281 1.04969 1.03949 -0.000305176 2.31549 -0.000305176H17.1865C18.4615 -0.000305176 19.5005 1.04969 19.5005 2.34069V3.27669C19.5005 4.11969 19.1835 4.92169 18.6095 5.53469L13.7625 10.6887C12.9595 11.5167 12.5205 12.6057 12.5205 13.7617V16.0487C12.5205 16.8047 12.1115 17.4967 11.4535 17.8567L8.69249 19.3607C8.52049 19.4537 8.33349 19.5007 8.14649 19.5007Z" fill="#676E78"/></svg>
-          <SortingMenu v-if="isShowingSortMenu" @mouseleave="isShowingSortMenu = false"/>
-        </div>
-      </menu>
-
+      
+      <ChannelTypeSelector :currentView="view"/>
       <section v-if="pinnedChannels.some(channel => channel.isPinned == true)">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.0415 12.9838C10.0848 13.0087 10.1314 13.0268 10.1796 13.0378L10.1657 13.1021L10.2919 13.1C10.5503 13.0956 10.7737 12.916 10.831 12.6629C10.8923 12.411 10.7768 12.1491 10.5494 12.0249L10.5481 12.0242L7.46984 10.4014C7.17107 10.234 6.80665 10.2341 6.50793 10.4016L3.97428 11.7601L4.46828 8.84543C4.46828 8.84542 4.46828 8.84541 4.46829 8.84541C4.52526 8.50962 4.41731 8.16703 4.17673 7.92508C4.17666 7.92501 4.17659 7.92494 4.17652 7.92487L2.12804 5.84511L4.96085 5.41498L4.96085 5.41498L4.9618 5.41483C5.30266 5.3597 5.59192 5.13486 5.72884 4.81763L7.0063 2.16115L8.2667 4.77333C8.40359 5.08981 8.69276 5.31529 9.03369 5.37044L9.03434 5.37054L11.8775 5.81146L9.81283 7.89562L9.8125 7.89595C9.57144 8.14156 9.46367 8.48825 9.52121 8.82742L9.5212 8.82743L9.52148 8.82894L9.83285 10.5075C9.83287 10.5076 9.83288 10.5077 9.8329 10.5078C9.88718 10.8098 10.1755 11.0102 10.4771 10.9561L10.4779 10.9559C10.7833 10.8984 10.9847 10.6064 10.9331 10.301L10.9331 10.301L10.9329 10.2998L10.6362 8.67201L12.7965 6.50132L12.7965 6.50134L12.7979 6.49989C13.156 6.12538 13.201 5.55065 12.9049 5.12521L12.9042 5.12431C12.7446 4.90019 12.5004 4.74976 12.228 4.7091C12.2279 4.70909 12.2279 4.70908 12.2278 4.70907L9.24357 4.25216L7.91466 1.48742C7.81404 1.26878 7.63834 1.09257 7.41864 0.992078C6.91203 0.75988 6.31359 0.981909 6.08084 1.48742L4.75794 4.2425L1.78434 4.694C1.56058 4.7248 1.3542 4.83068 1.19838 4.99429C0.800473 5.4056 0.800491 6.05852 1.19873 6.4692L1.19872 6.4692L1.19938 6.46987L3.37071 8.66754L2.85114 11.733L2.85096 11.7341C2.81529 11.96 2.8516 12.1906 2.95527 12.3947M10.0415 12.9838L4.33871 12.8222L4.29107 12.7342L4.33847 12.8223L4.33848 12.8223C3.84726 13.0883 3.23239 12.9061 2.96589 12.4146C2.96306 12.4095 2.95921 12.4026 2.95527 12.3947M10.0415 12.9838L7.00667 11.3861M10.0415 12.9838L7.00667 11.3861M2.95527 12.3947C2.95522 12.3946 2.95517 12.3945 2.95512 12.3944L3.04456 12.3497L2.95542 12.395C2.95537 12.3949 2.95532 12.3948 2.95527 12.3947ZM7.00667 11.3861L7.05355 11.3609L7.00615 11.2728M7.00667 11.3861L7.00615 11.2728M7.00667 11.3861L6.95957 11.3613L7.00615 11.2728M7.00667 11.3861L7.00615 11.2728" fill="#6D6E72" stroke="#6D6E72" stroke-width="0.2"/></svg><h1>PINNED</h1>
       </section> 
@@ -110,7 +93,7 @@ import translation from '@/services/translator.js';
 import Chat from '@/components/Chat.vue';
 import Channel from '@/components/v2/Channel.vue'; 
 import Takuchii from '@/components/v2/Takuchii.vue'; 
-import SortingMenu from '@/components/v2/SortingMenu.vue'; 
+import ChannelTypeSelector from '@/components/v2/ChannelTypeSelector.vue'; 
 
 export default {
   name: 'home',
@@ -118,7 +101,7 @@ export default {
     Chat,
     Channel,
     Takuchii,
-    SortingMenu,
+    ChannelTypeSelector
   },
   data: () => {
     return {
@@ -157,6 +140,7 @@ export default {
     this.emitter.on('pin', channel => this.pin(channel));
     this.emitter.on('unpin', channel => this.unpin(channel));
     this.emitter.on('resortChannels', sortType => this.sort(sortType));
+    this.emitter.on('channelViewUpdate', view => this.view = view);
 
     socket.on('call', callInformation => {
       this.callState = 'beingCalled';
@@ -242,8 +226,6 @@ export default {
 
       // When the peer is ready send an event on the socket that tells everyone else
       // That I joined the call with my user uuid being peer_uuid
-      // peer.on('open', peer_uuid => {
-      // });
       socket.emit('join_vc_channel', this.channel_uuid, this.me.uuid);
 
       // Connects to new user
@@ -350,15 +332,6 @@ export default {
       });
 
       this.sort(localStorage.sortType);
-    },
-
-    // Fetches right translation of the site
-    translation(sentence){
-        if(!localStorage.language) this.languageTable = require(`@/languages/en.json`);
-        else this.languageTable = require(`@/languages/${localStorage.language}.json`);
-        let translatedSentence = this.languageTable[sentence];
-        if (!translatedSentence) return sentence;
-        return translatedSentence;
     },
 
     // Loads from local storage
@@ -654,36 +627,6 @@ export default {
     margin-right: 14px;
 }
 
-menu.view {
-  display: flex;
-  position: relative;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 8px;
-}
-
-menu.view div {
-  width: min-content;
-  cursor: pointer;
-}
-
-menu.view div.active {
-  color: var(--themeColor);
-}
-
-menu.view div .line {
-  height: 3px;
-  border-radius: 32px;
-  width: 0%;
-  margin-top: 2px;
-  transition: 200ms ease;
-}
-
-menu.view div.active .line {
-  background: var(--themeColor);
-  width: 75%;
-}
-
 section {
   padding: 0px 8px;
   width: 100%;
@@ -693,14 +636,6 @@ section {
   display: flex;
   align-items: center;
   text-align: center;
-}
-
-menu.view div, section h1 {
-  font-family: Work Sans;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 10px;
-  line-height: 117.9%;
 }
 
 

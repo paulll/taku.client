@@ -25,7 +25,7 @@ export default {
 
 .takuchii .message {
   margin-bottom: 12px;
-  color: #81859D;
+  color: var(--textDark);
   text-align: center;
   margin-top: 8px;
   font-weight: 500;
@@ -34,6 +34,6 @@ export default {
 
 .takuchii .emoji {
   font-size: 32px;
-  color: #81859D;
+  color: var(--textDark);
 }
 </style>
