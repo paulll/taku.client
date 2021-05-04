@@ -10,6 +10,7 @@ const cookieParser = require("cookie-parser");
 const { v4: uuidv4 } = require("uuid");
 const handleHeartbeat = require('./handlers/onlineUserHandler');
 const port = process.env.PORT || 2087;
+const taku = require("./handlers/classes.js");    // Import Constructor classes
 const version = 'v0.144';
 const Jimp = require("jimp");
 const logo = `  ___       ___       ___       ___   
@@ -31,7 +32,7 @@ if(process.env.DEV_MODE == 'true') {
     process.env.rootPath = 'https://taku.moe:2087'
 }
  
-const smtp = require('./services/smtp.js');                             // Run SMTP Email server
+// const smtp = require('./services/smtp.js');                             // Run SMTP Email server
 const options = {
     key: fs.readFileSync("./key.pem"),
     cert: fs.readFileSync("./cert.pem")
@@ -81,7 +82,8 @@ function format24h() {
     return strTime.bgWhite.black;
 }
 
-console.ws = (...messages) => console.log(`${format24h()}`.bgCyan.white, "[WS]".bgRed.black, messages.join(" ")); 
+// Custom console formatting
+console.ws = (...messages) => console.log(`${format24h()}`.bgCyan.white + "[WS]".bgRed.black, messages.join(" ")); 
 
 app.use(morgan("dev"));                                                 // Enable HTTP code logs
 app.use(bodyParser.json());                                             // auto parse req.bodies as json
@@ -136,6 +138,49 @@ io.on("connection", socket => {
         socket.to(channel_uuid).broadcast.emit('user_connected', user_uuid)
         console.ws("Broadcasting new user", user_uuid.red);
     });
+    socket.on('message', async messageEvent => { 
+        
+        // Load the channel from the database
+        let channel = (await db.channels.find({ 'uuid': messageEvent.channel.uuid }))[0];
+    
+        // Check if the user is a member of that channel
+        if (!channel.member_list.includes(messageEvent.author.uuid)) return res.status(401).json({ "message": "Forbidden" });
+
+        // Replace message with taku message new message
+        let message = new taku.Message(messageEvent.author.uuid, messageEvent.content, messageEvent.channel.uuid);
+
+        await db.messages.insert(message); // Add to message database
+        await db.channels.update({ 'uuid': message.channel_uuid }, { "$set": { 'last_message': message.uuid } }); // Add to message to the channel it belongs to
+    
+        message = (await db.messages.aggregate([
+            {'$match': {"uuid": message.uuid}},
+            {'$lookup': {'from': 'users','localField': 'author','foreignField': 'uuid','as': 'author'}},
+            {'$unwind': {'path': '$author','preserveNullAndEmptyArrays': true}},
+            {'$project': { '_id': 0, 'author.settings': 0, 'author.profile': 0, 'author.created_at': 0, 'author.friend_list': 0, 'author.following': 0, 'author._id': 0 } }
+        ]))[0];
+    
+        // socket.broadcast.emit("message", message);  // Send to all other users
+        // socket.emit("message", message);            // Send to current user
+    
+        // Create the notification
+        let notification = new taku.Notification("Message", { uuid: messageEvent.author.uuid, username: messageEvent.author.username }, message.content);
+        io.sockets.in(message.author.uuid).emit('message', message);
+    
+        console.log(message);
+
+        for (member of channel.member_list) {
+            if (member != message.author.uuid) {
+                // Send event to the specific users
+                await db.notifications.update(
+                    { owner_uuid: member },
+                    { $push: { 'list': notification } }
+                );
+                
+                io.sockets.in(member).emit('notification', notification);
+                io.sockets.in(member).emit('message', message);
+            }
+        }
+    });
     socket.on('typing', event => {
         console.ws(event.user.username.red, "typing", event.user.uuid.red);
         socket.broadcast.emit('typing', event);
@@ -150,16 +195,5 @@ setInterval(async () => {
     ram = Math.floor(process.memoryUsage().heapUsed / 1000);
 }, 1000);
 
-// const routes = fs.readdirSync('./routes').map(route => route.replace(".js", ""));
-// for (route of routes) app.use(`/${route}`, require(`./routes/${route}`));  // Import all routes
-
 app.get("/", (req, res) => res.status(200).json({message: "hello"})); 
-
 https.listen(port, () => console.log("[INDEX]".bgCyan.black, `Started on port ${port.toString().cyan}`));
-
-let wallpapers = fs.readdirSync('./db/wallpapers').filter(image => image.endsWith(".png") || image.endsWith(".jpg"));
-wallpapers.forEach(async wallpaper => {
-    const image = await Jimp.read(`./db/wallpapers/${wallpaper}`);
-    image.resize(Jimp.AUTO, 156);
-    image.write(`./db/wallpapers/static/${wallpaper}`);
-}); 

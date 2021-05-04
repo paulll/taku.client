@@ -239,21 +239,29 @@ export default {
     // This function handles sending messages
     async sendMessage(message) {
 
-      // Init a formdata and add the message json
-      let formData = new FormData();
-
-      formData.append('message', JSON.stringify(message));
-      formData.append('channel', JSON.stringify({type: this.$route.path.split('/')[1], uuid: this.$route.params.channel_uuid}));
-
       // Add files on the formdata if theres any
-      if (message.attachments) {
+      if (message.attachments.length > 0) {
+
+        // Init a formdata and add the message json
+        let formData = new FormData();
+
         message.attachments.forEach(attachment => {
           formData.append('file', attachment.file);
         });
-      }
+  
+        formData.append('message', JSON.stringify(message));
+        formData.append('channel', JSON.stringify({type: this.$route.path.split('/')[1], uuid: this.$route.params.channel_uuid}));
 
-      // Send
-      this.api.channels.sendMessage(formData);
+        // Send
+        this.api.channels.sendMessage(formData);
+      } else {
+
+        message.channel = {type: this.$route.path.split('/')[1], uuid: this.$route.params.channel_uuid};
+        message.author = {username: this.me.username, uuid: this.me.uuid};
+
+        // Send
+        socket.emit("message", message);
+      }
     },
     // This gets the blocked users of the current user
     async getBlockedUsers(){
