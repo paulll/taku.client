@@ -23,6 +23,11 @@
 import SortingMenu from '@/components/v2/SortingMenu.vue'; 
 
 export default {
+    data: () => {
+      return {
+        isShowingSortMenu: false,
+      }
+    },
     props: {
       currentView :{ type: String, required: true },
     },

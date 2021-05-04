@@ -92,7 +92,6 @@ export default {
   },
   data: () => {
     return {
-      isShowingSortMenu: false,
       me: JSON.parse(localStorage.me),
       settings: JSON.parse(localStorage.settings),
       dms: [],
