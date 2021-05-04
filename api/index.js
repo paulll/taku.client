@@ -67,6 +67,8 @@ if(process.env.DEV_MODE == 'true') {
     app.use(cors({origin: "https://taku.moe", credentials: true}));     // Setup cors and allow only https
 }
 
+console.ws = (...messages) => console.log("[WS]".bgRed.black, messages.join(" ")); 
+
 app.use(morgan("dev"));                                                 // Enable HTTP code logs
 app.use(bodyParser.json());                                             // auto parse req.bodies as json
 app.use(express.static("db"));                                          // Enable the db folder to be accessible from the url
@@ -91,29 +93,39 @@ app.use('/tags',          require("./routes/tags"));                    // Impor
 
 // Websockets
 io.on("connection", socket => {
-    console.log("[WS]".bgRed.black, "New connection", socket.id.red, "Total", `${io.sockets.sockets.size.toString().red}`);
-    socket.on("ping", () => socket.emit("pong", { cpu, ram }));  // Send ping and pongs
-    socket.on("user", uuid => socket.join(uuid));                                       // Join a unique room for each user
+    console.ws("New connection", socket.id.red, "Total", `${io.sockets.sockets.size.toString().red}`);
 
-    socket.on("room", uuid => socket.join(uuid));                                       
-    socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));       
+    socket.on("ping", () => socket.emit("pong", { cpu, ram }));  // Send ping and pongs
+    socket.on("heartbeat", heartbeat => handleHeartbeat(heartbeat));
+
+    socket.on("user", uuid => {
+        console.ws("Joined user", uuid.red);
+        socket.join(uuid);
+    });
+    socket.on("room", uuid => {
+        console.ws("Joined room", uuid.red);
+        socket.join(uuid);
+    });
     socket.on('join_channel', async channel_uuid => {
         if(channel_uuid.length < 1) return;
-        console.log("[Channel WS]".bgRed.black, "Joined", channel_uuid.red);
+        console.ws("Joined", channel_uuid.red);
         socket.join(channel_uuid);
     });             
     socket.on('leave_channel', async channel_uuid => {
-        console.log("[Channel WS]".bgRed.black, "Left", channel_uuid.red);
+        console.ws("Left", channel_uuid.red);
         socket.leave(channel_uuid);
     });
-    socket.on('disconnect', () => console.log("[WS]".bgRed.black, "Disconnected", "Total", `${io.sockets.sockets.size.toString().red}`));
+    socket.on('disconnect', () => console.ws("Disconnected", "Total", `${io.sockets.sockets.size.toString().red}`));
     socket.on('join_vc_channel', (channel_uuid, user_uuid) => {
         socket.join(channel_uuid);
         socket.on('disconnect', () => socket.to(channel_uuid).broadcast.emit('user_disconnected', user_uuid));
         socket.to(channel_uuid).broadcast.emit('user_connected', user_uuid)
-        console.log("[Calling WS]".bgRed.black, "Broadcasting new user", user_uuid.red);
+        console.ws("Broadcasting new user", user_uuid.red);
     });
-    socket.on('typing', event => socket.broadcast.emit('typing', event));
+    socket.on('typing', event => {
+        console.ws("Typing", event.user.uuid.red, event.user.username.red);
+        socket.broadcast.emit('typing', event);
+    });
 });
 
 let cpu = 0;
