@@ -7,42 +7,42 @@
       </a>
 
       <div class="group">
-        <router-link to='/home'>
+        <router-link :to="{ name: 'home'}">
           <img src="../assets/navbar/Home.svg" alt="">
         </router-link>
 <!-- 
-        <router-link to='/wallpaper'>
+        <router-link :to="{ name: 'wallpaper'}">
           <img src="../assets/navbar/Wallpaper.svg" alt="">
         </router-link>
 
-        <router-link to='/upload'>
+        <router-link :to="{ name: 'upload'}">
           <img src="../assets/navbar/Upload.svg" alt="">
         </router-link> -->
 
-        <router-link to='/messages'>
+        <router-link :to="{ name: 'messages'}">
           <img src="../assets/navbar/Message.svg" alt="">
         </router-link>
 <!-- 
-        <router-link to='/notifications'>
+        <router-link :to="{ name: 'notifications'}">
           <img src="../assets/navbar/Bell.svg" alt="">
         </router-link>
 
-        <router-link to='/trash'>
+        <router-link :to="{ name: 'trash'}">
           <img src="../assets/navbar/Trash.svg" alt="">
         </router-link> -->
       </div>
 
       <div class="group">
-        <router-link v-if="!isLoggedIn" to='/signup'>
+        <router-link v-if="!isLoggedIn" :to="{ name: 'signup'}">
           <img src="../assets/add-user.png" alt="">
         </router-link>
-        <router-link v-if="!isLoggedIn" to='/login'>
+        <router-link v-if="!isLoggedIn" :to="{ name: 'login'}">
           <img src="../assets/login.png" alt="">
         </router-link>
         <a v-if="isLoggedIn" @click='logOut()'>
           <img src="../assets/logout.png" alt="">
         </a>
-        <router-link to='/settings'>
+        <router-link :to="{ name: 'settings'}">
           <img src="../assets/settings.svg" alt="">
         </router-link>
       </div>

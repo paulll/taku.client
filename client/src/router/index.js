@@ -8,7 +8,7 @@ const routes = [
   { path: '/', redirect: '/home' },
   {
     path: '/home',
-    name: 'Home',
+    name: 'home',
     component: () => import(/* webpackChunkName: "home" */ '@/views/Home'),
     meta: {
       title: 'Taku | Home',
@@ -16,7 +16,7 @@ const routes = [
   },
   {
     path: '/signup/',
-    name: 'Signup',
+    name: 'signup',
     component: () => import(/* webpackChunkName: "signup" */ '@/views/Signup'),
     meta: {
       title: 'Taku | Signup',
@@ -24,7 +24,7 @@ const routes = [
   },
   {
     path: '/login/',
-    name: 'Login',
+    name: 'login',
     component: () => import(/* webpackChunkName: "login" */ '@/views/Login'),
     meta: {
       title: 'Taku | Login',
@@ -32,12 +32,12 @@ const routes = [
   },
   {
     path: '/profile/:username',
-    name: 'Profile',
+    name: 'profile',
     component: () => import(/* webpackChunkName: "profile" */ '@/views/Profile'),
   },
   {
     path: '/settings/:setting?', // the ? makes the param optional so the default route works
-    name: 'Settings',
+    name: 'settings',
     component: () => import(/* webpackChunkName: "settings" */ '@/views/Settings'),
     meta: {
       title: 'Taku | Settings',
@@ -45,7 +45,7 @@ const routes = [
   },
   {
     path: '/messages/:type?/:channel_uuid?',
-    name: 'Messages',
+    name: 'messages',
     component: () => import(/* webpackChunkName: "messages" */ '@/views/Messages'),
     meta: {
       title: 'Taku | Messages',
@@ -53,7 +53,7 @@ const routes = [
   },
   {
     path: '/wallpaper/:wallpaper_uuid?',
-    name: 'Wallpaper',
+    name: 'wallpaper',
     component: () => import(/* webpackChunkName: "wallpaper" */ '@/views/Wallpaper'),
     meta: {
       title: 'Taku | Wallpaper',
@@ -61,7 +61,7 @@ const routes = [
   },
   {
     path: '/anime/:id',
-    name: 'Anime',
+    name: 'anime',
     component: () => import(/* webpackChunkName: "anime" */ '@/views/Anime'),
     meta: {
       title: 'Taku | Anime',
@@ -69,7 +69,7 @@ const routes = [
   },
   {
     path: '/upload/',
-    name: 'Upload',
+    name: 'upload',
     component: () => import(/* webpackChunkName: "upload" */ '@/views/Upload'),
     meta: {
       title: 'Taku | Upload',
