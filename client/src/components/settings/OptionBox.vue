@@ -8,8 +8,8 @@
 
                 </div>
                 <div v-if="toggleButtons" class="onOff" :style="themeColors">
-                    <button @mouseover="playHover()" @click="toggleOption(true, option.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == true}">{{translation("on")}}</button>
-                    <button @mouseover="playHover()" @click="toggleOption(false, option.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == false}">{{translation("off")}}</button>
+                    <button  @click="toggleOption(true, option.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == true}">{{translation("on")}}</button>
+                    <button  @click="toggleOption(false, option.toLowerCase().replace(/\s/g, '_'))" :style="themeColors" :class="{'active': optionValue == false}">{{translation("off")}}</button>
                 </div>
             </div>
         </div>
