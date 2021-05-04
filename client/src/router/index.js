@@ -9,7 +9,7 @@ const routes = [
   {
     path: '/home',
     name: 'Home',
-    component: () => import('../views/Home.vue'),
+    component: () => import(/* webpackChunkName: "home" */ '@/views/Home'),
     meta: {
       title: 'Taku | Home',
     },
@@ -17,7 +17,7 @@ const routes = [
   {
     path: '/signup/',
     name: 'Signup',
-    component: resolve => require(['@/views/Signup'], resolve),
+    component: () => import(/* webpackChunkName: "signup" */ '@/views/Signup'),
     meta: {
       title: 'Taku | Signup',
     },
@@ -25,7 +25,7 @@ const routes = [
   {
     path: '/login/',
     name: 'Login',
-    component: () => import('../views/Login.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '@/views/Login'),
     meta: {
       title: 'Taku | Login',
     },
@@ -33,12 +33,12 @@ const routes = [
   {
     path: '/profile/:username',
     name: 'Profile',
-    component: () => import('../views/Profile.vue'),
+    component: () => import(/* webpackChunkName: "profile" */ '@/views/Profile'),
   },
   {
     path: '/settings/:setting?', // the ? makes the param optional so the default route works
     name: 'Settings',
-    component: () => import('../views/Settings.vue'),
+    component: () => import(/* webpackChunkName: "settings" */ '@/views/Settings'),
     meta: {
       title: 'Taku | Settings',
     },
@@ -46,7 +46,7 @@ const routes = [
   {
     path: '/messages/:type?/:channel_uuid?',
     name: 'Messages',
-    component: () => import('../views/Messages.vue'),
+    component: () => import(/* webpackChunkName: "messages" */ '@/views/Messages'),
     meta: {
       title: 'Taku | Messages',
     },
@@ -54,7 +54,7 @@ const routes = [
   {
     path: '/wallpaper/:wallpaper_uuid?',
     name: 'Wallpaper',
-    component: () => import('../views/Wallpaper.vue'),
+    component: () => import(/* webpackChunkName: "wallpaper" */ '@/views/Wallpaper'),
     meta: {
       title: 'Taku | Wallpaper',
     },
@@ -62,7 +62,7 @@ const routes = [
   {
     path: '/anime/:id',
     name: 'Anime',
-    component: () => import('../views/Anime.vue'),
+    component: () => import(/* webpackChunkName: "anime" */ '@/views/Anime'),
     meta: {
       title: 'Taku | Anime',
     },
@@ -70,7 +70,7 @@ const routes = [
   {
     path: '/upload/',
     name: 'Upload',
-    component: () => import('../views/Upload.vue'),
+    component: () => import(/* webpackChunkName: "upload" */ '@/views/Upload'),
     meta: {
       title: 'Taku | Upload',
     },
