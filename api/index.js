@@ -113,6 +113,7 @@ io.on("connection", socket => {
         socket.to(channel_uuid).broadcast.emit('user_connected', user_uuid)
         console.log("[Calling WS]".bgRed.black, "Broadcasting new user", user_uuid.red);
     });
+    socket.on('typing', event => socket.broadcast.emit('typing', event));
 });
 
 let cpu = 0;

@@ -17,6 +17,9 @@
 </template>
 
 <script>
+import socket from '@/services/socket.js';
+
+
 export default {
 
     // These are the props that need (or may not need) to be passed down from the parent
@@ -63,10 +66,10 @@ export default {
         // It can be turned off from the settings
         typing(){
 
-            if (this.typingSfx == 'false') return 
+            if (this.typingSfx == 'false') return  
 
             // Send new message
-            // socket.emit('typing', {user: localStorage.token});
+            socket.emit('typing', {user: JSON.parse(localStorage.me), channel: this.$route.params.channel_uuid});
             this.typingSound = new Audio(localStorage.typingSoundUrl);
             this.typingSound.volume = 0.2;
             this.typingSound.play();

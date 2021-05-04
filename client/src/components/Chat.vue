@@ -26,10 +26,9 @@
               <div class="content"  v-for="attachment in message.attachments" :key="attachment" v-html="attachment"></div>
             </div>
           </div>
-
-          <div class="typingUsers">
-            <div v-for="pfp of typingUsers" :key="pfp" class="typing" :style="{ 'background-image': `url(${pfp})`}"></div>
-          </div>
+        </div>
+        <div class="typingUsers">
+          <div v-for="uuid of typingUsers" :key="uuid" class="typing" :style="{ 'background-image': `url('${rootPath}:2087/pfp/${uuid}')`}"></div>
         </div>
         <div class="dummy"></div>
       </div>
@@ -80,13 +79,13 @@ export default {
   },
   watch: {
       $route(to, from) {
-        this.loadMessagesFromCache();
+        // this.loadMessagesFromCache();
         this.getChannel();
         // socket.emit('leave_channel', to.params.channel_uuid);
       }
   },
   mounted() {
-    this.loadMessagesFromCache();
+    // this.loadMessagesFromCache();
     this.getBlockedUsers();
     this.getChannel();
     this.isLoading = false;
@@ -106,9 +105,18 @@ export default {
 
     let last_message = {
       author: {
-        username: "a72bd87a2nh3hjd"
+        username: "a72bd87a2nh3hjd" 
       }
-    };
+    }; 
+
+    let sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    socket.on("typing", async event => { 
+      if (event && !this.typingUsers.includes(event.user.uuid) && event.channel == this.$route.params.channel_uuid) {
+        this.typingUsers.push(event.user.uuid);
+        await sleep(3000);
+        this.typingUsers.splice(this.typingUsers.indexOf(event.user), 1);
+      }
+    });
 
     socket.on('message', message => {
 
@@ -127,7 +135,7 @@ export default {
         
         last_message = message;
         this.messages.unshift(message);
-        this.cache.appendMessage(message.channel_uuid, message);
+        // this.cache.appendMessage(message.channel_uuid, message);
 
         // Play notification sound if they got mentioned
         if (
@@ -155,25 +163,25 @@ export default {
   },
   methods: {
     translation,
-    loadMessagesFromCache(){
-      if (this.$route.params.channel_uuid){
-        this.messages = this.cache.getChannel(this.$route.params.channel_uuid).messages || [];
-      }
-    },
-    cacheMessages(messages){
-      if (!localStorage.messages) localStorage.setItem('messages', JSON.stringify({}));
+    // loadMessagesFromCache(){
+    //   if (this.$route.params.channel_uuid){
+    //     this.messages = this.cache.getChannel(this.$route.params.channel_uuid).messages || [];
+    //   }
+    // },
+    // cacheMessages(messages){
+    //   if (!localStorage.messages) localStorage.setItem('messages', JSON.stringify({}));
 
-      let cachedMessages = JSON.parse(localStorage.messages);
+    //   let cachedMessages = JSON.parse(localStorage.messages);
 
-      if (Object.keys(cachedMessages) == null){
-        localStorage.setItem('messages', JSON.stringify({}));
-        console.log("Created message cache");
-      }
+    //   if (Object.keys(cachedMessages) == null){
+    //     localStorage.setItem('messages', JSON.stringify({}));
+    //     console.log("Created message cache");
+    //   }
 
-      cachedMessages[this.$route.params.channel_uuid] = JSON.stringify(messages);
-      localStorage.messages = JSON.stringify(cachedMessages);
-      console.log("Cached messages");
-    },
+    //   cachedMessages[this.$route.params.channel_uuid] = JSON.stringify(messages);
+    //   localStorage.messages = JSON.stringify(cachedMessages);
+    //   console.log("Cached messages");
+    // },
     async getChannel(){ 
       this.isLoading = true;
       try {
@@ -215,7 +223,7 @@ export default {
       });
 
       this.messages = response.data || [];
-      this.cache.updateMessages(this.$route.params.channel_uuid, response.data);
+      // this.cache.updateMessages(this.$route.params.channel_uuid, response.data);
       console.log(`%cFetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
       this.isLoading = false;
     },
