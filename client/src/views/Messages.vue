@@ -429,6 +429,8 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  user-select: none;
+
 }
 
 .channelsContainer .top {

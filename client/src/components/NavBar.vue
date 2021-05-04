@@ -87,8 +87,10 @@ nav {
   align-items: center;
   justify-content: space-between;
   padding: 8px 0px;
-
+  user-select: none;
 }
+
+
 
 .group {
   display: grid;
