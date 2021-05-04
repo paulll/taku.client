@@ -117,6 +117,7 @@ export default {
     channel_uuid: { type: String, require: true },
   },
   mounted() {
+    this.view = this.type;
     this.getChannels();
     this.emitter.on('updateUI', () => this.updateUI()); 
     this.emitter.on('pin', channel => this.pin(channel));

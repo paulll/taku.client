@@ -3,7 +3,7 @@
     <div class="headerDetails">
       <div class="headerLeft">
         <div class="channelInfo">
-          <router-link  v-if="channel.type == 'dm'" :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
+          <router-link  v-if="channel. type == 'private'" :to="`/profile/${channel.member_list[0].username}`"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
           <a v-if="channel.type == 'group'"><img class="channelPfp" :src="`https://taku.moe:2087/pfp/_default`" alt=""></a>
           <div class="info">
             <div v-if="!channel.senpai">

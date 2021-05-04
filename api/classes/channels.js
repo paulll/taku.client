@@ -12,7 +12,7 @@ class Channel {
         this.member_list = [author, ...participants];       // The UUIDs of you and the person you're messaging to
         if (last_message) this.last_message = last_message  // The UUID of the latest message sent in that channel if any
         
-        this.type = 'dm';                                   // Type of the channel, here it's dm
+        this.type = 'private';                                   // Type of the channel, here it's dm
     };
 };
 

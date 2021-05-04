@@ -5,7 +5,7 @@
       <router-link :to="`/profile/${channel.member_list[0].username}`" @mouseenter="showMiniProfile($event)" @mouseleave="mouseLeftHover()" ><img class="channelPfp" :src="`https://taku.moe:2087/pfp/${channel.member_list[0].uuid}`" alt=""></router-link>
       <div class="info">
       <div> 
-        <h1 v-if="channel.type == 'dm'">{{channel.member_list[0].username}}</h1>
+        <h1 v-if="channel. type == 'private'">{{channel.member_list[0].username}}</h1>
         <h1 v-if="channel.type == 'group'">{{channel.name}}</h1>
         <div class="channelStatus">
           <Status :profile="channel.member_list[0]?.profile"/>
