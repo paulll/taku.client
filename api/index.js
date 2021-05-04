@@ -67,7 +67,21 @@ if(process.env.DEV_MODE == 'true') {
     app.use(cors({origin: "https://taku.moe", credentials: true}));     // Setup cors and allow only https
 }
 
-console.ws = (...messages) => console.log("[WS]".bgRed.black, messages.join(" ")); 
+function format24h() {
+    var date = new Date(); 
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    var seconds = date.getSeconds();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    seconds = seconds < 10 ? '0'+seconds : seconds;
+    var strTime = `[${hours}:${minutes}:${seconds}${ampm}]`;
+    return strTime.bgWhite.black;
+}
+
+console.ws = (...messages) => console.log(`${format24h()}`.bgCyan.white, "[WS]".bgRed.black, messages.join(" ")); 
 
 app.use(morgan("dev"));                                                 // Enable HTTP code logs
 app.use(bodyParser.json());                                             // auto parse req.bodies as json
@@ -123,7 +137,7 @@ io.on("connection", socket => {
         console.ws("Broadcasting new user", user_uuid.red);
     });
     socket.on('typing', event => {
-        console.ws("Typing", event.user.uuid.red, event.user.username.red);
+        console.ws(event.user.username.red, "typing", event.user.uuid.red);
         socket.broadcast.emit('typing', event);
     });
 });

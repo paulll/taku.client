@@ -3,7 +3,7 @@
     <div class="top" >
       <div class="search">
         <div class="button">
-          <input ref="search" class="searchBox" spellcheck="false" placeholder="Search users and channels" v-model="searchString" type="text" @keyup="filterSearch()">
+          <input ref="search" class="searchBox" spellcheck="false" placeholder="Filter through users and channels" v-model="searchString" type="text" @keyup="filterSearch()">
           <div class="iconWrapper">
             <img src="../assets/search.svg" alt="Search">
           </div>

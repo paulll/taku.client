@@ -14,3 +14,8 @@ module.exports = {
     invites:       db.get("invites"),
     wallpapers:    db.get("wallpapers"),
 };
+
+// Gets all the users UUIDs from the database
+// module.exports.users.find().then(users => {
+//     console.log(users.map(user => user.uuid));
+// });
