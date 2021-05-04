@@ -60,7 +60,7 @@ export default {
   display: inline-block;
   overflow: hidden; 
   background: none;
-  position: absolute;
+  /* position: absolute; */
   margin: auto;
 }
 .ldio-b073b5dxyqi {

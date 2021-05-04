@@ -3,7 +3,15 @@
     <ChatHeader v-if="currentChannel" :channel="currentChannel" />
     <div class="messagesWrapper">
       <div class="messagesContainer">
+        <div class="loadingSpinner" v-if="isLoading">
+          <Spinner/>
+        </div>
         <div class="messages" :class="{darkmode: darkmode == 'true'}">
+          <div class="noMessages" v-if="messages.length == 0 && !isLoading">
+            <img :src="require('@/assets/no-messages.png')" alt="No messages!">
+            <h1>Oh no! you've never spoken to this person before!</h1>
+          </div>
+
           <div class="message" v-for="message in messages" :key="message" v-bind:class="{me: me.uuid == message.author.uuid, same: message.author.same_as_last}">
             <router-link :to='`/profile/${message.author.username}`'><div class="pfp" :style="{'background-image' : `url('${rootPath}:2087/pfp/${message.author.uuid}')`}"></div></router-link>
             <div class="notch"></div>
@@ -23,8 +31,6 @@
           <div class="typingUsers">
             <div v-for="pfp of typingUsers" :key="pfp" class="typing" :style="{ 'background-image': `url(${pfp})`}"></div>
           </div>
-          
-
         </div>
         <div class="dummy"></div>
       </div>
@@ -37,18 +43,20 @@
 import linkifyHtml from 'linkifyjs/html';
 import TextInput from '@/components/messages/TextInput.vue';
 import ChatHeader from '@/components/ChatHeader.vue';
+import Spinner from '@/components/Spinner.vue';
 import translation from '@/services/translator.js';
 import socket from '@/services/socket.js';
 
 const URLMatcher = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
 export default {
-  name: 'home',
+  name: 'chat',
   // props: {
   //   channel_information:   { type: Object, required: true },
   // },
   components: {
     TextInput,
+    Spinner,
     ChatHeader,
   },
   data: () => {
@@ -68,6 +76,7 @@ export default {
       mentionSoundUrl: localStorage.mentionSoundUrl,
       mentionSound: '',
       currentChannel: null,
+      isLoading: true,
     };
   },
   watch: {
@@ -81,6 +90,7 @@ export default {
     this.loadMessagesFromCache();
     this.getBlockedUsers();
     this.getChannel();
+    this.isLoading = false;
 
         // Load Sounds
     if (!this.typingSoundUrl) this.typingSoundUrl = require("../../public/keystroke.wav");
@@ -148,7 +158,7 @@ export default {
     translation,
     loadMessagesFromCache(){
       if (this.$route.params.channel_uuid){
-        this.messages = this.cache.getChannel(this.$route.params.channel_uuid).messages;
+        this.messages = this.cache.getChannel(this.$route.params.channel_uuid).messages || [];
       }
     },
     cacheMessages(messages){
@@ -166,7 +176,7 @@ export default {
       console.log("Cached messages");
     },
     async getChannel(){ 
-
+      this.isLoading = true;
       try {
         var channel = (await this.api.channels.getChannel(this.$route.params.channel_uuid)).data.channel;
       } catch (error) {
@@ -182,11 +192,14 @@ export default {
       // socket.emit('join_channel', this.$route.params.channel_uuid);
       this.currentChannel = channel;
       this.getMessages(0);
+      this.isLoading = false;
       // this.messages.push(response.data.dm.messages)
     },
     async getMessages(offset){
+      this.isLoading = true;
+
       var response = await this.api.channels.getChannel(this.$route.params.channel_uuid, offset);
-      if (response.data.length == 0) return;
+      if (response.data.length == 0) return this.isLoading = false;
 
       // This has one of the most weird bugs where it fixes the original variable
       // Before even running it
@@ -202,9 +215,10 @@ export default {
         if (index == arr.length) this.last_message = message;
       });
 
-      this.messages = response.data;
+      this.messages = response.data || [];
       this.cache.updateMessages(this.$route.params.channel_uuid, response.data);
       console.log(`%cFetched ${this.messages.length} messages! 💬💬💬`, 'color: #ff00b6; font-weight: bold;');
+      this.isLoading = false;
     },
     // This is to convert epoch to the user's time
     // Gotta fix this, apparently its some weird ass timezone in europe
@@ -293,18 +307,57 @@ export default {
 
 <style scoped>
 
+.messagesContainer {
+  position: relative;
+}
+
 .ganyu {
   mix-blend-mode: screen;
+}
+
+.loadingSpinner {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.noMessages {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 100%;
+}
+
+.noMessages img {
+  width: 128px;
+  height: 128px;
+  transition: 100ms ease;
+  mix-blend-mode: multiply;
+  cursor: pointer;
+}
+
+.noMessages img:hover {
+  transform: rotate(10deg) scale(1.04);
+}
+
+.noMessages h1 {
+  margin-top: 8px;
+  color: var(--textDark);
+  font-size: 14px;
+  font-weight:600;
+  text-align: center;
 }
 
 .messages {
   scrollbar-color: #888888#F3F3F3;
   scrollbar-width: thin;
   flex-direction: column-reverse;
+  position: relative;
   display: flex;
   overflow: scroll;
   overflow-x: hidden;
-  height: calc(100vh - 155px);
+  height: calc(100vh - 164px);
   
 }
 
