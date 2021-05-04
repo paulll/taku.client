@@ -38,19 +38,6 @@ export default {
     components: {
         Status, 
     },
-    data: () => {
-        return {
-            darkmode: localStorage.darkmode,
-        };
-    },
-    methods: {
-        created(){
-            this.themeColors = {
-                '--themeColor': this.user.settings.appearance.theme_color,
-                '--themeColorHover': `${this.user.settings.appearance.theme_color}66`,
-            }
-        },
-    }
 }
 </script>
 
