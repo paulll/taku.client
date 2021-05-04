@@ -1,6 +1,6 @@
 <template>
     <!-- <div @dragover.prevent @drop.prevent="handleFileDrop" @paste="handleFilePaste" class="dropArea"></div> -->
-    <div class="sendMessageContainer">
+    <div class="sendMessageContainer" v-if="$route.params.channel_uuid">
         <form id="sendMessage" class="sendMessage"  v-on:submit.prevent="sendMessage" >
             <input multiple id="file" class="formImageInput" type="file" ref="files" v-on:change="handleFileInput()">
             <div class="images" :class="{darkmode: darkmode == 'true', padding: previews.length != 0}">

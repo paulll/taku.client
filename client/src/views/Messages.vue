@@ -183,7 +183,7 @@ export default {
             this.searchDMS.sort((a, b) => (a.member_list[0].profile.status.lastSeen > b.member_list[0].profile.status.lastSeen) ? 1 : -1); 
           break
           default:
-            //this.searchDMS.sort((a, b) => (b.last_message.created_at > a.last_message.created_at) ? 1 : -1);
+            this.searchDMS.sort((a, b) => (a < b) ? 1 : -1);
           break;
         }
       }
@@ -257,10 +257,13 @@ export default {
         this.channels.push(channel);
         this.cache.updateChannel(channel)
 
+        console.log(this.channels);
+
         if (channel.type == "private" && !channel.isPinned) this.privateChannels.push(channel);
         if (channel.type == "group" && !channel.isPinned) this.groupChannels.push(channel);
       }
 
+      if(this.channel_uuid == null) this.$router.push(`/messages/${this.privateChannels[0].type}/${this.privateChannels[0].uuid}`);
       this.inviteChannels = invitesRequest.data;
       this.filterSearch();
     }
