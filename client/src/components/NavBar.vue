@@ -32,10 +32,20 @@
         </router-link> -->
       </div>
 
-      <router-link to='/settings'>
-        <img src="../assets/settings.svg" alt="">
-      </router-link>
-
+      <div class="group">
+        <router-link v-if="!isLoggedIn" to='/signup'>
+          <img src="../assets/add-user.png" alt="">
+        </router-link>
+        <router-link v-if="!isLoggedIn" to='/login'>
+          <img src="../assets/login.png" alt="">
+        </router-link>
+        <a v-if="isLoggedIn" @click='logOut()'>
+          <img src="../assets/logout.png" alt="">
+        </a>
+        <router-link to='/settings'>
+          <img src="../assets/settings.svg" alt="">
+        </router-link>
+      </div>
     </nav>
   </div>
 </template>
@@ -44,7 +54,16 @@
 
 export default {
   name: 'NavBar',
+  computed: {
+    isLoggedIn: function(){
+      return localStorage.token == null || localStorage.token == '' ? false : true;
+    },
+  },
   methods: {
+    logOut(){
+      localStorage.clear();
+      this.$router.push("/login");
+    },
     toggleChannelList(){
       let settings = JSON.parse(localStorage.settings);
       settings.messages.isChannellistVisible = !settings.messages.isChannellistVisible;
@@ -89,10 +108,6 @@ a {
   outline: none;
 }
 
-a:hover {
-
-}
-
 a.router-link-active, a:hover {
   background: #2C1820;
 }
@@ -103,7 +118,7 @@ a img {
   height: 32px;
   cursor: pointer;
 
-  filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
+  filter: invert(15%) sepia(4%) saturate(1972%) hue-rotate(182deg) brightness(99%) contrast(81%);
 }
 
 a.router-link-active img {

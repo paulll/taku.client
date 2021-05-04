@@ -89,7 +89,6 @@ app.use('/connections',   require("./routes/connections"));             // Impor
 app.use('/wallpapers',    require("./routes/wallpapers"));              // Import wallpapers
 app.use('/tags',          require("./routes/tags"));                    // Import tags
 
-
 // Websockets
 io.on("connection", socket => {
     console.log("[WS]".bgRed.black, "New connection", socket.id.red, "Total", `${io.sockets.sockets.size.toString().red}`);
@@ -115,7 +114,6 @@ io.on("connection", socket => {
         console.log("[Calling WS]".bgRed.black, "Broadcasting new user", user_uuid.red);
     });
 });
-
 
 let cpu = 0;
 let ram = 0;

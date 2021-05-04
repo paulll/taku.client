@@ -8,6 +8,7 @@ import api from '@/services/api.js';
 const emitter = mitt();
 
 let app = createApp(App);
+app.config.devtools = true
 app.use(router);
 app.config.globalProperties.emitter = emitter;                                       
 app.config.globalProperties.DEV_MODE = api.DEV_MODE;            

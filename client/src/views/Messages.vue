@@ -539,7 +539,7 @@ export default {
   width: 24px;
   transform: translateX(12px);
   height: 24px;
-  filter: invert(17%) sepia(66%) saturate(344%) hue-rotate(174deg) brightness(83%) contrast(84%);
+  filter: invert(15%) sepia(4%) saturate(1972%) hue-rotate(182deg) brightness(99%) contrast(81%);
 }
 
 .searchBox {

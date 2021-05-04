@@ -17,7 +17,7 @@ const routes = [
   {
     path: '/signup/',
     name: 'Signup',
-    component: () => import('../views/Signup.vue'),
+    component: resolve => require(['@/views/Signup'], resolve),
     meta: {
       title: 'Taku | Signup',
     },
