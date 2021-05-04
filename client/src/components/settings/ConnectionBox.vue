@@ -57,12 +57,6 @@ export default {
           this.clickSound = new Audio(this.clickSoundUrl);
           this.clickSound.play();
         },
-        playHover(){
-          if (localStorage.hover_sfx == 'false') return
-          if (!this.hoverSoundUrl) this.hoverSoundUrl = require("../../../public/hover.wav");
-          this.hoverSound = new Audio(this.hoverSoundUrl);
-          this.hoverSound.play();
-        },
         async unlink(platform){
           const response = await axios.delete(`https://taku.moe:2087/connections/${platform}`, {
             withCredentials: true,

@@ -150,12 +150,6 @@ export default {
         NProgress.done();
         this.updateSettings();
       },
-      playHover(){
-        if (localStorage.hover_sfx == 'false') return
-        if (!this.hoverSoundUrl) this.hoverSoundUrl = require("../../../public/hover.wav");
-        this.hoverSound = new Audio(this.hoverSoundUrl);
-        this.hoverSound.play();
-      },
       async updateSettings(){
           NProgress.start();
           
