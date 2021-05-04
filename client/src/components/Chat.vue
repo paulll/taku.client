@@ -35,7 +35,7 @@
         <div class="dummy"></div>
       </div>
     </div>
-    <TextInput/>
+    <TextInput v-if="!isLoading"/>
   </div>
 </template>
  
@@ -597,8 +597,6 @@ export default {
   margin-right: 4px;
   padding: 0px 8px;
 } 
-
-
 
 @media only screen and (min-width: 715px)  {
   .dummy { height: 8px; }

@@ -19,7 +19,7 @@
           <img src="../assets/navbar/Upload.svg" alt="">
         </router-link> -->
 
-        <router-link :to="{ name: 'messages'}">
+        <router-link v-if="isLoggedIn" :to="{ name: 'messages'}">
           <img src="../assets/navbar/Message.svg" alt="">
         </router-link>
 <!-- 
@@ -56,13 +56,13 @@ export default {
   name: 'NavBar',
   computed: {
     isLoggedIn: function(){
-      return localStorage.token == null || localStorage.token == '' ? false : true;
+      return localStorage.token == undefined || localStorage.token == '' ? false : true;
     },
   },
   methods: {
     logOut(){
       localStorage.clear();
-      this.$router.push("/login");
+      window.location.href = "https://taku.moe/login";
     },
     toggleChannelList(){
       let settings = JSON.parse(localStorage.settings);
@@ -71,7 +71,6 @@ export default {
       this.emitter.emit('updateUI');
     }
   },
-  
 };
 </script>
 
