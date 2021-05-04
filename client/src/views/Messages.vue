@@ -172,18 +172,23 @@ export default {
         switch(sortType) {
           case 'alpha_asc':
             this.searchDMS.sort((a, b) => (a.member_list[0].username.toLowerCase() > b.member_list[0].username.toLowerCase()) ? 1 : -1);
+            this.pinnedChannels.sort((a, b) => (a.member_list[0].username.toLowerCase() > b.member_list[0].username.toLowerCase()) ? 1 : -1);
           break;
           case 'alpha_desc':
             this.searchDMS.sort((a, b) => (a.member_list[0].username.toLowerCase() < b.member_list[0].username.toLowerCase()) ? 1 : -1); 
+            this.pinnedChannels.sort((a, b) => (a.member_list[0].username.toLowerCase() < b.member_list[0].username.toLowerCase()) ? 1 : -1); 
           break;
           case 'status_asc':
             this.searchDMS.sort((a, b) => (a.member_list[0].profile.status.lastSeen < b.member_list[0].profile.status.lastSeen) ? 1 : -1); 
+            this.pinnedChannels.sort((a, b) => (a.member_list[0].profile.status.lastSeen < b.member_list[0].profile.status.lastSeen) ? 1 : -1); 
           break;
           case 'status_desc':
             this.searchDMS.sort((a, b) => (a.member_list[0].profile.status.lastSeen > b.member_list[0].profile.status.lastSeen) ? 1 : -1); 
+            this.pinnedChannels.sort((a, b) => (a.member_list[0].profile.status.lastSeen > b.member_list[0].profile.status.lastSeen) ? 1 : -1); 
           break
           default:
             this.searchDMS.sort((a, b) => (a < b) ? 1 : -1);
+            this.pinnedChannels.sort((a, b) => (a < b) ? 1 : -1);
           break;
         }
       }
@@ -262,8 +267,7 @@ export default {
         if (channel.type == "private" && !channel.isPinned) this.privateChannels.push(channel);
         if (channel.type == "group" && !channel.isPinned) this.groupChannels.push(channel);
       }
-
-      if(this.channel_uuid == null) this.$router.push(`/messages/${this.privateChannels[0].type}/${this.privateChannels[0].uuid}`);
+      if(this.framework.isEmpty(this.channel_uuid)) this.$router.push(`/messages/${this.privateChannels[0].type}/${this.privateChannels[0].uuid}`);
       this.inviteChannels = invitesRequest.data;
       this.filterSearch();
     }

@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import mitt from 'mitt'
 import cache from '@/services/cache.js';
+import framework from '@/services/framework.js';
 import api from '@/services/api.js';
 
 const emitter = mitt();
@@ -19,4 +20,5 @@ if(api.DEV_MODE) {
 }
 app.config.globalProperties.cache = cache;
 app.config.globalProperties.api = api;
+app.config.globalProperties.framework = framework;
 app.mount('#app');
