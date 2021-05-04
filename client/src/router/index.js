@@ -39,6 +39,7 @@ const routes = [
   {
     path: '/settings/:setting?', // the ? makes the param optional so the default route works
     name: 'settings',
+    props: true,
     component: () => import(/* webpackChunkName: "settings" */ '@/views/Settings'),
     meta: {
       title: 'Taku | Settings',
@@ -56,6 +57,7 @@ const routes = [
   {
     path: '/wallpaper/:wallpaper_uuid?',
     name: 'wallpaper',
+    props: true,
     component: () => import(/* webpackChunkName: "wallpaper" */ '@/views/Wallpaper'),
     meta: {
       title: 'Taku | Wallpaper',
@@ -64,6 +66,7 @@ const routes = [
   {
     path: '/anime/:id',
     name: 'anime',
+    props: true,
     component: () => import(/* webpackChunkName: "anime" */ '@/views/Anime'),
     meta: {
       title: 'Taku | Anime',
@@ -90,7 +93,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.path.startsWith('/profile/')) document.title = "Taku | " + to.params.username; 
   next();
 });
-
+ 
 router.beforeResolve((to, from, next) => {
   // If this isn't an initial page load.
   if (to.name) {

@@ -90,10 +90,16 @@ export default {
     Takuchii,
     ChannelTypeSelector
   },
+  computed: {
+    me: function(){
+      if (localStorage.me) return JSON.parse(localStorage.me);
+    },
+    settings: function(){
+      if (localStorage.settings) return JSON.parse(localStorage.settings);
+    }
+  },
   data: () => {
     return {
-      me: JSON.parse(localStorage.me),
-      settings: JSON.parse(localStorage.settings),
       dms: [],
       channels: [],
       privateChannels: [],

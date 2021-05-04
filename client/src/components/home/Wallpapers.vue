@@ -35,9 +35,13 @@ export default {
         endpoint:      { type: String, required: true },
         sectionTitle:  { type: String, required: true },
     },
+    computed: {
+        me: function () {
+            if (localStorage.me) return JSON.parse(localStorage.me);
+        },
+    },
     data: () => {
         return {
-            me: JSON.parse(localStorage.me),
             wallpapers: null
         }
     },

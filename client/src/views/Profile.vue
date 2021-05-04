@@ -138,12 +138,15 @@ export default {
   props: {
       username: { type: String, required: true }
   },
+    computed: {
+        me: function(){
+            if (localStorage.me) return JSON.parse(localStorage.me);
+        },
+    },
   data: () => {
     return {
-        darkmode: localStorage.darkmode,
         token: localStorage.token,
         edit: false,
-        me: JSON.parse(localStorage.me),
         hoveringOver: {
             "developerBadge": false,
             "status": false,
@@ -217,7 +220,7 @@ export default {
           }  
       }
 
-      user.isFriend = (user.friend_list.friends.includes(this.me.uuid));     
+      if (this.me) user.isFriend = (user.friend_list.friends.includes(this.me.uuid));     
     
       this.user = user;
       console.log(this.user);
