@@ -1,5 +1,5 @@
 import { User } from "./models/User";
-import { ISignupForm, IUser } from "types";
+import { ISignupRequest, IUser } from "./types";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,7 +11,7 @@ export const Database = new class Database {
  * Attempts to create a user and save them to the database
  * @param {Object} [form] Object containing user details from the frontend form
  */
-  async newUser(form: ISignupForm): Promise<IUser> {
+  async newUser(form: ISignupRequest): Promise<IUser> {
     let {username, email} = form;
       
     const usernameQuery = await User.findOne({ username }) as IUser;

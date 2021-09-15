@@ -10,9 +10,14 @@ export interface IUser extends mongoose.Document{
   profileBanner?: string;
 }
 
-export interface ISignupForm {
+export interface ISignupRequest {
   username: string;
   email: string;
   password: string;
   repeatPassword: string;
+}
+
+export interface ISignupResponse {
+  message: string;
+  user?: IUser;
 }

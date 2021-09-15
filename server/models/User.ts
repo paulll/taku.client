@@ -1,6 +1,6 @@
 import mongoose, {Schema } from "mongoose";
 
-import { IUser } from "types";
+import { IUser } from "../types";
 
 const ATLAS_HOST = `mongodb+srv://taku:${process.env.ATLAS_PASSWORD}@taku.xftvm.mongodb.net/taku?retryWrites=true&w=majority`;
 
