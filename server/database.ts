@@ -34,6 +34,7 @@ export const Database = new class Database {
 
     // Add user to DB
     const user = await new User({ _id: uuidv4(), ...form }).save();
+    user.password = undefined;
     return user;
   }
 }

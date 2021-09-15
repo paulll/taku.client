@@ -9,7 +9,7 @@ import morgan from "morgan";
 import "./models/User";
 import signup from "./routes/signup";
 
-const THEME_COLOR = "ff00b6";
+const THEME_COLOR = "#ff00b6";
 const PORT = process.env.PORT || 8081;
 
 const LOGO = chalk.hex(THEME_COLOR)(`  ___       ___       ___       ___   
