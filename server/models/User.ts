@@ -10,7 +10,7 @@ const schema = new Schema<IUser>(
   {
     _id: { type: String, required: true }, // The user's ID
     created_at: { type: Number, required: true, default: Date.now() }, // Epoch when the account is created
-    username: { type: String, required: true }, // Username of the user
+    username: { type: String, required: true, unique: true }, // Username of the user
     email: { type: String, required: true }, // Email of the user
     password: { type: String, required: true }, // Encrypted password of the user
     profileImage: { type: String }, // object containing the link and alpha to the pfp of the user

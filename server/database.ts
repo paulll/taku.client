@@ -1,9 +1,9 @@
 import { User } from "./models/User";
-import { ISignupRequest, IUser } from "./types";
+import { ILoginRequest, ISignupRequest, IUser } from "./types";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from 'uuid';
+import { SALT_ROUNDS } from ".";
 
-const SALT_ROUNDS = 10;
 
 export const Database = new class Database {
 
@@ -34,7 +34,12 @@ export const Database = new class Database {
 
     // Add user to DB
     const user = await new User({ _id: uuidv4(), ...form }).save();
-    user.password = undefined;
+    user.password = 'hidden';
     return user;
+  }
+
+
+  async getUser(username: string): Promise<IUser | null> {
+    return User.findOne({username});
   }
 }

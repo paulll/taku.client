@@ -8,9 +8,11 @@ import cors from "cors";
 import morgan from "morgan";
 import "./models/User";
 import signup from "./routes/signup";
+import login from "./routes/login";
 
-const THEME_COLOR = "#ff00b6";
-const PORT = process.env.PORT || 8081;
+export const THEME_COLOR = "#ff00b6";
+export const PORT = process.env.PORT || 8081;
+export const SALT_ROUNDS = 10;
 
 const LOGO = chalk.hex(THEME_COLOR)(`  ___       ___       ___       ___   
  /\\  \\     /\\  \\     /\\__\\     /\\__\\  
@@ -38,5 +40,6 @@ new class TAKU {
 
   public registerRoutes(){
     this.express.use(signup);
+    this.express.use(login);
   }
 }
