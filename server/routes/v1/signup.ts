@@ -1,8 +1,8 @@
-import { Database } from "../database";
+import { Database } from "../../database";
 import express from "express";
 import Joi from "joi";
-import { ISignupRequest, ISignupResponse } from "../types";
-import { validators } from "../validators";
+import { ISignupRequest, ISignupResponse } from "../../types";
+import { validators } from "../../validators";
 import StatusCodes from 'http-status-codes';
 
 
@@ -25,4 +25,4 @@ router.post<{}, ISignupResponse, ISignupRequest>("/signup", async (req, res) => 
   return res.status(StatusCodes.CREATED).json({message: "User ć̶͖̤͉̹̙̖̫̱́̎͌ͅr̷̥̒̃̎̀̑̉̔̈́̚̚̚̕͘e̸̢̤͙̗̥̯͎̊͐́̂̈̔͠à̷͖͉̺̗̣̓̐̐͛̃t̶̡̟̜̞͇̟͌͊̇̒̈́̏̿̎͂̒͋̕͜͠͝ͅë̵͇̞̖́̃̓́̈̾̈͋̽̓͘͝ḋ̸̮̤͖͕̙̩͓̰͇͗̑̉̊̋̓̒̋̉͘̕͘ 🤡", user});
 });
 
-export default router;
+export const signup = router;

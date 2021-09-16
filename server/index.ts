@@ -7,8 +7,7 @@ import http from "http";
 import cors from "cors";
 import morgan from "morgan";
 import "./models/User";
-import signup from "./routes/signup";
-import login from "./routes/login";
+import { V1 } from "./routes/v1";
 
 export const THEME_COLOR = "#ff00b6";
 export const PORT = process.env.PORT || 8081;
@@ -33,13 +32,8 @@ new class TAKU {
     this.express.use(cors());
     this.express.use(morgan("dev"));
     this.express.use(express.json());
-    this.registerRoutes();
+    this.express.use(V1);
     this.server = http.createServer(this.express);
     this.server.listen(PORT, () => console.log(`[INDEX] Started on port ${PORT.toString()}`));
-  }
-
-  public registerRoutes(){
-    this.express.use(signup);
-    this.express.use(login);
   }
 }
