@@ -7,7 +7,7 @@ import http from "http";
 import cors from "cors";
 import morgan from "morgan";
 import "./models/User";
-import { V1 } from "./routes/v1";
+import { V1 } from "./routes";
 
 export const THEME_COLOR = "#ff00b6";
 export const PORT = process.env.PORT || 8081;
