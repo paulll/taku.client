@@ -10,19 +10,19 @@
     </div>
 
     <button type="submit" :class="{ disabled: isFormValid || isLoading }">
-      Login <h1 v-if="isLoading">Loading...</h1>
+      Login
+      <h1 v-if="isLoading">Loading...</h1>
     </button>
   </form>
 </template>
 
 <script setup lang="ts">
-
 import { computed, ref } from "vue";
 import router from "../router";
 import api from "../services/api";
 
 const isLoading = ref(false);
-const isFormValid = computed(() => Object.values(form).some(field => field == ""));
+const isFormValid = computed(() => Object.values(form).some((field) => field == ""));
 
 const form = ref({
   username: "",
@@ -33,6 +33,6 @@ const login = async () => {
   isLoading.value = true;
   const response = await api.login(form.value);
   isLoading.value = false;
-  response.code === "login.successful" && router.push({ name: 'user', params: { uuid: response.user?._id } } );
+  response.code === "login.successful" && router.push({ name: "user", params: { uuid: response.user?._id } });
 };
 </script>

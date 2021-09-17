@@ -1,8 +1,8 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import 'virtual:windi.css'
+import { createApp } from "vue";
+import App from "./App.vue";
+import "virtual:windi.css";
 import router from "./router";
-import './services/api';
-import './services/state';
+import "./services/state";
+import "./services/api";
 
-createApp(App).use(router).mount('#app')
+createApp(App).use(router).mount("#app");

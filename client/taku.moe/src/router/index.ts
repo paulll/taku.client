@@ -7,8 +7,7 @@ const routes = [
     component: () => import("../views/Login.vue"),
     meta: {
       title: "taku.moe | Login",
-      guest: true
-    }
+    },
   },
   {
     path: "/signup",
@@ -16,23 +15,21 @@ const routes = [
     component: () => import("../views/Signup.vue"),
     meta: {
       title: "taku.moe | Signup",
-      guest: true
-    }
+    },
   },
   {
-    path: "/u/:uuid",
+    path: "/user/:uuid?",
     name: "user",
     component: () => import("../views/User.vue"),
     meta: {
       title: "taku.moe | User",
-      guest: true
-    }
-  }
+    },
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
 export default router;
