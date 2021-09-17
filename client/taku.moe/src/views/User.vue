@@ -1,7 +1,7 @@
 <template>
   <div v-if="user">
     <Banner :url="user.profileBanner || state.defaultBanner"/>
-    <div class="flex gap-6 items-start px-10/100 transform -translate-y-20">
+    <div class="flex gap-6 h-40 items-start px-10/100 transform -translate-y-20">
       <Avatar :url="user.profileImage  || state.defaultAvatar"/>
       <Buttons :user="user"/>
     </div>
@@ -21,8 +21,8 @@ import { useRoute } from "vue-router";
 import api, { User } from "../services/api";
 import Buttons from "../components/user/Buttons.vue";
 const route = useRoute();
-const isLoading = ref(true);
-const user = ref<User>();
+let isLoading = ref(true);
+let user = ref<User>();
 onMounted(async () => {
   user.value = await api.getUser(route.params.uuid as string)
   isLoading.value = false;

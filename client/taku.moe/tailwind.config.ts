@@ -9,6 +9,7 @@ export default defineConfig({
     colors: {
       ...colors,
       pink: {
+        300: "#D6005A",
         400: "#FF0079"
       },
       dark: {
