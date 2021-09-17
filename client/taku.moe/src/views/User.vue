@@ -1,9 +1,9 @@
 <template>
-  <div class="h-full w-full" v-if="user">
-    <Banner class="h-96" :url="user.profileBanner || state.defaultBanner" />
+  <div class="h-full w-full" v-if="profile">
+    <Banner class="h-96" :url="profile.profileBanner || state.defaultBanner" />
     <div class="flex gap-6 h-40 items-start px-10/100 transform -translate-y-20">
-      <Avatar class="w-40 h-40 border-4 border-dark-100" :url="user.profileImage || state.defaultAvatar" />
-      <Buttons :user="user" />
+      <Avatar class="w-40 h-40 border-4 border-dark-100" :url="profile.profileImage || state.defaultAvatar" />
+      <Buttons :user="profile" />
     </div>
   </div>
   <div v-else-if="!isLoading">
@@ -23,10 +23,19 @@ import { User } from "../services/types";
 import Buttons from "../components/user/Buttons.vue";
 
 const route = useRoute();
-let isLoading = ref(true);
-let user = ref<User>();
+const me = state.getMe();
+const isLoading = ref(true);
+let profile: Ref<User> = ref({});
+
 onMounted(async () => {
-  user.value = await api.getUser(route.params.uuid as string);
+  const user = await api.getUser(route.params.uuid as string);
+  if (route.params.uuid === me?._id) {
+    profile.value = me;
+    state.setMe(user);
+    isLoading.value = false;
+    return
+  }
+  profile.value = user;
   isLoading.value = false;
 });
 </script>

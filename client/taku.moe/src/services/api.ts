@@ -10,7 +10,7 @@ class API {
 
     const headers = {
       "Content-Type": "application/json",
-      Authorization: state.token,
+      Authorization: state.getToken() || 'unset',
     };
 
     const options = {
@@ -30,21 +30,11 @@ class API {
   }
 
   public async login(form: LoginForm) {
-    const response = await this.request<AuthResponse>("post", "/login", form);
-    if (response.token && response.user) {
-      state.setToken(response.token);
-      state.setMe(response.user);
-    }
-    return response;
+    return this.request<AuthResponse>("post", "/login", form);
   }
 
   public async signup(form: SignupForm) {
-    const response = await this.request<AuthResponse>("post", "/signup", form);
-    if (response.token && response.user) {
-      state.setToken(response.token);
-      state.setMe(response.user);
-    }
-    return response;
+    return this.request<AuthResponse>("post", "/signup", form);
   }
 
   public async getUser(uuid: string) {

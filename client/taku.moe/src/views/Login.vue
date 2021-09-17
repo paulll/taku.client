@@ -20,6 +20,7 @@
 import { computed, ref } from "vue";
 import router from "../router";
 import api from "../services/api";
+import state from "../services/state";
 
 const isLoading = ref(false);
 const isFormValid = computed(() => Object.values(form).some((field) => field == ""));
@@ -32,6 +33,10 @@ const form = ref({
 const login = async () => {
   isLoading.value = true;
   const response = await api.login(form.value);
+  if (response.token && response.user) {
+    state.setToken(response.token);
+    state.setMe(response.user);
+  }
   isLoading.value = false;
   response.code === "login.successful" && router.push({ name: "user", params: { uuid: response.user?._id } });
 };
