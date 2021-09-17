@@ -34,8 +34,6 @@ new (class TAKU {
     this.express.use(express.json());
     this.express.use(V1);
     this.server = http.createServer(this.express);
-    this.server.listen(PORT, () =>
-      console.log(`[INDEX] Started on port ${PORT.toString()}`)
-    );
+    this.server.listen(PORT, () => console.log(`[INDEX] Started on port ${PORT.toString()}`));
   }
 })();

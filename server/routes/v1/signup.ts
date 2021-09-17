@@ -11,9 +11,7 @@ router.post<{}, ISignupResponse, ISignupForm>("/signup", async (req, res) => {
     const user = await signup(req.body);
     return res.status(StatusCodes.CREATED).json({ code: "user.created", user });
   } catch (error: any) {
-    return res
-      .status(StatusCodes.BAD_REQUEST)
-      .json({ code: statusCodeResolver(error.message) });
+    return res.status(StatusCodes.BAD_REQUEST).json({ code: statusCodeResolver(error.message) });
   }
 });
 
