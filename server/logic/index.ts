@@ -5,6 +5,12 @@ import { ILoginForm, ISignupForm, IUser } from "../types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { statusCodeResolver } from "../statusHandler";
+import { StatusCodes } from "http-status-codes";
+import express from "express";
+
+export const bad = (res: express.Response, code: string) => res.status(StatusCodes.BAD_REQUEST).json({ code });
+export const ok = (res: express.Response, code: string) => res.status(StatusCodes.OK).json({ code });
+export const created = (res: express.Response, code: string, item: object) => res.status(StatusCodes.CREATED).json({code, item})
 
 const signupSchema = Joi.object({ ...validators });
 const loginSchema = Joi.object({

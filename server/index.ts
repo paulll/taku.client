@@ -23,17 +23,20 @@ const LOGO = chalk.hex(THEME_COLOR)(`  ___       ___       ___       ___
 `);
 console.log(LOGO);
 
-new (class TAKU {
+export class TAKU {
   public express: Express;
   public server: http.Server;
+  public port: number = 8081;
 
-  public constructor() {
+  public constructor(port: Number = 8081) {
     this.express = express();
     this.express.use(cors());
     this.express.use(morgan("dev"));
     this.express.use(express.json());
-    this.express.use(V1);
+    this.express.use("/v1", V1);
     this.server = http.createServer(this.express);
-    this.server.listen(PORT, () => console.log(`[INDEX] Started on port ${PORT.toString()}`));
+    this.server.listen(port, () => console.log(`[INDEX] Started on port ${port.toString()}`));
   }
-})();
+};
+
+new TAKU();

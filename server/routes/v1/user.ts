@@ -1,22 +1,58 @@
 import express from "express";
-import { StatusCodes } from "http-status-codes";
-import { getUser } from "../../logic";
+import { bad, created, getUser, ok } from "../../logic";
 import auth from "../../middlewares/auth";
 import me from "../../middlewares/auth";
 import { LoggedInRequest } from "../../types";
+import { validators } from "../../validators";
 const router = express.Router();
 
 router.get("/user/:uuid", async (req, res) => {
   try {
     const user = await getUser(req.params.uuid);
-    return res.status(StatusCodes.CREATED).json({ code: "success", user });
-  } catch (error: any) {
-    return res.status(StatusCodes.BAD_REQUEST).json(error);
+    return created(res, 'user.created', user);
+  } catch (code: any) {
+    return bad(res, code);
   }
 });
 
-router.patch("/user/:uuid", auth, me, async (req: LoggedInRequest, res) => {
-  return res.status(StatusCodes.OK).json({ code: "success" });
+router.patch("/user/:uuid/username", auth, me, async (req: LoggedInRequest, res) => {
+  const {username} = req.params;
+  if (await validators.username.validateAsync(username)) {
+    req.user!.username = username;
+    await req.user!.save()
+    return ok(res, "success");
+  }
+
+  return bad(res, "username.invalid")
+});
+
+router.patch("/user/:uuid/email", auth, me, async (req: LoggedInRequest, res) => {
+  const {email} = req.params;
+  if (await validators.email.validateAsync(email)) {
+    req.user!.email = email;
+    await req.user!.save()
+    return ok(res, "success");
+  }
+
+  return bad(res, "email.invalid")
+});
+
+router.patch("/user/:uuid/password", auth, me, async (req: LoggedInRequest, res) => {
+  const {password, repeatPassword} = req.params;
+  if (password !== repeatPassword) return bad(res, "password.mismatch");
+
+  const validations = await Promise.all([
+    validators.password.validateAsync(password),
+    validators.password.validateAsync(repeatPassword)
+  ]);
+
+  if (!validations.includes(false)) {
+    req.user!.password = password;
+    await req.user!.save()
+    return ok(res, "success");
+  }
+
+  return bad(res, "password.invalid")
 });
 
 export default router;

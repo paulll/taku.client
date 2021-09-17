@@ -1,5 +1,4 @@
-import login from "./v1/login";
-import signup from "./v1/signup";
+import auth from "./v1/auth";
 import user from "./v1/user";
 
-export const V1 = [signup, login, user];
+export const V1 = [auth, user];
