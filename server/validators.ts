@@ -5,4 +5,5 @@ export const validators = {
   password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9!@#$%^&*()_+$]{3,30}")).required(),
   repeatPassword: Joi.ref('password'),
   email: Joi.string().email({ minDomainSegments: 2 }).required(),
+  uuid: Joi.string().uuid(),
 }

@@ -30,8 +30,11 @@ export const Database = new class Database {
     return user;
   }
 
+  async getUserByUUID(_id: string): Promise<IUser | null> {
+    return User.findOne({_id});
+  }
 
-  async getUser(username: string): Promise<IUser | null> {
+  async getUserByUsername(username: string): Promise<IUser | null> {
     return User.findOne({username});
   }
 }

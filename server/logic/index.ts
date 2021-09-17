@@ -4,9 +4,21 @@ import { validators } from "../validators";
 import { ILoginForm, ISignupForm, IUser } from "../types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { statusCodeResolver } from "../statusHandler";
 
 const signupSchema = Joi.object({...validators});
 const loginSchema = Joi.object({username: validators.username, password: validators.password});
+
+export async function getUser(uuid: string): Promise<IUser> {
+  try {
+    await validators.uuid.validateAsync(uuid);
+  } catch (error: any) {
+    throw {code: statusCodeResolver(error.details[0].message)}
+  }
+  const user = await Database.getUserByUUID(uuid);
+  if (!user) throw {code: "user.notFound"};
+  return user;
+}
 
 export async function signup(form: ISignupForm): Promise<IUser> {
   await signupSchema.validateAsync(form);
@@ -16,7 +28,7 @@ export async function signup(form: ISignupForm): Promise<IUser> {
 export async function login(form: ILoginForm) { 
   await loginSchema.validateAsync(form);
 
-  const user = await Database.getUser(form.username);
+  const user = await Database.getUserByUsername(form.username);
   if (!user) throw {code: "user.notFound"};
 
   const hashMatch = await bcrypt.compare(form.password, user.password);

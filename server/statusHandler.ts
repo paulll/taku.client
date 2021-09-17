@@ -7,6 +7,7 @@ const statusCodes: {[key: string]: string} = {
   '"password" is required':                                 "password.required",
   '"email" is required':                                    "email.required",
   '"repeatPassword" is required':                           "repeatPassword.required",
+  '"value" must be a valid GUID':                           "uuid.invalid"
 }
 
 export const statusCodeResolver = (message: string): string => {
