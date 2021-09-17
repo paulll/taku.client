@@ -3,6 +3,8 @@ import api, { User } from "./api";
 class State {
   public me: User | undefined;
   public token: string | "unset";
+  public defaultBanner: string = 'https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png';
+  public defaultAvatar: string = 'https://cdn.discordapp.com/emojis/455467264641335297.png?v=1';
 
   constructor(){
     const localStorageMe = localStorage.getItem("me")

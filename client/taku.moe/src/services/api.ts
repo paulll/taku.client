@@ -78,7 +78,8 @@ class API {
   }
 
   public async getUser(uuid: string) {
-    return this.request<User>("get", `/user/${uuid}`);
+    const { user } = await this.request<{user: User}>("get", `/user/${uuid}`);
+    return user;
   }
 }
 
