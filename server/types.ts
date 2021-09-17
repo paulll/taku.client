@@ -22,18 +22,13 @@ export interface ISignupForm {
   repeatPassword: string;
 }
 
-export interface ISignupResponse {
+export interface IAuthResponse {
   code: string;
   user?: IUser;
+  token?: string;
 }
 
 export interface ILoginForm {
   username: string;
   password: string;
-}
-
-export interface ILoginResponse {
-  code: string;
-  token?: string;
-  user?: IUser;
 }

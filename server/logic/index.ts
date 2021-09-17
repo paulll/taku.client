@@ -8,9 +8,9 @@ import { statusCodeResolver } from "../statusHandler";
 import { StatusCodes } from "http-status-codes";
 import express from "express";
 
-export const bad = (res: express.Response, code: string) => res.status(StatusCodes.BAD_REQUEST).json({ code });
-export const ok = (res: express.Response, code: string) => res.status(StatusCodes.OK).json({ code });
-export const created = (res: express.Response, code: string, item: object) => res.status(StatusCodes.CREATED).json({code, item})
+export const bad = (res: express.Response, json: object) => res.status(StatusCodes.BAD_REQUEST).json(json);
+export const ok = (res: express.Response, json: object) => res.status(StatusCodes.OK).json(json);
+export const created = (res: express.Response, json: object) => res.status(StatusCodes.CREATED).json(json);
 
 const signupSchema = Joi.object({ ...validators });
 const loginSchema = Joi.object({
@@ -29,9 +29,11 @@ export async function getUser(uuid: string): Promise<IUser> {
   return user;
 }
 
-export async function signup(form: ISignupForm): Promise<IUser> {
+export async function signup(form: ISignupForm) {
   await signupSchema.validateAsync(form);
-  return Database.newUser(form);
+  const user = await Database.newUser(form);
+  const token = jwt.sign(user.toObject(), process.env.JWT_SECRET!);
+  return { code: "signup.sucessfull", user, token };
 }
 
 export async function login(form: ILoginForm) {

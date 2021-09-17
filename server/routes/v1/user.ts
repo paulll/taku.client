@@ -9,9 +9,9 @@ const router = express.Router();
 router.get("/user/:uuid", async (req, res) => {
   try {
     const user = await getUser(req.params.uuid);
-    return created(res, 'user.created', user);
+    return created(res, {code: 'user.created', user: user});
   } catch (code: any) {
-    return bad(res, code);
+    return bad(res, { code });
   }
 });
 
@@ -20,10 +20,10 @@ router.patch("/user/:uuid/username", auth, me, async (req: LoggedInRequest, res)
   if (await validators.username.validateAsync(username)) {
     req.user!.username = username;
     await req.user!.save()
-    return ok(res, "success");
+    return ok(res, {code: "success"});
   }
 
-  return bad(res, "username.invalid")
+  return bad(res, {code: "username.invalid"})
 });
 
 router.patch("/user/:uuid/email", auth, me, async (req: LoggedInRequest, res) => {
@@ -31,15 +31,15 @@ router.patch("/user/:uuid/email", auth, me, async (req: LoggedInRequest, res) =>
   if (await validators.email.validateAsync(email)) {
     req.user!.email = email;
     await req.user!.save()
-    return ok(res, "success");
+    return ok(res, {code: "success"});
   }
 
-  return bad(res, "email.invalid")
+  return bad(res, {code: "email.invalid"})
 });
 
 router.patch("/user/:uuid/password", auth, me, async (req: LoggedInRequest, res) => {
   const {password, repeatPassword} = req.params;
-  if (password !== repeatPassword) return bad(res, "password.mismatch");
+  if (password !== repeatPassword) return bad(res, {code: "password.mismatch"});
 
   const validations = await Promise.all([
     validators.password.validateAsync(password),
@@ -49,10 +49,10 @@ router.patch("/user/:uuid/password", auth, me, async (req: LoggedInRequest, res)
   if (!validations.includes(false)) {
     req.user!.password = password;
     await req.user!.save()
-    return ok(res, "success");
+    return ok(res, {code: "success"});
   }
 
-  return bad(res, "password.invalid")
+  return bad(res, {code: "password.invalid"})
 });
 
 export default router;

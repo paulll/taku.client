@@ -1,28 +1,26 @@
 import express from "express";
-import { ISignupForm, ISignupResponse } from "../../types";
-import StatusCodes from "http-status-codes";
 import { statusCodeResolver } from "../../statusHandler";
-import { signup } from "../../logic";
-import { ILoginResponse, ILoginForm } from "../../types";
+import { bad, created, ok, signup } from "../../logic";
+import { IAuthResponse, ILoginForm, ISignupForm } from "../../types";
 import { login } from "../../logic";
 
 const router = express.Router();
 
-router.post<{}, ISignupResponse, ISignupForm>("/signup", async (req, res) => {
+router.post<{}, IAuthResponse, ISignupForm>("/signup", async (req, res) => {
   try {
-    const user = await signup(req.body);
-    return res.status(StatusCodes.CREATED).json({ code: "user.created", user });
+    const body = await signup(req.body);
+    return created(res, body);
   } catch (error: any) {
-    return res.status(StatusCodes.BAD_REQUEST).json({ code: statusCodeResolver(error.message) });
+    return bad(res, {code: statusCodeResolver(error.message)});
   }
 });
 
-router.post<{}, ILoginResponse, ILoginForm>("/login", async (req, res) => {
+router.post<{}, IAuthResponse, ILoginForm>("/login", async (req, res) => {
   try {
-    const loginProcess = await login(req.body);
-    return res.status(StatusCodes.OK).json(loginProcess);
+    const body = await login(req.body);
+    return ok(res, body);
   } catch (error: any) {
-    return res.status(StatusCodes.BAD_REQUEST).json(error);
+    return bad(res, {code: statusCodeResolver(error.code)});
   }
 });
 
