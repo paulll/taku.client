@@ -1,8 +1,8 @@
 <template>
-  <nav class="h-full w-16">
+  <nav class="h-full w-16 px-2">
     <ol class="flex flex-col h-full justify-center items-center">
       <li class="route">
-        <router-link :to="{ name: 'user' }"> 
+        <router-link :to="{ name: 'user', params: {uuid: state.getMe()?._id}}"> 
           <Avatar class="w-16 h-16" :url="state.getMe()?.profileImage || state.defaultAvatar" /> 
         </router-link>
       </li>

@@ -70,6 +70,14 @@ class State extends Store<IAppState> {
     localStorage.setItem("token", token);
     this.state.token = token;
   }
+
+  public setLastProfile(user: User) {
+    this.state.lastProfile = user;
+  }
+
+  public getLastProfile(){
+    return this.state.lastProfile;
+  }
 }
 
 
@@ -81,9 +89,11 @@ if (localMe !== null) {
 interface IAppState {
   token: string | null;
   me: User | null;
+  lastProfile: User | null;
 }
 
 export default new State({
   token: null,
   me: localMe,
+  lastProfile: null,
 });
