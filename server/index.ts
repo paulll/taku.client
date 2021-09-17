@@ -1,5 +1,5 @@
 console.clear();
-require('dotenv').config();
+require("dotenv").config();
 
 import chalk from "chalk";
 import express, { Express } from "express";
@@ -23,17 +23,19 @@ const LOGO = chalk.hex(THEME_COLOR)(`  ___       ___       ___       ___
 `);
 console.log(LOGO);
 
-new class TAKU {
+new (class TAKU {
   public express: Express;
   public server: http.Server;
 
-  public constructor(){
+  public constructor() {
     this.express = express();
     this.express.use(cors());
     this.express.use(morgan("dev"));
     this.express.use(express.json());
     this.express.use(V1);
     this.server = http.createServer(this.express);
-    this.server.listen(PORT, () => console.log(`[INDEX] Started on port ${PORT.toString()}`));
+    this.server.listen(PORT, () =>
+      console.log(`[INDEX] Started on port ${PORT.toString()}`)
+    );
   }
-}
+})();

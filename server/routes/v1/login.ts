@@ -1,7 +1,6 @@
-
 import express from "express";
 import { ILoginResponse, ILoginForm } from "../../types";
-import StatusCodes from 'http-status-codes';
+import StatusCodes from "http-status-codes";
 import { login } from "../../logic";
 const router = express.Router();
 

@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 
 export interface LoggedInRequest extends express.Request {
-  user?: IUser
+  user?: IUser;
 }
 
 export interface IUser extends mongoose.Document {
