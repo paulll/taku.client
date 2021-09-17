@@ -46,5 +46,5 @@ export async function login(form: ILoginForm) {
   if (!hashMatch) throw { code: "credentials.invalid" };
 
   const token = jwt.sign(user.toObject(), process.env.JWT_SECRET!);
-  return { code: "login.valid", user, token };
+  return { code: "login.successful", user, token };
 }

@@ -5,8 +5,5 @@
 </script>
 
 <template>
-  <h1>taku.moe</h1>
-
   <router-view/>
-
 </template>

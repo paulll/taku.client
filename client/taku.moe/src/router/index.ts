@@ -18,6 +18,15 @@ const routes = [
       title: "taku.moe | Signup",
       guest: true
     }
+  },
+  {
+    path: "/u/:uuid",
+    name: "user",
+    component: () => import("../views/User.vue"),
+    meta: {
+      title: "taku.moe | User",
+      guest: true
+    }
   }
 ];
 

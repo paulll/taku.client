@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/user/:uuid", async (req, res) => {
   try {
     const user = await getUser(req.params.uuid);
-    return created(res, {code: 'user.created', user: user});
+    return created(res, {user});
   } catch (code: any) {
     return bad(res, { code });
   }

@@ -108,7 +108,7 @@ describe("POST /login", () => {
       data: userLoginBody,
       headers: {'Content-Type': 'application/json'}
     })
-    chai.expect(data.code).to.be.equal("login.valid");
+    chai.expect(data.code).to.be.equal("login.successful");
   });
 });
 

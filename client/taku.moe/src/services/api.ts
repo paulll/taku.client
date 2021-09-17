@@ -1,3 +1,5 @@
+import state from "./state";
+
 interface SignupForm extends LoginForm {
   email: string,
   repeatPassword: string,
@@ -11,7 +13,7 @@ interface LoginForm {
 export interface User {
   email: string;
   password: string;
-  id: string;
+  _id: string;
   created_at: number;
   username: string;
   profileImage?: string;
@@ -26,10 +28,14 @@ interface AuthResponse {
 
 class API {
   protected backendURL: string = "http://localhost:8081";
-  protected token: string = localStorage.getItem("token") || "unset";
   protected version: string = "v1";
+  protected token: string
 
-  private async request<T>(method: string, endpoint: string, body: object): Promise<T> {
+  constructor(){
+    this.token = state.token;
+  }
+
+  private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
     const url = `${this.backendURL}/${this.version}${endpoint}`;
 
     const headers = {
@@ -53,23 +59,26 @@ class API {
     return data;
   }
 
-  protected setToken(token: string | undefined) {
-    if (token) {
-      localStorage.setItem("token", token);
-      this.token = token;
-    }
-  }
-
   public async login(form: LoginForm) {
     const response = await this.request<AuthResponse>("post", "/login", form);
-    this.setToken(response.token)
+    if (response.token && response.user) {
+      state.setToken(response.token)
+      state.setMe(response.user);
+    }
     return response;
   }
 
   public async signup(form: SignupForm) {
     const response = await this.request<AuthResponse>("post", "/signup", form);
-    this.setToken(response.token)
+    if (response.token && response.user) {
+      state.setToken(response.token)
+      state.setMe(response.user);
+    }
     return response;
+  }
+
+  public async getUser(uuid: string) {
+    return this.request<User>("get", `/user/${uuid}`);
   }
 }
 

@@ -33,6 +33,6 @@ const login = async () => {
   isLoading.value = true;
   const response = await api.login(form.value);
   isLoading.value = false;
-  response.code === "login.valid" && router.push('home');
+  response.code === "login.successful" && router.push({ name: 'user', params: { uuid: response.user?._id } } );
 };
 </script>
