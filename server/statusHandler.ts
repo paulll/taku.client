@@ -1,0 +1,14 @@
+// le codes
+const statusCodes: {[key: string]: string} = {
+  '"username" must only contain alpha-numeric characters':  "username.nonAlphaNumeric",
+  '"email" must be a valid email':                          "email.invalid",
+  '"repeatPassword" must be [ref:password]':                "password.mismatch",
+  '"username" is required':                                 "username.required",
+  '"password" is required':                                 "password.required",
+  '"email" is required':                                    "email.required",
+  '"repeatPassword" is required':                           "repeatPassword.required",
+}
+
+export const statusCodeResolver = (message: string): string => {
+  return statusCodes[message] || message;
+}
