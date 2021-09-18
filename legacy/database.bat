@@ -1,3 +1,0 @@
-cd api
-nodemon .
-pause                    
