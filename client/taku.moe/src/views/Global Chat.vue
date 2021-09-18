@@ -1,23 +1,18 @@
 <template>
-  
+  <form @submit.prevent="api.sendGlobalMessage(input); input = ''">
+    <input type="text" class="text-black" v-model="input">
+  </form>
+
+  <div class="div flex flex-col">
+    <h1 v-for="message in messages" :key="message">{{message}}</h1>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch } from "@vue/runtime-core";
-import { computed } from "@vue/reactivity";
 import { ref } from "vue";
-import Avatar from "../components/user/Avatar.vue";
-import Banner from "../components/user/Banner.vue";
-import state from "../services/state";
-import { useRoute } from "vue-router";
+import { computed } from "@vue/reactivity";
 import api from "../services/api";
-import { User } from "../services/types";
-import Buttons from "../components/user/Buttons.vue";
-
-const route = useRoute();
-const me = state.getMe();
-const isLoading = ref(true);
-const chat = computed(() => state.getGlobalChat());
-watch(route, async () => {});
-onMounted(async () => {});
+import state from "../services/state";
+const messages = computed(() => state.getGlobalMessages());
+const input = ref("");
 </script>

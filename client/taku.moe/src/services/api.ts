@@ -15,7 +15,11 @@ class API {
       console.log(this.socket.id);
       this.socket.emit("message", "Hello server!");
     });
-    this.socket.on("message", (message: any) => console.log(message));
+    this.socket.on("globalMessage", (message: any) => {
+      console.log(message);
+      
+      state.pushGlobalMessage(message);
+    });
   }
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
@@ -57,6 +61,10 @@ class API {
     state.setUser(user);
     return user;
   }
+
+  public async sendGlobalMessage(message: string) {
+    this.socket.emit("globalMessage", message);
+  }
 }
 
 
@@ -84,26 +92,7 @@ class API {
 //   }
 // }
 
-// export class GlobalChat {
-//   public messages: Message[] = [];
 
-//   public getMessages(){
-//     return this.messages;
-//   }
-
-//   public setMessages(messages: Message[]){
-//     this.messages = messages;
-//   }
-
-//   public pushMessage(message: Message){
-//     this.messages.push(message);
-//   }
-
-//   public sendMessage(message: Message){
-//     this.pushMessage(message)
-//     return api.sendGlobalChatMessage(message);
-//   }
-// }
 
 const api = new API();
 

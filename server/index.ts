@@ -40,8 +40,12 @@ class TAKU {
     this.io = new io.Server(this.server);
     this.io.on("connection", socket => {
       console.log("WS Connection");
-      socket.on("message", message => console.log(message));
       socket.emit("message", "Hello client!");
+      socket.join("@global");
+      socket.on("globalMessage", message => {
+        console.log(message);
+        this.io.to("@global").emit("globalMessage", message);
+      });
     });
     this.server.listen(port, () => console.log(`[INDEX] Started on port ${port.toString()}`));
   }

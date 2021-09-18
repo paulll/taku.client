@@ -22,7 +22,7 @@ export abstract class Store<T extends Object> {
 class State extends Store<IAppState> {
   public defaultBanner: string = "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
   public defaultAvatar: string = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
-    
+
   /**
    * Gets the me-user object
    * @returns reactive instance of me-user object
@@ -90,8 +90,25 @@ class State extends Store<IAppState> {
   public getLastProfile(){
     return this.state.lastProfile;
   }
-}
 
+  public getGlobalMessages(){
+    return this.state.globalMessages;
+  }
+
+  public setGlobalMessages(messages: string[]){
+    this.state.globalMessages = messages;
+  }
+
+  public pushGlobalMessage(message: string){
+    this.state.globalMessages.push(message);
+  }
+
+  public sendGlobalMessage(message: string){
+    this.pushGlobalMessage(message)
+    return api.sendGlobalMessage(message);
+  }
+
+}
 
 let localMe: User | string | null = localStorage.getItem('me')
 if (localMe !== null) {
@@ -103,6 +120,7 @@ interface IAppState {
   me: User | null;
   lastProfile: User | null;
   users: Map<string, User>;
+  globalMessages: string[];
 }
 
 export default new State({
@@ -110,4 +128,5 @@ export default new State({
   me: localMe,
   lastProfile: null,
   users: new Map(),
+  globalMessages: [],
 });
