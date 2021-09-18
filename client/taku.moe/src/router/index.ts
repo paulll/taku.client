@@ -26,7 +26,7 @@ const routes = [
     },
   },
     {
-    path: "/chat/",
+    path: "/chat/:channel_uuid",
     name: "chat",
     component: () => import("../views/Global Chat.vue"),
     meta: {

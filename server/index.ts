@@ -7,8 +7,8 @@ import http from "http";
 import cors from "cors";
 import morgan from "morgan";
 import "./models/User";
-import { V1, V1WSS } from "./routes";
-import WebSocket from 'ws';
+import { V1 } from "./routes";
+import { WebSocketManager } from "./WebSocketManager";
 
 export const THEME_COLOR = "#ff00b6";
 export const PORT = process.env.PORT || 8081;
@@ -28,7 +28,7 @@ class TAKU {
   public express: Express;
   public server: http.Server;
   public port: number = 8081;
-  public wss: WebSocket.Server;
+  public wsm: WebSocketManager;
 
   public constructor(port: Number = 8081) {
     this.express = express();
@@ -38,24 +38,8 @@ class TAKU {
     this.express.use("/v1", V1);
     this.server = http.createServer(this.express);
     this.server.listen(port, () => console.log(`[INDEX] Started on port ${port.toString()}`));
-    this.wss = new WebSocket.Server({ server: this.server });
-    this.wss.on('connection', ws => new WebSocketManager(ws));
+    this.wsm = new WebSocketManager(this.server);
   }
 };
-
-class WebSocketManager {
-  public ws: WebSocket;
-  constructor(ws: WebSocket){
-    this.ws = ws;
-    this.registerListeners();
-  }
-
-  public registerListeners () {
-    for (let i = 0; i < V1WSS.length; i++) {
-      const listener = V1WSS[i];
-      this.ws.on(listener.event, listener.handler);
-    }
-  }
-}
 
 export default new TAKU();

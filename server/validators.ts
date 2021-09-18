@@ -6,4 +6,5 @@ export const validators = {
   repeatPassword: Joi.ref("password"),
   email: Joi.string().email({ minDomainSegments: 2 }).required(),
   uuid: Joi.string().uuid(),
+  messageContent: Joi.string().max(2000),
 };

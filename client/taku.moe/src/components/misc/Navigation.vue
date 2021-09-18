@@ -7,7 +7,7 @@
         </router-link>
       </li>
       <li class="route">
-        <router-link :to="{ name: 'chat'}"> 
+        <router-link :to="{ name: 'chat', params: {channel_uuid: '@global'}}"> 
           <Button icon="globe" class="border-dark-100" />
         </router-link>
       </li>
