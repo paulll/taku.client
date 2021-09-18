@@ -25,6 +25,14 @@ const routes = [
       title: "taku.moe | User",
     },
   },
+    {
+    path: "/chat/",
+    name: "chat",
+    component: () => import("../views/Global Chat.vue"),
+    meta: {
+      title: "taku.moe | Global Chat",
+    },
+  },
 ];
 
 const router = createRouter({

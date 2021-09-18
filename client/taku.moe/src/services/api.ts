@@ -1,5 +1,5 @@
 import state from "./state";
-import { LoginForm, AuthResponse, SignupForm, User } from "./types";
+import { LoginForm, AuthResponse, SignupForm, User, IAttachment, IMessage } from "./types";
 
 class API {
   protected backendURL: string = "http://localhost:8081";
@@ -38,9 +38,64 @@ class API {
   }
 
   public async getUser(uuid: string) {
+    const cachedUser = state.getUser(uuid);
+    if (cachedUser) return cachedUser;
     const { user } = await this.request<{ user: User }>("get", `/user/${uuid}`);
+    state.setUser(user);
     return user;
+  }
+
+  public async sendGlobalChatMessage(message: Message){
+    // Websockets {...} 
   }
 }
 
-export default new API();
+
+export class Attachment {
+  public buffer: ReadableStream;
+  public name: string;
+  public mime: string;
+
+  constructor(object: IAttachment) {
+    this.buffer = object.stream;
+    this.name = object.name;
+    this.mime = object.mime;
+  }
+}
+
+export class Message {
+  public author: string;
+  public content: string;
+  public attachments: Attachment[];
+
+  constructor(object: IMessage) {
+    this.author = object.author;
+    this.content = object.content;
+    this.attachments = object.attachments;
+  }
+}
+
+export class GlobalChat {
+  public messages: Message[] = [];
+
+  public getMessages(){
+    return this.messages;
+  }
+
+  public setMessages(messages: Message[]){
+    this.messages = messages;
+  }
+
+  public pushMessage(message: Message){
+    this.messages.push(message);
+  }
+
+  public sendMessage(message: Message){
+    this.pushMessage(message)
+    return api.sendGlobalChatMessage(message);
+  }
+}
+
+const api = new API();
+
+export default api;

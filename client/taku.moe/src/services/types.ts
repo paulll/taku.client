@@ -1,6 +1,23 @@
+import { Attachment } from "./api";
+
 export interface SignupForm extends LoginForm {
   email: string;
   repeatPassword: string;
+}
+
+export interface IMessage {
+  _id: string;
+  created_at: number;
+  content?: string;
+  attachments?: string[];
+  channel_id: string;
+  author_id: string;
+}
+
+export interface IAttachment {
+  stream: ReadableStream;
+  name: string;
+  mime: string;
 }
 
 export interface LoginForm {

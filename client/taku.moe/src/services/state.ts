@@ -22,7 +22,7 @@ export abstract class Store<T extends Object> {
 class State extends Store<IAppState> {
   public defaultBanner: string = "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
   public defaultAvatar: string = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
-
+    
   /**
    * Gets the me-user object
    * @returns reactive instance of me-user object
@@ -71,6 +71,18 @@ class State extends Store<IAppState> {
     this.state.token = token;
   }
 
+  public setUser(user: User) {
+    this.state.users.set(user._id, user);
+  }
+
+  public getUser(uuid: string) {
+    return this.state.users.get(uuid);
+  }
+
+  public getAllUsers(){
+    return this.state.users.values();
+  }
+
   public setLastProfile(user: User) {
     this.state.lastProfile = user;
   }
@@ -90,10 +102,12 @@ interface IAppState {
   token: string | null;
   me: User | null;
   lastProfile: User | null;
+  users: Map<string, User>;
 }
 
 export default new State({
   token: null,
   me: localMe,
   lastProfile: null,
+  users: new Map(),
 });

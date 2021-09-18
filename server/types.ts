@@ -15,6 +15,15 @@ export interface IUser extends mongoose.Document {
   profileBanner?: string;
 }
 
+export interface IMessage extends mongoose.Document {
+  _id: string;
+  created_at: number;
+  content?: string;
+  attachments?: string[];
+  channel_id: string;
+  author_id: string;
+}
+
 export interface ISignupForm {
   username: string;
   email: string;

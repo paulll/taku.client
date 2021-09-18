@@ -22,9 +22,7 @@ const schema = new Schema<IUser>(
     profileImage: { type: String },
     // Link to the banner of the user
     profileBanner: { type: String },
-  },
-  {
-    // You should be aware of the outcome after set to false
+  }, {
     versionKey: false,
   }
 );
