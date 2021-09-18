@@ -8,20 +8,23 @@ export interface LoggedInRequest extends express.Request {
 export interface IUser extends mongoose.Document {
   email: string;
   password: string;
-  id: string;
+  _id: string;
   created_at: number;
   username: string;
   profileImage?: string;
   profileBanner?: string;
 }
 
-export interface IMessage extends mongoose.Document {
+export interface IMessage extends mongoose.Document, IWSMessage {
   _id: string;
   created_at: number;
-  content?: string;
-  attachments?: string[];
-  channel_id: string;
-  author_id: string;
+}
+
+export interface IWSMessage {
+  content?: string,
+  attachments?: string[],
+  channel_id: string,
+  author_id: string
 }
 
 export interface ISignupForm {

@@ -25,3 +25,4 @@ const schema = new Schema<IMessage>({
 );
 
 export const Message = mongoose.model<IMessage>("Message", schema);
+

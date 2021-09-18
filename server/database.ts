@@ -1,8 +1,9 @@
 import { User } from "./models/User";
-import { ILoginForm, ISignupForm, IUser } from "./types";
+import { ILoginForm, IMessage, IWSMessage, ISignupForm, IUser } from "./types";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { SALT_ROUNDS } from ".";
+import { Message } from "./models/Message";
 
 export const Database = new (class Database {
   /**
@@ -26,6 +27,15 @@ export const Database = new (class Database {
     const user = await new User({ _id: uuidv4(), ...form }).save();
     user.password = "hidden";
     return user;
+  }
+
+  async newMessage(form: IWSMessage){
+    const message = await new Message({
+      _id: uuidv4(),
+      created_at: Date.now(),
+      ...form
+    }).save();
+    return message;
   }
 
   async getUserByUUID(_id: string): Promise<IUser | null> {

@@ -9,6 +9,10 @@ import morgan from "morgan";
 import "./models/User";
 import { V1 } from "./routes";
 import io from "socket.io";
+import { socketAuth } from "./middlewares/socket";
+import { IUser } from "./types";
+import { Message } from "./models/Message";
+import { Database } from "./database";
 
 export const THEME_COLOR = "#ff00b6";
 export const PORT = process.env.PORT || 8081;
@@ -24,6 +28,7 @@ const LOGO = chalk.hex(THEME_COLOR)(`  ___       ___       ___       ___
 `);
 console.log(LOGO);
 
+
 class TAKU {
   public express: Express;
   public server: http.Server;
@@ -38,17 +43,20 @@ class TAKU {
     this.express.use("/v1", V1);
     this.server = http.createServer(this.express);
     this.io = new io.Server(this.server);
-    this.io.on("connection", socket => {
-      console.log("WS Connection");
+    this.io.use(socketAuth);
+    this.io.on("connection", (socket: {user?: IUser} & io.Socket) => {
+      console.log(`[WS] New connection (${this.getTotalSockets()} total connections)`);
       socket.emit("message", "Hello client!");
       socket.join("@global");
-      socket.on("globalMessage", message => {
-        console.log(message);
+      socket.on("globalMessage", async content => {
+        const message = await Database.newMessage({content, author_id: socket.user!._id, channel_id: "@global"});
         this.io.to("@global").emit("globalMessage", message);
       });
     });
     this.server.listen(port, () => console.log(`[INDEX] Started on port ${port.toString()}`));
   }
+
+  private getTotalSockets = () => this.io.of("/").sockets.size;
 };
 
 export default new TAKU();

@@ -5,7 +5,10 @@ import io from "socket.io-client";
 class API {
   protected backendURL: string = "localhost:8081";
   protected version: string = "v1";
-  protected socket = io(`ws://${this.backendURL}`, {'transports': ['websocket']});
+  protected socket = io(`ws://${this.backendURL}`, {
+    auth: {token: state.getToken()},
+    transports: ['websocket']
+  });
 
   constructor(){
     this.socket.on("reconnect_attempt", () => {
@@ -16,8 +19,6 @@ class API {
       this.socket.emit("message", "Hello server!");
     });
     this.socket.on("globalMessage", (message: any) => {
-      // console.log(message);
-      
       state.pushGlobalMessage(message);
     });
   }

@@ -1,6 +1,6 @@
 import { User } from "./types";
 import { reactive } from "vue";
-import api from "./api";
+const lazy = async () => (await import('./api')).default;
 
 /**
  * Le abstract class that holds the attribute state
@@ -48,7 +48,7 @@ class State extends Store<IAppState> {
   private async updateMe() {
     const uuid = this.state.me?._id;
     if (!uuid) return
-    const user = await api.getUser(uuid);
+    const user = await (await lazy()).getUser(uuid);
     this.setMe(user);
   }
 
@@ -102,12 +102,6 @@ class State extends Store<IAppState> {
   public pushGlobalMessage(message: string){
     this.state.globalMessages.unshift(message);
   }
-
-  public sendGlobalMessage(message: string){
-    this.pushGlobalMessage(message)
-    return api.sendGlobalMessage(message);
-  }
-
 }
 
 let localMe: User | string | null = localStorage.getItem('me')
@@ -124,7 +118,7 @@ interface IAppState {
 }
 
 export default new State({
-  token: null,
+  token: localStorage.getItem("token"),
   me: localMe,
   lastProfile: null,
   users: new Map(),
