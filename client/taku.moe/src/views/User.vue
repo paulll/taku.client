@@ -2,7 +2,7 @@
   <div class="h-full w-full" v-if="profile">
     <Banner class="h-96" :url="profile.profileBanner || state.defaultBanner" />
     <div class="flex gap-6 h-40 items-start px-10/100 transform -translate-y-20">
-      <Avatar class="w-40 h-40 border-4 border-dark-100" :url="profile.profileImage || state.defaultAvatar" />
+      <Avatar class="w-40 h-40 border-8px bg-dark-200 border-dark-200" :url="profile.profileImage || state.defaultAvatar" />
       <Buttons :user="profile" />
     </div>
   </div>

@@ -5,10 +5,10 @@
     </div>
 
     <div class="fields">
-      <input v-model="form.username" class="inputField" type="text" placeholder="Username" autocomplete="off" />
-      <input v-model="form.email" class="inputField" type="text" placeholder="Email" autocomplete="off" />
-      <input v-model="form.password" class="inputField" type="password" placeholder="Password" />
-      <input v-model="form.repeatPassword" class="inputField" type="password" placeholder="Repeat Password" />
+      <input v-model="form.username" class="inputField text-black" type="text" placeholder="Username" autocomplete="off" />
+      <input v-model="form.email" class="inputField text-black" type="text" placeholder="Email" autocomplete="off" />
+      <input v-model="form.password" class="inputField text-black" type="password" placeholder="Password" />
+      <input v-model="form.repeatPassword" class="inputField text-black" type="password" placeholder="Repeat Password" />
     </div>
 
     <button type="submit" :class="{ disabled: isFormValid || isLoading }">
