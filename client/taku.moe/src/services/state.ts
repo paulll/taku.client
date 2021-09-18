@@ -100,7 +100,7 @@ class State extends Store<IAppState> {
   }
 
   public pushGlobalMessage(message: string){
-    this.state.globalMessages.push(message);
+    this.state.globalMessages.unshift(message);
   }
 
   public sendGlobalMessage(message: string){

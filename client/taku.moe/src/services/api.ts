@@ -16,7 +16,7 @@ class API {
       this.socket.emit("message", "Hello server!");
     });
     this.socket.on("globalMessage", (message: any) => {
-      console.log(message);
+      // console.log(message);
       
       state.pushGlobalMessage(message);
     });

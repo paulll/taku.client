@@ -1,10 +1,12 @@
 <template>
-  <form @submit.prevent="api.sendGlobalMessage(input); input = ''">
-    <input type="text" class="text-black" v-model="input">
-  </form>
+  <div class="h-full w-full flex flex-col justify-end">
+    <div class="div flex flex-col-reverse h-full overflow-y-scroll bg-dark-300">
+      <h1 v-for="message in messages" :key="message">{{message}}</h1>
+    </div>
 
-  <div class="div flex flex-col">
-    <h1 v-for="message in messages" :key="message">{{message}}</h1>
+    <form @submit.prevent="api.sendGlobalMessage(input); input = ''" class="bg-dark-400 p-2">
+      <input placeholder="Type here" type="text" class=" rounded-4px w-full bg-dark-300 outline-none border-none" v-model="input">
+    </form>
   </div>
 </template>
 
