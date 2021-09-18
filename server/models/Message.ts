@@ -6,7 +6,8 @@ const ATLAS_HOST = `mongodb+srv://taku:${process.env.ATLAS_PASSWORD}@taku.xftvm.
 
 mongoose.connect(ATLAS_HOST);
 
-const schema = new Schema<IMessage>({
+const schema = new Schema<IMessage>(
+  {
     // The message's ID
     _id: { type: String, required: true },
     // Epoch when the message is sent
@@ -18,11 +19,11 @@ const schema = new Schema<IMessage>({
     // The id of the channel where the message was sent
     channel_id: { type: String, required: true },
     // The id of the user who sent the message
-    author_id: { type: String, required: true }
-  }, {
+    author_id: { type: String, required: true },
+  },
+  {
     versionKey: false,
   }
 );
 
 export const Message = mongoose.model<IMessage>("Message", schema);
-

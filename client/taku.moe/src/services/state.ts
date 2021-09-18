@@ -19,7 +19,8 @@ export abstract class Store<T extends Object> {
  * @author Goxer & N1kO23
  */
 class State extends Store<IAppState> {
-  public defaultBanner: string = "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
+  public defaultBanner: string =
+    "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
   public defaultAvatar: string = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
 
   /**
@@ -48,7 +49,7 @@ class State extends Store<IAppState> {
   public getToken() {
     return this.state.token;
   }
-  
+
   /**
    * Sets the user's session token
    * @param token new session token to be set
@@ -68,7 +69,7 @@ class State extends Store<IAppState> {
     return user;
   }
 
-  public getAllUsers(){
+  public getAllUsers() {
     return this.state.users.values();
   }
 
@@ -76,24 +77,24 @@ class State extends Store<IAppState> {
     this.state.lastProfile = user;
   }
 
-  public getLastProfile(){
+  public getLastProfile() {
     return this.state.lastProfile;
   }
 
-  public getGlobalMessages(){
+  public getGlobalMessages() {
     return this.state.globalMessages;
   }
 
-  public setGlobalMessages(messages: IMessage[]){
+  public setGlobalMessages(messages: IMessage[]) {
     this.state.globalMessages = messages;
   }
 
-  public pushGlobalMessage(message: IMessage){
+  public pushGlobalMessage(message: IMessage) {
     this.state.globalMessages.unshift(message);
   }
 }
 
-let localMe: User | string | null = localStorage.getItem('me')
+let localMe: User | string | null = localStorage.getItem("me");
 if (localMe !== null) {
   localMe = JSON.parse(localMe) as User;
 }

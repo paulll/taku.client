@@ -22,7 +22,8 @@ const schema = new Schema<IUser>(
     profileImage: { type: String },
     // Link to the banner of the user
     profileBanner: { type: String },
-  }, {
+  },
+  {
     versionKey: false,
   }
 );

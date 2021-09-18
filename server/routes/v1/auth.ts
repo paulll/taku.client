@@ -11,7 +11,7 @@ router.post<{}, IAuthResponse, ISignupForm>("/signup", async (req, res) => {
     const body = await signup(req.body);
     return created(res, body);
   } catch (error: any) {
-    return bad(res, {code: statusCodeResolver(error.message)});
+    return bad(res, { code: statusCodeResolver(error.message) });
   }
 });
 
@@ -20,7 +20,7 @@ router.post<{}, IAuthResponse, ILoginForm>("/login", async (req, res) => {
     const body = await login(req.body);
     return ok(res, body);
   } catch (error: any) {
-    return bad(res, {code: statusCodeResolver(error.code)});
+    return bad(res, { code: statusCodeResolver(error.code) });
   }
 });
 

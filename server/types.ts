@@ -21,10 +21,10 @@ export interface IMessage extends mongoose.Document, IWSMessage {
 }
 
 export interface IWSMessage {
-  content?: string,
-  attachments?: string[],
-  channel_id: string,
-  author_id: string
+  content?: string;
+  attachments?: string[];
+  channel_id: string;
+  author_id: string;
 }
 
 export interface ISignupForm {

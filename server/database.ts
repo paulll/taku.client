@@ -29,11 +29,11 @@ export const Database = new (class Database {
     return user;
   }
 
-  async newMessage(form: IWSMessage){
+  async newMessage(form: IWSMessage) {
     const message = await new Message({
       _id: uuidv4(),
       created_at: Date.now(),
-      ...form
+      ...form,
     }).save();
     return message;
   }

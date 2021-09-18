@@ -4,8 +4,19 @@
       <Message v-for="message in messages" :key="message._id" :message="message" />
     </div>
 
-    <form @submit.prevent="api.sendGlobalMessage(input); input = ''" class="bg-dark-400 p-2">
-      <input placeholder="Type here" type="text" class=" rounded-4px w-full bg-dark-300 outline-none border-none" v-model="input">
+    <form
+      @submit.prevent="
+        api.sendGlobalMessage(input);
+        input = '';
+      "
+      class="bg-dark-400 p-2"
+    >
+      <input
+        placeholder="Type here"
+        type="text"
+        class="rounded-4px w-full bg-dark-300 outline-none border-none"
+        v-model="input"
+      />
     </form>
   </div>
 </template>

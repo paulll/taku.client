@@ -25,7 +25,7 @@ const routes = [
       title: "taku.moe | User",
     },
   },
-    {
+  {
     path: "/chat/:channel_uuid",
     name: "chat",
     component: () => import("../views/Global Chat.vue"),

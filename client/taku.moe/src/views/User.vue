@@ -29,22 +29,21 @@ const profile = computed(() => state.getLastProfile());
 watch(route, async () => await fetchProfile());
 onMounted(async () => await fetchProfile());
 
-async function fetchProfile(){
+async function fetchProfile() {
   isLoading.value = true;
 
   // Get the user
   const user = await api.getUser(route.params.uuid as string);
 
-  if (!user) return isLoading.value = false;
+  if (!user) return (isLoading.value = false);
 
   // If the profile is me use it as a chance to update my state
   if (route.params.uuid === me?._id) state.setMe(user);
 
-  // If the last profile is different than the one 
+  // If the last profile is different than the one
   // We're seeing cache it in the state
   if (profile.value?._id !== user._id) state.setLastProfile(user);
 
   isLoading.value = false;
 }
-
 </script>

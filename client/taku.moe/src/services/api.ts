@@ -6,11 +6,11 @@ class API {
   protected backendURL: string = "localhost:8081";
   protected version: string = "v1";
   protected socket = io(`ws://${this.backendURL}`, {
-    auth: {token: state.getToken()},
-    transports: ['websocket']
+    auth: { token: state.getToken() },
+    transports: ["websocket"],
   });
 
-  constructor(){
+  constructor() {
     this.socket.on("reconnect_attempt", () => {
       console.log("Reconnecting attempt");
     });
@@ -29,7 +29,7 @@ class API {
 
     const headers = {
       "Content-Type": "application/json",
-      Authorization: state.getToken() || 'unset',
+      Authorization: state.getToken() || "unset",
     };
 
     const options = {
