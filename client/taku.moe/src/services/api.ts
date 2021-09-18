@@ -1,12 +1,25 @@
 import state from "./state";
-import { LoginForm, AuthResponse, SignupForm, User, IAttachment, IMessage } from "./types";
+import { LoginForm, AuthResponse, SignupForm, User, IAttachment, IMessage, EventData } from "./types";
+import io from "socket.io-client";
 
 class API {
-  protected backendURL: string = "http://localhost:8081";
+  protected backendURL: string = "localhost:8081";
   protected version: string = "v1";
+  protected socket = io(`ws://${this.backendURL}`, {'transports': ['websocket']});
+
+  constructor(){
+    this.socket.on("reconnect_attempt", () => {
+      console.log("Reconnecting attempt");
+    });
+    this.socket.on("connect", () => {
+      console.log(this.socket.id);
+      this.socket.emit("message", "Hello server!");
+    });
+    this.socket.on("message", (message: any) => console.log(message));
+  }
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
-    const url = `${this.backendURL}/${this.version}${endpoint}`;
+    const url = `http://${this.backendURL}/${this.version}${endpoint}`;
 
     const headers = {
       "Content-Type": "application/json",
@@ -44,57 +57,53 @@ class API {
     state.setUser(user);
     return user;
   }
-
-  public async sendGlobalChatMessage(message: Message){
-    // Websockets {...} 
-  }
 }
 
 
-export class Attachment {
-  public buffer: ReadableStream;
-  public name: string;
-  public mime: string;
+// export class Attachment {
+//   public buffer: ReadableStream;
+//   public name: string;
+//   public mime: string;
 
-  constructor(object: IAttachment) {
-    this.buffer = object.stream;
-    this.name = object.name;
-    this.mime = object.mime;
-  }
-}
+//   constructor(object: IAttachment) {
+//     this.buffer = object.stream;
+//     this.name = object.name;
+//     this.mime = object.mime;
+//   }
+// }
 
-export class Message {
-  public author: string;
-  public content: string;
-  public attachments: Attachment[];
+// export class Message {
+//   public author: string;
+//   public content: string;
+//   public attachments: Attachment[];
 
-  constructor(object: IMessage) {
-    this.author = object.author;
-    this.content = object.content;
-    this.attachments = object.attachments;
-  }
-}
+//   constructor(object: IMessage) {
+//     this.author = object.author;
+//     this.content = object.content;
+//     this.attachments = object.attachments;
+//   }
+// }
 
-export class GlobalChat {
-  public messages: Message[] = [];
+// export class GlobalChat {
+//   public messages: Message[] = [];
 
-  public getMessages(){
-    return this.messages;
-  }
+//   public getMessages(){
+//     return this.messages;
+//   }
 
-  public setMessages(messages: Message[]){
-    this.messages = messages;
-  }
+//   public setMessages(messages: Message[]){
+//     this.messages = messages;
+//   }
 
-  public pushMessage(message: Message){
-    this.messages.push(message);
-  }
+//   public pushMessage(message: Message){
+//     this.messages.push(message);
+//   }
 
-  public sendMessage(message: Message){
-    this.pushMessage(message)
-    return api.sendGlobalChatMessage(message);
-  }
-}
+//   public sendMessage(message: Message){
+//     this.pushMessage(message)
+//     return api.sendGlobalChatMessage(message);
+//   }
+// }
 
 const api = new API();
 

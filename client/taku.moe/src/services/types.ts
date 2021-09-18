@@ -1,8 +1,11 @@
-import { Attachment } from "./api";
-
 export interface SignupForm extends LoginForm {
   email: string;
   repeatPassword: string;
+}
+
+export interface EventData<T = any> {
+  eventName: string;
+  body: T;
 }
 
 export interface IMessage {

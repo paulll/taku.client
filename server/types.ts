@@ -41,3 +41,8 @@ export interface ILoginForm {
   username: string;
   password: string;
 }
+
+export interface EventData<T = any> {
+  eventName: string;
+  body: T;
+}

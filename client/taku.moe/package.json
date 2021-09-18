@@ -8,6 +8,9 @@
     "prettify": "npx prettier --write \"./**/*.ts\" && npx prettier --write \"./**/*.json\" && npx prettier --write \"./**/*.vue\""
   },
   "dependencies": {
+    "@types/events": "^3.0.0",
+    "events": "^3.3.0",
+    "socket.io-client": "^4.2.0",
     "vue": "^3.2.6",
     "vue-router": "^4.0.11"
   },
