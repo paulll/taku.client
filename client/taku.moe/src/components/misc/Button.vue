@@ -1,6 +1,6 @@
 <template>
-  <button class="bg-dark-300 rounded-8px focus:outline-none flex font-medium p-1 items-center justify-center transition-all duration-200 border-3 border-dark-300 active:bg-white-400 active:border-white-500 border-dark-200 hover:border-dark-400">
-    <div class="flex items-center bg-dark-300 py-1 px-2 rounded-4px justify-between gap-2 transition-all duration-100">
+  <button class="bg-dark-300 select-none min-w-max rounded-8px flex font-medium p-1 items-center justify-center transition-all duration-100 border-3 border-dark-300 active:bg-white-400 active:border-white-500">
+    <div :class="`${text ? 'py-1 px-4' : 'p-2'} flex items-center bg-dark-300 rounded-4px justify-between gap-2 transition-all duration-100`">
       <Icon v-if="icon" class="h-6 transition-all duration-100" :icon="icon"/>
       <h1 v-if="text">{{ text }}</h1>
     </div>
@@ -17,6 +17,18 @@ defineProps<{
 
 <style scoped>
 
+button:focus {
+  outline: none;
+}
+
+button:active {
+  @apply border-white-500;
+}
+
+button:hover:not(:active) {
+  @apply border-dark-400;
+}
+
 button:hover > div {
   @apply bg-dark-400;
 }
@@ -24,7 +36,6 @@ button:hover > div {
 button:active > div {
   @apply bg-white-500 text-dark-100;
 }
-
 button:active .icon {
   @apply filter invert;
 }

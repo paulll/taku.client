@@ -3,7 +3,7 @@
     <ol class="flex flex-col h-full justify-center items-center">
       <li class="route">
         <router-link :to="{ name: 'user', params: {uuid: state.getMe()?._id}}"> 
-          <Button icon="account" />
+          <Button icon="account" class="border-dark-100" />
         </router-link>
       </li>
       <!-- <li class="route"><router-link :to="{name: 'chat'}"></router-link></li> -->

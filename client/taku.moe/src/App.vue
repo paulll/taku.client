@@ -5,7 +5,7 @@ import Navigation from "./components/misc/Navigation.vue";
 </script>
 
 <template>
-  <div class="flex h-full w-full">
+  <div class="flex h-full w-full text-white-500">
     <Navigation />
     <router-view />
   </div>
