@@ -72,33 +72,6 @@ class API {
   }
 }
 
-
-// export class Attachment {
-//   public buffer: ReadableStream;
-//   public name: string;
-//   public mime: string;
-
-//   constructor(object: IAttachment) {
-//     this.buffer = object.stream;
-//     this.name = object.name;
-//     this.mime = object.mime;
-//   }
-// }
-
-// export class Message {
-//   public author: string;
-//   public content: string;
-//   public attachments: Attachment[];
-
-//   constructor(object: IMessage) {
-//     this.author = object.author;
-//     this.content = object.content;
-//     this.attachments = object.attachments;
-//   }
-// }
-
-
-
 const api = new API();
 
 export default api;
