@@ -1,5 +1,5 @@
 import state from "./state";
-import { LoginForm, AuthResponse, SignupForm, User, IAttachment, IMessage, EventData } from "./types";
+import { LoginForm, AuthResponse, SignupForm, User, IMessage } from "./types";
 import io from "socket.io-client";
 
 class API {
