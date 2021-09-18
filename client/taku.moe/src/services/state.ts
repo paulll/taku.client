@@ -1,6 +1,5 @@
-import { User } from "./types";
+import { IMessage, User } from "./types";
 import { reactive } from "vue";
-const lazy = async () => (await import('./api')).default;
 
 /**
  * Le abstract class that holds the attribute state
@@ -42,17 +41,6 @@ class State extends Store<IAppState> {
   }
 
   /**
-   * Resyncs the me-user object with the backend server
-   * @author Goxer & N1kO23
-   */
-  private async updateMe() {
-    const uuid = this.state.me?._id;
-    if (!uuid) return
-    const user = await (await lazy()).getUser(uuid);
-    this.setMe(user);
-  }
-
-  /**
    * Gets the user's session token
    * @returns user's session token
    * @author Goxer & N1kO23
@@ -76,7 +64,8 @@ class State extends Store<IAppState> {
   }
 
   public getUser(uuid: string) {
-    return this.state.users.get(uuid);
+    const user = this.state.users.get(uuid);
+    return user;
   }
 
   public getAllUsers(){
@@ -95,11 +84,11 @@ class State extends Store<IAppState> {
     return this.state.globalMessages;
   }
 
-  public setGlobalMessages(messages: string[]){
+  public setGlobalMessages(messages: IMessage[]){
     this.state.globalMessages = messages;
   }
 
-  public pushGlobalMessage(message: string){
+  public pushGlobalMessage(message: IMessage){
     this.state.globalMessages.unshift(message);
   }
 }
@@ -114,7 +103,7 @@ interface IAppState {
   me: User | null;
   lastProfile: User | null;
   users: Map<string, User>;
-  globalMessages: string[];
+  globalMessages: IMessage[];
 }
 
 export default new State({

@@ -1,6 +1,6 @@
 {
   "name": "taku-backend-server",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Taku Backend Server",
   "main": "index.ts",
   "scripts": {

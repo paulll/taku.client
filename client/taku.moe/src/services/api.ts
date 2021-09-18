@@ -18,7 +18,8 @@ class API {
       console.log(this.socket.id);
       this.socket.emit("message", "Hello server!");
     });
-    this.socket.on("globalMessage", (message: any) => {
+    this.socket.on("globalMessage", async (message: IMessage) => {
+      await api.getUser(message.author_id);
       state.pushGlobalMessage(message);
     });
   }
@@ -56,6 +57,7 @@ class API {
   }
 
   public async getUser(uuid: string) {
+    if (!uuid) return;
     const cachedUser = state.getUser(uuid);
     if (cachedUser) return cachedUser;
     const { user } = await this.request<{ user: User }>("get", `/user/${uuid}`);
@@ -64,7 +66,9 @@ class API {
   }
 
   public async sendGlobalMessage(message: string) {
-    this.socket.emit("globalMessage", message);
+    if (message.trim().length > 0) {
+      this.socket.emit("globalMessage", message);
+    }
   }
 }
 

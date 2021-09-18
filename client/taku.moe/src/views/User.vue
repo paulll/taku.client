@@ -20,7 +20,6 @@ import Banner from "../components/user/Banner.vue";
 import state from "../services/state";
 import { useRoute } from "vue-router";
 import api from "../services/api";
-import { User } from "../services/types";
 import Buttons from "../components/user/Buttons.vue";
 
 const route = useRoute();
@@ -35,6 +34,8 @@ async function fetchProfile(){
 
   // Get the user
   const user = await api.getUser(route.params.uuid as string);
+
+  if (!user) return isLoading.value = false;
 
   // If the profile is me use it as a chance to update my state
   if (route.params.uuid === me?._id) state.setMe(user);
