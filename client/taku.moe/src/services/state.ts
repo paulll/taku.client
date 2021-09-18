@@ -19,14 +19,9 @@ export abstract class Store<T extends Object> {
  * @author Goxer & N1kO23
  */
 class State extends Store<IAppState> {
-  public defaultBanner: string =
-    "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
-  public defaultAvatar: string = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
-  public sounds = {
-    notification: {
-      play: async () => new Audio("https://cdn.discordapp.com/attachments/881632596298170399/888879202659614760/notification.wav").play(),
-    }
-  };
+  public defaultBanner = "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
+  public defaultAvatar = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
+  public playNotificationSound = async () => new Audio("https://cdn.discordapp.com/attachments/881632596298170399/888879202659614760/notification.wav").play();
 
   /**
    * Gets the me-user object
@@ -95,7 +90,7 @@ class State extends Store<IAppState> {
   }
 
   public pushGlobalMessage(message: IMessage) {
-    this.sounds.notification.play();
+    this.playNotificationSound();
     this.state.globalMessages.unshift(message);
   }
 }
