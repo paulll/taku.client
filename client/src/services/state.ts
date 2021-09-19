@@ -13,6 +13,14 @@ export abstract class Store<T extends Object> {
   }
 }
 
+class TakuAudio {
+  constructor(path: string){
+    const audio = new Audio(path);
+    audio.volume = 0.20;
+    audio.play();
+  }
+}
+
 /**
  * State-class, extends abstract class Store.
  * Responsible for handling app's state
@@ -21,9 +29,9 @@ export abstract class Store<T extends Object> {
 class State extends Store<IAppState> {
   public defaultBanner = "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
   public defaultAvatar = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
-  public playNotification = () => new Audio("../sounds/notification.flac").play();
-  public playKeystroke = () => new Audio("../sounds/keystroke.flac").play();
-  public playLogin = () => new Audio("../sounds/login.flac").play();
+  public playNotification = () => new TakuAudio("../sounds/notification.flac");
+  public playKeystroke = () => new TakuAudio("../sounds/keystroke.flac");
+  public playLogin = () => new TakuAudio("../sounds/login.flac");
 
   /**
    * Clears all data intended for logging out
