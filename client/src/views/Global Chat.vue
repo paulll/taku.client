@@ -1,6 +1,8 @@
 <template>
   <div class="h-full w-full flex flex-col justify-end">
-    <div class="div p-2 pb-6 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-300">
+    <div
+      class="div p-2 pb-6 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200"
+    >
       <Message v-for="message in messages" :key="message._id" :message="message" />
     </div>
 

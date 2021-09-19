@@ -16,12 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from "@vue/runtime-core";
 import state from "../../services/state";
-import { User } from "../../services/types";
-import Avatar from "../user/Avatar.vue";
-import Icon from "./Icon.vue";
 import Button from "./Button.vue";
 </script>
-
-<style lang="postcss" scoped></style>

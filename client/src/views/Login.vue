@@ -5,7 +5,13 @@
     </div>
 
     <div class="fields">
-      <input v-model="form.username" class="inputField text-black" type="text" placeholder="Username" autocomplete="off" />
+      <input
+        v-model="form.username"
+        class="inputField text-black"
+        type="text"
+        placeholder="Username"
+        autocomplete="off"
+      />
       <input v-model="form.password" class="inputField text-black" type="password" placeholder="Password" />
     </div>
 
@@ -36,8 +42,8 @@ const login = async () => {
   if (response.token && response.user) {
     state.setToken(response.token);
     state.setMe(response.user);
+    response.code === "login.successful" && router.push({ name: "user", params: { uuid: response.user?._id } });
   }
   isLoading.value = false;
-  response.code === "login.successful" && router.push({ name: "user", params: { uuid: response.user?._id } });
 };
 </script>

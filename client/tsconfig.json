@@ -6,6 +6,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "strict": true,
+    "types": ["vite-plugin-pwa/client"],
     "jsx": "preserve",
     "sourceMap": true,
     "resolveJsonModule": true,

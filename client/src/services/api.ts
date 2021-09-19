@@ -5,7 +5,7 @@ import io from "socket.io-client";
 class API {
   protected backendURL: string = "localhost:8081";
   protected version: string = "v1";
-  protected socket = io(`ws://${this.backendURL}`, {
+  public socket = io(`ws://${this.backendURL}`, {
     auth: { token: state.getToken() },
     transports: ["websocket"],
   });

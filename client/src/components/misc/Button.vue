@@ -35,9 +35,14 @@ defineProps<{
 }>();
 </script>
 
-<style scoped>
+<style>
 button:focus {
   outline: none;
+}
+
+a.router-link-active button,
+a.router-link-active button > div {
+  @apply bg-white-500;
 }
 
 button:active {
@@ -55,6 +60,8 @@ button:hover > div {
 button:active > div {
   @apply bg-white-500 text-dark-100;
 }
+
+a.router-link-active button .icon,
 button:active .icon {
   @apply filter invert;
 }
