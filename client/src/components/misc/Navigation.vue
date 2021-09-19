@@ -16,7 +16,6 @@
           icon="logout"
           @click="
             state.clear();
-            state.playLogout();
             router.push({ name: 'login' });
           "
           class="border-dark-100"

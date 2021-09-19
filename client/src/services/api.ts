@@ -5,7 +5,7 @@ import { useState } from "../services/state";
 const state = useState();
 
 class API {
-  protected backendURL: string = "localhost:8081";
+  protected backendURL: string = import.meta.env.DEV ? "localhost:8081" : "backend.taku.moe";
   protected version: string = "v1";
   public socket = io(`ws://${this.backendURL}`, {
     auth: { token: state.getToken() },
@@ -13,18 +13,13 @@ class API {
   });
 
   constructor() {
-    this.socket.on("reconnect_attempt", () => {
-      console.log("Reconnecting attempt");
-    });
-    this.socket.on("connect", () => {
-      console.log(this.socket.id);
-      this.socket.emit("message", "Hello server!");
-    });
+    this.socket.on("reconnect_attempt", () => console.log("Reconnecting attempt"));
+    this.socket.on("connect", () => this.socket.emit("message", "Hello server!"));
     this.socket.on("globalMessage", async (message: IMessage) => {
       await api.getUser(message.author_id);
       state.pushGlobalMessage(message);
     });
-  }
+  };
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
     const url = `http://${this.backendURL}/${this.version}${endpoint}`;
