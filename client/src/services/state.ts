@@ -13,7 +13,7 @@ export abstract class Store<T extends Object> {
   }
 }
 
-class TakuAudio {
+class SoundEffect {
   constructor(path: string){
     const audio = new Audio(path);
     audio.volume = 0.20;
@@ -29,9 +29,9 @@ class TakuAudio {
 class State extends Store<IAppState> {
   public defaultBanner = "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
   public defaultAvatar = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
-  public playNotification = () => new TakuAudio("../sounds/notification.flac");
-  public playKeystroke = () => new TakuAudio("../sounds/keystroke.flac");
-  public playLogin = () => new TakuAudio("../sounds/login.flac");
+  public playNotification = () => new SoundEffect("../sounds/notification.flac");
+  public playKeystroke = () => new SoundEffect("../sounds/keystroke.flac");
+  public playLogin = () => new SoundEffect("../sounds/login.flac");
 
   /**
    * Clears all data intended for logging out
