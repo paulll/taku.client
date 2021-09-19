@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2 max-w-full items-center">
+  <div class="flex gap-2 max-w-full items-start">
     <Avatar class="w-8 h-8" :url="state.getUser(message.author_id)?.profileImage" />
     <div class="flex flex-col">
       <div class="flex gap-2 items-center">
