@@ -8,6 +8,7 @@ const statusCodes: { [key: string]: string } = {
   '"username" is required': "username.required",
   '"password" is required': "password.required",
   '"email" is required': "email.required",
+  '"username" is not allowed to be empty': "username.empty",
   '"repeatPassword" is required': "repeatPassword.required",
   '"value" must be a valid GUID': "uuid.invalid",
 };

@@ -9,15 +9,13 @@
       <input v-model="form.password" class="inputField text-black" type="password" placeholder="Password" />
     </div>
 
-    <button type="submit" :class="{ disabled: isFormValid || isLoading }">
-      Login
-      <h1 v-if="isLoading">Loading...</h1>
-    </button>
+    <Button text="Login" />
   </form>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import Button from "../components/misc/Button.vue";
 import router from "../router";
 import api from "../services/api";
 import { useState } from "../services/state";

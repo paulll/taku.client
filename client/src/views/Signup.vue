@@ -11,15 +11,13 @@
       <input v-model="form.repeatPassword" class="inputField text-black" type="password" placeholder="Repeat Password" />
     </div>
 
-    <button type="submit" :class="{ disabled: isFormValid || isLoading }">
-      Signup
-      <h1 v-if="isLoading">Loading...</h1>
-    </button>
+    <Button text="Signup" />
   </form>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import Button from "../components/misc/Button.vue";
 import router from "../router";
 import api from "../services/api";
 import { useState } from "../services/state";
