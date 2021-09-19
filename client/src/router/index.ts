@@ -45,11 +45,11 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = !!state.getToken();
 
   // If they are logged in don't let them go to signup/login
-  if (isAuthenticated && to.name === 'login' || to.name === 'signup') return next({name: "user", params: {uuid: state.getMe()?._id}});
+  if ((isAuthenticated && to.name === "login") || to.name === "signup") return next({ name: "user", params: { uuid: state.getMe()?._id } });
 
   // If they aren't logged in don't let them go anywhere besides signup/login
-  if (!isAuthenticated && to.name !== 'login' && to.name !== 'signup') return next({ name: 'login' });
-  next()
-})
+  if (!isAuthenticated && to.name !== "login" && to.name !== "signup") return next({ name: "login" });
+  next();
+});
 
 export default router;

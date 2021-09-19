@@ -2,10 +2,7 @@
   <div class="h-full w-full" v-if="profile">
     <Banner class="h-96" :url="profile.profileBanner || state.defaultBanner" />
     <div class="flex gap-6 h-40 items-start px-10/100 transform -translate-y-20">
-      <Avatar
-        class="w-40 h-40 border-8px bg-dark-200 border-dark-200"
-        :url="profile.profileImage || state.defaultAvatar"
-      />
+      <Avatar class="w-40 h-40 border-8px bg-dark-200 border-dark-200" :url="profile.profileImage || state.defaultAvatar" />
       <Buttons :user="profile" />
     </div>
   </div>
@@ -18,12 +15,14 @@
 import { onMounted, watch } from "@vue/runtime-core";
 import { computed } from "@vue/reactivity";
 import { ref } from "vue";
-import Avatar from "../components/user/Avatar.vue";
-import Banner from "../components/user/Banner.vue";
-import { useState }  from "../services/state";
+import { useState } from "../services/state";
 import { useRoute } from "vue-router";
 import api from "../services/api";
+
+import Avatar from "../components/user/Avatar.vue";
+import Banner from "../components/user/Banner.vue";
 import Buttons from "../components/user/Buttons.vue";
+
 const state = useState();
 const route = useRoute();
 const me = state.getMe();

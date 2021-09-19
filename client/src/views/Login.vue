@@ -5,13 +5,7 @@
     </div>
 
     <div class="fields">
-      <input
-        v-model="form.username"
-        class="inputField text-black"
-        type="text"
-        placeholder="Username"
-        autocomplete="off"
-      />
+      <input v-model="form.username" class="inputField text-black" type="text" placeholder="Username" autocomplete="off" />
       <input v-model="form.password" class="inputField text-black" type="password" placeholder="Password" />
     </div>
 
@@ -26,7 +20,7 @@
 import { computed, ref } from "vue";
 import router from "../router";
 import api from "../services/api";
-import { useState }  from "../services/state";
+import { useState } from "../services/state";
 const state = useState();
 const isLoading = ref(false);
 const isFormValid = computed(() => Object.values(form).some((field) => field == ""));

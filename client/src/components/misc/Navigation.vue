@@ -12,7 +12,14 @@
         </router-link>
       </li>
       <li class="route">
-        <Button icon="logout" @click="state.clear(); router.push({name: 'login'})" class="border-dark-100" />
+        <Button
+          icon="logout"
+          @click="
+            state.clear();
+            router.push({ name: 'login' });
+          "
+          class="border-dark-100"
+        />
       </li>
     </ol>
   </nav>
@@ -25,4 +32,3 @@ import Button from "./Button.vue";
 const router = useRouter();
 const state = useState();
 </script>
-

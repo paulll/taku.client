@@ -1,8 +1,6 @@
 <template>
   <div class="h-full w-full flex flex-col justify-end">
-    <div
-      class="div p-2 pb-6 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200"
-    >
+    <div class="div p-2 pb-6 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200">
       <Message v-for="message in messages" :key="message._id" :message="message" />
     </div>
 
@@ -13,12 +11,7 @@
       "
       class="bg-dark-400 p-2"
     >
-      <input
-        placeholder="Type here"
-        type="text"
-        class="rounded-4px w-full bg-dark-300 outline-none border-none"
-        v-model="input"
-      />
+      <input placeholder="Type here" @keypress="state.playKeystroke()" type="text" class="rounded-4px w-full bg-dark-300 outline-none border-none" v-model="input" />
     </form>
   </div>
 </template>
@@ -27,7 +20,7 @@
 import { ref } from "vue";
 import { computed } from "@vue/reactivity";
 import api from "../services/api";
-import { useState }  from "../services/state";
+import { useState } from "../services/state";
 import Message from "../components/chat/Message.vue";
 const state = useState();
 const messages = computed(() => state.getGlobalMessages());
