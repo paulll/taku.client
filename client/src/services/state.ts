@@ -21,8 +21,9 @@ export abstract class Store<T extends Object> {
 class State extends Store<IAppState> {
   public defaultBanner = "https://cdn.discordapp.com/attachments/881632596298170399/888473221182148608/242209754_1050478125722251_7808276400397729144_n.png";
   public defaultAvatar = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
-  public playNotification = async () => new Audio("../sounds/notification.flac").play();
-  public playKeystroke = async () => new Audio("../sounds/keystroke.flac").play();
+  public playNotification = () => new Audio("../sounds/notification.flac").play();
+  public playKeystroke = () => new Audio("../sounds/keystroke.flac").play();
+  public playLogin = () => new Audio("../sounds/login.flac").play();
 
   /**
    * Clears all data intended for logging out
