@@ -6,9 +6,10 @@ const state = useState();
 
 class API {
   protected backendURL: string = import.meta.env.DEV ? "localhost:8081" : "backend.taku.moe";
-  protected protocol: string = import.meta.env.DEV ? "ws" : "wss";
+  protected websocketProtocol: string = import.meta.env.DEV ? "ws" : "wss";
+  protected httpProtocol: string = import.meta.env.DEV ? "http" : "https";
   protected version: string = "v1";
-  public socket = io(`${this.protocol}://${this.backendURL}`, {
+  public socket = io(`${this.websocketProtocol}://${this.backendURL}`, {
     auth: { token: state.getToken() },
     transports: ["websocket"],
   });
@@ -23,7 +24,7 @@ class API {
   };
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
-    const url = `http://${this.backendURL}/${this.version}${endpoint}`;
+    const url = `${this.httpProtocol}://${this.backendURL}/${this.version}${endpoint}`;
 
     const headers = {
       "Content-Type": "application/json",
