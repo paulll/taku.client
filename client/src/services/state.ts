@@ -111,9 +111,18 @@ class State extends Store<IAppState> {
     
     Notification.requestPermission().then(function (permission) {
       if (permission === "granted") {
-        new Notification(messageAuthor?.username || "User", {
-          icon: messageAuthor?.profileImage,
-          body: message.content || "Attachment"
+        navigator.serviceWorker.getRegistration().then(function(reg) {
+          console.log('creating notification');
+          var options = {
+            body: message.content || "Attachment",
+            icon: messageAuthor?.profileImage,
+            vibrate: [100, 50, 100],
+            data: {
+              dateOfArrival: Date.now(),
+              primaryKey: 1
+            }
+          };
+          reg?.showNotification(messageAuthor?.username || "User", options);
         });
       }
     });
