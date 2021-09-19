@@ -108,10 +108,16 @@ class State extends Store<IAppState> {
   public pushGlobalMessage(message: IMessage) {
     this.playNotification();
     const messageAuthor = state.getUser(message.author_id);
-    new Notification(messageAuthor?.username || "User", {
-      icon: messageAuthor?.profileImage,
-      body: message.content || "Attachment"
+    
+    Notification.requestPermission().then(function (permission) {
+      if (permission === "granted") {
+        new Notification(messageAuthor?.username || "User", {
+          icon: messageAuthor?.profileImage,
+          body: message.content || "Attachment"
+        });
+      }
     });
+
     this.state.globalMessages.unshift(message);
   }
 }
