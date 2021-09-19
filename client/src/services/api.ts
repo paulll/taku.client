@@ -6,8 +6,9 @@ const state = useState();
 
 class API {
   protected backendURL: string = import.meta.env.DEV ? "localhost:8081" : "backend.taku.moe";
+  protected protocol: string = import.meta.env.DEV ? "ws" : "wss";
   protected version: string = "v1";
-  public socket = io(`ws://${this.backendURL}`, {
+  public socket = io(`${this.protocol}://${this.backendURL}`, {
     auth: { token: state.getToken() },
     transports: ["websocket"],
   });
