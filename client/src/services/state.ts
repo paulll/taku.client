@@ -107,9 +107,15 @@ class State extends Store<IAppState> {
 
   public pushGlobalMessage(message: IMessage) {
     this.playNotification();
+    const messageAuthor = state.getUser(message.author_id);
+    new Notification(messageAuthor?.username || "User", {
+      icon: messageAuthor?.profileImage,
+      body: message.content || "Attachment"
+    });
     this.state.globalMessages.unshift(message);
   }
 }
+
 
 let localMe: User | string | null = localStorage.getItem("me");
 if (localMe !== null) {
