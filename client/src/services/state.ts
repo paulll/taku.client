@@ -13,7 +13,7 @@ export abstract class Store<T extends Object> {
   }
 }
 
-class SoundEffect {
+export class SoundEffect {
   constructor(path: string){
     const audio = new Audio(path);
     audio.volume = 0.20;
@@ -113,27 +113,24 @@ class State extends Store<IAppState> {
     this.state.globalMessages = messages;
   }
 
-  public pushGlobalMessage(message: IMessage) {
+  public async pushGlobalMessage(message: IMessage) {
     this.playNotification();
     const messageAuthor = state.getUser(message.author_id);
     
-    Notification.requestPermission().then(function (permission) {
-      if (permission === "granted") {
-        navigator.serviceWorker.getRegistration().then(function(reg) {
-          console.log('creating notification');
-          var options = {
-            body: message.content || "Attachment",
-            icon: messageAuthor?.profileImage,
-            vibrate: [100, 50, 100],
-            data: {
-              dateOfArrival: Date.now(),
-              primaryKey: 1
-            }
-          };
-          reg?.showNotification(messageAuthor?.username || "User", options);
-        });
-      }
-    });
+    const permission = await Notification.requestPermission()
+    if (permission === "granted") {
+      const reg = await navigator.serviceWorker.getRegistration();
+      var options = {
+        body: message.content || "Attachment",
+        icon: messageAuthor?.profileImage,
+        vibrate: [100, 50, 100],
+        data: {
+          dateOfArrival: Date.now(),
+          primaryKey: 1
+        }
+      };
+      reg?.showNotification(messageAuthor?.username || "User", options);
+    }
 
     this.state.globalMessages.unshift(message);
   }
