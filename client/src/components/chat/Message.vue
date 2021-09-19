@@ -1,11 +1,15 @@
 <template>
   <div class="flex gap-2 max-w-full items-center">
-    <Avatar class="w-6 h-6" :url="state.getUser(message.author_id)?.profileImage" />
-    <router-link class="username" :to="{ name: 'user', params: { uuid: state.getUser(message.author_id)?._id } }">
-      <p class="text-orange-500 font-semibold">{{ state.getUser(message.author_id)?.username }}</p>
-    </router-link>
-    <h1 class="content">{{ message.content }}</h1>
-    <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
+    <Avatar class="w-8 h-8" :url="state.getUser(message.author_id)?.profileImage" />
+    <div class="flex flex-col">
+      <div class="flex gap-2 items-center">
+        <router-link class="username" :to="{ name: 'user', params: { uuid: state.getUser(message.author_id)?._id } }">
+          <p class="text-orange-500 font-semibold">{{ state.getUser(message.author_id)?.username }}</p>
+        </router-link>
+        <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
+      </div>
+      <h1 class="content">{{ message.content }}</h1>
+    </div>
   </div>
 </template>
 

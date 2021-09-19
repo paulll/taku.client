@@ -38,8 +38,8 @@ const signup = async () => {
   if (response.token && response.user) {
     state.setToken(response.token);
     state.setMe(response.user);
+    response.code === "signup.sucessfull" && router.push({ name: "user", params: { uuid: response.user?._id } });
   }
   isLoading.value = false;
-  response.code === "signup.sucessfull" && router.push({ name: "user", params: { uuid: response.user?._id } });
 };
 </script>
