@@ -11,11 +11,18 @@
           <Button icon="globe" class="border-dark-100" />
         </router-link>
       </li>
+      <li class="route">
+        <Button icon="logout" @click="state.clear(); router.push({name: 'login'})" class="border-dark-100" />
+      </li>
     </ol>
   </nav>
 </template>
 
 <script setup lang="ts">
-import state from "../../services/state";
+import { useRouter } from "vue-router";
+import { useState } from "../../services/state";
 import Button from "./Button.vue";
+const router = useRouter();
+const state = useState();
 </script>
+

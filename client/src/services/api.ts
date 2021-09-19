@@ -1,6 +1,8 @@
-import state from "./state";
 import { LoginForm, AuthResponse, SignupForm, User, IMessage } from "./types";
 import io from "socket.io-client";
+
+import { useState } from "../services/state";
+const state = useState();
 
 class API {
   protected backendURL: string = "localhost:8081";

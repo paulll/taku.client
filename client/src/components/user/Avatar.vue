@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import state from "../../services/state";
+import { useState }  from "../../services/state";
 defineProps<{
   url?: string;
 }>();

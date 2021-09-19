@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import state from "../../services/state";
+import { useState }  from "../../services/state";
 import Avatar from "../../components/user/Avatar.vue";
 import { IMessage } from "../../services/types";
 defineProps<{

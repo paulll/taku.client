@@ -28,6 +28,20 @@ class State extends Store<IAppState> {
     ).play();
 
   /**
+   * Clears all data intended for logging out
+   * @author Goxer
+   */
+  public clear(){
+    localStorage.removeItem("me");
+    localStorage.removeItem("token");
+    this.state.me = null;
+    this.state.token = null;
+    this.state.lastProfile = null;
+    this.state.users.clear();
+    this.state.globalMessages = [];
+  }
+
+  /**
    * Gets the me-user object
    * @returns reactive instance of me-user object
    * @author Goxer & N1kO23
@@ -112,10 +126,12 @@ interface IAppState {
   globalMessages: IMessage[];
 }
 
-export default new State({
+const state = new State({
   token: localStorage.getItem("token"),
   me: localMe,
   lastProfile: null,
   users: new Map(),
   globalMessages: [],
 });
+
+export const useState = () => state;

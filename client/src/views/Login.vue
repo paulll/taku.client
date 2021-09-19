@@ -26,8 +26,8 @@
 import { computed, ref } from "vue";
 import router from "../router";
 import api from "../services/api";
-import state from "../services/state";
-
+import { useState }  from "../services/state";
+const state = useState();
 const isLoading = ref(false);
 const isFormValid = computed(() => Object.values(form).some((field) => field == ""));
 
