@@ -66,16 +66,14 @@ const updateProfile = async () => {
     banner: newBanner,
     avatar: newAvatar,
   });
-  await fetchProfile();
+  await fetchProfile(true);
 };
 
 // TODO: Replace this with websocket userUpdate events so it works globally too
-const fetchProfile = async () => {
-  const user = await api.getUser(route.params.uuid as string, true);
+const fetchProfile = async (hard: boolean) => {
+  const user = await api.getUser(route.params.uuid as string, hard);
 
-  console.log(user);
-
-  if (!user) return console.log("returning no user");
+  if (!user) return;
 
   // If the profile is me use it as a chance to update my state
   if (route.params.uuid === me?._id) state.setMe(user);
