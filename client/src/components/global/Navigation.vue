@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import { useState } from "../../services/state";
-import Button from "./Button.vue";
+import Button from "../misc/Button.vue";
 const router = useRouter();
 const state = useState();
 </script>
