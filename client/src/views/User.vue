@@ -75,11 +75,9 @@ const fetchProfile = async () => {
   if (!user) return console.log("returning no user");
 
   // If the profile is me use it as a chance to update my state
-  if (route.params.uuid === me?._id) {
-    state.setMe(user);
-    console.log("updating me state")
-  };
+  if (route.params.uuid === me?._id) state.setMe(user);
   
+  state.setUser(user);
   state.setLastProfile(user);
 };
 </script>
