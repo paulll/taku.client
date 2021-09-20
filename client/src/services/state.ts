@@ -31,7 +31,6 @@ class State extends Store<IAppState> {
   public defaultAvatar = "https://cdn.discordapp.com/emojis/455467264641335297.png?v=1";
   public playNotification = () => new SoundEffect("../sounds/notification.flac");
   public playKeystroke = () => new SoundEffect("../sounds/keystroke.flac");
-  public playLogin = () => new SoundEffect("../sounds/login.flac");
 
   /**
    * Clears all data intended for logging out

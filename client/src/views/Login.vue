@@ -34,8 +34,8 @@ const login = async () => {
   if (response.token && response.user && response.code === "login.successful") {
     state.setToken(response.token);
     state.setMe(response.user);
-    state.playLogin();
     router.push({ name: "user", params: { uuid: response.user?._id } });
+    router.go(0);
   }
   isLoading.value = false;
 };

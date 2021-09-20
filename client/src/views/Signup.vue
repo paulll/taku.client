@@ -35,10 +35,11 @@ const form = ref({
 const signup = async () => {
   isLoading.value = true;
   const response = await api.signup(form.value);
-  if (response.token && response.user) {
+  if (response.token && response.user && response.code === "signup.sucessfull") {
     state.setToken(response.token);
     state.setMe(response.user);
-    response.code === "signup.sucessfull" && router.push({ name: "user", params: { uuid: response.user?._id } });
+    router.push({ name: "user", params: { uuid: response.user?._id } });
+    router.go(0);
   }
   isLoading.value = false;
 };
