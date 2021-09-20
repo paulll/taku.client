@@ -5,11 +5,13 @@ import { useState } from "../services/state";
 const state = useState();
 
 class API {
-  protected backendURL: string = import.meta.env.DEV ? "localhost:8081" : "backend.taku.moe";
+  protected backendHost: string = import.meta.env.DEV ? "localhost:8081" : "backend.taku.moe";
   protected websocketProtocol: string = import.meta.env.DEV ? "ws" : "wss";
   protected httpProtocol: string = import.meta.env.DEV ? "http" : "https";
+  public backendURL = `${this.httpProtocol}://${this.backendHost}`;
+
   protected version: string = "v1";
-  public socket = io(`${this.websocketProtocol}://${this.backendURL}`, {
+  public socket = io(`${this.websocketProtocol}://${this.backendHost}`, {
     auth: { token: state.getToken() },
     transports: ["websocket"],
   });
@@ -24,18 +26,28 @@ class API {
   };
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
-    const url = `${this.httpProtocol}://${this.backendURL}/${this.version}${endpoint}`;
+    const url = `${this.backendURL}/${this.version}${endpoint}`;
 
-    const headers = {
-      "Content-Type": "application/json",
-      Authorization: state.getToken() || "unset",
-    };
+    // Very stupid, good job fetch API
+    if (body instanceof FormData) {
+      var headers = {
+        Authorization: state.getToken() || "unset",
+      };
+    } else {
+      // @ts-ignore
+      var headers = {
+        "Content-Type": body instanceof FormData ? undefined : "application/json",
+        Authorization: state.getToken() || "unset",
+      };
+    }
 
     const options = {
       method: method.toUpperCase(),
       headers,
-      body: JSON.stringify(body),
+      body: body instanceof FormData ? body : JSON.stringify(body),
     };
+
+    console.log(options);
 
     console.log(`API ${method.toUpperCase()} Request ${url}`);
 
@@ -69,6 +81,19 @@ class API {
       this.socket.emit("globalMessage", message);
     }
   }
+
+  public async updateProfile(data: IProfileUpdate) {
+    const formData = new FormData();
+    const {avatar, banner} = data;
+    avatar && formData.append("avatar", avatar);
+    banner && formData.append("banner", banner);
+    await this.request("patch", `/user/${state.getMe()?._id}/profile`, formData);
+  }
+}
+
+interface IProfileUpdate {
+  banner?: File;
+  avatar?: File;
 }
 
 const api = new API();

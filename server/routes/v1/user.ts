@@ -2,6 +2,7 @@ import express from "express";
 import { bad, created, getUser, ok } from "../../logic";
 import auth from "../../middlewares/auth";
 import me from "../../middlewares/auth";
+import { upload } from "../../middlewares/upload";
 import { LoggedInRequest } from "../../types";
 import { validators } from "../../validators";
 const router = express.Router();
@@ -15,44 +16,56 @@ router.get("/user/:uuid", async (req, res) => {
   }
 });
 
-router.patch("/user/:uuid/username", auth, me, async (req: LoggedInRequest, res) => {
-  const { username } = req.params;
-  if (await validators.username.validateAsync(username)) {
-    req.user!.username = username;
-    await req.user!.save();
-    return ok(res, { code: "success" });
-  }
-
-  return bad(res, { code: "username.invalid" });
+router.patch("/user/:uuid/profile", auth, me, upload.any(), async (req: LoggedInRequest, res) => {
+  const files = req.files as Express.Multer.File[];
+  const avatar = files.find(file => file.fieldname === 'avatar')?.filename;
+  const banner = files.find(file => file.fieldname === 'banner')?.filename;
+  if (avatar) req.user!.profileImage = avatar;
+  if (banner) req.user!.profileBanner = banner;
+  await req.user!.save();
+  return ok(res, { code: "success" });
 });
 
-router.patch("/user/:uuid/email", auth, me, async (req: LoggedInRequest, res) => {
-  const { email } = req.params;
-  if (await validators.email.validateAsync(email)) {
-    req.user!.email = email;
-    await req.user!.save();
-    return ok(res, { code: "success" });
-  }
+// router.patch("/user/:uuid/username", auth, me, async (req: LoggedInRequest, res) => {
+//   const { username } = req.params;
+//   if (await validators.username.validateAsync(username)) {
+//     req.user!.username = username;
+//     await req.user!.save();
+//     return ok(res, { code: "success" });
+//   }
 
-  return bad(res, { code: "email.invalid" });
-});
+//   return bad(res, { code: "username.invalid" });
+// });
 
-router.patch("/user/:uuid/password", auth, me, async (req: LoggedInRequest, res) => {
-  const { password, repeatPassword } = req.params;
-  if (password !== repeatPassword) return bad(res, { code: "password.mismatch" });
+// router.patch("/user/:uuid/email", auth, me, async (req: LoggedInRequest, res) => {
+//   const { email } = req.params;
+//   if (await validators.email.validateAsync(email)) {
+//     req.user!.email = email;
+//     await req.user!.save();
+//     return ok(res, { code: "success" });
+//   }
 
-  const validations = await Promise.all([
-    validators.password.validateAsync(password),
-    validators.password.validateAsync(repeatPassword),
-  ]);
+//   return bad(res, { code: "email.invalid" });
+// });
 
-  if (!validations.includes(false)) {
-    req.user!.password = password;
-    await req.user!.save();
-    return ok(res, { code: "success" });
-  }
 
-  return bad(res, { code: "password.invalid" });
-});
+
+// router.patch("/user/:uuid/password", auth, me, async (req: LoggedInRequest, res) => {
+//   const { password, repeatPassword } = req.params;
+//   if (password !== repeatPassword) return bad(res, { code: "password.mismatch" });
+
+//   const validations = await Promise.all([
+//     validators.password.validateAsync(password),
+//     validators.password.validateAsync(repeatPassword),
+//   ]);
+
+//   if (!validations.includes(false)) {
+//     req.user!.password = password;
+//     await req.user!.save();
+//     return ok(res, { code: "success" });
+//   }
+
+//   return bad(res, { code: "password.invalid" });
+// });
 
 export default router;

@@ -45,6 +45,7 @@ class State extends Store<IAppState> {
     this.state.lastProfile = null;
     this.state.users.clear();
     this.state.globalMessages = [];
+    this.state.isEditingProfile = false;
   }
 
   /**
@@ -65,6 +66,24 @@ class State extends Store<IAppState> {
     this.state.me = user;
   }
 
+  /**
+   * Gets the isEditingProfile attribute's value
+   * @returns boolean of the editing state
+   * @author Goxer & N1kO23
+   */
+  public getIsEditingProfile(): boolean {
+    return this.state.isEditingProfile;
+  }
+
+  /**
+   * Sets the isEditingProfile attribute's value
+   * @param boolean new editing state
+   * @author Goxer & N1kO23
+   */
+  public setIsEditingProfile(state: boolean) {
+    this.state.isEditingProfile = state;
+  }
+ 
   /**
    * Gets the user's session token
    * @returns user's session token
@@ -148,6 +167,7 @@ interface IAppState {
   lastProfile: User | null;
   users: Map<string, User>;
   globalMessages: IMessage[];
+  isEditingProfile: boolean;
 }
 
 const state = new State({
@@ -156,6 +176,7 @@ const state = new State({
   lastProfile: null,
   users: new Map(),
   globalMessages: [],
+  isEditingProfile: false,
 });
 
 export const useState = () => state;

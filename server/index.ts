@@ -11,7 +11,6 @@ import { V1 } from "./routes";
 import io from "socket.io";
 import { socketAuth } from "./middlewares/socket";
 import { IUser } from "./types";
-import { Message } from "./models/Message";
 import { Database } from "./database";
 
 export const THEME_COLOR = "#ff00b6";
@@ -39,6 +38,7 @@ class TAKU {
     this.express.use(cors());
     this.express.use(morgan("dev"));
     this.express.use(express.json());
+    this.express.use(express.static("uploads"));
     this.express.use("/v1", V1);
     this.server = http.createServer(this.express);
     this.io = new io.Server(this.server);
