@@ -2,8 +2,7 @@
   <div class="h-full w-full" v-if="profile">
     <Banner @click="isEditing && banner?.click()" class="h-96" :class="isEditing && 'editing'" :url="newBannerPreview || profile.profileBanner || state.defaultBanner" />
     <div class="flex gap-6 h-40 items-start px-10/100 transform -translate-y-20">
-
-      <form v-if="isEditing" style="display: none;">
+      <form v-if="isEditing" style="display: none">
         <input type="file" @change="onAvatarChange" id="avatar" name="avatar" ref="avatar" accept="image/*" />
         <input type="file" @change="onBannerChange" id="banner" name="banner" ref="banner" accept="image/*" />
       </form>
@@ -51,7 +50,7 @@ const onAvatarChange = (event: any) => {
 };
 const onBannerChange = (event: any) => {
   newBanner = event.target.files[0];
-  newBannerPreview.value = URL.createObjectURL(newBanner)
+  newBannerPreview.value = URL.createObjectURL(newBanner);
 };
 
 const cancelEdit = async () => {
@@ -60,7 +59,7 @@ const cancelEdit = async () => {
   newBannerPreview.value = undefined;
   newAvatarPreview.value = undefined;
   state.setIsEditingProfile(false);
-}
+};
 
 const updateProfile = async () => {
   await api.updateProfile({
@@ -82,7 +81,7 @@ const fetchProfile = async () => {
   // If the last profile is different than the one
   // We're seeing cache it in the state
   profile.value?._id !== user._id && state.setLastProfile(user);
-}
+};
 </script>
 
 <style scoped>

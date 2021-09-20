@@ -12,7 +12,6 @@ import Navigation from "./components/misc/Navigation.vue";
 </template>
 
 <style>
-
 *::-webkit-scrollbar {
   width: 9px;
 }
@@ -24,5 +23,4 @@ import Navigation from "./components/misc/Navigation.vue";
   border-radius: 20px;
   border: transparent;
 }
-
 </style>

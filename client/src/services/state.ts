@@ -14,9 +14,9 @@ export abstract class Store<T extends Object> {
 }
 
 export class SoundEffect {
-  constructor(path: string){
+  constructor(path: string) {
     const audio = new Audio(path);
-    audio.volume = 0.20;
+    audio.volume = 0.2;
     audio.play();
   }
 }
@@ -83,7 +83,7 @@ class State extends Store<IAppState> {
   public setIsEditingProfile(state: boolean) {
     this.state.isEditingProfile = state;
   }
- 
+
   /**
    * Gets the user's session token
    * @returns user's session token
@@ -135,8 +135,8 @@ class State extends Store<IAppState> {
   public async pushGlobalMessage(message: IMessage) {
     this.playNotification();
     const messageAuthor = state.getUser(message.author_id);
-    
-    const permission = await Notification.requestPermission()
+
+    const permission = await Notification.requestPermission();
     if (permission === "granted") {
       const reg = await navigator.serviceWorker.getRegistration();
       var options = {
@@ -145,8 +145,8 @@ class State extends Store<IAppState> {
         vibrate: [100, 50, 100],
         data: {
           dateOfArrival: Date.now(),
-          primaryKey: 1
-        }
+          primaryKey: 1,
+        },
       };
       reg?.showNotification(messageAuthor?.username || "User", options);
     }
@@ -154,7 +154,6 @@ class State extends Store<IAppState> {
     this.state.globalMessages.unshift(message);
   }
 }
-
 
 let localMe: User | string | null = localStorage.getItem("me");
 if (localMe !== null) {

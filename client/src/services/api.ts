@@ -23,7 +23,7 @@ class API {
       await api.getUser(message.author_id);
       state.pushGlobalMessage(message);
     });
-  };
+  }
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
     const url = `${this.backendURL}/${this.version}${endpoint}`;
@@ -84,7 +84,7 @@ class API {
 
   public async updateProfile(data: IProfileUpdate) {
     const formData = new FormData();
-    const {avatar, banner} = data;
+    const { avatar, banner } = data;
     avatar && formData.append("avatar", avatar);
     banner && formData.append("banner", banner);
     await this.request("patch", `/user/${state.getMe()?._id}/profile`, formData);

@@ -18,8 +18,8 @@ router.get("/user/:uuid", async (req, res) => {
 
 router.patch("/user/:uuid/profile", auth, me, upload.any(), async (req: LoggedInRequest, res) => {
   const files = req.files as Express.Multer.File[];
-  const avatar = files.find(file => file.fieldname === 'avatar')?.filename;
-  const banner = files.find(file => file.fieldname === 'banner')?.filename;
+  const avatar = files.find((file) => file.fieldname === "avatar")?.filename;
+  const banner = files.find((file) => file.fieldname === "banner")?.filename;
   if (avatar) req.user!.profileImage = `https://backend.taku.moe/${avatar}`;
   if (banner) req.user!.profileBanner = `https://backend.taku.moe/${banner}`;
   await req.user!.save();
@@ -47,8 +47,6 @@ router.patch("/user/:uuid/profile", auth, me, upload.any(), async (req: LoggedIn
 
 //   return bad(res, { code: "email.invalid" });
 // });
-
-
 
 // router.patch("/user/:uuid/password", auth, me, async (req: LoggedInRequest, res) => {
 //   const { password, repeatPassword } = req.params;
