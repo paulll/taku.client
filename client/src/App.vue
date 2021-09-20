@@ -6,7 +6,7 @@ import DebugHeader from "./components/global/DebugHeader.vue";
 </script>
 
 <template>
-  <div class="flex flex-col h-full w-full text-white-500">
+  <div class="flex flex-col h-full w-full overflow-hidden text-white-500">
     <DebugHeader /> 
     <div class="flex h-full w-full">
       <Navigation />
