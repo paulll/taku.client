@@ -10,3 +10,19 @@ import Navigation from "./components/misc/Navigation.vue";
     <router-view />
   </div>
 </template>
+
+<style>
+
+*::-webkit-scrollbar {
+  width: 9px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  @apply bg-dark-400;
+  border-radius: 20px;
+  border: transparent;
+}
+
+</style>
