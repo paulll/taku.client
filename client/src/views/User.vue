@@ -70,7 +70,7 @@ const updateProfile = async () => {
 };
 
 // TODO: Replace this with websocket userUpdate events so it works globally too
-const fetchProfile = async (hard: boolean) => {
+const fetchProfile = async (hard?: boolean) => {
   const user = await api.getUser(route.params.uuid as string, hard);
 
   if (!user) return;
