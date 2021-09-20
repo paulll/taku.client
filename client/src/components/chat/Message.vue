@@ -1,6 +1,8 @@
 <template>
   <div class="flex gap-2 max-w-full items-start">
-    <Avatar class="w-8 h-8 mt-1" :url="state.getUser(message.author_id)?.profileImage" />
+    <MiniProfile :user="state.getUser(message.author_id)">
+      <Avatar class="w-8 h-8 mt-1" :url="state.getUser(message.author_id)?.profileImage" />
+    </MiniProfile>
     <div class="flex flex-col">
       <div class="flex gap-2 items-center">
         <router-link class="username" :to="{ name: 'user', params: { uuid: state.getUser(message.author_id)?._id } }">
@@ -18,6 +20,7 @@ import { useState } from "../../services/state";
 import { IMessage } from "../../services/types";
 
 import Avatar from "../../components/user/Avatar.vue";
+import MiniProfile from "../user/MiniProfile.vue";
 
 const state = useState();
 
