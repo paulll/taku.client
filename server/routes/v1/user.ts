@@ -22,7 +22,7 @@ router.patch("/user/:uuid/profile", auth, me, upload.any(), async (req: LoggedIn
   const banner = files.find((file) => file.fieldname === "banner")?.filename;
   if (avatar) req.user!.profileImage = `https://backend.taku.moe/${avatar}`;
   if (banner) req.user!.profileBanner = `https://backend.taku.moe/${banner}`;
-  await req.user!.save();
+  const user = await req.user!.save();
   return ok(res, { code: "success" });
 });
 

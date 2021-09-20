@@ -70,7 +70,9 @@ const updateProfile = async () => {
 };
 
 const fetchProfile = async () => {
-  const user = await api.getUser(route.params.uuid as string);
+  const user = await api.getUser(route.params.uuid as string, true);
+
+  console.log(user);
 
   if (!user) return console.log("returning no user");
 

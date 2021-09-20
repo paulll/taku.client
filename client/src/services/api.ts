@@ -67,10 +67,10 @@ class API {
     return this.request<AuthResponse>("post", "/signup", form);
   }
 
-  public async getUser(uuid: string) {
+  public async getUser(uuid: string, force: boolean = false) {
     if (!uuid) return;
     const cachedUser = state.getUser(uuid);
-    if (cachedUser) return cachedUser;
+    if (!force && cachedUser) return cachedUser;
     const { user } = await this.request<{ user: User }>("get", `/user/${uuid}`);
     state.setUser(user);
     return user;
