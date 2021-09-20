@@ -5,6 +5,7 @@
     </div>
     <div class="bottom flex gap-4 text-lg items-center">
       <Button
+        class="border-dark-200" 
         :icon="isEditing ? 'save' : 'edit'"
         :text="isEditing ? 'Save' : 'Edit'"
         @click="
@@ -12,7 +13,7 @@
           !isEditing && $emit('save');
         "
       />
-      <Button v-if="isEditing" icon="cancel" text="Cancel" @click="$emit('cancel')" />
+      <Button v-if="isEditing" class="border-dark-200" icon="cancel" text="Cancel" @click="$emit('cancel')" />
     </div>
   </div>
 </template>
