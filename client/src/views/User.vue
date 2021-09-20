@@ -70,17 +70,17 @@ const updateProfile = async () => {
 };
 
 const fetchProfile = async () => {
-  // Get the user
   const user = await api.getUser(route.params.uuid as string);
 
-  if (!user) return;
+  if (!user) return console.log("returning no user");
 
   // If the profile is me use it as a chance to update my state
-  route.params.uuid === me?._id && state.setMe(user);
-
-  // If the last profile is different than the one
-  // We're seeing cache it in the state
-  profile.value?._id !== user._id && state.setLastProfile(user);
+  if (route.params.uuid === me?._id) {
+    state.setMe(user);
+    console.log("updating me state")
+  };
+  
+  state.setLastProfile(user);
 };
 </script>
 
