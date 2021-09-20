@@ -14,6 +14,7 @@ export default defineConfig({
       manifest: {
         name: "Taku.moe",
         short_name: "Taku",
+        display: "minimal-ui",
         description: "Taku chat app",
         theme_color: "#111215",
         icons: [
