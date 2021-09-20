@@ -1,7 +1,7 @@
 <template>
   <div class="miniProfileBox flex relative cursor-pointer">
     <slot/>
-    <div class="miniProfile flex flex-col bg-dark-100 bottom-12 drop-shadow-2xl hidden absolute rounded-4px h-48 w-96">
+    <div class="miniProfile flex flex-col bg-dark-100 bottom-12 drop-shadow-2xl hidden z-10 absolute rounded-4px h-48 w-96">
       <Banner class="h-1/2" :url="user?.profileBanner || state.defaultBanner" />
       <div class="p-4 transform gap-2 -translate-y-12 flex">
         <Avatar class="w-20 h-20" :url="user?.profileImage || state.defaultAvatar"/>
