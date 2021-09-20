@@ -7,7 +7,7 @@
         <input type="file" @change="onBannerChange" id="banner" name="banner" ref="banner" accept="image/*" />
       </form>
 
-      <Avatar @click="isEditing && avatar?.click()" class="w-40 h-40 border-8px bg-dark-200 border-dark-200" :class="isEditing && 'editing'" :url="newAvatarPreview || profile.profileImage" />
+      <Avatar @click="isEditing && avatar?.click()" class="w-40 h-40 min-w-40 min-h-40 border-8px bg-dark-200 border-dark-200" :class="isEditing && 'editing'" :url="newAvatarPreview || profile.profileImage" />
       <Buttons :user="profile" @save="updateProfile()" @cancel="cancelEdit()" />
     </div>
   </div>

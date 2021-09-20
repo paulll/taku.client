@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-2 max-w-full items-start">
     <MiniProfile :user="state.getUser(message.author_id)">
-      <Avatar class="w-8 h-8 mt-1" :url="state.getUser(message.author_id)?.profileImage" />
+      <Avatar class="w-8 h-8 min-w-8 min-h-8 mt-1" :url="state.getUser(message.author_id)?.profileImage" />
     </MiniProfile>
     <div class="flex flex-col">
       <div class="flex gap-2 items-center">
