@@ -2,7 +2,7 @@ import { Embed, EmbedTypes, IAudioEmbed, IImageEmbed, IVideoEmbed } from "./type
 
 const IMAGE_EXTENSIONS = [".jpg", ".png", ".webp", ".gif", ".jpeg"];
 const AUDIO_EXTENSIONS = [".flac", ".ogg", ".aiff", ".mp3", ".wav"];
-const VIDEO_EXTENSIONS = [".mp4", ".webm", '.flv'];
+const VIDEO_EXTENSIONS = [".mp4", ".webm", '.flv', '.mov'];
 
 export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbed | IVideoEmbed)[] => {
 
