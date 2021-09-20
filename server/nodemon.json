@@ -1,3 +1,0 @@
-{
-  "exec": "ts-node -T ./index.ts"
-}
