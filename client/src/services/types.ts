@@ -8,6 +8,24 @@ export interface EventData<T = any> {
   body: T;
 }
 
+export type EmbedTypes = 'audio' | 'video' | 'image' | null;
+
+export interface Embed {
+  link: string, 
+}
+
+export interface IAudioEmbed extends Embed {
+  type: 'audio';
+}
+
+export interface IImageEmbed extends Embed {
+  type: 'image';
+}
+
+export interface IVideoEmbed extends Embed {
+  type: 'video';
+}
+
 export interface IMessage {
   _id: string;
   created_at: number;

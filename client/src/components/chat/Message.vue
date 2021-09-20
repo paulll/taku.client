@@ -10,7 +10,14 @@
         </router-link>
         <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
       </div>
-      <h1 class="content">{{ message.content }}</h1>
+      <div class="flex flex-col gap-2">
+        <h1 class="content">{{ message.content }}</h1>
+        <div v-for="embed in embeds" :key="embed.link">
+          <AudioEmbed v-if="embed.type === 'audio'" :embed="embed"/>
+          <ImageEmbed v-if="embed.type === 'image'" :embed="embed"/>
+          <VideoEmbed v-if="embed.type === 'video'" :embed="embed"/>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -18,15 +25,23 @@
 <script setup lang="ts">
 import { useState } from "../../services/state";
 import { IMessage } from "../../services/types";
+import { getEmbeds } from "../../services/logic";
 
 import Avatar from "../../components/user/Avatar.vue";
 import MiniProfile from "../user/MiniProfile.vue";
+import { computed } from "@vue/reactivity";
+
+import AudioEmbed from "./AudioEmbed.vue";
+import ImageEmbed from "./ImageEmbed.vue";
+import VideoEmbed from "./VideoEmbed.vue";
 
 const state = useState();
-
-defineProps<{
+const props = defineProps<{
   message: IMessage;
 }>();
+
+const embeds = computed(() => getEmbeds(props.message.content));
+
 </script>
 
 <style scoped>
