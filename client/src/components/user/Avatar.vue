@@ -4,7 +4,6 @@
 
 <script setup lang="ts">
 import { useState } from "../../services/state";
-import api from "../../services/api";
 const state = useState();
 defineProps<{
   url?: string;

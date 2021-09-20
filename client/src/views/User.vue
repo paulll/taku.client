@@ -1,13 +1,13 @@
 <template>
   <div class="h-full w-full" v-if="profile">
-    <Banner @click="isEditing && banner?.click()" class="h-96" :class="isEditing && 'editing'" :url="newBannerPreview || profile.profileBanner || state.defaultBanner" />
+    <Banner @click="isEditing && banner?.click()" class="h-96" :class="isEditing && 'editing'" :url="newBannerPreview || profile.profileBanner" />
     <div class="flex gap-6 h-40 items-start px-10/100 transform -translate-y-20">
       <form v-if="isEditing" style="display: none">
         <input type="file" @change="onAvatarChange" id="avatar" name="avatar" ref="avatar" accept="image/*" />
         <input type="file" @change="onBannerChange" id="banner" name="banner" ref="banner" accept="image/*" />
       </form>
 
-      <Avatar @click="isEditing && avatar?.click()" class="w-40 h-40 border-8px bg-dark-200 border-dark-200" :class="isEditing && 'editing'" :url="newAvatarPreview || profile.profileImage || state.defaultAvatar" />
+      <Avatar @click="isEditing && avatar?.click()" class="w-40 h-40 border-8px bg-dark-200 border-dark-200" :class="isEditing && 'editing'" :url="newAvatarPreview || profile.profileImage" />
       <Buttons :user="profile" @save="updateProfile()" @cancel="cancelEdit()" />
     </div>
   </div>
