@@ -11,7 +11,7 @@
       "
       class="bg-dark-400 p-2"
     >
-      <input placeholder="Type here" @keypress="state.playKeystroke()" type="text" class="rounded-4px w-full bg-dark-300 outline-none border-none" v-model="input" />
+      <input placeholder="Type here" maxlength="2000" @keypress="state.playKeystroke()" type="text" class="rounded-4px w-full bg-dark-300 outline-none border-none" v-model="input" />
     </form>
   </div>
 </template>
