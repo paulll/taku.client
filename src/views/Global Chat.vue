@@ -1,7 +1,7 @@
 <template>
-  <div class="h-full max-h-97vh w-full flex flex-col justify-end">
-    <div class="div pt-2 pb-6 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200">
-      <Message class="px-2" v-for="message in messages" :key="message._id" :message="message" />
+  <div class="h-full gap-2 w-full flex flex-col justify-end">
+    <div class="div py-2 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200">
+      <Message class="px-2" v-for="message in messages" :key="message.author_id" :message="message" />
     </div>
 
     <div class="bg-transparent h-min p-2">

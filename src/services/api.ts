@@ -69,7 +69,6 @@ class API {
   }
 
   public async getUser(uuid: string, force: boolean = false) {
-    if (!uuid) return;
     const cachedUser = state.getUser(uuid);
     if (!force && cachedUser) return cachedUser;
     const { user } = await this.request<{ user: User }>("get", `/user/${uuid}`);
@@ -101,11 +100,10 @@ class API {
 
     for (let i = 0; i < globalMessagesFirstLoad.length; i++) {
       const message = globalMessagesFirstLoad[i];
-      this.getUser(message.author_id);
+      await this.getUser(message.author_id);
     }
   }
 }
-
 
 const api = new API();
 
