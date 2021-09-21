@@ -3,6 +3,11 @@ export interface SignupForm extends LoginForm {
   repeatPassword: string;
 }
 
+export interface IProfileUpdate {
+  banner?: File;
+  avatar?: File;
+}
+
 export interface EventData<T = any> {
   eventName: string;
   body: T;

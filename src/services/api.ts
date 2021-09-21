@@ -1,4 +1,4 @@
-import { LoginForm, AuthResponse, SignupForm, User, IMessage } from "./types";
+import { LoginForm, AuthResponse, SignupForm, User, IMessage, IProfileUpdate } from "./types";
 import io from "socket.io-client";
 
 import { useState } from "../services/state";
@@ -16,13 +16,23 @@ class API {
     transports: ["websocket"],
   });
 
-  constructor() {
-    this.socket.on("reconnect_attempt", () => console.log("Reconnecting attempt"));
-    this.socket.on("connect", () => this.socket.emit("message", "Hello server!"));
-    this.socket.on("globalMessage", async (message: IMessage) => {
+  public static async create(){
+    const api = new this();
+    api.socket.on("reconnect_attempt", () => console.log("Reconnecting attempt"));
+    api.socket.on("connect", () => api.socket.emit("message", "Hello server!"));
+    api.socket.on("globalMessage", async (message: IMessage) => {
       await api.getUser(message.author_id);
       state.pushGlobalMessage(message);
     });
+
+    const globalMessagesFirstLoad = await api.getMessages("@global", 0, 25);
+    state.setGlobalMessages(globalMessagesFirstLoad);
+
+    for (let i = 0; i < globalMessagesFirstLoad.length; i++) {
+      const message = globalMessagesFirstLoad[i];
+      api.getUser(message.author_id);
+    }
+    return api;
   }
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
@@ -89,13 +99,13 @@ class API {
     banner && formData.append("banner", banner);
     await this.request("patch", `/user/${state.getMe()?._id}/profile`, formData);
   }
+
+  public async getMessages(channel_uuid: string, offset: number = 0, count: number = 25): Promise<IMessage[]> {
+    return this.request("get", `/message/${channel_uuid}/${offset}/${count}`);
+  }
 }
 
-interface IProfileUpdate {
-  banner?: File;
-  avatar?: File;
-}
 
-const api = new API();
+const api = await API.create();
 
 export default api;
