@@ -53,6 +53,9 @@ const handleInput = () => {
 
 const handleEnter = (event: KeyboardEvent) => {
   if (event.key === 'Enter' && !event.shiftKey) {
+    // If the input is full of \n and no text don't allow enter to create
+    // a \n and don't send the message
+    if (input.value.trim() == "") return event.preventDefault();
     api.sendGlobalMessage(input.value.trim());
     input.value = "";
     event.preventDefault();
