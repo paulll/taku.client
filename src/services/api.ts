@@ -16,23 +16,14 @@ class API {
     transports: ["websocket"],
   });
 
-  public static async create(){
-    const api = new this();
-    api.socket.on("reconnect_attempt", () => console.log("Reconnecting attempt"));
-    api.socket.on("connect", () => api.socket.emit("message", "Hello server!"));
-    api.socket.on("globalMessage", async (message: IMessage) => {
-      await api.getUser(message.author_id);
+  constructor(){
+    this.socket.on("reconnect_attempt", () => console.log("Reconnecting attempt"));
+    this.socket.on("connect", async () => this.socket.emit("message", "Hello server!"));
+    this.socket.on("globalMessage", async (message: IMessage) => {
+      await this.getUser(message.author_id);
       state.pushGlobalMessage(message);
     });
-
-    const globalMessagesFirstLoad = await api.getMessages("@global", 0, 25);
-    state.setGlobalMessages(globalMessagesFirstLoad);
-
-    for (let i = 0; i < globalMessagesFirstLoad.length; i++) {
-      const message = globalMessagesFirstLoad[i];
-      api.getUser(message.author_id);
-    }
-    return api;
+    this.getGlobalMessages();
   }
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
@@ -103,9 +94,19 @@ class API {
   public async getMessages(channel_uuid: string, offset: number = 0, count: number = 25): Promise<IMessage[]> {
     return this.request("get", `/message/${channel_uuid}/${offset}/${count}`);
   }
+
+  private async getGlobalMessages(){
+    const globalMessagesFirstLoad = await this.getMessages("@global", 0, 25);
+    state.setGlobalMessages(globalMessagesFirstLoad);
+
+    for (let i = 0; i < globalMessagesFirstLoad.length; i++) {
+      const message = globalMessagesFirstLoad[i];
+      this.getUser(message.author_id);
+    }
+  }
 }
 
 
-const api = await API.create();
+const api = new API();
 
 export default api;
