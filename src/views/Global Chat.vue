@@ -4,16 +4,16 @@
       <Message class="px-2" v-for="message in messages" :key="message._id" :message="message" />
     </div>
 
-    <div class="bg-dark-300 p-2">
+    <div class="bg-transparent h-min p-2">
       <textarea
         ref="textarea"
         placeholder="Type here"
         style="resize: none;"
         maxlength="2000"
         :oninput="handleInput"
-        @keypress="handleEnter"
+        @keydown="handleEnter"
         type="text"
-        class="rounded-4px w-full h-10 max-h-64 bg-dark-200 outline-none border-none"
+        class="rounded-4px w-full h-10 max-h-64 bg-dark-300 outline-none border-none"
         v-model="input">
       </textarea>
     </div>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import { useState } from "../services/state";
 import Message from "../components/chat/Message.vue";
@@ -38,6 +38,8 @@ const autoResize = () => {
   element.style.height = element.scrollHeight + "px";
 };
 
+watch(input, async (to) => to === "" && resetResize());
+
 const resetResize = () => {
   const element = textarea.value;
   if (!element) return;
@@ -51,7 +53,7 @@ const handleInput = () => {
 
 const handleEnter = (event: KeyboardEvent) => {
   if (event.key === 'Enter' && !event.shiftKey) {
-    api.sendGlobalMessage(input.value);
+    api.sendGlobalMessage(input.value.trim());
     input.value = "";
     event.preventDefault();
     resetResize();

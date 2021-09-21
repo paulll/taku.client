@@ -11,7 +11,7 @@
         <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
       </div>
       <div class="flex flex-col gap-2">
-        <h1 class="content">{{ message.content }}</h1>
+        <h1 class="content whitespace-pre-line">{{ message.content }}</h1>
         <div v-for="embed in embeds" :key="embed.link">
           <AudioEmbed v-if="embed.type === 'audio'" :embed="embed" />
           <ImageEmbed v-if="embed.type === 'image'" :embed="embed" />
