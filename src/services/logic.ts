@@ -14,7 +14,7 @@ export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbe
   const embeds = [];
 
   for (let i = 0; i < links.length; i++) {
-    const link = links[i];
+    const link = links[i].split("?")[0] // Remove params;
     let type: EmbedTypes = null;
     const fileExtension = link.substring(link.lastIndexOf('.'));
 
