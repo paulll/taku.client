@@ -41,10 +41,9 @@ export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbe
   return embeds;
 };
 
-export const renderLinks = (string: string | undefined): string | undefined => {
-  if (!string) return;
+export const renderLinks = (string: string): string => {
   if (!string.includes("http")) return string;
-  
+
   const words = string.split(" ");
   const parsed = [];
 

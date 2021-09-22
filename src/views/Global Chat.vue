@@ -27,6 +27,7 @@ import { computed } from "@vue/reactivity";
 import { useState } from "../services/state";
 import Message from "../components/chat/Message.vue";
 import api from "../services/api";
+
 const state = useState();
 const messages = computed(() => state.getGlobalMessages());
 const input = ref("");

@@ -28,6 +28,7 @@ import { getEmbeds, renderLinks } from "../../services/logic";
 import Avatar from "../../components/user/Avatar.vue";
 import MiniProfile from "../user/MiniProfile.vue";
 import { computed } from "@vue/reactivity";
+import DOMPurify from "dompurify";
 
 import AudioEmbed from "./AudioEmbed.vue";
 import ImageEmbed from "./ImageEmbed.vue";
@@ -40,7 +41,7 @@ const props = defineProps<{
 }>();
 
 const embeds = computed(() => getEmbeds(props.message.content));
-const content = computed(() => renderLinks(props.message.content)) 
+const content = computed(() => DOMPurify.sanitize(renderLinks(props.message.content || 'fuck')));
 
 </script>
 
