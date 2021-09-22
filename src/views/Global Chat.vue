@@ -1,7 +1,7 @@
 <template>
   <div class="h-full gap-2 w-full flex flex-col justify-end">
     <div class="div py-2 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200">
-      <Message class="px-2" v-for="(message, index) in messages" :key="message._id" :message="message" :minimal="messages[index + 1]?.author_id === message.author_id" />
+      <Message class="px-2" v-for="(message, index) in messages" :key="message.author_id" :message="message" :minimal="messages[index + 1]?.author_id === message.author_id" />
     </div>
 
     <div class="bg-transparent h-min p-2">
