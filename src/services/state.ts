@@ -144,7 +144,7 @@ class State extends Store<IAppState> {
       const reg = await navigator.serviceWorker.getRegistration();
       var options = {
         body: message.content || "Attachment",
-        icon: messageAuthor?.profileImage,
+        icon: messageAuthor?.avatar,
         vibrate: [100, 50, 100],
         data: {
           dateOfArrival: Date.now(),

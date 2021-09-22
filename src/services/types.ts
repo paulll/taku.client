@@ -64,8 +64,8 @@ export interface User {
   _id: string;
   created_at: number;
   username: string;
-  profileImage?: string;
-  profileBanner?: string;
+  avatar?: string;
+  banner?: string;
   last_seen: number;
   status: StatusTypes;
 }

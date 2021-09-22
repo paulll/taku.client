@@ -1,6 +1,6 @@
 <template>
   <div class="flex gap-2 max-w-full items-start hover:bg-dark-300">
-    <Avatar v-if="!minimal" class="w-10 h-10 min-w-10 min-h-10 mt-1" :url="state.getUser(message.author_id)?.profileImage" />
+    <Avatar v-if="!minimal" class="w-10 h-10 min-w-10 min-h-10 mt-1" :url="state.getUser(message.author_id)?.avatar" />
     <div class="flex flex-col" :class="minimal && 'pl-12'">
       <div v-if="!minimal" class="flex gap-2 items-center">
         <router-link class="username" :to="{ name: 'user', params: { uuid: state.getUser(message.author_id)?._id } }">
