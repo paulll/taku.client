@@ -8,7 +8,7 @@
         </router-link>
         <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col gap-1">
         <div class="content whitespace-pre-line" v-html="content"></div>
         <div v-for="embed in embeds" :key="embed.link" class="w-min">
           <AudioEmbed v-if="embed.type === 'audio'" :embed="embed" />
