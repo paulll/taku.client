@@ -2,11 +2,10 @@ import { EmbedTypes, IAudioEmbed, IImageEmbed, IProfileEmbed, IVideoEmbed } from
 
 const IMAGE_EXTENSIONS = [".jpg", ".png", ".webp", ".gif", ".jpeg"];
 const AUDIO_EXTENSIONS = [".flac", ".ogg", ".aiff", ".mp3", ".wav"];
-const VIDEO_EXTENSIONS = [".mp4", ".webm", '.flv', '.mov'];
+const VIDEO_EXTENSIONS = [".mp4", ".webm", ".flv", ".mov"];
 const UUID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
 
 export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbed | IVideoEmbed | IProfileEmbed)[] => {
-
   if (!string) return [];
 
   const links = string.match(/\bhttps?:\/\/\S+/gi);
@@ -17,25 +16,25 @@ export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbe
   for (let i = 0; i < links.length; i++) {
     const link = links[i].split("?")[0]; // Remove params
     let type: EmbedTypes = null;
-    const fileExtension = link.substring(link.lastIndexOf('.'));
+    const fileExtension = link.substring(link.lastIndexOf("."));
 
     if (IMAGE_EXTENSIONS.includes(fileExtension)) {
-      type = 'image'
-      embeds.push({link, type} as IImageEmbed);
-    };
+      type = "image";
+      embeds.push({ link, type } as IImageEmbed);
+    }
     if (AUDIO_EXTENSIONS.includes(fileExtension)) {
-      type = 'audio'
-      embeds.push({link, type} as IAudioEmbed);
-    };
+      type = "audio";
+      embeds.push({ link, type } as IAudioEmbed);
+    }
     if (VIDEO_EXTENSIONS.includes(fileExtension)) {
-      type = 'video'
-      embeds.push({link, type} as IVideoEmbed);
-    };
+      type = "video";
+      embeds.push({ link, type } as IVideoEmbed);
+    }
     if (link.startsWith("https://taku.moe/user/")) {
       const uuid = link.match(UUID_REGEX);
       if (!uuid) continue;
-      type = 'profile';
-      embeds.push({uuid: uuid[0], type} as IProfileEmbed)
+      type = "profile";
+      embeds.push({ uuid: uuid[0], type } as IProfileEmbed);
     }
   }
 

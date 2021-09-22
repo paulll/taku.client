@@ -8,13 +8,14 @@
       <textarea
         ref="textarea"
         placeholder="Type here"
-        style="resize: none;"
+        style="resize: none"
         maxlength="2000"
         :oninput="handleInput"
         @keydown="handleEnter"
         type="text"
         class="rounded-4px w-full h-10 max-h-64 bg-dark-300 outline-none border-none"
-        v-model="input">
+        v-model="input"
+      >
       </textarea>
     </div>
   </div>
@@ -52,7 +53,7 @@ const handleInput = () => {
 };
 
 const handleEnter = (event: KeyboardEvent) => {
-  if (event.key === 'Enter' && !event.shiftKey) {
+  if (event.key === "Enter" && !event.shiftKey) {
     // If the input is full of \n and no text don't allow enter to create
     // a \n and don't send the message
     if (input.value.trim() == "") return event.preventDefault();
@@ -60,7 +61,6 @@ const handleEnter = (event: KeyboardEvent) => {
     input.value = "";
     event.preventDefault();
     resetResize();
-  };
+  }
 };
-
 </script>

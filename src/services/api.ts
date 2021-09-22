@@ -16,7 +16,7 @@ class API {
     transports: ["websocket"],
   });
 
-  constructor(){
+  constructor() {
     this.socket.on("reconnect_attempt", () => console.log("Reconnecting attempt"));
     this.socket.on("connect", async () => this.socket.emit("message", "Hello server!"));
     this.socket.on("globalMessage", async (message: IMessage) => {
@@ -94,7 +94,7 @@ class API {
     return this.request("get", `/message/${channel_uuid}/${offset}/${count}`);
   }
 
-  private async getGlobalMessages(){
+  private async getGlobalMessages() {
     const globalMessagesFirstLoad = await this.getMessages("@global", 0, 25);
     state.setGlobalMessages(globalMessagesFirstLoad);
 
