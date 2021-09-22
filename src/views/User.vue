@@ -41,7 +41,7 @@ const newBannerPreview = ref<string>();
 let newAvatar: File | undefined;
 let newBanner: File | undefined;
 
-watch(route, async () => await fetchProfile());
+watch(route, async (to, from) => await fetchProfile());
 onMounted(async () => await fetchProfile());
 
 const onAvatarChange = (event: any) => {
@@ -71,6 +71,9 @@ const updateProfile = async () => {
 
 // TODO: Replace this with websocket userUpdate events so it works globally too
 const fetchProfile = async (hard?: boolean) => {
+
+  if (!route.params.uuid) return;
+
   const user = await api.getUser(route.params.uuid as string, hard);
 
   if (!user) return;
