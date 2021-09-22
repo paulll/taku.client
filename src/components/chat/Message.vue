@@ -9,7 +9,7 @@
         <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
       </div>
       <div class="flex flex-col gap-2">
-        <h1 class="content whitespace-pre-line">{{ message.content }}</h1>
+        <div class="content whitespace-pre-line" v-html="content"></div>
         <div v-for="embed in embeds" :key="embed.link" class="w-min">
           <AudioEmbed v-if="embed.type === 'audio'" :embed="embed" />
           <ImageEmbed v-if="embed.type === 'image'" :embed="embed" />
@@ -24,8 +24,7 @@
 <script setup lang="ts">
 import { useState } from "../../services/state";
 import { IMessage } from "../../services/types";
-import { getEmbeds } from "../../services/logic";
-
+import { getEmbeds, renderLinks } from "../../services/logic";
 import Avatar from "../../components/user/Avatar.vue";
 import MiniProfile from "../user/MiniProfile.vue";
 import { computed } from "@vue/reactivity";
@@ -41,13 +40,24 @@ const props = defineProps<{
 }>();
 
 const embeds = computed(() => getEmbeds(props.message.content));
+const content = computed(() => renderLinks(props.message.content)) 
+
 </script>
 
-<style scoped>
-.content {
-  word-break: break-word;
-}
+<style lang="postcss">
 .username:hover p {
   @apply underline;
 }
+.content {
+  word-break: break-word;
+}
+
+.content .link {
+  @apply text-blue-600;
+
+  &:hover {
+    @apply underline;
+  }
+}
+
 </style>

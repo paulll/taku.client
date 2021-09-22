@@ -40,3 +40,21 @@ export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbe
 
   return embeds;
 };
+
+export const renderLinks = (string: string | undefined): string | undefined => {
+  if (!string) return;
+  const words = string.split(" ");
+  const parsed = [];
+
+  for (let i = 0; i < words.length; i++) {
+    let word = words[i];
+    if (word.startsWith("http://") || word.startsWith("https://")) {
+      word = word.split('\n')[0]; 
+      parsed.push(`<a target="_blank" class="link" href="${word}"">${word}</a>`);
+      continue;
+    }
+    parsed.push(word);
+  }
+
+  return parsed.join(' ');
+}
