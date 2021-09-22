@@ -1,6 +1,6 @@
 <template>
-  <nav class="h-full w-16 px-2 bg-dark-100">
-    <ol class="flex flex-col h-full justify-center items-center">
+  <nav class="w-full h-16 md:h-full md:w-16 px-2 bg-dark-100">
+    <ol class="flex flex-row md:flex-col h-full justify-center items-center">
       <li class="route">
         <router-link :to="{ name: 'user', params: { uuid: state.getMe()?._id } }">
           <Button icon="account" class="border-dark-100" />
