@@ -56,6 +56,8 @@ export interface LoginForm {
   password: string;
 }
 
+export type StatusTypes = "online" | "offline" | "away" | "dnd";
+
 export interface User {
   email: string;
   password: string;
@@ -64,7 +66,8 @@ export interface User {
   username: string;
   profileImage?: string;
   profileBanner?: string;
-  lastSeenTimestamp: number;
+  last_seen: number;
+  status: StatusTypes;
 }
 
 export interface AuthResponse {
