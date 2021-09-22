@@ -41,7 +41,8 @@ export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbe
   return embeds;
 };
 
-export const renderLinks = (string: string): string => {
+export const renderLinks = (string: string | undefined) => {
+  if (!string) return;
   if (!string.includes("http")) return string;
 
   const words = string.split(" ");

@@ -41,7 +41,7 @@ const props = defineProps<{
 }>();
 
 const embeds = computed(() => getEmbeds(props.message.content));
-const content = computed(() => DOMPurify.sanitize(renderLinks(props.message.content || 'fuck')));
+const content = computed(() =>  DOMPurify.sanitize(renderLinks(props.message.content) || '', {ALLOWED_TAGS: ['a'], ALLOWED_ATTR: ['href', 'target', 'class']}));
 
 </script>
 
