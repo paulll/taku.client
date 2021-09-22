@@ -64,6 +64,7 @@ export interface User {
   username: string;
   profileImage?: string;
   profileBanner?: string;
+  lastSeenTimestamp: number;
 }
 
 export interface AuthResponse {
