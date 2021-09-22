@@ -1,6 +1,6 @@
 <template>
   <div class="h-full gap-2 w-full flex flex-col justify-end">
-    <div class="div py-2 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200">
+    <div :onscroll="handleScroll" ref="chat" class="div py-2 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200">
       <Message class="px-2" v-for="(message, index) in messages" :key="message.author_id" :message="message" :minimal="messages[index + 1]?.author_id === message.author_id" />
     </div>
 
@@ -31,7 +31,8 @@ const state = useState();
 const messages = computed(() => state.getGlobalMessages());
 const input = ref("");
 
-const textarea = ref<HTMLElement | undefined>(undefined);
+const textarea = ref<HTMLElement>();
+const chat = ref<HTMLElement>();
 
 const autoResize = () => {
   const element = textarea.value;
@@ -46,6 +47,16 @@ const resetResize = () => {
   if (!element) return;
   element.style.height = "2.5rem";
 };
+
+const handleScroll = (event: Event) => {
+  const scrollTop = chat.value?.scrollTop;
+  const scrollHeight = chat.value?.scrollHeight;
+  if (!scrollTop || !scrollHeight) return
+  console.log(Math.abs(scrollTop - window.innerHeight), chat.value?.scrollHeight);
+  if(Math.abs(scrollTop - window.innerHeight) > scrollHeight){
+    console.log('top');
+  }
+}
 
 const handleInput = () => {
   state.playKeystroke();
