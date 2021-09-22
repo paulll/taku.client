@@ -3,7 +3,7 @@
     <div class="top">
       <h1 class="text-5xl">{{ user.username }}</h1>
     </div>
-    <div class="bottom flex gap-4 text-lg items-center">
+    <div v-if="user._id === state.getMe()?._id" class="bottom flex gap-4 text-lg items-center">
       <Button
         class="border-dark-200" 
         :icon="isEditing ? 'save' : 'edit'"

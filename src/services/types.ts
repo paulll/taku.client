@@ -13,7 +13,7 @@ export interface EventData<T = any> {
   body: T;
 }
 
-export type EmbedTypes = 'audio' | 'video' | 'image' | null;
+export type EmbedTypes = 'audio' | 'video' | 'image' | 'profile' |null;
 
 export interface Embed {
   link: string, 
@@ -29,6 +29,11 @@ export interface IImageEmbed extends Embed {
 
 export interface IVideoEmbed extends Embed {
   type: 'video';
+}
+
+export interface IProfileEmbed extends Embed {
+  type: 'profile';
+  uuid: string;
 }
 
 export interface IMessage {

@@ -1,8 +1,6 @@
 <template>
   <div class="flex gap-2 max-w-full items-start hover:bg-dark-300">
-    <MiniProfile :user="state.getUser(message.author_id)">
-      <Avatar class="w-8 h-8 min-w-8 min-h-8 mt-1" :url="state.getUser(message.author_id)?.profileImage" />
-    </MiniProfile>
+    <Avatar class="w-10 h-10 min-w-10 min-h-10 mt-1" :url="state.getUser(message.author_id)?.profileImage" />
     <div class="flex flex-col">
       <div class="flex gap-2 items-center">
         <router-link class="username" :to="{ name: 'user', params: { uuid: state.getUser(message.author_id)?._id } }">
@@ -16,6 +14,7 @@
           <AudioEmbed v-if="embed.type === 'audio'" :embed="embed" />
           <ImageEmbed v-if="embed.type === 'image'" :embed="embed" />
           <VideoEmbed v-if="embed.type === 'video'" :embed="embed" />
+          <MiniProfile v-if="embed.type === 'profile'" :user="state.getUser(embed.uuid)" />
         </div>
       </div>
     </div>

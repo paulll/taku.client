@@ -1,10 +1,11 @@
-import { EmbedTypes, IAudioEmbed, IImageEmbed, IVideoEmbed } from "./types";
+import { EmbedTypes, IAudioEmbed, IImageEmbed, IProfileEmbed, IVideoEmbed } from "./types";
 
 const IMAGE_EXTENSIONS = [".jpg", ".png", ".webp", ".gif", ".jpeg"];
 const AUDIO_EXTENSIONS = [".flac", ".ogg", ".aiff", ".mp3", ".wav"];
 const VIDEO_EXTENSIONS = [".mp4", ".webm", '.flv', '.mov'];
+const UUID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
 
-export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbed | IVideoEmbed)[] => {
+export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbed | IVideoEmbed | IProfileEmbed)[] => {
 
   if (!string) return [];
 
@@ -30,6 +31,12 @@ export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbe
       type = 'video'
       embeds.push({link, type} as IVideoEmbed);
     };
+    if (link.startsWith("https://taku.moe/user/")) {
+      const uuid = link.match(UUID_REGEX);
+      if (!uuid) continue;
+      type = 'profile';
+      embeds.push({uuid: uuid[0], type} as IProfileEmbed)
+    }
   }
 
   return embeds;
