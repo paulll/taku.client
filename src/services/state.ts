@@ -131,6 +131,10 @@ class State extends Store<IAppState> {
     this.state.globalMessages = messages;
   }
 
+  public unshiftGlobalMessages(messages: IMessage[]) {
+    this.state.globalMessages = [...this.state.globalMessages, ...messages];
+  }
+
   public async pushGlobalMessage(message: IMessage) {
     this.playNotification();
     const messageAuthor = state.getUser(message.author_id);

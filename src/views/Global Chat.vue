@@ -30,6 +30,7 @@ import api from "../services/api";
 const state = useState();
 const messages = computed(() => state.getGlobalMessages());
 const input = ref("");
+const isAtTop = ref(false);
 
 const textarea = ref<HTMLElement>();
 const chat = ref<HTMLElement>();
@@ -48,15 +49,19 @@ const resetResize = () => {
   element.style.height = "2.5rem";
 };
 
-const handleScroll = (event: Event) => {
+const handleScroll = async (event: Event) => {
   const scrollTop = chat.value?.scrollTop;
   const scrollHeight = chat.value?.scrollHeight;
-  if (!scrollTop || !scrollHeight) return
-  console.log(Math.abs(scrollTop - window.innerHeight), chat.value?.scrollHeight);
-  if(Math.abs(scrollTop - window.innerHeight) > scrollHeight){
-    console.log('top');
+  if (!scrollTop || !scrollHeight) return;
+  if (!isAtTop.value) {
+    if (Math.abs(scrollTop - window.innerHeight) > scrollHeight) {
+      isAtTop.value = true;
+      const newMessages = await api.getMessages("@global", messages.value.length, 50);
+      state.unshiftGlobalMessages(newMessages);
+      isAtTop.value = false;
+    }
   }
-}
+};
 
 const handleInput = () => {
   state.playKeystroke();

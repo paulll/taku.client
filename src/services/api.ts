@@ -91,15 +91,19 @@ class API {
   }
 
   public async getMessages(channel_uuid: string, offset: number = 0, count: number = 25): Promise<IMessage[]> {
-    return this.request("get", `/message/${channel_uuid}/${offset}/${count}`);
+    const messages = (await this.request("get", `/message/${channel_uuid}/${offset}/${count}`)) as IMessage[];
+    this.getUsersFromMessages(messages);
+    return messages;
   }
 
   private async getGlobalMessages() {
     const globalMessagesFirstLoad = await this.getMessages("@global", 0, 50);
     state.setGlobalMessages(globalMessagesFirstLoad);
+  }
 
-    for (let i = 0; i < globalMessagesFirstLoad.length; i++) {
-      const message = globalMessagesFirstLoad[i];
+  private async getUsersFromMessages(messages: IMessage[]) {
+    for (let i = 0; i < messages.length; i++) {
+      const message = messages[i];
       await this.getUser(message.author_id);
     }
   }
