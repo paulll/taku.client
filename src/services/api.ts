@@ -95,7 +95,7 @@ class API {
   }
 
   private async getGlobalMessages() {
-    const globalMessagesFirstLoad = await this.getMessages("@global", 0, 25);
+    const globalMessagesFirstLoad = await this.getMessages("@global", 0, 50);
     state.setGlobalMessages(globalMessagesFirstLoad);
 
     for (let i = 0; i < globalMessagesFirstLoad.length; i++) {
