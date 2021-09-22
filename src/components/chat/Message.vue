@@ -14,7 +14,7 @@
           <AudioEmbed v-if="embed.type === 'audio'" :embed="embed" />
           <ImageEmbed v-if="embed.type === 'image'" :embed="embed" />
           <VideoEmbed v-if="embed.type === 'video'" :embed="embed" />
-          <MiniProfile v-if="embed.type === 'profile'" :user="state.getUser(embed.uuid)" />
+          <MiniProfile v-if="embed.type === 'profile'" :uuid="embed.uuid" />
         </div>
       </div>
     </div>
