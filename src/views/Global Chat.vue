@@ -19,14 +19,21 @@
       </textarea>
     </div>
   </div>
+  <div class="w-64 flex flex-col bg-dark-100 p-2">
+    <UserList name="Online" :users="state.getAllUsers().filter(user => user.status === 'online')"/>
+    <UserList name="Away" :users="state.getAllUsers().filter(user => user.status === 'away')"/>
+    <UserList name="Do not disturb" :users="state.getAllUsers().filter(user => user.status === 'dnd')"/>
+    <UserList name="Offline" :users="state.getAllUsers().filter(user => user.status === 'offline')"/>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { computed } from "@vue/reactivity";
 import { useState } from "../services/state";
-import Message from "../components/chat/Message.vue";
 import api from "../services/api";
+import Message from "../components/chat/Message.vue";
+import UserList from "../components/chat/UserList.vue";
 
 const state = useState();
 const messages = computed(() => state.getGlobalMessages());

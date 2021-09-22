@@ -112,7 +112,7 @@ class State extends Store<IAppState> {
   }
 
   public getAllUsers() {
-    return this.state.users.values();
+    return Array.from(this.state.users.values());
   }
 
   public setLastProfile(user: User) {
