@@ -27,7 +27,19 @@ class API {
       await this.getUser(message.author_id);
       state.pushGlobalMessage(message);
     });
+    this.getAllUsers();
     this.getGlobalMessages();
+  }
+
+  private log(method: string, ...messages: any) {
+    // prettier-ignore
+    console.log(
+      `%c[API]` + 
+      `%c [${method.toUpperCase()}]`, 
+      "color: black; background-color: #00aaff; padding: 2px; border-radius: 4px; font-weight: bold;", 
+      "color: #ff00b6;", 
+      ...messages
+    );
   }
 
   private async request<T>(method: string, endpoint: string, body?: object): Promise<T> {
@@ -52,14 +64,11 @@ class API {
       body: body instanceof FormData ? body : JSON.stringify(body),
     };
 
-    console.log(options);
-
-    console.log(`API ${method.toUpperCase()} Request ${url}`);
+    import.meta.env.DEV && this.log(method, url);
 
     const response = await fetch(url, options);
     const data = await response.json();
 
-    console.log(data);
 
     return data;
   }
@@ -78,6 +87,13 @@ class API {
     const { user } = await this.request<{ user: User }>("get", `/user/${uuid}`);
     state.setUser(user);
     return user;
+  }
+
+  public async getAllUsers(){
+    const users = await this.request<User[]>("get", `/users`);
+    for (let i = 0; i < users.length; i++) {
+      state.setUser(users[i]);
+    }
   }
 
   public async sendGlobalMessage(message: string) {
