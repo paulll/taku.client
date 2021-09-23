@@ -1,6 +1,6 @@
 <template>
   <Avatar class="h-8 max-h-8" :url="user.avatar" />
-  <Status :status="user.status" />
+  <Status :status="user.status" :device="user.device" />
   {{user.username}}
 </template>
 
