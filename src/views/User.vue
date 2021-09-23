@@ -8,7 +8,7 @@
       </form>
 
       <Avatar @click="isEditing && avatar?.click()" class="w-40 h-40 min-w-40 min-h-40 border-8px bg-dark-200 border-dark-200" :class="isEditing && 'editing'" :url="newAvatarPreview || profile.avatar" />
-      <Buttons :user="profile" @save="updateProfile()" @cancel="cancelEdit()" />
+      <ProfileInfo :user="profile" @save="updateProfile()" @cancel="cancelEdit()" />
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@ import api from "../services/api";
 
 import Avatar from "../components/user/Avatar.vue";
 import Banner from "../components/user/Banner.vue";
-import Buttons from "../components/user/Buttons.vue";
+import ProfileInfo from "../components/user/ProfileInfo.vue";
 
 const state = useState();
 const route = useRoute();
