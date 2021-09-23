@@ -20,10 +20,10 @@
     </div>
   </div>
   <div class="w-72 flex flex-col bg-dark-100 p-2 pr-0 overflow-y-scroll overflow-x-hidden">
-    <UserList name="Online" :users="state.getAllUsers().filter(user => user.status === 'online')"/>
-    <UserList name="Away" :users="state.getAllUsers().filter(user => user.status === 'away')"/>
-    <UserList name="Do not disturb" :users="state.getAllUsers().filter(user => user.status === 'dnd')"/>
-    <UserList name="Offline" :users="state.getAllUsers().filter(user => user.status === 'offline')"/>
+    <UserList name="Online" :users="onlineUsers.sort(userSort)"/>
+    <UserList name="Away" :users="awayUsers.sort(userSort)"/>
+    <UserList name="Do not disturb" :users="dndUsers.sort(userSort)"/>
+    <UserList name="Offline" :users="offlineUsers.sort(userSort)"/>
   </div>
 </template>
 
@@ -36,10 +36,16 @@ import Message from "../components/chat/Message.vue";
 import UserList from "../components/chat/UserList.vue";
 
 const state = useState();
+
 const messages = computed(() => state.getGlobalMessages());
+const onlineUsers = computed(() => state.getAllUsers().filter(user => user.status === 'online'));
+const awayUsers = computed(() => state.getAllUsers().filter(user => user.status === 'away'));
+const dndUsers = computed(() => state.getAllUsers().filter(user => user.status === 'dnd'));
+const offlineUsers = computed(() => state.getAllUsers().filter(user => user.status === 'offline'));
+const userSort = (a: any, b: any) => a.username.toLowerCase() < b.username.toLowerCase() ? -1 : 1;
+
 const input = ref("");
 const isAtTop = ref(false);
-
 const textarea = ref<HTMLElement>();
 const chat = ref<HTMLElement>();
 
