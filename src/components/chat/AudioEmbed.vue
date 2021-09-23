@@ -1,5 +1,5 @@
 <template>
-  <audio controls class="max-w-100 rounded-4px">
+  <audio controls class="max-w-100 h-full max-h-96 rounded-4px">
     <source :src="embed.link" />
   </audio>
 </template>
