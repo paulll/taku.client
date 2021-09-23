@@ -57,6 +57,7 @@ export interface LoginForm {
 }
 
 export type StatusTypes = "online" | "offline" | "away" | "dnd";
+export type DeviceTypes = "desktop" | "mobile" | "terminal";
 
 export interface User {
   email: string;
@@ -68,6 +69,7 @@ export interface User {
   banner?: string;
   last_seen: number;
   status: StatusTypes;
+  device: DeviceTypes;
 }
 
 export interface AuthResponse {

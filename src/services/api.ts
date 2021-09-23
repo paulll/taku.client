@@ -3,6 +3,7 @@ import io from "socket.io-client";
 
 import { useState } from "../services/state";
 const state = useState();
+const MOBILE_DEVICE_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
 
 class API {
   protected backendHost: string = import.meta.env.DEV ? "localhost:8081" : "backend.taku.moe";
@@ -12,7 +13,10 @@ class API {
 
   protected version: string = "v1";
   public socket = io(`${this.websocketProtocol}://${this.backendHost}`, {
-    auth: { token: state.getToken() },
+    auth: { 
+      token: state.getToken(),
+      device: MOBILE_DEVICE_REGEX.test(navigator.userAgent) ? 'mobile' : 'desktop'
+    },
     transports: ["websocket"],
   });
 

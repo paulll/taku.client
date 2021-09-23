@@ -4,7 +4,7 @@
     <div class="flex flex-col" :class="minimal && 'pl-12'">
       <div v-if="!minimal" class="flex gap-2 items-center">
         <router-link class="username" :to="{ name: 'user', params: { uuid: state.getUser(message.author_id)?._id } }">
-          <p class="text-gray-400 font-semibold">{{ state.getUser(message.author_id)?.username }}</p>
+          <p class="text-gray-400 font-semibold">{{ state.getUser(message.author_id)?.username || 'Taku User' }}</p>
         </router-link>
         <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
       </div>
