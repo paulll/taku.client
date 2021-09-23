@@ -1,4 +1,9 @@
 <template>
+
+  <div class="w-48 max-w-48 min-w-48 bg-dark-100 flex flex-col p-2">
+    <ChannelButton name="@global" uuid="@global" />
+  </div>
+
   <div class="h-full gap-2 w-full flex flex-col justify-end">
     <div :onscroll="handleScroll" ref="chat" class="div py-2 flex gap-1 flex-col-reverse h-full overflow-y-scroll overflow-x-hidden bg-dark-200">
       <Message class="px-2" v-for="(message, index) in messages" :key="message.author_id" :message="message" :minimal="messages[index + 1]?.author_id === message.author_id" />
@@ -19,12 +24,8 @@
       </textarea>
     </div>
   </div>
-  <div class="w-72 flex flex-col bg-dark-100 p-2 pr-0 overflow-y-scroll overflow-x-hidden">
-    <UserList name="Online" :users="onlineUsers.sort(userSort)"/>
-    <UserList name="Away" :users="awayUsers.sort(userSort)"/>
-    <UserList name="Do not disturb" :users="dndUsers.sort(userSort)"/>
-    <UserList name="Offline" :users="offlineUsers.sort(userSort)"/>
-  </div>
+
+  <UserList :users="state.getAllUsers()" />
 </template>
 
 <script setup lang="ts">
@@ -34,15 +35,9 @@ import { useState } from "../services/state";
 import api from "../services/api";
 import Message from "../components/chat/Message.vue";
 import UserList from "../components/chat/UserList.vue";
-
+import ChannelButton from "../components/chat/ChannelButton.vue";
 const state = useState();
-
 const messages = computed(() => state.getGlobalMessages());
-const onlineUsers = computed(() => state.getAllUsers().filter(user => user.status === 'online'));
-const awayUsers = computed(() => state.getAllUsers().filter(user => user.status === 'away'));
-const dndUsers = computed(() => state.getAllUsers().filter(user => user.status === 'dnd'));
-const offlineUsers = computed(() => state.getAllUsers().filter(user => user.status === 'offline'));
-const userSort = (a: any, b: any) => a.username.toLowerCase() < b.username.toLowerCase() ? -1 : 1;
 
 const input = ref("");
 const isAtTop = ref(false);
