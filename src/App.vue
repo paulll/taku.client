@@ -13,13 +13,16 @@ import Navigation from "./components/global/Navigation.vue";
 
 <style>
 *::-webkit-scrollbar {
-  width: 9px;
+  width: 6px;
+  left: -100px;
 }
-*::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
   background: transparent;
 }
+
 *::-webkit-scrollbar-thumb {
-  @apply bg-dark-400;
+  @apply bg-dark-500;
   border-radius: 20px;
   border: transparent;
 }

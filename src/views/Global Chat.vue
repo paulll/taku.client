@@ -19,7 +19,7 @@
       </textarea>
     </div>
   </div>
-  <div class="w-64 flex flex-col bg-dark-100 p-2">
+  <div class="w-72 flex flex-col bg-dark-100 p-2 pr-0 overflow-y-scroll overflow-x-hidden">
     <UserList name="Online" :users="state.getAllUsers().filter(user => user.status === 'online')"/>
     <UserList name="Away" :users="state.getAllUsers().filter(user => user.status === 'away')"/>
     <UserList name="Do not disturb" :users="state.getAllUsers().filter(user => user.status === 'dnd')"/>
