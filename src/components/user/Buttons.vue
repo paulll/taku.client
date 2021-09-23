@@ -1,6 +1,7 @@
 <template>
   <div class="flex flex-col font-medium h-full py-2 gap-12">
-    <div class="top">
+    <div class="top flex gap-4">
+      <Status class="w-10" :status="user.status" :device="user.device" />
       <h1 class="text-5xl">{{ user.username }}</h1>
     </div>
     <div v-if="user._id === state.getMe()?._id" class="bottom flex gap-4 text-lg items-center">
@@ -23,6 +24,7 @@ import { computed } from "vue";
 import { useState } from "../../services/state";
 import { User } from "../../services/types";
 import Button from "../misc/Button.vue";
+import Status from "./Status.vue";
 
 const state = useState();
 const isEditing = computed(() => state.getIsEditingProfile());

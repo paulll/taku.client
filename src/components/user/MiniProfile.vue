@@ -4,7 +4,10 @@
     <div class="p-4 transform gap-2 -translate-y-12 flex">
       <Avatar class="w-20 h-20 min-w-20 min-h-20" :url="user.avatar" />
       <div class="flex flex-col gap-4 justify-between">
-        <h1 class="text-xl">{{ user.username }}</h1>
+        <div class="flex gap-2">
+          <Status class="w-6" :status="user.status" :device="user.device" />
+          <h1 class="text-xl">{{ user.username }}</h1>
+        </div>
         <router-link :to="{ name: 'user', params: { uuid: user._id } }">
           <Button icon="arrow-right" class="border-dark-100" text="Profile" />
         </router-link>
@@ -20,6 +23,7 @@ import Button from "../misc/Button.vue";
 import api from "../../services/api";
 import { onMounted } from "@vue/runtime-core";
 import { ref } from "vue";
+import Status from "./Status.vue";
 
 const user = ref();
 const props = defineProps<{ uuid: string }>();

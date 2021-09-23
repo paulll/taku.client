@@ -1,6 +1,6 @@
 <template>
   <!-- <div :class="status" class=" box-border w-4 h-2.5 border-3px rounded-4px"></div> -->
-  <Icon :icon="device" :class="status" class="w-4"/>
+  <Icon :icon="device" :class="status"/>
 </template>
 
 <script setup lang="ts">
