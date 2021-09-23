@@ -103,8 +103,7 @@ class API {
 
   private async getUsersFromMessages(messages: IMessage[]) {
     for (let i = 0; i < messages.length; i++) {
-      const message = messages[i];
-      this.getUser(message.author_id);
+      this.getUser(messages[i].author_id);
     }
   }
 }
