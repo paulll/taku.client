@@ -1,4 +1,4 @@
-import { EmbedTypes, IAudioEmbed, IImageEmbed, IProfileEmbed, IVideoEmbed, Embed } from "./types";
+import { EmbedTypes, IAudioEmbed, IImageEmbed, IProfileEmbed, IVideoEmbed, Embed, IAttachment } from "./types";
 import createMarkdownParser from "markdown-it";
 
 const md = createMarkdownParser({linkify: true, typographer: true})
@@ -9,46 +9,65 @@ const VIDEO_EXTENSIONS = [".mp4", ".webm", ".flv", ".mov"];
 const UUID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
 
 /**
+ * @author Geoxor
+ * Parses a link to check if its embedable or not
+ * @param link the link to check
+ * @returns returns an embed type object for a link
+ */
+export const getEmbed = (link: string): Embed | undefined => {
+  let type: EmbedTypes = null;
+  const fileExtension = link.substring(link.lastIndexOf("."));
+
+  if (IMAGE_EXTENSIONS.includes(fileExtension.toLowerCase())) {
+    type = "image";
+    return { link, type } as IImageEmbed;
+  }
+  if (AUDIO_EXTENSIONS.includes(fileExtension.toLowerCase())) {
+    type = "audio";
+    return { link, type } as IAudioEmbed;
+  }
+  if (VIDEO_EXTENSIONS.includes(fileExtension.toLowerCase())) {
+    type = "video";
+    return { link, type } as IVideoEmbed;
+  }
+  if (link.startsWith("https://taku.moe/user/")) {
+    type = "profile";
+    let uuid = link.match(UUID_REGEX);
+    if (!uuid) return { uuid: "@unknown", type, link } as IProfileEmbed;
+    return { uuid: uuid[0], type, link } as IProfileEmbed;
+  }
+}
+
+/**
  * Parses a string and returns embeds for the found types
  * @param string the string to parse
  * @returns {Embed[]} an array of embeds
  * @author Geoxor
  */
-export const getEmbeds = (string: string | undefined): Embed[] => {
+export const getEmbedsFromContent = (string: string | undefined): Embed[] => {
   if (!string) return [];
-
-  const links = string.match(/\bhttps?:\/\/\S+/gi);
+  let links = string.match(/\bhttps?:\/\/\S+/gi);
   if (!links) return [];
-
-  const embeds = [];
-
-  for (let i = 0; i < links.length; i++) {
-    const link = links[i].split("?")[0]; // Remove params
-    let type: EmbedTypes = null;
-    const fileExtension = link.substring(link.lastIndexOf("."));
-
-    if (IMAGE_EXTENSIONS.includes(fileExtension.toLowerCase())) {
-      type = "image";
-      embeds.push({ link, type } as IImageEmbed);
-    }
-    if (AUDIO_EXTENSIONS.includes(fileExtension.toLowerCase())) {
-      type = "audio";
-      embeds.push({ link, type } as IAudioEmbed);
-    }
-    if (VIDEO_EXTENSIONS.includes(fileExtension.toLowerCase())) {
-      type = "video";
-      embeds.push({ link, type } as IVideoEmbed);
-    }
-    if (link.startsWith("https://taku.moe/user/")) {
-      const uuid = link.match(UUID_REGEX);
-      if (!uuid) continue;
-      type = "profile";
-      embeds.push({ uuid: uuid[0], type, link } as IProfileEmbed);
-    }
-  }
-
-  return embeds;
+  links = links.map(link => link.split("?")[0])
+  return getEmbeds(links);
 };
+
+/**
+ * Gets embeds for an array of links or undefined
+ * @param links an array of links to fetch embeds for
+ * @returns 
+ * @author Geoxor
+ */
+export const getEmbeds = (links: (string | undefined)[]): Embed[] => {
+  const embeds = [];
+  for (let i = 0; i < links.length; i++) {
+    const link = links[i];
+    if (!link) continue;
+    const embed = getEmbed(link);
+    if (embed) embeds.push(embed);
+  }
+  return embeds;
+}
 
 /**
  * Parses the message content of a message to create embeds and anchors

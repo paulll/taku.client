@@ -38,19 +38,18 @@ export interface IProfileEmbed {
   uuid: string;
 }
 
+export interface IAttachment {
+  name: string;
+  link: string;
+}
+
 export interface IMessage {
   _id: string;
   created_at: number;
   content?: string;
-  attachments?: string[];
+  attachments: IAttachment[];
   channel_id: string;
   author_id: string;
-}
-
-export interface IAttachment {
-  stream: ReadableStream;
-  name: string;
-  mime: string;
 }
 
 export interface LoginForm {

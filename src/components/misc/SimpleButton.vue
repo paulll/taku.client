@@ -1,7 +1,7 @@
 <template>
   <button
     @click="state.playKeystroke()"
-    class="bg-pink-400 whitespace-nowrap select-none min-w-max p-2 rounded-full flex font-medium items-center justify-center transition-all duration-100 active:bg-white-500"
+    class="whitespace-nowrap select-none min-w-max p-2 rounded-4px flex font-medium items-center justify-center transition-all duration-100 active:bg-white-500"
   >
     <Icon v-if="icon" class="h-full transition-all duration-100" :icon="icon" />
   </button>

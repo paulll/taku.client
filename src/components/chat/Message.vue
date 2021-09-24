@@ -9,8 +9,8 @@
         <p class="text-sm text-dark-500">{{ new Date(message.created_at).toLocaleTimeString() }}</p>
       </div>
       <div class="flex flex-col gap-1">
-        <h1 class="content whitespace-pre-line" v-html=content></h1>
-        <div v-for="embed in embeds" :key="embed.link" class="w-min">
+        <h1 class="content whitespace-pre-line" v-html="content"></h1>
+        <div v-for="embed in [...embeds, ...attachments]" :key="embed.link" class="w-min">
           <AudioEmbed v-if="embed.type === 'audio'" :embed="embed" />
           <ImageEmbed v-if="embed.type === 'image'" :embed="embed" />
           <VideoEmbed v-if="embed.type === 'video'" :embed="embed" />
@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import { useState } from "../../services/state";
 import { IMessage } from "../../services/types";
-import { getEmbeds, parseMessageContent } from "../../services/logic";
+import { getEmbeds, getEmbedsFromContent, parseMessageContent } from "../../services/logic";
 import Avatar from "../../components/user/Avatar.vue";
 import MiniProfile from "../user/MiniProfile.vue";
 import { computed } from "@vue/reactivity";
@@ -39,7 +39,8 @@ const props = defineProps<{
   minimal: boolean;
 }>();
 
-const embeds = computed(() => getEmbeds(props.message.content));
+const attachments = computed(() => getEmbeds(props.message.attachments.map(attachment => attachment.link)));
+const embeds = computed(() => getEmbedsFromContent(props.message.content));
 const content = computed(() => parseMessageContent(props.message.content, embeds.value));
 </script>
 

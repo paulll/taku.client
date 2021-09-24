@@ -26,6 +26,7 @@ class API {
     this.socket.on("globalMessage", async (message: IMessage) => {
       await this.getUser(message.author_id);
       state.pushGlobalMessage(message);
+      import.meta.env.DEV && this.log('socket', message);
     });
     this.getAllUsers();
     this.getGlobalMessages();
@@ -69,7 +70,6 @@ class API {
     const response = await fetch(url, options);
     const data = await response.json();
 
-
     return data;
   }
 
@@ -96,10 +96,20 @@ class API {
     }
   }
 
-  public async sendGlobalMessage(message: string) {
-    if (message.trim().length > 0) {
-      this.socket.emit("globalMessage", message);
+  public async sendGlobalMessage(content?: string, attachments?: File[]) {
+    this.sendMessage("@global", attachments, content);
+  }
+
+  public async sendMessage(channel: string, attachments: File[] = [], content?: string) {
+    if (attachments.length > 0) {
+      const formData = new FormData();
+      for (let i = 0; i < attachments.length; i++) {
+        const attachment = attachments[i];
+        formData.append('attachment', attachment);
+      }
+      return this.request<void>("post", `/message/${channel}`, formData);
     }
+    content && content?.trim().length > 0 && this.socket.emit("globalMessage", content);
   }
 
   public async updateProfile(data: IProfileUpdate) {
