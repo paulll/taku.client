@@ -1,11 +1,14 @@
-import { EmbedTypes, IAudioEmbed, IImageEmbed, IProfileEmbed, IVideoEmbed } from "./types";
+import { EmbedTypes, IAudioEmbed, IImageEmbed, IProfileEmbed, IVideoEmbed, Embed } from "./types";
+import createMarkdownParser from "markdown-it";
+
+const md = createMarkdownParser({linkify: true, typographer: true})
 
 const IMAGE_EXTENSIONS = [".jpg", ".png", ".webp", ".gif", ".jpeg"];
 const AUDIO_EXTENSIONS = [".flac", ".ogg", ".aiff", ".mp3", ".wav"];
 const VIDEO_EXTENSIONS = [".mp4", ".webm", ".flv", ".mov"];
 const UUID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
 
-export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbed | IVideoEmbed | IProfileEmbed)[] => {
+export const getEmbeds = (string: string | undefined): Embed[] => {
   if (!string) return [];
 
   const links = string.match(/\bhttps?:\/\/\S+/gi);
@@ -40,6 +43,24 @@ export const getEmbeds = (string: string | undefined): (IAudioEmbed | IImageEmbe
 
   return embeds;
 };
+
+export const processMarkdown = (string: string): string => {
+  return md.renderInline(string);
+}
+
+export const removeTrailingEmbeds = (string: string, embeds: Embed[]): string => {
+  if (!string.includes("http")) return string;
+
+  const lastLinkIndex = string.lastIndexOf("http");
+  const lastLinkPart = string.slice(lastLinkIndex).trim();
+  const lastLinkIsTrailing = !/\s/.test(lastLinkPart);
+
+  if (lastLinkIsTrailing && embeds.some((embed) => embed.link == lastLinkPart)) {
+    return removeTrailingEmbeds(string.slice(0, lastLinkIndex).trim(), embeds);
+  }
+  
+  return string;
+}
 
 export const renderLinks = (string: string | undefined) => {
   if (!string) return;
