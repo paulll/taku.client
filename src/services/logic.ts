@@ -8,6 +8,12 @@ const AUDIO_EXTENSIONS = [".flac", ".ogg", ".aiff", ".mp3", ".wav"];
 const VIDEO_EXTENSIONS = [".mp4", ".webm", ".flv", ".mov"];
 const UUID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
 
+/**
+ * Parses a string and returns embeds for the found types
+ * @param string the string to parse
+ * @returns {Embed[]} an array of embeds
+ * @author Geoxor
+ */
 export const getEmbeds = (string: string | undefined): Embed[] => {
   if (!string) return [];
 
@@ -21,15 +27,15 @@ export const getEmbeds = (string: string | undefined): Embed[] => {
     let type: EmbedTypes = null;
     const fileExtension = link.substring(link.lastIndexOf("."));
 
-    if (IMAGE_EXTENSIONS.includes(fileExtension)) {
+    if (IMAGE_EXTENSIONS.includes(fileExtension.toLowerCase())) {
       type = "image";
       embeds.push({ link, type } as IImageEmbed);
     }
-    if (AUDIO_EXTENSIONS.includes(fileExtension)) {
+    if (AUDIO_EXTENSIONS.includes(fileExtension.toLowerCase())) {
       type = "audio";
       embeds.push({ link, type } as IAudioEmbed);
     }
-    if (VIDEO_EXTENSIONS.includes(fileExtension)) {
+    if (VIDEO_EXTENSIONS.includes(fileExtension.toLowerCase())) {
       type = "video";
       embeds.push({ link, type } as IVideoEmbed);
     }
@@ -44,10 +50,36 @@ export const getEmbeds = (string: string | undefined): Embed[] => {
   return embeds;
 };
 
+/**
+ * Parses the message content of a message to create embeds and anchors
+ * while also sanetizing the HTML so no XSS is allowed
+ * @param string the string to parse
+ * @param embeds the array of embeds to remove trailing embeds with
+ * @returns {string | undefined}
+ * @author Geoxor
+ */
+export const parseMessageContent = (string: string | undefined, embeds: Embed[]) => {
+  if (!string) return;
+  return addTargetBlankToAnchors(processMarkdown(removeTrailingEmbeds(string, embeds))); 
+}
+
+/**
+ * Parses a string to render markdown such as italics, bold, etc.
+ * @param string the string to parse
+ * @returns {string}
+ * @author paulll
+ */
 export const processMarkdown = (string: string): string => {
   return md.renderInline(string);
 }
 
+/**
+ * Removes trailing embeds from a string
+ * @param string the string to parse
+ * @param embeds the list of embeds to check against
+ * @returns {string}
+ * @author paulll
+ */
 export const removeTrailingEmbeds = (string: string, embeds: Embed[]): string => {
   if (!string.includes("http")) return string;
 
@@ -62,26 +94,13 @@ export const removeTrailingEmbeds = (string: string, embeds: Embed[]): string =>
   return string;
 }
 
+/**
+ * 
+ * Adds the target="_blank" to anchor tags
+ * @param string the string to parse
+ * @returns {string}
+ * @author Geoxor
+ */
 export const addTargetBlankToAnchors = (string: string): string =>  {
   return string.replace(/<a /gi, `<a target="_blank" `);
 }
-
-// export const renderLinks = (string: string | undefined) => {
-//   if (!string) return;
-//   if (!string.includes("http")) return string;
-
-//   const words = string.split(" ");
-//   const parsed = [];
-
-//   for (let i = 0; i < words.length; i++) {
-//     let word = words[i];
-//     if (word.startsWith("http://") || word.startsWith("https://")) {
-//       word = word.split('\n')[0]; 
-//       parsed.push(`<a target="_blank" href="${word}"">${word}</a>`);
-//       continue;
-//     }
-//     parsed.push(word);
-//   }
-
-//   return parsed.join(' ');
-// }
