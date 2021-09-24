@@ -51,7 +51,7 @@ const html = computed(() => processMarkdown(removeTrailingEmbeds(props.message.c
   word-break: break-word;
 }
 
-.content .link {
+.content a {
   @apply text-blue-600;
 
   &:hover {

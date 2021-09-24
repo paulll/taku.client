@@ -62,22 +62,22 @@ export const removeTrailingEmbeds = (string: string, embeds: Embed[]): string =>
   return string;
 }
 
-export const renderLinks = (string: string | undefined) => {
-  if (!string) return;
-  if (!string.includes("http")) return string;
+// export const renderLinks = (string: string | undefined) => {
+//   if (!string) return;
+//   if (!string.includes("http")) return string;
 
-  const words = string.split(" ");
-  const parsed = [];
+//   const words = string.split(" ");
+//   const parsed = [];
 
-  for (let i = 0; i < words.length; i++) {
-    let word = words[i];
-    if (word.startsWith("http://") || word.startsWith("https://")) {
-      word = word.split('\n')[0]; 
-      parsed.push(`<a target="_blank" class="link" href="${word}"">${word}</a>`);
-      continue;
-    }
-    parsed.push(word);
-  }
+//   for (let i = 0; i < words.length; i++) {
+//     let word = words[i];
+//     if (word.startsWith("http://") || word.startsWith("https://")) {
+//       word = word.split('\n')[0]; 
+//       parsed.push(`<a target="_blank" href="${word}"">${word}</a>`);
+//       continue;
+//     }
+//     parsed.push(word);
+//   }
 
-  return parsed.join(' ');
-}
+//   return parsed.join(' ');
+// }
