@@ -60,7 +60,7 @@ const content = computed(() => parseMessageContent(props.message.content, embeds
 }
 
 .content code {
-  @apply p-1 bg-dark-100;
+  @apply p-1 bg-dark-100 rounded-4px;
 }
 
 </style>
