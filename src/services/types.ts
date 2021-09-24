@@ -16,6 +16,7 @@ export interface EventData<T = any> {
 export type EmbedTypes = "audio" | "video" | "image" | "profile" | null;
 
 export interface Embed {
+  type: string;
   link: string;
 }
 
