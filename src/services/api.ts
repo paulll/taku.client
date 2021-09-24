@@ -1,4 +1,4 @@
-import { LoginForm, AuthResponse, SignupForm, User, IMessage, IProfileUpdate } from "./types";
+import { LoginForm, AuthResponse, SignupForm, User, IMessage, IProfileUpdate, IEmojiMapping} from "./types";
 import io from "socket.io-client";
 
 import { useState } from "../services/state";
@@ -30,6 +30,7 @@ class API {
     });
     this.getAllUsers();
     this.getGlobalMessages();
+    this.updateEmoji();
   }
 
   private log(method: string, ...messages: any) {
@@ -135,6 +136,13 @@ class API {
     for (let i = 0; i < messages.length; i++) {
       this.getUser(messages[i].author_id);
     }
+  }
+
+  private async updateEmoji() {
+    // @todo request emojis.json from backend so it could handle custom emojis  
+    const response = await fetch('/emoji.json');
+    const emoji = await response.json() as IEmojiMapping;
+    state.setEmojiMapping(emoji);
   }
 }
 

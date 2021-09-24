@@ -78,3 +78,7 @@ export interface AuthResponse {
   token?: string;
   user?: User;
 }
+
+export interface IEmojiMapping {
+  [key: string]: string
+}

@@ -1,6 +1,8 @@
 import { EmbedTypes, IAudioEmbed, IImageEmbed, IProfileEmbed, IVideoEmbed, Embed, IAttachment } from "./types";
 import createMarkdownParser from "markdown-it";
+import { useState } from "../services/state";
 
+const state = useState();
 const md = createMarkdownParser({linkify: true, typographer: true})
 
 const IMAGE_EXTENSIONS = [".jpg", ".png", ".webp", ".gif", ".jpeg", ".apng"];
@@ -79,7 +81,7 @@ export const getEmbeds = (links: (string | undefined)[]): Embed[] => {
  */
 export const parseMessageContent = (string: string | undefined, embeds: Embed[]) => {
   if (!string) return;
-  return addTargetBlankToAnchors(processMarkdown(removeTrailingEmbeds(string, embeds))); 
+  return emojify(addTargetBlankToAnchors(processMarkdown(removeTrailingEmbeds(string, embeds)))); 
 }
 
 /**
@@ -122,4 +124,21 @@ export const removeTrailingEmbeds = (string: string, embeds: Embed[]): string =>
  */
 export const addTargetBlankToAnchors = (string: string): string =>  {
   return string.replace(/<a /gi, `<a target="_blank" `);
+}
+
+/**
+ * Replaces :emotions: with unicode emojis or custom inline imgs
+ * @param string the string to parse
+ * @returns {string}
+ * @author paulll
+ */
+ export const emojify = (string: string): string => {
+  const emoji = state.getEmojiMapping();
+  return string.replace(/\s*:[^:\s]+:\s*/g, (rawEmotion) => {
+    const emotion = rawEmotion.trim().slice(1,-1);
+    if (emotion in emoji) {
+      return ` ${emoji[emotion]} `;
+    }
+    return rawEmotion;
+  }).trim();
 }

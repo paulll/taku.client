@@ -1,4 +1,4 @@
-import { IMessage, User } from "./types";
+import { IMessage, User, IEmojiMapping } from "./types";
 import { reactive } from "vue";
 
 /**
@@ -31,6 +31,8 @@ class State extends Store<IAppState> {
   public defaultAvatar = "https://cdn.discordapp.com/attachments/881632596298170399/890589155619389461/pwa-256x256.png";
   public playNotification = () => new SoundEffect("../sounds/notification.flac");
   public playKeystroke = () => new SoundEffect("../sounds/keystroke.flac");
+  
+  private emojiMapping: IEmojiMapping = {};
 
   /**
    * Clears all data intended for logging out
@@ -155,6 +157,14 @@ class State extends Store<IAppState> {
     }
 
     this.state.globalMessages.unshift(message);
+  }
+
+  public setEmojiMapping(emojis: IEmojiMapping) {
+    this.emojiMapping = emojis;
+  }
+
+  public getEmojiMapping() {
+    return this.emojiMapping;
   }
 }
 
