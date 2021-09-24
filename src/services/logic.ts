@@ -62,6 +62,10 @@ export const removeTrailingEmbeds = (string: string, embeds: Embed[]): string =>
   return string;
 }
 
+export const addTargetBlankToAnchors = (string: string): string =>  {
+  return string.replace(/<a /gi, `<a target="_blank" `);
+}
+
 // export const renderLinks = (string: string | undefined) => {
 //   if (!string) return;
 //   if (!string.includes("http")) return string;
