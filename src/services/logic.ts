@@ -37,7 +37,7 @@ export const getEmbeds = (string: string | undefined): Embed[] => {
       const uuid = link.match(UUID_REGEX);
       if (!uuid) continue;
       type = "profile";
-      embeds.push({ uuid: uuid[0], type } as IProfileEmbed);
+      embeds.push({ uuid: uuid[0], type, link } as IProfileEmbed);
     }
   }
 

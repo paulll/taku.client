@@ -40,7 +40,7 @@ const props = defineProps<{
 }>();
 
 const embeds = computed(() => getEmbeds(props.message.content));
-const html = computed(() => processMarkdown(removeTrailingEmbeds(props.message.content, embeds.value)))
+const html = computed(() => processMarkdown(removeTrailingEmbeds(props.message.content || '', embeds.value)))
 </script>
 
 <style lang="postcss">
