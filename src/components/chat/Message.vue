@@ -58,4 +58,9 @@ const content = computed(() => parseMessageContent(props.message.content, embeds
     @apply underline;
   }
 }
+
+.content code {
+  @apply p-1 bg-dark-100;
+}
+
 </style>
