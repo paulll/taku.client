@@ -3,8 +3,8 @@ import createMarkdownParser from "markdown-it";
 
 const md = createMarkdownParser({linkify: true, typographer: true})
 
-const IMAGE_EXTENSIONS = [".jpg", ".png", ".webp", ".gif", ".jpeg"];
-const AUDIO_EXTENSIONS = [".flac", ".ogg", ".aiff", ".mp3", ".wav"];
+const IMAGE_EXTENSIONS = [".jpg", ".png", ".webp", ".gif", ".jpeg", ".apng"];
+const AUDIO_EXTENSIONS = [".flac", ".ogg", ".aiff", ".aac", ".mp3", ".wav"];
 const VIDEO_EXTENSIONS = [".mp4", ".webm", ".flv", ".mov"];
 const UUID_REGEX = /\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b/g;
 
