@@ -9,19 +9,20 @@
       <Message class="px-2" v-for="(message, index) in messages" :key="message.author_id" :message="message" :minimal="messages[index + 1]?.author_id === message.author_id" />
     </div>
 
-    <div class="bg-transparent h-min p-2">
+    <div class="bg-transparent flex gap-2 h-min p-2">
       <textarea
         ref="textarea"
-        placeholder="Type here"
+        placeholder="Send a message"
         style="resize: none"
         maxlength="2000"
         :oninput="handleInput"
         @keydown="handleEnter"
         type="text"
-        class="rounded-4px w-full h-10 max-h-64 bg-dark-300 outline-none border-none"
+        class="rounded-20px px-4 w-full h-10 max-h-64 bg-dark-300 outline-none border-none"
         v-model="input"
       >
       </textarea>
+      <RoundedButton icon="paperplane" class="w-10 h-10 min-w-10 min-h-10" @click="sendMessage()" />
     </div>
   </div>
 
@@ -36,6 +37,7 @@ import api from "../services/api";
 import Message from "../components/chat/Message.vue";
 import UserList from "../components/chat/UserList.vue";
 import ChannelButton from "../components/chat/ChannelButton.vue";
+import RoundedButton from "../components/misc/RoundedButton.vue";
 const state = useState();
 const messages = computed(() => state.getGlobalMessages());
 
@@ -71,6 +73,12 @@ const handleScroll = async (event: Event) => {
     }
   }
 };
+
+const sendMessage = () => {
+  api.sendGlobalMessage(input.value.trim());
+  input.value = "";
+  resetResize();
+}
 
 const handleInput = () => {
   state.playKeystroke();
